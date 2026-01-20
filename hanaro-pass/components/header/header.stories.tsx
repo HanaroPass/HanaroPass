@@ -1,53 +1,64 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-
-import { fn } from 'storybook/test';
+import { Bell, Settings } from 'lucide-react';
 import Header from './header';
 
-// More on how to set up stories at: https://storybook.js.org/docs/writing-stories#default-export
 const meta = {
-  title: 'Example/Header',
+  title: 'Components/Header',
   component: Header,
   parameters: {
-    // Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout
-    layout: 'centered',
+    layout: 'fullscreen',
   },
-  // This component will have an automatically generated Autodocs entry: https://storybook.js.org/docs/writing-docs/autodocs
   tags: ['autodocs'],
-  // More on argTypes: https://storybook.js.org/docs/api/argtypes
   argTypes: {
-    backgroundColor: { control: 'color' },
+    title: {
+      control: 'text',
+      description: '헤더 중앙에 표시될 제목입니다.',
+    },
+    showBack: {
+      control: 'boolean',
+      description: '뒤로가기 버튼 표시 여부를 결정합니다.',
+    },
   },
-  // Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#story-args
-  args: { onClick: fn() },
 } satisfies Meta<typeof Header>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// More on writing stories with args: https://storybook.js.org/docs/writing-stories/args
-export const Primary: Story = {
+export const Default: Story = {
   args: {
-    primary: true,
-    label: 'Button',
+    title: 'Hanaro Pass',
+    showBack: true,
   },
 };
 
-export const Secondary: Story = {
+export const Main: Story = {
   args: {
-    label: 'Button',
+    title: '홈',
+    showBack: false,
   },
 };
 
-export const Large: Story = {
+export const WithNotification: Story = {
   args: {
-    size: 'large',
-    label: 'Button',
+    title: '알림 설정',
+    showBack: true,
+    rightElement: (
+      <button className="rounded-full p-2 transition-colors hover:bg-gray-100">
+        <Bell size={24} className="text-gray-600" />
+      </button>
+    ),
   },
 };
 
-export const Small: Story = {
+export const WithSettings: Story = {
   args: {
-    size: 'small',
-    label: 'Button',
+    title: '마이페이지',
+    showBack: true,
+    rightElement: (
+      <button className="flex items-center gap-1 rounded-md p-1 hover:bg-gray-50">
+        <Settings size={20} />
+        <span className="font-medium text-sm">설정</span>
+      </button>
+    ),
   },
 };
