@@ -1,5 +1,42 @@
 @import "tailwindcss";
 
+/* Pretendard */
+@font-face {
+  font-family: 'Pretendard';
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/Pretendard-Regular.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/Pretendard-Medium.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/Pretendard-SemiBold.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/Pretendard-Bold.woff2') format('woff2');
+}
+
+/* Hana 2.0 */
+@font-face {
+  font-family: 'Hana 2.0';
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/Hana2-Bold.woff2') format('woff2');
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -8,8 +45,59 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-hana: 'Hana 2.0', 'Pretendard', sans-serif;
+  
+  /* Font sizes */
+  --font-size-sm: 14px;
+  --font-size-base: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 22px;
+  
+  /* Colors - Green */
+  --color-green-ez: #01A5AC;
+  --color-hana-green: #008485;
+  --color-green-800: #5D9586;
+  --color-green-700: #61C0A6;
+  --color-green-600: #ABCEC8;
+  --color-green-500: #DCFCE7;
+  --color-green-400: #D9E8E5;
+  --color-green-300: #F0FDFA;
+  --color-green-200: #F6F8F7;
+  
+  /* Colors - Red */
+  --color-hana-red: #E90061;
+  --color-red-800: #D2524F;
+  --color-red-600: #DE8274;
+  --color-red-400: #E9ADA0;
+  --color-red-200: #F3D8D0;
+  
+  /* Colors - Gold */
+  --color-hana-gold: #AD9A5F;
+  --color-gold-800: #B4A085;
+  --color-gold-600: #D5CAB9;
+  --color-gold-400: #EDE8DF;
+  --color-gold-200: #FAF9F7;
+  
+  /* Colors - Silver/Gray */
+  --color-hana-silver: #B5B5B5;
+  --color-silver-800: #B7B6B1;
+  --color-silver-600: #E5E7EB;
+  --color-silver-400: #FAFAFA;
+  
+  /* Colors - Black/Gray */
+  --color-black-900: #101828;
+  --color-black-800: #4A5565;
+  --color-black-600: #888988;
+  --color-black-400: #B6B6B6;
+  --color-black-200: #DEDCDD;
+  --color-white-ez: #FFFFFF;
+  --color-gray-200: #F9FAFB;
+  --color-gray-100: #F0F3F4;
+  
+  /* Colors - Accent */
+  --color-blue-100: #006CFF;
+  --color-yellow-200: #FEF9C2;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -22,5 +110,5 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
 }
