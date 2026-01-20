@@ -1,0 +1,19 @@
+# =========================================
+# CODEOWNERS
+# 도메인별 자동 리뷰 요청 설정
+# =========================================
+
+# ---- benefits 도메인
+/app/benefits/  @imddoy
+
+# ---- payment 도메인
+/app/payment/   @imddoy
+
+# ---- map 도메인
+/app/map/       @hansoojeongsj @KelseyKwon @s0nsy @Kimm00
+
+# ---- medical 도메인
+/app/medical/   @hansoojeongsj @KelseyKwon @s0nsy @Kimm00
+
+# ---- user 도메인
+/app/user/      @imsom2 @thisminji
