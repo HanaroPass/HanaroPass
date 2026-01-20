@@ -145,6 +145,7 @@ model SavedPlace {
 model Hospital {
   id        Int      @id @default(autoincrement()) @db.UnsignedInt
   nameKo    String   @db.VarChar(255)
+  imageUrl  String?  @db.Text
   address   String   @db.VarChar(500)
   latitude  Decimal  @db.Decimal(10, 8)
   longitude Decimal  @db.Decimal(11, 8)
