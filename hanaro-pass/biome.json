@@ -20,7 +20,15 @@
       "recommended": true,
       "suspicious": {
         "noUnknownAtRules": "off"
-      }
+      },
+      "nursery": {
+        "useSortedClasses": {
+          "level": "error",
+          "fix": "safe",
+          "options": {}
+        }
+      },
+      "a11y": { "useButtonType": "off" }
     },
     "domains": {
       "next": "recommended",
@@ -32,6 +40,11 @@
       "source": {
         "organizeImports": "on"
       }
+    }
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "single"
     }
   }
 }
