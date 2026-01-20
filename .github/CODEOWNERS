@@ -1,0 +1,19 @@
+# =========================================
+# CODEOWNERS
+# 도메인별 자동 리뷰 요청 설정
+# =========================================
+
+# ---- benefits 도메인
+/hanaro-pass/app/benefits/  @imddoy @hansoojeongsj @KelseyKwon @s0nsy @Kimm00 @imsom2 @thisminji
+
+# ---- payment 도메인
+/hanaro-pass/app/payment/   @imddoy @hansoojeongsj @KelseyKwon @s0nsy @Kimm00 @imsom2 @thisminji
+
+# ---- map 도메인
+/hanaro-pass/app/map/       @hansoojeongsj @KelseyKwon @s0nsy @Kimm00
+
+# ---- medical 도메인
+/hanaro-pass/app/medical/   @hansoojeongsj @KelseyKwon @s0nsy @Kimm00
+
+# ---- user 도메인
+/hanaro-pass/app/user/      @imsom2 @thisminji
