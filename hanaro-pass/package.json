@@ -7,7 +7,14 @@
     "build": "next build",
     "start": "next start",
     "lint": "biome check",
-    "format": "biome format --write"
+    "db:pull": "prisma db pull",
+    "db:push": "prisma db push",
+    "db:gen": "prisma generate",
+    "db:seed": "prisma db seed",
+    "db:mig": "prisma migrate dev",
+    "format": "biome format --write",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "dependencies": {
     "@prisma/client": "^7.2.0",
