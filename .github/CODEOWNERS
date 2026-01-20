@@ -4,16 +4,16 @@
 # =========================================
 
 # ---- benefits 도메인
-/app/benefits/  @imddoy
+/hanaro-pass/app/benefits/  @imddoy
 
 # ---- payment 도메인
-/app/payment/   @imddoy
+/hanaro-pass/app/payment/   @imddoy
 
 # ---- map 도메인
-/app/map/       @hansoojeongsj @KelseyKwon @s0nsy @Kimm00
+/hanaro-pass/app/map/       @hansoojeongsj @KelseyKwon @s0nsy @Kimm00
 
 # ---- medical 도메인
-/app/medical/   @hansoojeongsj @KelseyKwon @s0nsy @Kimm00
+/hanaro-pass/app/medical/   @hansoojeongsj @KelseyKwon @s0nsy @Kimm00
 
 # ---- user 도메인
-/app/user/      @imsom2 @thisminji
+/hanaro-pass/app/user/      @imsom2 @thisminji
