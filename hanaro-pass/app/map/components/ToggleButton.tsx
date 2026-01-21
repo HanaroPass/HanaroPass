@@ -1,23 +1,23 @@
 type ToggleButtonProps =
   | {
-      variant: "icon";
+      variant: 'icon';
       active: boolean;
       onClick: () => void;
       icon: React.ReactNode;
       ariaLabel: string;
-      colorVariant?: "green" | "red";
-      iconColorVariant?: "green" | "red" | "blue" | "yellow";
+      colorVariant?: 'green' | 'red';
+      iconColorVariant?: 'green' | 'red' | 'blue' | 'yellow';
       label?: never;
     }
   | {
-      variant: "pill";
+      variant: 'pill';
       active: boolean;
       onClick: () => void;
       icon: React.ReactNode;
       label: string;
       ariaLabel?: string;
-      colorVariant?: "green" | "red";
-      iconColorVariant?: "green" | "red" | "blue" | "yellow";
+      colorVariant?: 'green' | 'red';
+      iconColorVariant?: 'green' | 'red' | 'blue' | 'yellow';
     };
 
 export function ToggleButton({
@@ -27,21 +27,31 @@ export function ToggleButton({
   label,
   icon,
   ariaLabel,
-  colorVariant = "green",
-  iconColorVariant = "green",
+  colorVariant = 'green',
+  iconColorVariant = 'green',
 }: ToggleButtonProps) {
   const baseClass =
-    variant === "pill"
-      ? "flex items-center gap-1 px-3 py-2 rounded-full text-base font-semibold shadow-md"
-      : "w-10 h-10 flex items-center justify-center rounded-full shadow-md";
+    variant === 'pill'
+      ? 'flex items-center gap-1 px-3 py-2 rounded-full text-base font-semibold shadow-md border'
+      : 'w-10 h-10 flex items-center justify-center rounded-full shadow-md border';
 
-  const activeBg = colorVariant === "red" ? "bg-red-200" : "bg-green-500";
+  const borderColor = active
+    ? colorVariant === 'red'
+      ? 'border-red-600'
+      : 'border-green-700'
+    : 'border-white';
+
+  const bgColor = active
+    ? colorVariant === 'red'
+      ? 'bg-red-200'
+      : 'bg-green-300'
+    : 'bg-white';
 
   const iconColorMap = {
-    green: "text-hana-green",
-    red: "text-hana-red",
-    blue: "text-blue-100",
-    yellow: "text-yellow-300",
+    green: 'text-hana-green',
+    red: 'text-hana-red',
+    blue: 'text-blue-100',
+    yellow: 'text-yellow-300',
   };
 
   return (
@@ -50,13 +60,10 @@ export function ToggleButton({
       onClick={onClick}
       aria-pressed={active}
       aria-label={ariaLabel ?? label}
-      className={`${baseClass} transition
-        ${active ? activeBg : "bg-white"}
-        text-black-900
-      `}
+      className={`${baseClass} ${borderColor} ${bgColor} text-black-900 transition`}
     >
       <span className={iconColorMap[iconColorVariant]}>{icon}</span>
-      {variant === "pill" && <span>{label}</span>}
+      {variant === 'pill' && <span>{label}</span>}
     </button>
   );
 }

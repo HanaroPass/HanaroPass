@@ -96,3 +96,4 @@ function makeLabel(selected: string[], defaultLabel: string) {
 
   return `${selected[0]}, ${selected[1]} 외 ${selected.length - 2}개`;
 }
+

@@ -3,10 +3,10 @@
 import { useEffect, useState } from 'react';
 
 import {
+  Bookmark,
+  CircleDollarSign,
   Cross,
   Landmark,
-  CircleDollarSign,
-  Bookmark,
   Siren,
 } from 'lucide-react';
 import { ToggleButton } from './components/ToggleButton';
