@@ -59,7 +59,7 @@ export default function BenefitBanner({
           width: cfg.contentPos.left === '50%' ? '100%' : 'auto',
         }}
       >
-        <p className="font-bold text-[22px] leading-tight tracking-tight">
+        <p className="font-bold text-lg">
           {country}에서 오신 {name} 손님,
         </p>
         <p className="font-medium text-base opacity-90">{cfg.subtitle}</p>
