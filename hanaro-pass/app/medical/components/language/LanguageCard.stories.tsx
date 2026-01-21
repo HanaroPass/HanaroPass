@@ -50,7 +50,7 @@ export const DifferentLanguage: Story = {
 
 export const Playground: Story = {
   render: (args) => (
-    <div className="w-[360px]">
+    <div className="w-90">
       <LanguageCard {...args} />
     </div>
   ),
