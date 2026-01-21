@@ -42,8 +42,8 @@ export default function Header({
             ? leftElement
             : leftType !== 'none' && (
                 <button
-                  type='button'
-                  aria-label='뒤로 가기'
+                  type="button"
+                  aria-label="뒤로 가기"
                   onClick={handleLeftClick}
                   className="-ml-2 p-2 text-black-900 transition-opacity active:opacity-50"
                 >
