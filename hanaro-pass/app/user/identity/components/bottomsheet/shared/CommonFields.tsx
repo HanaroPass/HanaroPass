@@ -20,45 +20,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { NATIONALITIES } from '@/lib/constants';
 
 interface CommonFieldsProps {
   formData: Record<string, string>;
   onFormDataChange: (data: Record<string, string>) => void;
 }
-
-const NATIONALITIES = [
-  { value: 'KINGDOM OF CAMBODIA', label: 'KINGDOM OF CAMBODIA' },
-  {
-    value: "PEOPLE'S REPUBLIC OF BANGLADESH",
-    label: "PEOPLE'S REPUBLIC OF BANGLADESH",
-  },
-  { value: "PEOPLE'S REPUBLIC OF CHINA", label: "PEOPLE'S REPUBLIC OF CHINA" },
-  { value: 'REPUBLIC OF INDONESIA', label: 'REPUBLIC OF INDONESIA' },
-  { value: 'REPUBLIC OF JAPAN', label: 'REPUBLIC OF JAPAN' },
-  { value: 'REPUBLIC OF KAZAKHSTAN', label: 'REPUBLIC OF KAZAKHSTAN' },
-  { value: 'REPUBLIC OF MONGOLIA', label: 'REPUBLIC OF MONGOLIA' },
-  { value: 'REPUBLIC OF NEPAL', label: 'REPUBLIC OF NEPAL' },
-  {
-    value: 'REPUBLIC OF THE PHILIPPINES',
-    label: 'REPUBLIC OF THE PHILIPPINES',
-  },
-  { value: 'REPUBLIC OF UZBEKISTAN', label: 'REPUBLIC OF UZBEKISTAN' },
-  { value: 'RUSSIAN FEDERATION', label: 'RUSSIAN FEDERATION' },
-  {
-    value: 'SOCIALIST REPUBLIC OF VIET NAM',
-    label: 'SOCIALIST REPUBLIC OF VIET NAM',
-  },
-  {
-    value: 'DEMOCRATIC SOCIALIST REPUBLIC OF SRI LANKA',
-    label: 'DEMOCRATIC SOCIALIST REPUBLIC OF SRI LANKA',
-  },
-  { value: 'KINGDOM OF THAILAND', label: 'KINGDOM OF THAILAND' },
-  {
-    value: 'REPUBLIC OF THE UNION OF MYANMAR',
-    label: 'REPUBLIC OF THE UNION OF MYANMAR',
-  },
-  { value: 'UNITED STATES OF AMERICA', label: 'UNITED STATES OF AMERICA' },
-];
 
 function DatePicker({
   value,
