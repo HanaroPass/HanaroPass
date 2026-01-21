@@ -5,9 +5,14 @@ const config: StorybookConfig = {
     '../app/**/*.stories.@(ts|tsx|mdx)',
     '../components/**/*.stories.@(ts|tsx|mdx)',
     '../stories/**/*.stories.@(ts|tsx|mdx)',
+    '../src/**/*.stories.@(ts|tsx|mdx)',
   ],
 
-  addons: ['@storybook/addon-docs'],
+  addons: [
+    '@storybook/addon-links',
+    '@storybook/addon-essentials',
+    '@storybook/addon-interactions',
+  ],
   framework: '@storybook/nextjs-vite',
   staticDirs: ['../public'],
 };

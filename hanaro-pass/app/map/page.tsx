@@ -76,7 +76,12 @@ export default function MapPage() {
       <div className="absolute right-[1.2rem] top-[15%] z-10 flex flex-col gap-[0.8rem]">
         <ToggleButton
           variant="icon"
-          icon={<Bookmark className="w-5 h-5" />}
+          icon={
+            <Bookmark
+              className="w-5 h-5"
+              fill={rightSelected.bookmark ? "currentColor" : "none"}
+            />
+          }
           active={rightSelected.bookmark}
           ariaLabel="결제 장소 표시 토글"
           onClick={() =>
