@@ -1,6 +1,6 @@
 export const mockCoupons = [
   {
-    id: 1,
+    couponId: 1,
     brandName: 'GS25',
     tag: '#편의점',
     category: 'food',
@@ -10,7 +10,7 @@ export const mockCoupons = [
       'https://blog.kakaocdn.net/dna/lMgCJ/btqVvPDO1IB/AAAAAAAAAAAAAAAAAAAAAMppshZ7hQfAA8C0R-uK8w62V9O4BJYwNvifeBrHKjK8/img.jpg?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1769871599&allow_ip=&allow_referer=&signature=rXZhIFRLxIpT%2FxAqf7MMHNb%2Bdgc%3D',
   },
   {
-    id: 2,
+    couponId: 2,
     brandName: 'CU',
     tag: '#편의점',
     category: 'food',
@@ -20,7 +20,7 @@ export const mockCoupons = [
       'https://blog.kakaocdn.net/dna/lMgCJ/btqVvPDO1IB/AAAAAAAAAAAAAAAAAAAAAMppshZ7hQfAA8C0R-uK8w62V9O4BJYwNvifeBrHKjK8/img.jpg?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1769871599&allow_ip=&allow_referer=&signature=rXZhIFRLxIpT%2FxAqf7MMHNb%2Bdgc%3D',
   },
   {
-    id: 3,
+    couponId: 3,
     brandName: '스타벅스',
     tag: '#카페',
     category: 'drink',
