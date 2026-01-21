@@ -4,33 +4,20 @@ import { ChevronUp, CreditCard } from 'lucide-react';
 import DocsPreview from './DocsPreview';
 import type { CardColor } from '../constants/cardColor';
 import { CARD_GRADIENT_CLASS } from '../constants/cardColor';
-import { useEffect, useState } from 'react';
 
 type DocsCardProps = {
   title: string;
   color: CardColor;
-  initialOpen?: boolean;
-  onToggle?: () => void;
+  isOpen: boolean;
+  onToggle: () => void;
 };
 
 export default function DocsCard({
   title,
   color,
-  initialOpen = false,
+  isOpen,
   onToggle,
 }: DocsCardProps) {
-  const [isOpen, setIsOpen] = useState(initialOpen);
-
-  // 부모가 onToggle 넘기면 그걸 우선 사용
-  // 스토리북에서 사용할 수 있도록 독립적으로도 isOpen 사용할 수 있게함
-  const handleToggle = () => {
-    if (onToggle) return onToggle();
-    setIsOpen((v) => !v);
-  };
-
-  // 부모 상태가 바뀌면 반영되게
-  useEffect(() => setIsOpen(initialOpen), [initialOpen]);
-
   return (
     <section
       className={`w-83 rounded-xl shadow-[0_18px_30px_rgba(0,0,0,0.18)] ${CARD_GRADIENT_CLASS[color]} transition-[padding] duration-300 ease-in-out ${isOpen ? 'p-3 pb-10' : 'p-3 pb-15'}`}
@@ -48,7 +35,7 @@ export default function DocsCard({
         {/* 오른쪽: 토글 아이콘 */}
         <button
           type="button"
-          onClick={handleToggle}
+          onClick={onToggle}
           aria-expanded={isOpen}
           className="grid h-9 w-9 place-items-center bg-transparent p-0"
         >
