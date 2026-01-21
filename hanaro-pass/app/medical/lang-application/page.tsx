@@ -2,6 +2,7 @@
 
 import { Info } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { default as DescriptionSection } from '../components/language/DescriptionSection';
 import HospitalItem from '../components/language/HospitalItem';
@@ -9,15 +10,17 @@ import SearchInput from '../components/language/SearchInput';
 
 export default function MedicalPage() {
   const router = useRouter();
-  // 상태 관리 (나중에 hooks로 분리 예정)
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // QQQ : 더미 데이터 - 실제로는 API 호출로 대체
   const dummyHospitals = [
     { id: 1, name: '서울국제의료센터', address: '서울시 강남구 테헤란로 123' },
     { id: 2, name: '강남병원', address: '서울시 강남구 역삼로 456' },
   ];
 
-  const handleHospitalSelect = (id: number) => {
-    console.log(`병원 ID ${id} 선택됨`);
-  };
+  const filteredHospitals = dummyHospitals.filter((hospital) =>
+    hospital.name.toLowerCase().includes(searchQuery.toLowerCase()),
+  );
 
   return (
     <div className="flex h-full flex-col">
@@ -30,8 +33,11 @@ export default function MedicalPage() {
           ]}
         />
         {/* 1. 검색 입력 (상태에 따라 변함) */}
-        <div className="mt-4">
-          <SearchInput />
+        <div className="mt-4 px-6">
+          <SearchInput
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
         </div>
 
         {/* 2. 병원 리스트 (데이터 유무에 따라 변함) */}
@@ -51,7 +57,7 @@ export default function MedicalPage() {
             </div>
           ) : (
             <div className="space-y-4 pb-6">
-              {dummyHospitals.map((hospital) => (
+              {filteredHospitals.map((hospital) => (
                 <HospitalItem
                   key={hospital.id}
                   name={hospital.name}

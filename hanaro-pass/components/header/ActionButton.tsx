@@ -1,4 +1,3 @@
-// app/medical/components/ActionButton.tsx
 import { Button } from '@/components/ui/button';
 
 type ActionButtonProps = {
