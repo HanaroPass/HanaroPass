@@ -65,11 +65,12 @@ export default function MapPage() {
         />
       </div>
 
-      <div className="absolute right-[1.2rem] top-[15%] z-1 flex flex-col gap-[0.8rem]">
+      <div className="absolute right-[1.2rem] top-[15%] z-10 flex flex-col gap-[0.8rem]">
         <ToggleButton
           variant="icon"
           icon={<Bookmark className="w-5 h-5" />}
           active={rightSelected.bookmark}
+          ariaLabel="결제 장소 표시 토글"
           onClick={() =>
             setRightSelected((p) => ({ ...p, bookmark: !p.bookmark }))
           }
@@ -81,6 +82,7 @@ export default function MapPage() {
           active={rightSelected.siren}
           iconColorVariant="red"
           colorVariant="red"
+          ariaLabel="긴급 상황 표시 토글"
           onClick={() => setRightSelected((p) => ({ ...p, siren: !p.siren }))}
         />
       </div>

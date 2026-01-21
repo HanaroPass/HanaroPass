@@ -1,20 +1,35 @@
+type ToggleButtonProps =
+  | {
+      variant: "icon";
+      active: boolean;
+      onClick: () => void;
+      icon: React.ReactNode;
+      ariaLabel: string;
+      colorVariant?: "green" | "red";
+      iconColorVariant?: "green" | "red" | "blue" | "yellow";
+      label?: never;
+    }
+  | {
+      variant: "pill";
+      active: boolean;
+      onClick: () => void;
+      icon: React.ReactNode;
+      label: string;
+      ariaLabel?: string;
+      colorVariant?: "green" | "red";
+      iconColorVariant?: "green" | "red" | "blue" | "yellow";
+    };
+
 export function ToggleButton({
   active,
   onClick,
   variant,
   label,
   icon,
+  ariaLabel,
   colorVariant = "green",
   iconColorVariant = "green",
-}: {
-  active: boolean;
-  onClick: () => void;
-  variant: "pill" | "icon";
-  label?: string;
-  icon: React.ReactNode;
-  colorVariant?: "green" | "red";
-  iconColorVariant?: "green" | "red" | "blue" | "yellow";
-}) {
+}: ToggleButtonProps) {
   const baseClass =
     variant === "pill"
       ? "flex items-center gap-1 px-3 py-2 rounded-full text-base font-semibold shadow-md"
@@ -31,14 +46,17 @@ export function ToggleButton({
 
   return (
     <button
+      type="button"
       onClick={onClick}
+      aria-pressed={active}
+      aria-label={ariaLabel ?? label}
       className={`${baseClass} transition
         ${active ? activeBg : "bg-white"}
         text-black-900
       `}
     >
       <span className={iconColorMap[iconColorVariant]}>{icon}</span>
-      {label && <span>{label}</span>}
+      {variant === "pill" && <span>{label}</span>}
     </button>
   );
 }
