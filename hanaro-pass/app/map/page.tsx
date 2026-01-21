@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   Cross,
@@ -17,6 +17,12 @@ type TopType = "hospital" | "embassy" | "exchange" | null;
 
 export default function MapPage() {
   const [topSelected, setTopSelected] = useState<TopType>(null);
+
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   const [rightSelected, setRightSelected] = useState({
     bookmark: false,
     siren: false,
@@ -89,24 +95,33 @@ export default function MapPage() {
         />
       </div>
 
-      <button
-        onClick={() => setOpenBottomSheet(true)}
-        className="
-          absolute bottom-6 left-1/2 -translate-x-1/2
-          z-20
-          h-12 px-6
-          rounded-full
-          bg-green-ez text-white
-          text-base font-medium
-          shadow-lg
-        "
-      >
-        병원 필터 보기
-      </button>
-      <BottomSheet
-        open={openBottomSheet}
-        onOpenChange={setOpenBottomSheet}
-      />
+      {mounted && (
+        <>
+          <button
+              onClick={(e) => {
+                e.currentTarget.blur(); 
+                setOpenBottomSheet(true);
+              }}
+            className="
+              absolute bottom-6 left-1/2 -translate-x-1/2
+              z-20
+              h-12 px-6
+              rounded-full
+              bg-green-ez text-white
+              text-base font-medium
+              shadow-lg
+            "
+          >
+            병원 필터 보기
+          </button>
+
+          <BottomSheet
+            open={openBottomSheet}
+            onOpenChange={setOpenBottomSheet}
+          />
+        </>
+      )}
+
     </main>
   );
 }
