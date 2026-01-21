@@ -93,6 +93,12 @@ async function getHospitalDepartments(ykiho: string) {
 
   try {
     const response = await fetch(`${DEPT_API_URL}?${params.toString()}`);
+    if (!response.ok) {
+      console.warn(
+        `[ 부서 조회 실패 ] ykiho=${ykiho} status=${response.status}`,
+      );
+      return [];
+    }
     const result = await response.json();
     const items = normalizeItems(result.response?.body?.items?.item);
 
@@ -104,6 +110,7 @@ async function getHospitalDepartments(ykiho: string) {
       })
       .filter(Boolean) as { deptName: string }[];
   } catch (error) {
+    console.error(`[ 부서 조회 실패 ] ykiho=${ykiho}`, error);
     return [];
   }
 }
@@ -112,7 +119,7 @@ async function fetchAndSeed() {
   console.log('[ 시딩 작업 시작 - 광진구 / 성동구 병원 데이터 수집 ]');
 
   for (const district of TARGET_DISTRICTS) {
-    console.log(`[ 시딩 작업 시작 - ${district.name} 데이터 수집 중...`);
+    console.log(`[ 시딩 작업 시작 - ${district.name} 데이터 수집 중... ]`);
 
     const params = new URLSearchParams({
       ServiceKey: SERVICE_KEY!,
@@ -141,13 +148,20 @@ async function fetchAndSeed() {
         const departments = await getHospitalDepartments(item.ykiho);
         const langs = getRandomLangs(); // 확률 로직 적용 - 최대 3개까지 언어 지원 가능
 
+        const latitude = Number(item.YPos);
+        const longitude = Number(item.XPos);
+        if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+          console.warn(`[ 좌표 누락 ] ${item.yadmNm} (${item.ykiho})`);
+          continue;
+        }
+
         await prisma.hospital.create({
           data: {
             nameKo: item.yadmNm,
             imageUrl: getRandomHospitalImage(),
             address: item.addr,
-            latitude: parseFloat(item.YPos),
-            longitude: parseFloat(item.XPos),
+            latitude,
+            longitude,
             phone: item.telno || null,
             openHours: '09:00 - 18:00',
             HospitalDept: {
