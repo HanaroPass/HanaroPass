@@ -1,6 +1,6 @@
-import { PrismaMariaDb } from "@prisma/adapter-mariadb";
-import { PrismaClient } from "@/lib/generated/prisma/client";
-import "dotenv/config";
+import { PrismaMariaDb } from '@prisma/adapter-mariadb';
+import { PrismaClient } from '@/lib/generated/prisma/client';
+import 'dotenv/config';
 
 const adapter = new PrismaMariaDb({
   host: process.env.DATABASE_HOST,
@@ -21,4 +21,4 @@ declare const globalThis: {
 
 export const prisma = globalThis.prismaGlobal || newInstance();
 
-if (process.env.NODE_ENV !== "production") globalThis.prismaGlobal = prisma;
+if (process.env.NODE_ENV !== 'production') globalThis.prismaGlobal = prisma;
