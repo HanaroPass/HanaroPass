@@ -1,15 +1,13 @@
-import DocsCardClosed from './components/DocsCardClosed';
-import DocsCardOpened from './components/DocsCardOpened';
+import DocsCard from './components/DocsCard';
 
 export default function DocsPage() {
   return (
     <main>
-      <DocsCardOpened title="모바일 외국인 신분증" color="blueSoft" />
-      <DocsCardClosed title="모바일 외국인 신분증" color="blueSoft" />
-      <DocsCardClosed title="모바일 외국인 신분증" color="blueStrong" />
-      <DocsCardClosed title="모바일 외국인 신분증" color="gray" />
-      <DocsCardClosed title="모바일 외국인 신분증" color="peach" />
-      <DocsCardClosed title="모바일 외국인 신분증" color="purple" />
+      <DocsCard title="모바일 외국인 신분증" color="blueSoft" />
+      <DocsCard title="모바일 외국인 신분증" color="blueStrong" />
+      <DocsCard title="모바일 외국인 신분증" color="gray" />
+      <DocsCard title="모바일 외국인 신분증" color="peach" />
+      <DocsCard title="모바일 외국인 신분증" color="purple" />
     </main>
   );
 }
