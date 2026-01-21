@@ -32,10 +32,20 @@ export function ToggleButton({
 }: ToggleButtonProps) {
   const baseClass =
     variant === "pill"
-      ? "flex items-center gap-1 px-3 py-2 rounded-full text-base font-semibold shadow-md"
-      : "w-10 h-10 flex items-center justify-center rounded-full shadow-md";
+      ? "flex items-center gap-1 px-3 py-2 rounded-full text-base font-semibold shadow-md border"
+      : "w-10 h-10 flex items-center justify-center rounded-full shadow-md border";
 
-  const activeBg = colorVariant === "red" ? "bg-red-200" : "bg-green-500";
+  const borderColor = active
+    ? colorVariant === "red"
+      ? "border-red-600"
+      : "border-green-700"
+    : "border-white";
+
+  const bgColor = active
+    ? colorVariant === "red"
+      ? "bg-red-200"
+      : "bg-green-300"
+    : "bg-white";
 
   const iconColorMap = {
     green: "text-hana-green",
@@ -50,10 +60,7 @@ export function ToggleButton({
       onClick={onClick}
       aria-pressed={active}
       aria-label={ariaLabel ?? label}
-      className={`${baseClass} transition
-        ${active ? activeBg : "bg-white"}
-        text-black-900
-      `}
+      className={`${baseClass} ${borderColor} ${bgColor} transition text-black-900`}
     >
       <span className={iconColorMap[iconColorVariant]}>{icon}</span>
       {variant === "pill" && <span>{label}</span>}
