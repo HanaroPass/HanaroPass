@@ -1,6 +1,7 @@
 'use client';
 
 import { useParams, useRouter } from 'next/navigation';
+import HospitalGuide from '@/app/medical/components/language/HospitalGuide';
 import StatusBadge from '@/app/medical/components/StatusBadge';
 import ActionButton from '@/components/header/ActionButton';
 import RegistrationSummary from '@/components/result/RegistrationSummary';
@@ -25,6 +26,8 @@ export default function HospitalRegistrationCompletePage() {
           description={`관리자 확인 후 승인되면\n알림을 보내드릴게요`}
           items={summaryItems}
         />
+
+        <HospitalGuide text="승인 완료 시 외국인 환자가 귀하의 병원 정보를 확인할 수 있게 됩니다" />
       </main>
 
       {/* 2. 하단 버튼 영역: main이 위에서 공간을 다 차지하므로 자동으로 화면 맨 아래 고정됨 */}
