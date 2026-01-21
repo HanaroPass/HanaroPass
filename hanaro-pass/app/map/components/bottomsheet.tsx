@@ -39,7 +39,9 @@ export default function BottomSheet({
             className={`${basePill} ${
               active === "language" ? activePill : inactivePill
             }`}
-            onClick={() => setActive("language")}
+            onClick={() =>
+              setActive((prev) => (prev === "language" ? null : "language"))
+            }
           >
             소통 가능 언어
           </button>
@@ -48,7 +50,9 @@ export default function BottomSheet({
             className={`${basePill} ${
               active === "department" ? activePill : inactivePill
             }`}
-            onClick={() => setActive("department")}
+            onClick={() =>
+              setActive((prev) => (prev === "department" ? null : "department"))
+            }
           >
             진료과목
           </button>
