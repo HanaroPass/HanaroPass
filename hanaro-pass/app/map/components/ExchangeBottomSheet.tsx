@@ -15,7 +15,6 @@ export function ExchangeBottomSheet() {
           ))}
         </div>
       </div>
-      <div className="h-30" />
     </>
   );
 }
