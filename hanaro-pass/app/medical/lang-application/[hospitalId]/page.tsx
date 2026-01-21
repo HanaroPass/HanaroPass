@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import DescriptionSection from '../../components/DescriptionSection';
+import HospitalGuide from '../../components/HospitalGuide';
 import type { Language } from '../../components/LanguageCard';
 import LanguageCard from '../../components/LanguageCard';
 
@@ -38,6 +39,7 @@ export default function LanguageRegistrationPage() {
       <div className="flex-1 overflow-y-auto">
         <DescriptionSection
           title="외국어 진료 가능 정보 등록"
+          //   QQQ 나중에 병원 이름 동적으로 바꾸기
           descriptions={[
             '강남 병원에서 외국어 진료가 가능한 언어를',
             '아래에서 선택해주세요',
@@ -54,6 +56,9 @@ export default function LanguageRegistrationPage() {
               />
             ))}
           </div>
+        </div>
+        <div className="border-gray-200 border-t bg-white pb-8">
+          <HospitalGuide text="등록하신 정보는 외국인 환자 병원을 검색할 때 표시됩니다." />
         </div>
       </div>
     </div>
