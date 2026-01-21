@@ -20,7 +20,7 @@ const meta: Meta<typeof LanguageCard> = {
   },
   argTypes: {
     isSelected: { control: 'boolean' },
-    onToggle: { action: 'onToggle' }, // ✅ 클릭 시 Actions 패널에 id 찍힘
+    onToggle: { action: 'onToggle' },
     lang: { control: 'object' },
   },
 };
