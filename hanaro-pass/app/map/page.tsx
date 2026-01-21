@@ -11,6 +11,8 @@ import {
 } from "lucide-react";
 import { ToggleButton } from "./components/ToggleButton";
 import { NaverMap } from "./components/NaverMap";
+import { EmbassyExchangeSheet } from "./components/EmbassyExchangeSheet";
+import { locations } from "./mock/embassyExchange";
 
 type TopType = "hospital" | "embassy" | "exchange" | null;
 
@@ -90,6 +92,15 @@ export default function MapPage() {
           ariaLabel="긴급 상황 표시 토글"
           onClick={() => setRightSelected((p) => ({ ...p, siren: !p.siren }))}
         />
+      </div>
+      <div className="absolute top-20 inset-x-0 bottom-0 z-50 flex justify-center p-4">
+        <div className="w-full max-w-md pointer-events-auto">
+          <div className="p-4">
+            {locations.map((loc) => (
+              <EmbassyExchangeSheet key={loc.name} data={loc} />
+            ))}
+          </div>
+        </div>
       </div>
     </main>
   );
