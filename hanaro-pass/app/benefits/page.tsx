@@ -1,4 +1,3 @@
-import { Search } from 'lucide-react';
 import SearchInput from '@/components/SearchInput/SearchInput';
 import {
   TabsLine,
