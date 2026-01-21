@@ -10,7 +10,7 @@ const meta = {
   args: {
     countryCode: 'HK',
     name: 'Chan',
-    className: 'w-[375px]',
+    className: 'w-full',
   },
   argTypes: {
     variant: {
