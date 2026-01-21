@@ -10,20 +10,32 @@ export default function IdentityPage() {
   const [openAlien, setOpenAlien] = useState(false);
   const [openAccount, setOpenAccount] = useState(false);
 
-  const handlePassportSubmit = (data: Record<string, string>) => {
-    console.log('여권 데이터:', data);
+  // 폼 데이터 관리
+  const [passportData, setPassportData] = useState<Record<string, string>>({});
+  const [alienData, setAlienData] = useState<Record<string, string>>({});
+  const [accountData, setAccountData] = useState<Record<string, string>>({});
+
+  const handlePassportSubmit = () => {
+    console.log('여권 데이터:', passportData);
     alert('여권 정보가 제출되었습니다!');
+    setOpenPassport(false);
   };
 
-  const handleAlienSubmit = (data: Record<string, string>) => {
-    console.log('외국인등록증 데이터:', data);
+  const handleAlienSubmit = () => {
+    console.log('외국인등록증 데이터:', alienData);
     alert('외국인 등록증 정보가 제출되었습니다!');
+    setOpenAlien(false);
   };
 
-  const handleAccountSubmit = (data: Record<string, string>) => {
-    console.log('계좌 데이터:', data);
+  const handleAccountSubmit = () => {
+    console.log('계좌 데이터:', accountData);
     alert('출입계좌가 선택되었습니다!');
+    setOpenAccount(false);
   };
+
+  const resetPassport = () => setPassportData({});
+  const resetAlien = () => setAlienData({});
+  const resetAccount = () => setAccountData({});
 
   return (
     <div className="min-h-screen bg-gray-100 p-8">
@@ -31,6 +43,7 @@ export default function IdentityPage() {
         <h1 className="mb-8 font-bold text-2xl">신원 정보 확인</h1>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          {/* 여권 */}
           <button
             type="button"
             onClick={() => setOpenPassport(true)}
@@ -40,6 +53,7 @@ export default function IdentityPage() {
             <p className="text-gray-500 text-sm">여권 정보를 입력하세요</p>
           </button>
 
+          {/* 외국인 등록증 */}
           <button
             type="button"
             onClick={() => setOpenAlien(true)}
@@ -51,6 +65,7 @@ export default function IdentityPage() {
             </p>
           </button>
 
+          {/* 출입계좌 */}
           <button
             type="button"
             onClick={() => setOpenAccount(true)}
@@ -62,6 +77,7 @@ export default function IdentityPage() {
         </div>
       </div>
 
+      {/* 완성된 컴포넌트 사용 */}
       <PassportDrawer
         open={openPassport}
         onOpenChange={setOpenPassport}
