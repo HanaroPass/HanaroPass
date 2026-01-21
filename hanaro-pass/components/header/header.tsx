@@ -1,35 +1,59 @@
+'use client';
+
+import { ChevronLeft, X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import type { ReactNode } from 'react';
-import BackButton from './BackButton';
 
 interface HeaderProps {
   title?: string;
-  showBack?: boolean;
+  leftType?: 'back' | 'none';
+  onLeftClick?: () => void;
   rightElement?: ReactNode;
   className?: string;
 }
 
 export default function Header({
-  title = 'Hanaro Pass',
-  showBack = true,
+  title = '',
+  leftType = 'back',
+  onLeftClick,
   rightElement,
   className = '',
 }: HeaderProps) {
+  const router = useRouter();
+
+  const handleLeftClick = () => {
+    if (onLeftClick) {
+      onLeftClick();
+      return;
+    }
+    router.back();
+  };
+
   return (
     <header
-      className={`sticky top-0 z-50 w-full border-gray-50 border-b bg-white ${className}`}
+      className={`sticky top-0 z-50 w-full border-gray-100 border-b bg-white-ez ${className}`}
     >
       <div className="h-[env(safe-area-inset-top)]" />
+      <div className="relative flex h-14 items-center justify-between px-4">
+        <div className="flex justify-start">
+          {leftType !== 'none' && (
+            <button
+              onClick={handleLeftClick}
+              className="-ml-2 p-2 transition-opacity active:opacity-50"
+              aria-label={leftType === 'back' ? '뒤로가기' : '닫기'}
+            >
+              <ChevronLeft size={24} className="text-black-900" />
+            </button>
+          )}
+        </div>
 
-      <div className="flex h-16 items-center justify-between px-4">
-        <div className="flex justify-start">{showBack && <BackButton />}</div>
-
-        <div className="flex flex-1 justify-center overflow-hidden">
-          <h1 className="truncate font-bold text-gray-900 text-lg tracking-tight">
+        <div className="-translate-x-1/2 absolute left-1/2 max-w-[60%]">
+          <h1 className="truncate font-semibold text-base text-black-900 tracking-tight">
             {title}
           </h1>
         </div>
 
-        <div className="flex items-center justify-end">
+        <div className="flex justify-end">
           {rightElement || <div className="w-6" />}
         </div>
       </div>
