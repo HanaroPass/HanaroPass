@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import DescriptionSection from './DescriptionSection';
+import DescriptionSection from '../DescriptionSection';
 
 const meta: Meta<typeof DescriptionSection> = {
   title: 'Sections/DescriptionSection',

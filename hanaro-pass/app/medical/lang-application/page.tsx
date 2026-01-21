@@ -3,9 +3,9 @@
 import { Info } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { default as DescriptionSection } from '../components/DescriptionSection';
-import HospitalItem from '../components/HospitalItem';
-import SearchInput from '../components/SearchInput';
+import { default as DescriptionSection } from '../components/language/DescriptionSection';
+import HospitalItem from '../components/language/HospitalItem';
+import SearchInput from '../components/language/SearchInput';
 
 export default function MedicalPage() {
   const router = useRouter();

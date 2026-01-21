@@ -15,7 +15,6 @@ export default function HospitalItem({
     <div className="rounded-lg border border-gray-300 bg-white p-4 shadow-sm">
       <p className="font-sans font-semibold text-base text-primary">{name}</p>
       <p className="mt-1 font-sans text-black-800 text-sm">{address}</p>
-      {/* 확인 버튼: bg-green-ez 브랜드 컬러 적용 */}
       <Button
         onClick={onSelect}
         className="mt-4 w-full bg-green-ez font-medium font-sans text-sm text-white hover:bg-green-ez/90"

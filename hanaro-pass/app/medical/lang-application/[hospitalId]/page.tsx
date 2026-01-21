@@ -3,11 +3,11 @@
 import { Globe } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import DescriptionSection from '../../components/DescriptionSection';
-import HospitalGuide from '../../components/HospitalGuide';
-import type { Language } from '../../components/LanguageCard';
-import LanguageCard from '../../components/LanguageCard';
-import SectionHeader from '../../components/SectionHeader';
+import DescriptionSection from '../../components/language/DescriptionSection';
+import HospitalGuide from '../../components/language/HospitalGuide';
+import type { Language } from '../../components/language/LanguageCard';
+import LanguageCard from '../../components/language/LanguageCard';
+import SectionHeader from '../../components/language/SectionHeader';
 
 const LANGUAGES: Language[] = [
   { id: 'en', name: '영어', sub: 'English', flag: '🇺🇸' },
@@ -78,6 +78,7 @@ export default function LanguageRegistrationPage() {
       <div className="border-gray-200 border-t bg-white px-6 py-4 pb-8">
         <Button
           disabled={!isSelected}
+          // QQQ : 실제 DB에 반영되도록
           onClick={() => console.log('제출된 데이터:', selectedIds)}
           className={`w-full rounded-xl py-7 font-bold text-lg transition-all ${
             isSelected
