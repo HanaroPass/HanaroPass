@@ -55,7 +55,7 @@ export function MapBottomSheet({
   return (
     <div
       ref={sheetRef}
-      className="fixed inset-x-0 bottom-0 z-50 flex h-[80%] flex-col overflow-hidden rounded-t-[10px] border-[#e5e5e5] border-t bg-white shadow-lg"
+      className="fixed inset-x-0 bottom-0 z-50 flex h-[81%] flex-col overflow-hidden rounded-t-[10px] border-[#e5e5e5] border-t bg-white shadow-lg"
       style={{ transform: 'translateY(100%)', touchAction: 'none' }}
     >
       <div
@@ -64,7 +64,7 @@ export function MapBottomSheet({
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
       >
-        <div className="h-2 w-25 rounded-full bg-gray-200" />
+        <div className="h-2 w-24 rounded-full bg-gray-200" />
       </div>
 
       <div className="flex-1 overflow-y-auto pb-1">

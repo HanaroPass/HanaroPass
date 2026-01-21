@@ -45,7 +45,7 @@ export default function MapPage() {
       </div>
 
       {/* 필터 그룹 */}
-      <div className="absolute top-5 left-5 z-10 flex gap-2.5">
+      <div className="absolute top-3 left-3 z-10 flex gap-2.5">
         <ToggleButton
           variant="pill"
           label="병원"
@@ -73,7 +73,7 @@ export default function MapPage() {
       </div>
 
       {/* 우측 유틸 버튼 그룹 */}
-      <div className="absolute top-[15%] right-5 z-10 flex flex-col gap-2.5">
+      <div className="absolute top-[15%] right-3 z-10 flex flex-col gap-2.5">
         <ToggleButton
           variant="icon"
           icon={
