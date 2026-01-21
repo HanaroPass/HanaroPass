@@ -20,7 +20,7 @@ export default function DocsCard({
 }: DocsCardProps) {
   return (
     <section
-      className={`w-83 rounded-xl shadow-[0_18px_30px_rgba(0,0,0,0.18)] ${CARD_GRADIENT_CLASS[color]} transition-[padding] duration-300 ease-in-out ${isOpen ? 'p-3 pb-10' : 'p-3 pb-15'}`}
+      className={`w-83 rounded-xl shadow-[0_18px_30px_rgba(0,0,0,0.18)] ${CARD_GRADIENT_CLASS[color]} transition-[padding] duration-300 ease-in-out ${isOpen ? 'p-4 pb-10' : 'p-4 pb-15'}`}
     >
       {/* 헤더 영역 */}
       <div className="grid grid-cols-[1fr_auto] items-start text-white">

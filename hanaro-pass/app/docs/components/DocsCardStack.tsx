@@ -24,7 +24,7 @@ export default function DocsCardStack() {
             key={item.id}
             className={cn(
               'relative transition-transform duration-300 ease-in-out',
-              idx === 0 ? 'mt-0' : '-mt-10',
+              idx === 0 ? 'mt-0' : '-mt-13',
               extraOffset,
             )}
           >
