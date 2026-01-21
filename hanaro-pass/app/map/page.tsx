@@ -17,7 +17,6 @@ type TopType = "hospital" | "embassy" | "exchange" | null;
 
 export default function MapPage() {
   const [topSelected, setTopSelected] = useState<TopType>(null);
-
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -31,7 +30,7 @@ export default function MapPage() {
 
   return (
     <main className="relative w-screen h-screen overflow-hidden bg-gray-100">
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 z-0 pointer-events-none">
         <NaverMap onMarkerClick={() => {}} />
       </div>
 
@@ -95,33 +94,34 @@ export default function MapPage() {
         />
       </div>
 
-      {mounted && (
-        <>
-          <button
-              onClick={(e) => {
-                e.currentTarget.blur(); 
-                setOpenBottomSheet(true);
+        {mounted && (
+          <>
+            {!openBottomSheet && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setOpenBottomSheet(true);
+                }}
+                className="
+                  absolute bottom-6 left-1/2 -translate-x-1/2
+                  z-50
+                  h-12 px-6
+                  rounded-full
+                  bg-green-ez text-white
+                "
+              >
+                병원 필터 보기
+              </button>
+            )}
+
+            <BottomSheet
+              open={openBottomSheet}
+              onOpenChange={(open) => {
+                if (!open) setOpenBottomSheet(false);
               }}
-            className="
-              absolute bottom-6 left-1/2 -translate-x-1/2
-              z-20
-              h-12 px-6
-              rounded-full
-              bg-green-ez text-white
-              text-base font-medium
-              shadow-lg
-            "
-          >
-            병원 필터 보기
-          </button>
-
-          <BottomSheet
-            open={openBottomSheet}
-            onOpenChange={setOpenBottomSheet}
-          />
-        </>
-      )}
-
+            />
+          </>
+        )}
     </main>
   );
 }
