@@ -1,3 +1,5 @@
+import { Button } from '@/components/ui/button';
+
 type HospitalItemProps = {
   name: string;
   address: string;
@@ -14,13 +16,12 @@ export default function HospitalItem({
       <p className="font-sans font-semibold text-base text-primary">{name}</p>
       <p className="mt-1 font-sans text-black-800 text-sm">{address}</p>
       {/* 확인 버튼: bg-green-ez 브랜드 컬러 적용 */}
-      <button
-        type="button"
+      <Button
         onClick={onSelect}
-        className="mt-4 w-full rounded-md bg-green-ez py-2 font-medium font-sans text-sm text-white transition-opacity active:opacity-90"
+        className="mt-4 w-full bg-green-ez font-medium font-sans text-sm text-white hover:bg-green-ez/90"
       >
         이 병원이 맞습니다
-      </button>
+      </Button>
     </div>
   );
 }
