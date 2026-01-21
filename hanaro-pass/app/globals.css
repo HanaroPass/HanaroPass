@@ -99,6 +99,7 @@
   /* Colors - Accent */
   --color-blue-100: #006cff;
   --color-yellow-200: #fef9c2;
+  --color-yellow-300: #ffc801;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -112,4 +113,29 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
+}
+
+.app-shell {
+  width: 375px;
+  height: 100dvh;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .app-shell {
+    width: 100%;
+  }
+}
+
+.app-layout {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-main {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
