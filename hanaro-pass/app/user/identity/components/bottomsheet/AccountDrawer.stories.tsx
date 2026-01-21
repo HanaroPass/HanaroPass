@@ -1,35 +1,35 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import { useState } from "react";
-import { AccountDrawer } from "./AccountDrawer";
+import type { Meta, StoryObj } from '@storybook/react';
+import { useState } from 'react';
+import { AccountDrawer } from './AccountDrawer';
 
 const meta: Meta<typeof AccountDrawer> = {
-  title: "Components/Bottomsheet/AccountDrawer",
+  title: 'Components/Bottomsheet/AccountDrawer',
   component: AccountDrawer,
   parameters: {
-    layout: "centered",
+    layout: 'centered',
     docs: {
       description: {
-        component: "출입계좌를 선택할 수 있는 바텀시트 드로어 컴포넌트입니다.",
+        component: '출입계좌를 선택할 수 있는 바텀시트 드로어 컴포넌트입니다.',
       },
     },
   },
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   argTypes: {
     open: {
-      control: "boolean",
-      description: "드로어 열림/닫힘 상태",
+      control: 'boolean',
+      description: '드로어 열림/닫힘 상태',
     },
     onOpenChange: {
-      action: "onOpenChange",
-      description: "드로어 상태 변경 콜백",
+      action: 'onOpenChange',
+      description: '드로어 상태 변경 콜백',
     },
     onSubmit: {
-      action: "onSubmit",
-      description: "계좌 선택 완료 콜백",
+      action: 'onSubmit',
+      description: '계좌 선택 완료 콜백',
     },
     className: {
-      control: "text",
-      description: "추가 CSS 클래스",
+      control: 'text',
+      description: '추가 CSS 클래스',
     },
   },
 };
@@ -41,8 +41,8 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     open: false,
-    onOpenChange: (open: boolean) => console.log("onOpenChange:", open),
-    onSubmit: (data: Record<string, string>) => console.log("onSubmit:", data),
+    onOpenChange: (open: boolean) => console.log('onOpenChange:', open),
+    onSubmit: (data: Record<string, string>) => console.log('onSubmit:', data),
   },
 };
 
@@ -50,8 +50,8 @@ export const Default: Story = {
 export const Open: Story = {
   args: {
     open: true,
-    onOpenChange: (open: boolean) => console.log("onOpenChange:", open),
-    onSubmit: (data: Record<string, string>) => console.log("onSubmit:", data),
+    onOpenChange: (open: boolean) => console.log('onOpenChange:', open),
+    onSubmit: (data: Record<string, string>) => console.log('onSubmit:', data),
   },
 };
 
@@ -74,7 +74,7 @@ export const Interactive: Story = {
           open={isOpen}
           onOpenChange={setIsOpen}
           onSubmit={(data) => {
-            console.log("선택된 계좌:", data);
+            console.log('선택된 계좌:', data);
             alert(`계좌가 선택되었습니다: ${data.selectedAccount}`);
           }}
         />
@@ -87,8 +87,8 @@ export const Interactive: Story = {
 export const CustomStyle: Story = {
   args: {
     open: true,
-    className: "max-w-lg",
-    onOpenChange: (open: boolean) => console.log("onOpenChange:", open),
-    onSubmit: (data: Record<string, string>) => console.log("onSubmit:", data),
+    className: 'max-w-lg',
+    onOpenChange: (open: boolean) => console.log('onOpenChange:', open),
+    onSubmit: (data: Record<string, string>) => console.log('onSubmit:', data),
   },
 };
