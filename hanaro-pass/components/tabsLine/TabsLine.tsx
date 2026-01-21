@@ -40,7 +40,7 @@ function TabsLineTrigger({
     <TabsPrimitive.Trigger
       data-slot="tabs-line-trigger"
       className={cn(
-        'relative inline-flex items-center justify-center whitespace-nowrap rounded-none border-transparent border-b-2 px-4 py-2.5 font-medium text-sm transition-all',
+        'relative inline-flex items-center justify-center whitespace-nowrap rounded-none border-transparent border-b-2 px-3 py-2.5 font-medium text-sm transition-all',
         'focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50',
         'data-[state=active]:border-black-900 data-[state=active]:text-black-900 data-[state=active]:shadow-none',
         'dark:data-[state=active]:border-primary dark:data-[state=active]:text-foreground',

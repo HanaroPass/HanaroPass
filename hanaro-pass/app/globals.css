@@ -164,6 +164,14 @@ body {
   -webkit-overflow-scrolling: touch;
 }
 
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE/Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
 :root {
   --radius: 0.625rem;
   --background: oklch(1 0 0);

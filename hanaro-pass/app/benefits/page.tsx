@@ -19,7 +19,10 @@ function page() {
           <Search />
           <Input placeholder="쿠폰 검색" className="border-none outline-none" />
         </div>
-        <TabsLine defaultValue="all" className="mb-4">
+        <TabsLine
+          defaultValue="all"
+          className="verflow-y-hidden no-scrollbar mb-4 w-full overflow-auto"
+        >
           <TabsLineList>
             {COUPON_CATEGORY_TABS.map(({ value, label }) => (
               <TabsLineTrigger key={value} value={value}>
