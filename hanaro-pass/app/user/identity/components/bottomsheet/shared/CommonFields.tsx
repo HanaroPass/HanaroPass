@@ -1,25 +1,25 @@
-"use client";
+'use client';
 
-import { format } from "date-fns";
-import { ko } from "date-fns/locale";
-import { CalendarIcon } from "lucide-react";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { format } from 'date-fns';
+import { ko } from 'date-fns/locale';
+import { CalendarIcon } from 'lucide-react';
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
+} from '@/components/ui/popover';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 
 interface CommonFieldsProps {
   formData: Record<string, string>;
@@ -27,37 +27,37 @@ interface CommonFieldsProps {
 }
 
 const NATIONALITIES = [
-  { value: "KINGDOM OF CAMBODIA", label: "KINGDOM OF CAMBODIA" },
+  { value: 'KINGDOM OF CAMBODIA', label: 'KINGDOM OF CAMBODIA' },
   {
     value: "PEOPLE'S REPUBLIC OF BANGLADESH",
     label: "PEOPLE'S REPUBLIC OF BANGLADESH",
   },
   { value: "PEOPLE'S REPUBLIC OF CHINA", label: "PEOPLE'S REPUBLIC OF CHINA" },
-  { value: "REPUBLIC OF INDONESIA", label: "REPUBLIC OF INDONESIA" },
-  { value: "REPUBLIC OF JAPAN", label: "REPUBLIC OF JAPAN" },
-  { value: "REPUBLIC OF KAZAKHSTAN", label: "REPUBLIC OF KAZAKHSTAN" },
-  { value: "REPUBLIC OF MONGOLIA", label: "REPUBLIC OF MONGOLIA" },
-  { value: "REPUBLIC OF NEPAL", label: "REPUBLIC OF NEPAL" },
+  { value: 'REPUBLIC OF INDONESIA', label: 'REPUBLIC OF INDONESIA' },
+  { value: 'REPUBLIC OF JAPAN', label: 'REPUBLIC OF JAPAN' },
+  { value: 'REPUBLIC OF KAZAKHSTAN', label: 'REPUBLIC OF KAZAKHSTAN' },
+  { value: 'REPUBLIC OF MONGOLIA', label: 'REPUBLIC OF MONGOLIA' },
+  { value: 'REPUBLIC OF NEPAL', label: 'REPUBLIC OF NEPAL' },
   {
-    value: "REPUBLIC OF THE PHILIPPINES",
-    label: "REPUBLIC OF THE PHILIPPINES",
+    value: 'REPUBLIC OF THE PHILIPPINES',
+    label: 'REPUBLIC OF THE PHILIPPINES',
   },
-  { value: "REPUBLIC OF UZBEKISTAN", label: "REPUBLIC OF UZBEKISTAN" },
-  { value: "RUSSIAN FEDERATION", label: "RUSSIAN FEDERATION" },
+  { value: 'REPUBLIC OF UZBEKISTAN', label: 'REPUBLIC OF UZBEKISTAN' },
+  { value: 'RUSSIAN FEDERATION', label: 'RUSSIAN FEDERATION' },
   {
-    value: "SOCIALIST REPUBLIC OF VIET NAM",
-    label: "SOCIALIST REPUBLIC OF VIET NAM",
+    value: 'SOCIALIST REPUBLIC OF VIET NAM',
+    label: 'SOCIALIST REPUBLIC OF VIET NAM',
   },
   {
-    value: "DEMOCRATIC SOCIALIST REPUBLIC OF SRI LANKA",
-    label: "DEMOCRATIC SOCIALIST REPUBLIC OF SRI LANKA",
+    value: 'DEMOCRATIC SOCIALIST REPUBLIC OF SRI LANKA',
+    label: 'DEMOCRATIC SOCIALIST REPUBLIC OF SRI LANKA',
   },
-  { value: "KINGDOM OF THAILAND", label: "KINGDOM OF THAILAND" },
+  { value: 'KINGDOM OF THAILAND', label: 'KINGDOM OF THAILAND' },
   {
-    value: "REPUBLIC OF THE UNION OF MYANMAR",
-    label: "REPUBLIC OF THE UNION OF MYANMAR",
+    value: 'REPUBLIC OF THE UNION OF MYANMAR',
+    label: 'REPUBLIC OF THE UNION OF MYANMAR',
   },
-  { value: "UNITED STATES OF AMERICA", label: "UNITED STATES OF AMERICA" },
+  { value: 'UNITED STATES OF AMERICA', label: 'UNITED STATES OF AMERICA' },
 ];
 
 function DatePicker({
@@ -77,7 +77,7 @@ function DatePicker({
           className="h-12 w-full justify-start border-0 bg-gray-50 text-left font-normal"
         >
           {date ? (
-            format(date, "yyyy.MM.dd", { locale: ko })
+            format(date, 'yyyy.MM.dd', { locale: ko })
           ) : (
             <span className="text-gray-400">날짜 선택</span>
           )}
@@ -91,7 +91,7 @@ function DatePicker({
           onSelect={(newDate) => {
             setDate(newDate);
             if (newDate) {
-              onChange(format(newDate, "yyyy.MM.dd"));
+              onChange(format(newDate, 'yyyy.MM.dd'));
             }
           }}
           locale={ko}
@@ -119,8 +119,8 @@ export function CommonFields({
           <Input
             type="text"
             placeholder="한"
-            value={formData.lastName || ""}
-            onChange={(e) => updateField("lastName", e.target.value)}
+            value={formData.lastName || ''}
+            onChange={(e) => updateField('lastName', e.target.value)}
             className="h-12 border-0 bg-gray-50"
           />
         </div>
@@ -129,8 +129,8 @@ export function CommonFields({
           <Input
             type="text"
             placeholder="수정"
-            value={formData.firstName || ""}
-            onChange={(e) => updateField("firstName", e.target.value)}
+            value={formData.firstName || ''}
+            onChange={(e) => updateField('firstName', e.target.value)}
             className="h-12 border-0 bg-gray-50"
           />
         </div>
@@ -140,8 +140,8 @@ export function CommonFields({
       <div className="space-y-2">
         <Label className="font-normal text-gray-600 text-sm">국적</Label>
         <Select
-          value={formData.nationality || ""}
-          onValueChange={(value) => updateField("nationality", value)}
+          value={formData.nationality || ''}
+          onValueChange={(value) => updateField('nationality', value)}
         >
           <SelectTrigger className="flex h-12 min-h-12 w-full items-center border-0 bg-gray-50">
             <SelectValue placeholder="선택하세요" />
@@ -175,7 +175,7 @@ export function PassportDateFields({
         <Label className="font-normal text-gray-600 text-sm">발급일</Label>
         <DatePicker
           value={formData.birthDate}
-          onChange={(date) => updateField("birthDate", date)}
+          onChange={(date) => updateField('birthDate', date)}
         />
       </div>
 
@@ -184,7 +184,7 @@ export function PassportDateFields({
         <Label className="font-normal text-gray-600 text-sm">기간 만료일</Label>
         <DatePicker
           value={formData.expiryDate}
-          onChange={(date) => updateField("expiryDate", date)}
+          onChange={(date) => updateField('expiryDate', date)}
         />
       </div>
     </>
@@ -208,8 +208,8 @@ export function AlienExtraFields({
         <Input
           type="text"
           placeholder="D-8"
-          value={formData.residenceType || ""}
-          onChange={(e) => updateField("residenceType", e.target.value)}
+          value={formData.residenceType || ''}
+          onChange={(e) => updateField('residenceType', e.target.value)}
           className="h-12 border-0 bg-gray-50"
         />
       </div>
@@ -219,7 +219,7 @@ export function AlienExtraFields({
         <Label className="font-normal text-gray-600 text-sm">발급일자</Label>
         <DatePicker
           value={formData.issueDate}
-          onChange={(date) => updateField("issueDate", date)}
+          onChange={(date) => updateField('issueDate', date)}
         />
       </div>
     </>
