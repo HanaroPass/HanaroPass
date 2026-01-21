@@ -16,6 +16,11 @@ export default function BottomSheet({
 }: BottomSheetProps) {
   return (
     <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="docs-sheet-title"
+      aria-hidden={!isOpen}
+      inert={!isOpen}
       className={`fixed inset-0 z-50 flex justify-center ${isOpen ? '' : 'pointer-events-none'}`}
     >
       <div className="relative h-full w-full max-w-93.75">
@@ -34,9 +39,10 @@ export default function BottomSheet({
           <div className="rounded-t-2xl bg-white">
             {/* 바텀시트의 이름 영역 */}
             <div className="flex items-center justify-between px-6 py-4">
-              <h2 className="font-bold font-sans text-[18px] text-black-900">
-                서류 선택
-              </h2>
+              <h2
+                id="docs-sheet-title"
+                className="font-bold font-sans text-[18px] text-black-900"
+              >서류 선택</h2>
 
               <button
                 type="button"
