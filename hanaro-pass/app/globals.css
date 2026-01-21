@@ -99,6 +99,7 @@
   /* Colors - Accent */
   --color-blue-100: #006cff;
   --color-yellow-200: #fef9c2;
+  --color-yellow-300: #ffc801;
 }
 
 @media (prefers-color-scheme: dark) {
