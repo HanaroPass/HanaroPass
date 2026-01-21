@@ -5,12 +5,12 @@ import { AlienFields } from './shared/AlienFields';
 import { BaseDrawer } from './shared/BaseDrawer';
 import { AlienExtraFields, CommonFields } from './shared/CommonFields';
 
-interface AlienDrawerProps {
+type AlienDrawerProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit?: (data: Record<string, string>) => void;
   className?: string;
-}
+};
 
 export function AlienDrawer({
   open,

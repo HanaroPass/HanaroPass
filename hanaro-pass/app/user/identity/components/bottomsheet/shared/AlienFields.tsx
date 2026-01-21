@@ -3,10 +3,10 @@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-interface AlienFieldsProps {
+type AlienFieldsProps = {
   formData: Record<string, string>;
   onFormDataChange: (data: Record<string, string>) => void;
-}
+};
 
 export function AlienFields({ formData, onFormDataChange }: AlienFieldsProps) {
   const updateField = (field: string, value: string) => {

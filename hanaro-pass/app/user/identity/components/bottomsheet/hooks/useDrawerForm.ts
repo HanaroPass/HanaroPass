@@ -1,9 +1,9 @@
 import { useState } from 'react';
 
-interface UseDrawerFormProps {
+type UseDrawerFormProps = {
   onSubmit?: (data: Record<string, string>) => void;
   onOpenChange: (open: boolean) => void;
-}
+};
 
 export function useDrawerForm({ onSubmit, onOpenChange }: UseDrawerFormProps) {
   const [formData, setFormData] = useState<Record<string, string>>({});

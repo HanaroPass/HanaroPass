@@ -2,18 +2,18 @@
 
 import { Star } from 'lucide-react';
 
-interface AccountFieldsProps {
+type AccountFieldsProps = {
   formData: Record<string, string>;
   onFormDataChange: (data: Record<string, string>) => void;
-}
+};
 
-interface AccountOptionProps {
+type AccountOptionProps = {
   name: string;
   accountNumber: string;
   value: string;
   selected: boolean;
   onSelect: (value: string) => void;
-}
+};
 
 function AccountOption({
   name,

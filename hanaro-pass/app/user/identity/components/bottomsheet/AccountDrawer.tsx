@@ -4,12 +4,12 @@ import { useDrawerForm } from './hooks/useDrawerForm';
 import { AccountFields } from './shared/AccountFields';
 import { BaseDrawer } from './shared/BaseDrawer';
 
-interface AccountDrawerProps {
+type AccountDrawerProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit?: (data: Record<string, string>) => void;
   className?: string;
-}
+};
 
 export function AccountDrawer({
   open,

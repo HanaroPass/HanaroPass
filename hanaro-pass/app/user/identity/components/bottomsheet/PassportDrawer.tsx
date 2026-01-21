@@ -5,12 +5,12 @@ import { BaseDrawer } from './shared/BaseDrawer';
 import { CommonFields, PassportDateFields } from './shared/CommonFields';
 import { PassportFields } from './shared/PassportFields';
 
-interface PassportDrawerProps {
+type PassportDrawerProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit?: (data: Record<string, string>) => void;
   className?: string;
-}
+};
 
 export function PassportDrawer({
   open,

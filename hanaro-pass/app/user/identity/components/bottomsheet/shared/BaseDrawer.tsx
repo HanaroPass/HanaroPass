@@ -11,7 +11,7 @@ import {
   DrawerTitle,
 } from '@/components/ui/drawer';
 
-interface BaseDrawerProps {
+type BaseDrawerProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   title: string;
@@ -20,7 +20,7 @@ interface BaseDrawerProps {
   className?: string;
   showButtons?: boolean;
   children: ReactNode;
-}
+};
 
 export function BaseDrawer({
   open,

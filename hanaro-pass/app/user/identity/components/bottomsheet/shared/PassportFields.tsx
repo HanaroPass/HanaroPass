@@ -10,10 +10,10 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-interface PassportFieldsProps {
+type PassportFieldsProps = {
   formData: Record<string, string>;
   onFormDataChange: (data: Record<string, string>) => void;
-}
+};
 
 export function PassportFields({
   formData,

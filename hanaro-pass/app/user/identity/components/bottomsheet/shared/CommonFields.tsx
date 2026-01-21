@@ -22,10 +22,10 @@ import {
 } from '@/components/ui/select';
 import { NATIONALITIES } from '@/lib/constants';
 
-interface CommonFieldsProps {
+type CommonFieldsProps = {
   formData: Record<string, string>;
   onFormDataChange: (data: Record<string, string>) => void;
-}
+};
 
 function DatePicker({
   value,
