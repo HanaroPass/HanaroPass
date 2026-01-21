@@ -11,7 +11,6 @@ export function SirenBottomSheet() {
           alt="여권 분실 안내 지도"
           width={380}
           height={210}
-          sizes="100vw"
           className="h-auto w-full"
         />
       </div>

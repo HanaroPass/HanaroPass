@@ -10,7 +10,12 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 
-import { Drawer, DrawerContent, DrawerTitle } from '@/components/ui/drawer';
+import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerTitle,
+} from '@/components/ui/drawer';
 import { ExchangeBottomSheet } from './components/ExchangeBottomSheet';
 import { NaverMap } from './components/NaverMap';
 import { SirenBottomSheet } from './components/SirenBottomSheet';
@@ -27,6 +32,8 @@ export default function MapPage() {
       if (prev === type) return null;
       return type;
     });
+
+    (document.activeElement as HTMLElement)?.blur();
   };
 
   return (
@@ -107,6 +114,12 @@ export default function MapPage() {
               {openSheet === 'hospital' && '병원 정보'}
               {openSheet === 'embassy' && '대사관 정보'}
             </DrawerTitle>
+            <DrawerDescription>
+              {openSheet === 'siren' && '위기 상황 발생 시 대처 요령 안내'}
+              {openSheet === 'exchange' && '주변 환전소 위치 정보'}
+              {openSheet === 'hospital' && '인근 의료기관 정보'}
+              {openSheet === 'embassy' && '자국 대사관 연락처'}
+            </DrawerDescription>
           </VisuallyHidden>
 
           {openSheet === 'siren' && <SirenBottomSheet />}

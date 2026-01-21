@@ -9,9 +9,9 @@ export const metadata: Metadata = {
 
 function layout({ children }: PropsWithChildren) {
   return (
-    <div className="app-layout flex h-screen flex-col">
+    <div className="app-shell">
       <Header title="K-map" />
-      <main className="flex-1 overflow-hidden">{children}</main>
+      <main className="app-main">{children}</main>
     </div>
   );
 }

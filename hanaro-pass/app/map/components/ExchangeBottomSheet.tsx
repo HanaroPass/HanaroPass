@@ -7,7 +7,7 @@ import { PlaceCard } from './PlaceCard';
 export function ExchangeBottomSheet() {
   return (
     <>
-      <p>환전소 바텀시트</p>
+      <p>환전소 바텀시트 내부 내용</p>
       <div className="pointer-events-auto w-full max-w-md">
         <div className="p-4">
           {locations.map((loc) => (
