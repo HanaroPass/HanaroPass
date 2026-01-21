@@ -1,9 +1,9 @@
 'use client';
 
-import { format } from 'date-fns';
+import { format, parse } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { CalendarIcon } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Input } from '@/components/ui/input';
@@ -61,7 +61,7 @@ const NATIONALITIES = [
 ];
 
 function DatePicker({
-  //value,
+  value,
   onChange,
 }: {
   value?: string;

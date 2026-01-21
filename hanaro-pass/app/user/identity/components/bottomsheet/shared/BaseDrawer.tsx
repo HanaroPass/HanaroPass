@@ -39,7 +39,7 @@ export function BaseDrawer({
           <DrawerTitle className="text-center font-semibold text-base">
             {title}
           </DrawerTitle>
-          <DrawerClose className="absolute top-4 right-4">
+          <DrawerClose className="absolute top-4 right-4" aria-label="닫기">
             <X className="h-5 w-5" />
           </DrawerClose>
         </DrawerHeader>
