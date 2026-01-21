@@ -12,11 +12,11 @@ export type LocationInfo = {
   imageUrl?: string;
 };
 
-type EmbassyExchangeSheetProps = {
+type PlaceCardProps = {
   data: LocationInfo;
 };
 
-export function EmbassyExchangeSheet({ data }: EmbassyExchangeSheetProps) {
+export function PlaceCard({ data }: PlaceCardProps) {
   return (
     <div className="bg-white w-full text-sm font-semibold">
       <div className="flex justify-between items-start gap-4">

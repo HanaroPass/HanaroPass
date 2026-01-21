@@ -1,4 +1,4 @@
-import { LocationInfo } from "../components/EmbassyExchangeSheet";
+import { LocationInfo } from "../components/PlaceCard";
 
 export const locations: LocationInfo[] = [
   {
