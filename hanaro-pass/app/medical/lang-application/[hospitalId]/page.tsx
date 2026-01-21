@@ -1,10 +1,12 @@
 'use client';
 
+import { Globe } from 'lucide-react';
 import { useState } from 'react';
 import DescriptionSection from '../../components/DescriptionSection';
 import HospitalGuide from '../../components/HospitalGuide';
 import type { Language } from '../../components/LanguageCard';
 import LanguageCard from '../../components/LanguageCard';
+import SectionHeader from '../../components/SectionHeader';
 
 const LANGUAGES: Language[] = [
   { id: 'en', name: '영어', sub: 'English', flag: '🇺🇸' },
@@ -45,6 +47,15 @@ export default function LanguageRegistrationPage() {
             '아래에서 선택해주세요',
           ]}
         />
+        <SectionHeader icon={Globe} title="진료 가능 언어" />
+        <div className="px-6">
+          <p className="mt-2 font-sans text-black-400 text-xs">
+            (복수 선택 가능)
+          </p>
+          <p className="mt-1 font-sans text-black-600 text-xs">
+            최소 1개 이상의 언어를 선택해주세요
+          </p>
+        </div>
         <div className="px-6 py-6">
           <div className="space-y-3 pb-10">
             {LANGUAGES.map((lang) => (
