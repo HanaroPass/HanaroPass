@@ -21,7 +21,7 @@ function page() {
         </div>
         <TabsLine
           defaultValue="all"
-          className="verflow-y-hidden no-scrollbar mb-4 w-full overflow-auto"
+          className="no-scrollbar mb-4 w-full overflow-auto overflow-y-hidden"
         >
           <TabsLineList>
             {COUPON_CATEGORY_TABS.map(({ value, label }) => (

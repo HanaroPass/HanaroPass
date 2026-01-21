@@ -22,7 +22,7 @@ function Coupon({
       <div className="shrink-0">
         <Image
           src={brandPic}
-          alt="Coupon Logo"
+          alt={`${brandName} logo`}
           width={64}
           height={64}
           className="aspect-auto h-16 w-16 rounded-md object-contain shadow-sm"
@@ -36,7 +36,11 @@ function Coupon({
         <p className="font-bold text-green-ez text-xl">{discount}% 할인</p>
         <p className="text-black-800 text-sm">{description}</p>
       </div>
-      <button className="h-12 w-12 shrink-0 rounded-[14px] bg-green-ez">
+      <button
+        type="button"
+        aria-label={`${brandName} 쿠폰 받기`}
+        className="h-12 w-12 shrink-0 rounded-[14px] bg-green-ez"
+      >
         <Ticket className="m-auto h-6 w-6 text-white-ez" />
       </button>
     </div>

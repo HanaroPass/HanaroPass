@@ -4,6 +4,7 @@ import {
   type BenefitBannerVariant,
   COUNTRY_LABEL,
 } from '@/constants/benefitBanner';
+import { cn } from '@/lib/utils';
 
 type BenefitBannerProps = {
   variant: BenefitBannerVariant;
@@ -29,7 +30,10 @@ export default function BenefitBanner({
     <button
       type="button"
       onClick={onClick}
-      className={`relative w-full overflow-hidden bg-white transition-opacity active:opacity-95 ${className}`}
+      className={cn(
+        'relative w-full overflow-hidden bg-white transition-opacity active:opacity-95',
+        className,
+      )}
     >
       <Image
         src={cfg.imageSrc}
