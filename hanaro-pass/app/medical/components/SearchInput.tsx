@@ -23,8 +23,7 @@ export default function SearchInput({
 }: SearchInputProps) {
   return (
     <section className="flex flex-col gap-3 px-6 pt-6">
-      {/* 검색창 라벨 */}
-      {/** biome-ignore lint/a11y/noLabelWithoutControl: <explanation> */}
+      {/** biome-ignore lint/a11y/noLabelWithoutControl: 접근성 라벨이 아닌 UI 섹션 타이틀 용도로 사용됨 */}
       <label className="font-sans font-semibold text-black-900 text-sm">
         {label}
       </label>

@@ -15,7 +15,7 @@ export default function DescriptionSection({
         </h2>
       </div>
 
-      <div className="mt-3 w-full space-y-0.2">
+      <div className="mt-3 w-full space-y-0.5">
         {descriptions.map((line, index) => (
           <p
             key={`${index}-${line}`}

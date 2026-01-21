@@ -1,5 +1,3 @@
-// DescriptionSection.stories.tsx
-
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import DescriptionSection from './DescriptionSection';
 
