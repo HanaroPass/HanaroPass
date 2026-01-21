@@ -11,8 +11,17 @@ export default function HospitalRegistrationCompletePage() {
   const router = useRouter();
   const hospitalId = params.hospitalId as string;
 
+  /**
+   * QQQ (Data Flow & Prisma Plan):
+   * 1. POST 요청 응답 처리:
+   * - /api/medical/lang-application 호출 후 반환된 신규 레코드 데이터 사용.
+   * 2. 필드 매칭:
+   * - '신청 병원': Hospital 테이블의 nameKo (id로 조회)
+   * - '신청 일시': 서버에서 생성된 Timestamp (new Date().toISOString() 등)
+   * 3. 상태 값:
+   * - 초기값은 무조건 'pending'으로 서버 응답에 포함되어야 함.
+   */
   const summaryItems = [
-    // QQQ : 실제 데이터베이스 연동
     { label: '신청 병원', value: '강남병원' },
     { label: '신청 일시', value: '2026.01.19 08:53:55' },
     { label: '상태', value: <StatusBadge status="pending" /> },

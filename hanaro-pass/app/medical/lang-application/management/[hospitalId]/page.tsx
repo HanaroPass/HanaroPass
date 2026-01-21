@@ -23,12 +23,32 @@ const InfoDetailPlate = ({ children }: { children: React.ReactNode }) => (
   </div>
 );
 
+/**
+ * QQQ (Integration Plan):
+ * 1. useQuery 등을 이용해 병원 상세 정보 API 호출 (hospitalId 활용)
+ * 2. 서버 응답 데이터에 맞춰 hospitalInfo 배열 동적 매핑
+ * 3. 'rejected' 상태일 때만 반려 사유를 보여주는 조건부 렌더링 추가
+ */
 export default function HospitalRegistrationDetailsPage() {
   const router = useRouter();
-  // QQQ : 실제 데이터베이스 연동
+  // QQQ 1: API 연동 및 데이터 패칭
+  // - Endpoint: GET /api/medical/lang-application/[hospitalId]
+  // - 필요 데이터: { status: 'pending' | 'approved' | 'rejected', hospitalName: string, selectedLanguages: string[], createdAt: string, processedAt?: string }
+  // - 고려사항: 데이터 로딩 중(isLoading)일 때 보여줄 스켈레톤 UI 필요
   const currentStatus = 'pending';
 
-  // QQQ : 실제 데이터베이스 연동
+  // QQQ (Database Integration Plan):
+  // 1. Data Fetching:
+  //    - const hospital = await prisma.hospital.findUnique({
+  //        where: { id: hospitalId },
+  //        include: { HospitalLang: true }
+  //      });
+  // 2. Mapping:
+  //    - 병원명: hospital.nameKo
+  //    - 진료 가능 언어: hospital.HospitalLang.map(l => l.langName) -> UI의 '중국어 (中文)'와 포맷팅 일치 필요
+  // 3. Pending/History Issue:
+  //    - 현재 스키마에 '신청 일시'와 '진행 상태(Status)' 필드가 없음.
+  //    - Hospital 모델에 createdAt을 추가하거나, 'HospitalRegistration' 모델을 신설하여 관리 권장.
   const hospitalInfo = [
     { label: '병원 정보', icon: Hospital, content: '강남 병원' },
     {
@@ -66,6 +86,10 @@ export default function HospitalRegistrationDetailsPage() {
             <div className="absolute top-5 right-5 flex-none">
               <StatusBadge status={currentStatus} />
             </div>
+            {/* QQQ 3: 상태별 동적 메시지 처리 */}
+            {/* - status === 'rejected'인 경우, 서버에서 'rejectReason'을 추가로 받아와 
+    - AlertDescription 하단에 '반려 사유: [사유]' 형태로 노출해야 함 
+*/}
             <AlertDescription className="mt-7 pr-2 font-sans text-sm text-yellow-700 leading-relaxed">
               관리자가 확인 중입니다. 승인까지 1-2 영업일이 소요됩니다.
             </AlertDescription>
@@ -90,6 +114,10 @@ export default function HospitalRegistrationDetailsPage() {
             <div className="absolute top-8 bottom-8 left-7.5 w-px bg-gray-500" />
 
             <div className="flex flex-col gap-8">
+              {/* QQQ 4: 히스토리 타임라인 동적 생성 */}
+              {/* - 현재는 수동 입력이나, 서버의 [ { stage: 'apply', date: '...' }, { stage: 'approve', date: '...' } ] 
+    - 배열 데이터를 순회하여 HistoryItem을 동적으로 생성하도록 변경 필요
+*/}
               <HistoryItem
                 icon={CheckCircle2}
                 iconColor="text-teal-600"
