@@ -10,10 +10,11 @@ import { useState } from 'react';
 export type DocsCardProps = {
   title: string;
   color: CardColor;
+  initialOpen?: boolean;
 };
 
-export default function DocsCard({ title, color }: DocsCardProps) {
-  const [isOpen, setIsOpen] = useState(true);
+export default function DocsCard({ title, color, initialOpen }: DocsCardProps) {
+  const [isOpen, setIsOpen] = useState(initialOpen);
   return (
     <section
       className={

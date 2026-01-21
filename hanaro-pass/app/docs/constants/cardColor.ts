@@ -5,5 +5,5 @@ export const CARD_GRADIENT_CLASS: Record<CardColor, string> = {
   blueSoft: 'bg-gradient-to-b from-[#55B4ED] to-[#8BCCF3]',
   purple: 'bg-gradient-to-b from-[#937DCE] to-[#B7A8DE]',
   gray: 'bg-gradient-to-b from-[#A2ABC5] to-[#CDD2E0]',
-  peach: 'bg-gradient-to-b from-[#FBC5B9] to-[#FDE9E5]',
+  peach: 'bg-gradient-to-b from-[#FFBAAA] to-[#FFDCD5]',
 };
