@@ -1,87 +1,99 @@
-"use client";
+'use client';
 
-import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-} from "@/components/ui/drawer";
-import { Button } from "@/components/ui/button";
-import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
-import { useState } from "react";
+import { useState } from 'react';
+import { Drawer, DrawerContent } from '@/components/ui/drawer';
+import { Button } from '@/components/ui/button';
 
-type FilterType = "language" | "department" | null;
+import FilterPanel from './FilterPanel';
+import LanguageFilterPanel from './LanguageFilterPanel';
+import DepartmentFilterPanel from './DepartmentFilterPanel';
 
-export default function BottomSheet({
-  open,
-  onOpenChange,
-}: {
+type FilterType = 'language' | 'department' | null;
+
+type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-}) {
+};
+
+export default function BottomSheet({ open, onOpenChange }: Props) {
   const [active, setActive] = useState<FilterType>(null);
+
+  const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
+  const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
+
   const basePill =
-  "rounded-full px-5 py-2 text-sm font-medium border transition";
-  const inactivePill = "bg-white border-gray-300 text-gray-700";
-  const activePill = "bg-green-ez border-green-ez text-white";
+    'rounded-full px-5 py-2 text-sm font-medium border transition';
+  const inactivePill = 'bg-white border-gray-300 text-gray-700';
+  const activePill = 'bg-green-ez border-green-ez text-white';
+
+  const languageLabel = makeLabel(selectedLanguages, '소통 가능 언어');
+
+  const departmentLabel = makeLabel(selectedDepartments, '진료과목');
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="h-[75vh] p-0">
-        <DrawerHeader>
-          <DrawerTitle>
-            <VisuallyHidden>병원 필터</VisuallyHidden>
-          </DrawerTitle>
-        </DrawerHeader>
+      <DrawerContent className="flex h-[55vh] flex-col p-0">
+        <div className="bg-white px-4 pt-1">
+          <div className="flex gap-2">
+            <button
+              className={`${basePill} ${
+                active === 'language' ? activePill : inactivePill
+              }`}
+              onClick={() =>
+                setActive((p) => (p === 'language' ? null : 'language'))
+              }
+            >
+              {languageLabel}
+            </button>
 
-        <div className="sticky top-0 z-60 bg-white px-4 py-3 flex gap-2 border-b">
-          <button
-            className={`${basePill} ${
-              active === "language" ? activePill : inactivePill
-            }`}
-            onClick={() =>
-              setActive((prev) => (prev === "language" ? null : "language"))
-            }
-          >
-            소통 가능 언어
-          </button>
-
-          <button
-            className={`${basePill} ${
-              active === "department" ? activePill : inactivePill
-            }`}
-            onClick={() =>
-              setActive((prev) => (prev === "department" ? null : "department"))
-            }
-          >
-            진료과목
-          </button>
+            <button
+              className={`${basePill} ${
+                active === 'department' ? activePill : inactivePill
+              }`}
+              onClick={() =>
+                setActive((p) => (p === 'department' ? null : 'department'))
+              }
+            >
+              {departmentLabel}
+            </button>
+          </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-6 pb-6">
-          <h2 className="text-lg font-bold">어쩌구 바른 내과</h2>
-          <p className="text-sm text-muted-foreground">
-            서울시 강남구 테헤란로 123
-          </p>
+        <div className="relative flex-1 overflow-y-auto px-6 pt-3">
+          {active === 'language' && (
+            <FilterPanel title="소통 가능 언어">
+              <LanguageFilterPanel
+                value={selectedLanguages}
+                onChange={setSelectedLanguages}
+              />
+            </FilterPanel>
+          )}
 
-        <Button className="
-            mt-4
-            w-full
-            rounded-10
-            bg-green-ez
-            py-6
-            text-base
-            font-semibold
-            text-white
-            hover:bg-green-ez/90
-          "
-        >
-          AI에게 나에게 맞는 병원 물어보기
-        </Button>
+          {active === 'department' && (
+            <FilterPanel title="진료과목">
+              <DepartmentFilterPanel
+                value={selectedDepartments}
+                onChange={setSelectedDepartments}
+              />
+            </FilterPanel>
+          )}
+        </div>
 
-          <div className="h-200"/>
+        <div className="border-[#F0F3F4] border-t bg-white px-6 py-4">
+          <Button className="h-14 w-full rounded-xl bg-green-ez text-white">
+            나에게 맞는 병원 찾기
+          </Button>
         </div>
       </DrawerContent>
     </Drawer>
   );
 }
+
+function makeLabel(selected: string[], defaultLabel: string) {
+  if (selected.length === 0) return defaultLabel;
+  if (selected.length === 1) return selected[0];
+  if (selected.length === 2) return `${selected[0]}, ${selected[1]}`;
+
+  return `${selected[0]}, ${selected[1]} 외 ${selected.length - 2}개`;
+}
+
