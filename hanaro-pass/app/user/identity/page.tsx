@@ -10,19 +10,15 @@ export default function IdentityPage() {
   const [openAlien, setOpenAlien] = useState(false);
   const [openAccount, setOpenAccount] = useState(false);
 
-  const handlePassportSubmit = (data: Record<string, string>) => {
-    console.log('여권 데이터:', data);
-    alert('여권 정보가 제출되었습니다!');
+  const handlePassportSubmit = (_data: Record<string, string>) => {
+    // TODO: 실제 제출 로직(API/토스트)로 대체
   };
 
-  const handleAlienSubmit = (data: Record<string, string>) => {
-    console.log('외국인등록증 데이터:', data);
-    alert('외국인 등록증 정보가 제출되었습니다!');
+  const handleAlienSubmit = (_data: Record<string, string>) => {
+    // TODO: 실제 제출 로직(API/토스트)로 대체
   };
-
-  const handleAccountSubmit = (data: Record<string, string>) => {
-    console.log('계좌 데이터:', data);
-    alert('출입계좌가 선택되었습니다!');
+  const handleAccountSubmit = (_data: Record<string, string>) => {
+    // TODO: 실제 제출 로직(API/토스트)로 대체
   };
 
   return (
