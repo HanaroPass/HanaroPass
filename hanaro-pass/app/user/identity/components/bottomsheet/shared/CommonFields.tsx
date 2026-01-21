@@ -67,12 +67,23 @@ function DatePicker({
   value?: string;
   onChange: (date: string) => void;
 }) {
-  const [date, setDate] = useState<Date>();
+  const [date, setDate] = useState<Date | undefined>(() =>
+    value ? parse(value, 'yyyy.MM.dd', new Date()) : undefined,
+  );
+
+  useEffect(() => {
+    if (value) {
+      setDate(parse(value, 'yyyy.MM.dd', new Date()));
+    } else {
+      setDate(undefined);
+    }
+  }, [value]);
 
   return (
     <Popover>
       <PopoverTrigger asChild>
         <Button
+          type="button"
           variant="outline"
           className="h-12 w-full justify-start border-0 bg-gray-50 text-left font-normal"
         >
@@ -174,8 +185,8 @@ export function PassportDateFields({
       <div className="space-y-2">
         <Label className="font-normal text-gray-600 text-sm">발급일</Label>
         <DatePicker
-          value={formData.birthDate}
-          onChange={(date) => updateField('birthDate', date)}
+          value={formData.issueDate}
+          onChange={(date) => updateField('issueDate', date)}
         />
       </div>
 
