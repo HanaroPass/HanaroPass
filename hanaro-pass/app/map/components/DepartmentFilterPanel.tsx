@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { DEPARTMENTS } from "../constants/departments";
+import { DEPARTMENTS } from '../constants/departments';
 
 interface Props {
   value: string[];
@@ -10,9 +10,7 @@ interface Props {
 export default function DepartmentFilterPanel({ value, onChange }: Props) {
   const toggle = (dep: string) => {
     onChange(
-      value.includes(dep)
-        ? value.filter((d) => d !== dep)
-        : [...value, dep]
+      value.includes(dep) ? value.filter((d) => d !== dep) : [...value, dep],
     );
   };
 
@@ -22,23 +20,24 @@ export default function DepartmentFilterPanel({ value, onChange }: Props) {
         const checked = value.includes(dep);
 
         return (
-          <div
+          <button
             key={dep}
+            type="button"
             onClick={() => toggle(dep)}
-            className="
-              flex items-center gap-3 h-16 px-4 cursor-pointer
-              border-b border-gray-200 last:border-b-0
-            "
+            className="flex h-16 w-full items-center gap-3 border-gray-200 border-b px-4 last:border-b-0"
           >
-            {/* 체크박스 */}
             <div
-              className={`
-                w-5 h-5 rounded flex items-center justify-center
-                ${checked ? "bg-green-ez" : "border border-gray-300"}
+              className={`flex h-5 w-5 items-center justify-center rounded ${checked ? 'bg-green-ez' : 'border border-gray-300'}
               `}
             >
               {checked && (
-                <svg width="12" height="8" viewBox="0 0 12 8" fill="none">
+                <svg
+                  width="12"
+                  height="8"
+                  viewBox="0 0 12 8"
+                  fill="none"
+                  aria-hidden="true"
+                >
                   <path
                     d="M1 4L4.5 7L11 1"
                     stroke="white"
@@ -50,8 +49,8 @@ export default function DepartmentFilterPanel({ value, onChange }: Props) {
               )}
             </div>
 
-            <span className="text-base font-medium">{dep}</span>
-          </div>
+            <span className="font-medium text-base">{dep}</span>
+          </button>
         );
       })}
     </>

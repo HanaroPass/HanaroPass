@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { LANGUAGES } from "../constants/languages";
+import { LANGUAGES } from '../constants/languages';
 
 export default function LanguageFilterPanel({
   value,
@@ -11,9 +11,7 @@ export default function LanguageFilterPanel({
 }) {
   const toggle = (lang: string) => {
     onChange(
-      value.includes(lang)
-        ? value.filter((l) => l !== lang)
-        : [...value, lang]
+      value.includes(lang) ? value.filter((l) => l !== lang) : [...value, lang],
     );
   };
 
@@ -23,27 +21,24 @@ export default function LanguageFilterPanel({
         const checked = value.includes(lang);
 
         return (
-            <div
+          <button
             key={lang}
+            type="button"
             onClick={() => toggle(lang)}
-            className="
-                flex items-center gap-3 h-16 px-4 cursor-pointer
-                border-b border-gray-200
-                last:border-b-0
-            "
-            >
+            className="flex h-16 w-full items-center gap-3 border-gray-200 border-b px-4 last:border-b-0"
+          >
             <div
-              className={`
-                w-5 h-5 rounded flex items-center justify-center
-                ${
-                  checked
-                    ? "bg-green-ez"
-                    : "border border-gray-300"
-                }
-              `}
+              className={`flex h-5 w-5 items-center justify-center rounded ${checked ? 'bg-green-ez' : 'border border-gray-300'}
+      `}
             >
               {checked && (
-                <svg width="12" height="8" viewBox="0 0 12 8" fill="none">
+                <svg
+                  width="12"
+                  height="8"
+                  viewBox="0 0 12 8"
+                  fill="none"
+                  aria-hidden="true"
+                >
                   <path
                     d="M1 4L4.5 7L11 1"
                     stroke="white"
@@ -55,8 +50,8 @@ export default function LanguageFilterPanel({
               )}
             </div>
 
-            <span className="text-base font-medium">{lang}</span>
-          </div>
+            <span className="font-medium text-base">{lang}</span>
+          </button>
         );
       })}
     </>

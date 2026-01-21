@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
 import {
   Cross,
@@ -8,12 +8,12 @@ import {
   CircleDollarSign,
   Bookmark,
   Siren,
-} from "lucide-react";
-import { ToggleButton } from "./components/ToggleButton";
-import { NaverMap } from "./components/NaverMap";
-import BottomSheet from "./components/BottomSheet";
+} from 'lucide-react';
+import { ToggleButton } from './components/ToggleButton';
+import { NaverMap } from './components/NaverMap';
+import BottomSheet from './components/BottomSheet';
 
-type TopType = "hospital" | "embassy" | "exchange" | null;
+type TopType = 'hospital' | 'embassy' | 'exchange' | null;
 
 export default function MapPage() {
   const [topSelected, setTopSelected] = useState<TopType>(null);
@@ -29,53 +29,53 @@ export default function MapPage() {
   const [openBottomSheet, setOpenBottomSheet] = useState(false);
 
   return (
-    <main className="relative w-screen h-screen overflow-hidden bg-gray-100">
-      <div className="absolute inset-0 z-0 pointer-events-none">
+    <main className="relative h-screen w-screen overflow-hidden bg-gray-100">
+      <div className="pointer-events-none absolute inset-0 z-0">
         <NaverMap onMarkerClick={() => {}} />
       </div>
 
       <div
         className="absolute z-10 flex gap-[0.8rem]"
-        style={{ top: "1.2rem", left: "1.2rem" }}
+        style={{ top: '1.2rem', left: '1.2rem' }}
       >
         <ToggleButton
           variant="pill"
           label="병원"
-          icon={<Cross className="w-4 h-4" />}
-          active={topSelected === "hospital"}
+          icon={<Cross className="h-4 w-4" />}
+          active={topSelected === 'hospital'}
           iconColorVariant="red"
           onClick={() =>
-            setTopSelected((p) => (p === "hospital" ? null : "hospital"))
+            setTopSelected((p) => (p === 'hospital' ? null : 'hospital'))
           }
         />
 
         <ToggleButton
           variant="pill"
           label="대사관"
-          icon={<Landmark className="w-4 h-4" />}
-          active={topSelected === "embassy"}
+          icon={<Landmark className="h-4 w-4" />}
+          active={topSelected === 'embassy'}
           iconColorVariant="blue"
           onClick={() =>
-            setTopSelected((p) => (p === "embassy" ? null : "embassy"))
+            setTopSelected((p) => (p === 'embassy' ? null : 'embassy'))
           }
         />
 
         <ToggleButton
           variant="pill"
           label="환전소"
-          icon={<CircleDollarSign className="w-4 h-4" />}
-          active={topSelected === "exchange"}
+          icon={<CircleDollarSign className="h-4 w-4" />}
+          active={topSelected === 'exchange'}
           iconColorVariant="yellow"
           onClick={() =>
-            setTopSelected((p) => (p === "exchange" ? null : "exchange"))
+            setTopSelected((p) => (p === 'exchange' ? null : 'exchange'))
           }
         />
       </div>
 
-      <div className="absolute right-[1.2rem] top-[15%] z-10 flex flex-col gap-[0.8rem]">
+      <div className="absolute top-[15%] right-[1.2rem] z-10 flex flex-col gap-[0.8rem]">
         <ToggleButton
           variant="icon"
-          icon={<Bookmark className="w-5 h-5" />}
+          icon={<Bookmark className="h-5 w-5" />}
           active={rightSelected.bookmark}
           ariaLabel="결제 장소 표시 토글"
           onClick={() =>
@@ -85,7 +85,7 @@ export default function MapPage() {
 
         <ToggleButton
           variant="icon"
-          icon={<Siren className="w-5 h-5" />}
+          icon={<Siren className="h-5 w-5" />}
           active={rightSelected.siren}
           iconColorVariant="red"
           colorVariant="red"
@@ -94,34 +94,28 @@ export default function MapPage() {
         />
       </div>
 
-        {mounted && (
-          <>
-            {!openBottomSheet && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setOpenBottomSheet(true);
-                }}
-                className="
-                  absolute bottom-6 left-1/2 -translate-x-1/2
-                  z-50
-                  h-12 px-6
-                  rounded-full
-                  bg-green-ez text-white
-                "
-              >
-                병원 필터 보기
-              </button>
-            )}
-
-            <BottomSheet
-              open={openBottomSheet}
-              onOpenChange={(open) => {
-                if (!open) setOpenBottomSheet(false);
+      {mounted && (
+        <>
+          {!openBottomSheet && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setOpenBottomSheet(true);
               }}
-            />
-          </>
-        )}
+              className="-translate-x-1/2 absolute bottom-6 left-1/2 z-50 h-12 rounded-full bg-green-ez px-6 text-white"
+            >
+              병원 필터 보기
+            </button>
+          )}
+
+          <BottomSheet
+            open={openBottomSheet}
+            onOpenChange={(open) => {
+              if (!open) setOpenBottomSheet(false);
+            }}
+          />
+        </>
+      )}
     </main>
   );
 }
