@@ -38,7 +38,6 @@ const meta: Meta<typeof AlienDrawer> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// 기본 스토리 (닫힌 상태)
 export const Default: Story = {
   args: {
     open: false,
@@ -47,7 +46,6 @@ export const Default: Story = {
   },
 };
 
-// 열린 상태 스토리
 export const Open: Story = {
   args: {
     open: true,
@@ -56,7 +54,6 @@ export const Open: Story = {
   },
 };
 
-// 인터랙티브 스토리 (실제로 열고 닫을 수 있음)
 export const Interactive: Story = {
   render: (args: typeof Default.args) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -84,7 +81,6 @@ export const Interactive: Story = {
   },
 };
 
-// 폼 검증 스토리
 export const FormValidation: Story = {
   render: (args: typeof Default.args) => {
     const [isOpen, setIsOpen] = useState(true);
@@ -96,7 +92,6 @@ export const FormValidation: Story = {
           open={isOpen}
           onOpenChange={setIsOpen}
           onSubmit={(data) => {
-            // 간단한 검증 로직 예시
             if (!data.lastName || !data.firstName) {
               alert('이름을 입력해주세요!');
               return;

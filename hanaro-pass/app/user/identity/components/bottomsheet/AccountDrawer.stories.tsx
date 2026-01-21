@@ -37,7 +37,6 @@ const meta: Meta<typeof AccountDrawer> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// 기본 스토리 (닫힌 상태)
 export const Default: Story = {
   args: {
     open: false,
@@ -46,7 +45,6 @@ export const Default: Story = {
   },
 };
 
-// 열린 상태 스토리
 export const Open: Story = {
   args: {
     open: true,
@@ -55,7 +53,6 @@ export const Open: Story = {
   },
 };
 
-// 인터랙티브 스토리 (실제로 열고 닫을 수 있음)
 export const Interactive: Story = {
   render: (args: typeof Default.args) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -83,7 +80,6 @@ export const Interactive: Story = {
   },
 };
 
-// 커스텀 스타일 스토리
 export const CustomStyle: Story = {
   args: {
     open: true,
