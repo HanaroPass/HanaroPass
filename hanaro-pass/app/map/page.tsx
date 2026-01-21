@@ -1,132 +1,120 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import {
+  Bookmark,
+  CircleDollarSign,
   Cross,
   Landmark,
-  CircleDollarSign,
-  Bookmark,
   Siren,
-} from "lucide-react";
-import { ToggleButton } from "./components/ToggleButton";
-import { NaverMap } from "./components/NaverMap";
-import BottomSheet from "./components/BottomSheet";
+} from 'lucide-react';
+import { useState } from 'react';
 
-type TopType = "hospital" | "embassy" | "exchange" | null;
+import { Drawer, DrawerContent, DrawerTitle } from '@/components/ui/drawer';
+import { ExchangeBottomSheet } from './components/ExchangeBottomSheet';
+import { NaverMap } from './components/NaverMap';
+import { SirenBottomSheet } from './components/SirenBottomSheet';
+import { ToggleButton } from './components/ToggleButton';
+
+type SheetType = 'hospital' | 'embassy' | 'exchange' | 'siren' | null;
 
 export default function MapPage() {
-  const [topSelected, setTopSelected] = useState<TopType>(null);
+  const [openSheet, setOpenSheet] = useState<SheetType>(null);
+  const [bookmark, setBookmark] = useState(false);
 
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-  const [rightSelected, setRightSelected] = useState({
-    bookmark: false,
-    siren: false,
-  });
-  const [openBottomSheet, setOpenBottomSheet] = useState(false);
+  const toggleSheet = (type: SheetType) => {
+    setOpenSheet((prev) => {
+      if (prev === type) return null;
+      return type;
+    });
+  };
 
   return (
-    <main className="relative w-screen h-screen overflow-hidden bg-gray-100">
+    <main className="relative h-screen w-screen overflow-hidden bg-gray-100">
       <div className="absolute inset-0 z-0">
         <NaverMap onMarkerClick={() => {}} />
       </div>
 
       <div
         className="absolute z-10 flex gap-[0.8rem]"
-        style={{ top: "1.2rem", left: "1.2rem" }}
+        style={{ top: '1.2rem', left: '1.2rem' }}
       >
         <ToggleButton
           variant="pill"
           label="병원"
-          icon={<Cross className="w-4 h-4" />}
-          active={topSelected === "hospital"}
+          icon={<Cross className="h-4 w-4" />}
+          active={openSheet === 'hospital'}
           iconColorVariant="red"
-          onClick={() =>
-            setTopSelected((p) => (p === "hospital" ? null : "hospital"))
-          }
+          onClick={() => toggleSheet('hospital')}
         />
 
         <ToggleButton
           variant="pill"
           label="대사관"
-          icon={<Landmark className="w-4 h-4" />}
-          active={topSelected === "embassy"}
+          icon={<Landmark className="h-4 w-4" />}
+          active={openSheet === 'embassy'}
           iconColorVariant="blue"
-          onClick={() =>
-            setTopSelected((p) => (p === "embassy" ? null : "embassy"))
-          }
+          onClick={() => toggleSheet('embassy')}
         />
 
         <ToggleButton
           variant="pill"
           label="환전소"
-          icon={<CircleDollarSign className="w-4 h-4" />}
-          active={topSelected === "exchange"}
+          icon={<CircleDollarSign className="h-4 w-4" />}
+          active={openSheet === 'exchange'}
           iconColorVariant="yellow"
-          onClick={() =>
-            setTopSelected((p) => (p === "exchange" ? null : "exchange"))
-          }
+          onClick={() => toggleSheet('exchange')}
         />
       </div>
 
-      <div className="absolute right-[1.2rem] top-[15%] z-10 flex flex-col gap-[0.8rem]">
+      <div className="absolute top-[15%] right-[1.2rem] z-10 flex flex-col gap-[0.8rem]">
         <ToggleButton
           variant="icon"
           icon={
             <Bookmark
-              className="w-5 h-5"
-              fill={rightSelected.bookmark ? "currentColor" : "none"}
+              className="h-5 w-5"
+              fill={bookmark ? 'currentColor' : 'none'}
             />
           }
-          active={rightSelected.bookmark}
-          ariaLabel="결제 장소 표시 토글"
-          onClick={() =>
-            setRightSelected((p) => ({ ...p, bookmark: !p.bookmark }))
-          }
+          active={bookmark}
+          ariaLabel="저장 토글"
+          onClick={() => setBookmark((prev) => !prev)}
         />
 
         <ToggleButton
           variant="icon"
-          icon={<Siren className="w-5 h-5" />}
-          active={rightSelected.siren}
+          icon={<Siren className="h-5 w-5" />}
+          active={openSheet === 'siren'}
           iconColorVariant="red"
           colorVariant="red"
-          ariaLabel="긴급 상황 표시 토글"
-          onClick={() => setRightSelected((p) => ({ ...p, siren: !p.siren }))}
+          ariaLabel="긴급 상황 토글"
+          onClick={() => toggleSheet('siren')}
         />
       </div>
 
-      {mounted && (
-        <>
-          <button
-              onClick={(e) => {
-                e.currentTarget.blur(); 
-                setOpenBottomSheet(true);
-              }}
-            className="
-              absolute bottom-6 left-1/2 -translate-x-1/2
-              z-20
-              h-12 px-6
-              rounded-full
-              bg-green-ez text-white
-              text-base font-medium
-              shadow-lg
-            "
-          >
-            병원 필터 보기
-          </button>
+      <Drawer
+        modal={true}
+        open={openSheet !== null}
+        onOpenChange={(open) => {
+          if (!open) setOpenSheet(null);
+        }}
+      >
+        <DrawerContent className="pointer-events-auto z-50 overflow-hidden border-none bg-white shadow-lg">
+          <VisuallyHidden>
+            <DrawerTitle>
+              {openSheet === 'siren' && '긴급 상황 안내'}
+              {openSheet === 'exchange' && '환전소 정보'}
+              {openSheet === 'hospital' && '병원 정보'}
+              {openSheet === 'embassy' && '대사관 정보'}
+            </DrawerTitle>
+          </VisuallyHidden>
 
-          <BottomSheet
-            open={openBottomSheet}
-            onOpenChange={setOpenBottomSheet}
-          />
-        </>
-      )}
-
+          {openSheet === 'siren' && <SirenBottomSheet />}
+          {openSheet === 'exchange' && <ExchangeBottomSheet />}
+          {openSheet === 'hospital' && <div>병원 바텀시트 내용</div>}
+          {openSheet === 'embassy' && <div>대사관 바텀시트 내용</div>}
+        </DrawerContent>
+      </Drawer>
     </main>
   );
 }
