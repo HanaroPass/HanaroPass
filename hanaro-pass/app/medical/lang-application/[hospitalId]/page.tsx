@@ -2,7 +2,7 @@
 
 import { Globe } from 'lucide-react';
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
+import ActionButton from '@/components/header/ActionButton';
 import DescriptionSection from '../../components/language/DescriptionSection';
 import HospitalGuide from '../../components/language/HospitalGuide';
 import type { Language } from '../../components/language/LanguageCard';
@@ -76,18 +76,13 @@ export default function LanguageRegistrationPage() {
         </div>
       </div>
       <div className="border-gray-200 border-t bg-white px-6 py-4 pb-8">
-        <Button
+        <ActionButton
           disabled={!isSelected}
-          // QQQ : 실제 DB에 반영되도록
+          text={`병원 언어 등록 신청하기 ${isSelected ? `(${selectedIds.length})` : ''}`}
+          // QQQ 나중에 실제 데이터에 반영
           onClick={() => console.log('제출된 데이터:', selectedIds)}
-          className={`w-full rounded-xl py-7 font-bold text-lg transition-all ${
-            isSelected
-              ? 'bg-hana-green text-white shadow-lg hover:bg-hana-green/80 active:scale-[0.98]'
-              : 'cursor-not-allowed bg-gray-200 text-gray-400'
-          }`}
-        >
-          병원 언어 등록 신청하기 {isSelected && `(${selectedIds.length})`}
-        </Button>
+          className="py-7 text-lg"
+        />
       </div>
     </div>
   );
