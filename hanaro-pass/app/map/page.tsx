@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { ToggleButton } from "./components/ToggleButton";
 import { NaverMap } from "./components/NaverMap";
-import BottomSheet from "./components/BottomSheet";
+import BottomSheet from "./components/ottomSheet";
 
 type TopType = "hospital" | "embassy" | "exchange" | null;
 

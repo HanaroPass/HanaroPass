@@ -34,7 +34,7 @@ export default function BottomSheet({
           </DrawerTitle>
         </DrawerHeader>
 
-        <div className="sticky top-0 z-[60] bg-white px-4 py-3 flex gap-2 border-b">
+        <div className="sticky top-0 z-60 bg-white px-4 py-3 flex gap-2 border-b">
           <button
             className={`${basePill} ${
               active === "language" ? activePill : inactivePill
@@ -79,7 +79,7 @@ export default function BottomSheet({
           AI에게 나에게 맞는 병원 물어보기
         </Button>
 
-          <div className="h-[800px]" />
+          <div className="h-200"/>
         </div>
       </DrawerContent>
     </Drawer>
