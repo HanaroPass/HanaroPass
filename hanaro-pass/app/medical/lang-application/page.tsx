@@ -46,7 +46,7 @@ export default function MedicalPage() {
             검색된 병원 정보
           </h3>
 
-          {dummyHospitals.length === 0 ? (
+          {filteredHospitals.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-10 text-center">
               <p className="font-medium font-sans text-base text-black-600">
                 검색 결과가 없습니다
