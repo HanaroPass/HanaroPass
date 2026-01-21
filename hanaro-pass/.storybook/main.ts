@@ -8,11 +8,7 @@ const config: StorybookConfig = {
     '../src/**/*.stories.@(ts|tsx|mdx)',
   ],
 
-  addons: [
-    '@storybook/addon-links',
-    '@storybook/addon-essentials',
-    '@storybook/addon-interactions',
-  ],
+  addons: [],
   framework: '@storybook/nextjs-vite',
   staticDirs: ['../public'],
 };
