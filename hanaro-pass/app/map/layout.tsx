@@ -9,13 +9,10 @@ export const metadata: Metadata = {
 
 function layout({ children }: PropsWithChildren) {
   return (
-    <div className="app-layout">
+    <div className="app-layout flex h-screen flex-col">
       <Header title="K-map" />
-      <main className="app-main" style={{ height: 'calc(100vh - 56px)' }}>
-        {children}
-      </main>
+      <main className="flex-1 overflow-hidden">{children}</main>
     </div>
   );
 }
-
 export default layout;
