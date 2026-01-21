@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useDrawerForm } from './hooks/useDrawerForm';
 import { BaseDrawer } from './shared/BaseDrawer';
 import { CommonFields, PassportDateFields } from './shared/CommonFields';
 import { PassportFields } from './shared/PassportFields';
@@ -18,16 +18,11 @@ export function PassportDrawer({
   onSubmit,
   className,
 }: PassportDrawerProps) {
-  const [formData, setFormData] = useState<Record<string, string>>({});
-
-  const handleSubmit = () => {
-    onSubmit?.(formData);
-    onOpenChange(false);
-  };
-
-  const resetForm = () => {
-    setFormData({});
-  };
+  const { formData, handleSubmit, resetForm, handleFormDataChange } =
+    useDrawerForm({
+      onSubmit,
+      onOpenChange,
+    });
 
   return (
     <BaseDrawer
@@ -39,9 +34,18 @@ export function PassportDrawer({
       className={className}
       showButtons={true}
     >
-      <CommonFields formData={formData} onFormDataChange={setFormData} />
-      <PassportFields formData={formData} onFormDataChange={setFormData} />
-      <PassportDateFields formData={formData} onFormDataChange={setFormData} />
+      <CommonFields
+        formData={formData}
+        onFormDataChange={handleFormDataChange}
+      />
+      <PassportFields
+        formData={formData}
+        onFormDataChange={handleFormDataChange}
+      />
+      <PassportDateFields
+        formData={formData}
+        onFormDataChange={handleFormDataChange}
+      />
     </BaseDrawer>
   );
 }

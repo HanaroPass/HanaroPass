@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useDrawerForm } from './hooks/useDrawerForm';
 import { AccountFields } from './shared/AccountFields';
 import { BaseDrawer } from './shared/BaseDrawer';
 
@@ -17,16 +17,11 @@ export function AccountDrawer({
   onSubmit,
   className,
 }: AccountDrawerProps) {
-  const [formData, setFormData] = useState<Record<string, string>>({});
-
-  const handleSubmit = () => {
-    onSubmit?.(formData);
-    onOpenChange(false);
-  };
-
-  const resetForm = () => {
-    setFormData({});
-  };
+  const { formData, handleSubmit, resetForm, handleFormDataChange } =
+    useDrawerForm({
+      onSubmit,
+      onOpenChange,
+    });
 
   return (
     <BaseDrawer
@@ -38,7 +33,10 @@ export function AccountDrawer({
       className={className}
       showButtons={false}
     >
-      <AccountFields formData={formData} onFormDataChange={setFormData} />
+      <AccountFields
+        formData={formData}
+        onFormDataChange={handleFormDataChange}
+      />
     </BaseDrawer>
   );
 }

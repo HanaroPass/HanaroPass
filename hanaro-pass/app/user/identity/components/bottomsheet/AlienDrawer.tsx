@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useDrawerForm } from './hooks/useDrawerForm';
 import { AlienFields } from './shared/AlienFields';
 import { BaseDrawer } from './shared/BaseDrawer';
 import { AlienExtraFields, CommonFields } from './shared/CommonFields';
@@ -18,16 +18,11 @@ export function AlienDrawer({
   onSubmit,
   className,
 }: AlienDrawerProps) {
-  const [formData, setFormData] = useState<Record<string, string>>({});
-
-  const handleSubmit = () => {
-    onSubmit?.(formData);
-    onOpenChange(false);
-  };
-
-  const resetForm = () => {
-    setFormData({});
-  };
+  const { formData, handleSubmit, resetForm, handleFormDataChange } =
+    useDrawerForm({
+      onSubmit,
+      onOpenChange,
+    });
 
   return (
     <BaseDrawer
@@ -39,9 +34,18 @@ export function AlienDrawer({
       className={className}
       showButtons={true}
     >
-      <CommonFields formData={formData} onFormDataChange={setFormData} />
-      <AlienFields formData={formData} onFormDataChange={setFormData} />
-      <AlienExtraFields formData={formData} onFormDataChange={setFormData} />
+      <CommonFields
+        formData={formData}
+        onFormDataChange={handleFormDataChange}
+      />
+      <AlienFields
+        formData={formData}
+        onFormDataChange={handleFormDataChange}
+      />
+      <AlienExtraFields
+        formData={formData}
+        onFormDataChange={handleFormDataChange}
+      />
     </BaseDrawer>
   );
 }
