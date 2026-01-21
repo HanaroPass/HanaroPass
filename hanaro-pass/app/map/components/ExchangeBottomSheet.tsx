@@ -3,6 +3,7 @@
 import { locations } from '../mock/embassyExchange';
 import { PlaceCard } from './PlaceCard';
 
+// 임시
 export function ExchangeBottomSheet() {
   return (
     <>
