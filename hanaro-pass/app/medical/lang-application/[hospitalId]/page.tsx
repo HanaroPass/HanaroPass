@@ -1,0 +1,61 @@
+'use client';
+
+import { useState } from 'react';
+import DescriptionSection from '../../components/DescriptionSection';
+import type { Language } from '../../components/LanguageCard';
+import LanguageCard from '../../components/LanguageCard';
+
+const LANGUAGES: Language[] = [
+  { id: 'en', name: '영어', sub: 'English', flag: '🇺🇸' },
+  { id: 'cn', name: '중국어', sub: '中文', flag: '🇨🇳' },
+  { id: 'jp', name: '일본어', sub: '日本語', flag: '🇯🇵' },
+  { id: 'vn', name: '베트남어', sub: 'Tiếng Việt', flag: '🇻🇳' },
+  { id: 'th', name: '태국어', sub: 'ภาษาไทย', flag: '🇹🇭' },
+  { id: 'ph', name: '필리핀어', sub: 'Filipino (Tagalog)', flag: '🇵🇭' },
+  { id: 'id', name: '인도네시아어', sub: 'Bahasa Indonesia', flag: '🇮🇩' },
+  { id: 'kh', name: '캄보디아어', sub: 'Khmer', flag: '🇰🇭' },
+  { id: 'mm', name: '미얀마어', sub: 'Myanmar', flag: '🇲🇲' },
+  { id: 'mn', name: '몽골어', sub: 'Mongol', flag: '🇲🇳' },
+  { id: 'ru', name: '러시아어', sub: 'Русский', flag: '🇷🇺' },
+  { id: 'bd', name: '뱅골어', sub: 'Bangla', flag: '🇧🇩' },
+  { id: 'lk', name: '스리랑카어', sub: 'Sinhala', flag: '🇱🇰' },
+  { id: 'np', name: '네팔어', sub: 'Nepali', flag: '🇳🇵' },
+  { id: 'uz', name: '우즈베키스탄어', sub: "O'zbek tili", flag: '🇺🇿' },
+  { id: 'kr', name: '한국어', sub: '한국어', flag: '🇰🇷' },
+];
+
+export default function LanguageRegistrationPage() {
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+
+  const toggleLanguage = (id: string) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
+    );
+  };
+
+  return (
+    <div className="flex h-full flex-col">
+      <div className="flex-1 overflow-y-auto">
+        <DescriptionSection
+          title="외국어 진료 가능 정보 등록"
+          descriptions={[
+            '강남 병원에서 외국어 진료가 가능한 언어를',
+            '아래에서 선택해주세요',
+          ]}
+        />
+        <div className="px-6 py-6">
+          <div className="space-y-3 pb-10">
+            {LANGUAGES.map((lang) => (
+              <LanguageCard
+                key={lang.id}
+                lang={lang}
+                isSelected={selectedIds.includes(lang.id)}
+                onToggle={toggleLanguage}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
