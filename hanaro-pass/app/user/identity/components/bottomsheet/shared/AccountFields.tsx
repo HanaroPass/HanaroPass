@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { Star } from 'lucide-react';
+import { Star } from "lucide-react";
 
 interface AccountFieldsProps {
   formData: Record<string, string>;
@@ -28,15 +28,13 @@ function AccountOption({
       onClick={() => onSelect(value)}
       className={`w-full rounded-lg border p-4 text-left transition-colors ${
         selected
-          ? 'border-hana-green bg-green-50'
-          : 'hover:border-hana-green hover:bg-green-50'
+          ? "border-hana-green bg-green-50"
+          : "hover:border-hana-green hover:bg-green-50"
       }`}
     >
       <div className="flex items-center gap-2">
         <Star
-          className={`h-4 w-4 ${
-            selected ? 'fill-hana-green text-hana-green' : 'text-gray-400'
-          }`}
+          className="h-4 w-4 fill-hana-green text-hana-green"
           strokeWidth={0.1}
         />
         <div>
@@ -62,14 +60,14 @@ export function AccountFields({
         name="영업나블러스 통장"
         accountNumber="211-910776-38107"
         value="account1"
-        selected={formData.selectedAccount === 'account1'}
+        selected={formData.selectedAccount === "account1"}
         onSelect={handleAccountSelect}
       />
       <AccountOption
         name="자유예금"
         accountNumber="506-910017-92907"
         value="account2"
-        selected={formData.selectedAccount === 'account2'}
+        selected={formData.selectedAccount === "account2"}
         onSelect={handleAccountSelect}
       />
     </div>
