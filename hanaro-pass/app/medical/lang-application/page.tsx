@@ -42,6 +42,7 @@ export default function MedicalPage() {
                 key={hospital.id}
                 name={hospital.name}
                 address={hospital.address}
+                // QQQ : action으로 라우팅 하기
                 onSelect={() => handleHospitalSelect(hospital.id)}
               />
             ))}
