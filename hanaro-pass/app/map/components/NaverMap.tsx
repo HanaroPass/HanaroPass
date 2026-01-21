@@ -14,12 +14,21 @@ type NaverMapProps = {
 
 export function NaverMap({ onMarkerClick }: NaverMapProps) {
   const mapRef = useRef<naver.maps.Map | null>(null);
-  const onMarkerClickRef = useRef(onMarkerClick);
   const containerRef = useRef<HTMLDivElement | null>(null);
+
+  const onMarkerClickRef = useRef(onMarkerClick);
+
+  const isMountedRef = useRef(true);
 
   useEffect(() => {
     onMarkerClickRef.current = onMarkerClick;
   }, [onMarkerClick]);
+
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     const NAVER_MAP_KEY = process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID;
@@ -29,14 +38,18 @@ export function NaverMap({ onMarkerClick }: NaverMapProps) {
     if (!NAVER_MAP_KEY || !containerRef.current) return;
 
     const initMap = () => {
+      if (!isMountedRef.current) return;
       if (mapRef.current) return;
+
       const { naver } = window;
       if (!naver?.maps) return;
 
       const renderMap = (lat: number, lng: number) => {
+        if (!isMountedRef.current || !containerRef.current) return;
+
         const center = new naver.maps.LatLng(lat, lng);
 
-        const map = new naver.maps.Map(containerRef.current!, {
+        const map = new naver.maps.Map(containerRef.current, {
           center,
           zoom: 14,
           logoControl: false,
@@ -48,7 +61,9 @@ export function NaverMap({ onMarkerClick }: NaverMapProps) {
           position: center,
           map,
           icon: {
-            content: `<div class="w-4 h-4 bg-blue-600 rounded-full border-2 border-white shadow-lg"></div>`,
+            content: `
+              <div class="w-4 h-4 bg-blue-600 rounded-full border-2 border-white shadow-lg"></div>
+            `,
             anchor: new naver.maps.Point(8, 8),
           },
         });
@@ -63,17 +78,26 @@ export function NaverMap({ onMarkerClick }: NaverMapProps) {
       };
 
       navigator.geolocation.getCurrentPosition(
-        (p) => renderMap(p.coords.latitude, p.coords.longitude),
+        (pos) => renderMap(pos.coords.latitude, pos.coords.longitude),
+        // fallback: 성수역
         () => renderMap(37.5445, 127.0557),
-        { enableHighAccuracy: true, timeout: 10000 },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+        },
       );
     };
 
-    const existing = document.getElementById("naver-map-script");
-    if (existing) {
+    const existingScript = document.getElementById(
+      "naver-map-script",
+    ) as HTMLScriptElement | null;
+
+    if (existingScript) {
       window.naver?.maps
         ? initMap()
-        : existing.addEventListener("load", initMap, { once: true });
+        : existingScript.addEventListener("load", initMap, {
+            once: true,
+          });
       return;
     }
 
