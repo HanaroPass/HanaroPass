@@ -5,9 +5,10 @@ import { AccountDrawer } from './components/bottomsheet/AccountDrawer';
 import { AlienDrawer } from './components/bottomsheet/AlienDrawer';
 import { PassportDrawer } from './components/bottomsheet/PassportDrawer';
 
+type DrawerType = 'passport' | 'alien' | null;
+
 export default function IdentityPage() {
-  const [openPassport, setOpenPassport] = useState(false);
-  const [openAlien, setOpenAlien] = useState(false);
+  const [openDrawer, setOpenDrawer] = useState<DrawerType>(null);
   const [openAccount, setOpenAccount] = useState(false);
 
   const handlePassportSubmit = (_data: Record<string, string>) => {
@@ -29,7 +30,7 @@ export default function IdentityPage() {
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           <button
             type="button"
-            onClick={() => setOpenPassport(true)}
+            onClick={() => setOpenDrawer('passport')}
             className="rounded-lg bg-white p-6 shadow transition-shadow hover:shadow-lg"
           >
             <h2 className="mb-2 font-semibold text-lg">여권 정보 확인</h2>
@@ -38,7 +39,7 @@ export default function IdentityPage() {
 
           <button
             type="button"
-            onClick={() => setOpenAlien(true)}
+            onClick={() => setOpenDrawer('alien')}
             className="rounded-lg bg-white p-6 shadow transition-shadow hover:shadow-lg"
           >
             <h2 className="mb-2 font-semibold text-lg">외국인 등록증</h2>
@@ -59,14 +60,14 @@ export default function IdentityPage() {
       </div>
 
       <PassportDrawer
-        open={openPassport}
-        onOpenChange={setOpenPassport}
+        open={openDrawer === 'passport'}
+        onOpenChange={(open) => setOpenDrawer(open ? 'passport' : null)}
         onSubmit={handlePassportSubmit}
       />
 
       <AlienDrawer
-        open={openAlien}
-        onOpenChange={setOpenAlien}
+        open={openDrawer === 'alien'}
+        onOpenChange={(open) => setOpenDrawer(open ? 'alien' : null)}
         onSubmit={handleAlienSubmit}
       />
 
