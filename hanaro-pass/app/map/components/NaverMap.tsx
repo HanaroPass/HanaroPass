@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef } from 'react';
 
 type Place = {
   id: number;
@@ -33,7 +33,7 @@ export function NaverMap({ onMarkerClick }: NaverMapProps) {
   useEffect(() => {
     const NAVER_MAP_KEY = process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID;
     const NAVER_MAP_SCRIPT_URL =
-      "https://oapi.map.naver.com/openapi/v3/maps.js";
+      'https://oapi.map.naver.com/openapi/v3/maps.js';
 
     if (!NAVER_MAP_KEY || !containerRef.current) return;
 
@@ -68,11 +68,11 @@ export function NaverMap({ onMarkerClick }: NaverMapProps) {
           },
         });
 
-        naver.maps.Event.addListener(marker, "click", () => {
+        naver.maps.Event.addListener(marker, 'click', () => {
           onMarkerClickRef.current({
             id: 1,
-            name: "내 위치",
-            address: "현재 위치",
+            name: '내 위치',
+            address: '현재 위치',
           });
         });
       };
@@ -89,20 +89,20 @@ export function NaverMap({ onMarkerClick }: NaverMapProps) {
     };
 
     const existingScript = document.getElementById(
-      "naver-map-script",
+      'naver-map-script',
     ) as HTMLScriptElement | null;
 
     if (existingScript) {
       window.naver?.maps
         ? initMap()
-        : existingScript.addEventListener("load", initMap, {
+        : existingScript.addEventListener('load', initMap, {
             once: true,
           });
       return;
     }
 
-    const script = document.createElement("script");
-    script.id = "naver-map-script";
+    const script = document.createElement('script');
+    script.id = 'naver-map-script';
     script.src = `${NAVER_MAP_SCRIPT_URL}?ncpKeyId=${NAVER_MAP_KEY}`;
     script.async = true;
     script.onload = initMap;
@@ -110,5 +110,5 @@ export function NaverMap({ onMarkerClick }: NaverMapProps) {
     document.head.appendChild(script);
   }, []);
 
-  return <div ref={containerRef} className="w-full h-full" />;
+  return <div ref={containerRef} className="h-full w-full" />;
 }
