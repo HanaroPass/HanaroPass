@@ -11,7 +11,9 @@ function layout({ children }: PropsWithChildren) {
   return (
     <div className="app-layout">
       <Header title="K-map" />
-      <main className="app-main">{children}</main>
+      <main className="app-main" style={{ height: 'calc(100vh - 56px)' }}>
+        {children}
+      </main>
     </div>
   );
 }

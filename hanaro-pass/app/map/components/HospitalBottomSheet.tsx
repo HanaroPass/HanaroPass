@@ -1,21 +1,23 @@
 'use client';
 
 import { useState } from 'react';
-import { Drawer, DrawerContent } from '@/components/ui/drawer';
 import { Button } from '@/components/ui/button';
-
+import { Drawer, DrawerContent } from '@/components/ui/drawer';
+import DepartmentFilterPanel from './DepartmentFilterPanel';
 import FilterPanel from './FilterPanel';
 import LanguageFilterPanel from './LanguageFilterPanel';
-import DepartmentFilterPanel from './DepartmentFilterPanel';
 
 type FilterType = 'language' | 'department' | null;
 
-type Props = {
+type HospitalBottomSheetProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 };
 
-export default function BottomSheet({ open, onOpenChange }: Props) {
+export default function HospitalBottomSheet({
+  open,
+  onOpenChange,
+}: HospitalBottomSheetProps) {
   const [active, setActive] = useState<FilterType>(null);
 
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
@@ -96,4 +98,3 @@ function makeLabel(selected: string[], defaultLabel: string) {
 
   return `${selected[0]}, ${selected[1]} 외 ${selected.length - 2}개`;
 }
-
