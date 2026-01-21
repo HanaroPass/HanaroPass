@@ -9,15 +9,12 @@ import LanguageFilterPanel from './LanguageFilterPanel';
 
 type FilterType = 'language' | 'department' | null;
 
-type HospitalBottomSheetProps = {
+type HospitalContentProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 };
 
-export default function HospitalBottomSheet({
-  open,
-  onOpenChange,
-}: HospitalBottomSheetProps) {
+export function HospitalContent({ open, onOpenChange }: HospitalContentProps) {
   const [active, setActive] = useState<FilterType>(null);
 
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);

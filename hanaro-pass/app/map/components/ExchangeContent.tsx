@@ -4,7 +4,7 @@ import { locations } from '../mock/embassyExchange';
 import { PlaceCard } from './PlaceCard';
 
 // 임시
-export function ExchangeBottomSheet() {
+export function ExchangeContent() {
   return (
     <>
       <p>환전소 바텀시트 내부 내용</p>

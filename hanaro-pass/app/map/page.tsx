@@ -1,6 +1,5 @@
 'use client';
 
-import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import {
   Bookmark,
   CircleDollarSign,
@@ -9,43 +8,44 @@ import {
   Siren,
 } from 'lucide-react';
 import { useState } from 'react';
-
-import {
-  Drawer,
-  DrawerContent,
-  DrawerDescription,
-  DrawerTitle,
-} from '@/components/ui/drawer';
-import { ExchangeBottomSheet } from './components/ExchangeBottomSheet';
+import { ExchangeContent } from './components/ExchangeContent';
+import { MapBottomSheet } from './components/MapBottomSheet';
 import { NaverMap } from './components/NaverMap';
-import { SirenBottomSheet } from './components/SirenBottomSheet';
+import { SirenContent } from './components/SirenContent';
 import { ToggleButton } from './components/ToggleButton';
+import { useBottomSheet } from './hooks/useBottomSheet';
 
-type SheetType = 'hospital' | 'embassy' | 'exchange' | 'siren' | null;
-
+/**
+ * @page MapPage
+ * @description 지도 기반 서비스의 메인 페이지입니다.
+ * Naver Map을 배경으로 깔고, 상단 카테고리 탭과 우측 퀵 버튼, 하단 바텀시트를 조합합니다.
+ * useBottomSheet 커스텀 훅을 사용하여 시트 관련 모든 로직을 주입받아 사용합니다.
+ */
 export default function MapPage() {
-  const [openSheet, setOpenSheet] = useState<SheetType>(null);
-  const [bookmark, setBookmark] = useState(false);
+  const [bookmark, setBookmark] = useState<boolean>(false);
 
-  const toggleSheet = (type: SheetType) => {
-    setOpenSheet((prev) => {
-      if (prev === type) return null;
-      return type;
-    });
-
-    (document.activeElement as HTMLElement)?.blur();
-  };
+  // 시트 관련 로직과 상태를 커스텀 훅에서 추출
+  const {
+    openSheet,
+    sheetPosition,
+    sheetRef,
+    contentRef,
+    toggleSheet,
+    handleTouchStart,
+    handleTouchMove,
+    handleTouchEnd,
+    getTranslateValue,
+  } = useBottomSheet();
 
   return (
     <main className="relative h-screen w-screen overflow-hidden bg-gray-100">
+      {/* 맵 레이어 */}
       <div className="absolute inset-0 z-0">
         <NaverMap onMarkerClick={() => {}} />
       </div>
 
-      <div
-        className="absolute z-10 flex gap-[0.8rem]"
-        style={{ top: '1.2rem', left: '1.2rem' }}
-      >
+      {/* 필터 그룹 */}
+      <div className="absolute top-5 left-5 z-10 flex gap-2.5">
         <ToggleButton
           variant="pill"
           label="병원"
@@ -54,7 +54,6 @@ export default function MapPage() {
           iconColorVariant="red"
           onClick={() => toggleSheet('hospital')}
         />
-
         <ToggleButton
           variant="pill"
           label="대사관"
@@ -63,7 +62,6 @@ export default function MapPage() {
           iconColorVariant="blue"
           onClick={() => toggleSheet('embassy')}
         />
-
         <ToggleButton
           variant="pill"
           label="환전소"
@@ -74,7 +72,8 @@ export default function MapPage() {
         />
       </div>
 
-      <div className="absolute top-[15%] right-[1.2rem] z-10 flex flex-col gap-[0.8rem]">
+      {/* 우측 유틸 버튼 그룹 */}
+      <div className="absolute top-[15%] right-5 z-10 flex flex-col gap-2.5">
         <ToggleButton
           variant="icon"
           icon={
@@ -85,9 +84,8 @@ export default function MapPage() {
           }
           active={bookmark}
           ariaLabel="저장 토글"
-          onClick={() => setBookmark((prev) => !prev)}
+          onClick={() => setBookmark(!bookmark)}
         />
-
         <ToggleButton
           variant="icon"
           icon={<Siren className="h-5 w-5" />}
@@ -99,35 +97,27 @@ export default function MapPage() {
         />
       </div>
 
-      <Drawer
-        modal={true}
-        open={openSheet !== null}
-        onOpenChange={(open) => {
-          if (!open) setOpenSheet(null);
-        }}
+      {/* 바텀시트 컴포넌트 조합 */}
+      <MapBottomSheet
+        openSheet={openSheet}
+        position={sheetPosition}
+        sheetRef={sheetRef}
+        contentRef={contentRef}
+        getTranslateValue={getTranslateValue}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
       >
-        <DrawerContent className="pointer-events-auto z-50 overflow-hidden border-none bg-white shadow-lg">
-          <VisuallyHidden>
-            <DrawerTitle>
-              {openSheet === 'siren' && '긴급 상황 안내'}
-              {openSheet === 'exchange' && '환전소 정보'}
-              {openSheet === 'hospital' && '병원 정보'}
-              {openSheet === 'embassy' && '대사관 정보'}
-            </DrawerTitle>
-            <DrawerDescription>
-              {openSheet === 'siren' && '위기 상황 발생 시 대처 요령 안내'}
-              {openSheet === 'exchange' && '주변 환전소 위치 정보'}
-              {openSheet === 'hospital' && '인근 의료기관 정보'}
-              {openSheet === 'embassy' && '자국 대사관 연락처'}
-            </DrawerDescription>
-          </VisuallyHidden>
-
-          {openSheet === 'siren' && <SirenBottomSheet />}
-          {openSheet === 'exchange' && <ExchangeBottomSheet />}
-          {openSheet === 'hospital' && <div>병원 바텀시트 내용</div>}
-          {openSheet === 'embassy' && <div>대사관 바텀시트 내용</div>}
-        </DrawerContent>
-      </Drawer>
+        {/* 컨텐츠 렌더링 영역 */}
+        {openSheet === 'siren' && <SirenContent />}
+        {openSheet === 'exchange' && <ExchangeContent />}
+        {openSheet === 'hospital' && (
+          <div className="py-4 text-gray-600">병원 정보를 확인해요.</div>
+        )}
+        {openSheet === 'embassy' && (
+          <div className="py-4 text-gray-600">대사관 정보를 확인해요.</div>
+        )}
+      </MapBottomSheet>
     </main>
   );
 }
