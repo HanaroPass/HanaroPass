@@ -22,7 +22,7 @@ export default function DocsPage() {
         <button
           type="button"
           onClick={() => setIsSheetOpen(true)}
-          className="rounded-3xl border border-white/70 px-3.5 py-1 font-sans font-semibold text-[14px]"
+          className="rounded-3xl border border-white/70 px-3.5 py-1 font-sans font-semibold text-[14px] transition-transform active:scale-95 active:opacity-80"
         >
           + 추가
         </button>
