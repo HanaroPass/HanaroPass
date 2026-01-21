@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+
 import {
   Bookmark,
   CircleDollarSign,
@@ -7,16 +9,14 @@ import {
   Landmark,
   Siren,
 } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import BottomSheet from './components/BottomSheet';
-import { NaverMap } from './components/NaverMap';
 import { ToggleButton } from './components/ToggleButton';
+import { NaverMap } from './components/NaverMap';
+import BottomSheet from './components/BottomSheet';
 
 type TopType = 'hospital' | 'embassy' | 'exchange' | null;
 
 export default function MapPage() {
   const [topSelected, setTopSelected] = useState<TopType>(null);
-
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -30,7 +30,7 @@ export default function MapPage() {
 
   return (
     <main className="relative h-screen w-screen overflow-hidden bg-gray-100">
-      <div className="absolute inset-0 z-0">
+      <div className="pointer-events-none absolute inset-0 z-0">
         <NaverMap onMarkerClick={() => {}} />
       </div>
 
@@ -75,12 +75,7 @@ export default function MapPage() {
       <div className="absolute top-[15%] right-[1.2rem] z-10 flex flex-col gap-[0.8rem]">
         <ToggleButton
           variant="icon"
-          icon={
-            <Bookmark
-              className="h-5 w-5"
-              fill={rightSelected.bookmark ? 'currentColor' : 'none'}
-            />
-          }
+          icon={<Bookmark className="h-5 w-5" />}
           active={rightSelected.bookmark}
           ariaLabel="결제 장소 표시 토글"
           onClick={() =>
@@ -101,19 +96,23 @@ export default function MapPage() {
 
       {mounted && (
         <>
-          <button
-            onClick={(e) => {
-              e.currentTarget.blur();
-              setOpenBottomSheet(true);
-            }}
-            className="-translate-x-1/2 absolute bottom-6 left-1/2 z-20 h-12 rounded-full bg-green-ez px-6 font-medium text-base text-white shadow-lg"
-          >
-            병원 필터 보기
-          </button>
+          {!openBottomSheet && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setOpenBottomSheet(true);
+              }}
+              className="-translate-x-1/2 absolute bottom-6 left-1/2 z-50 h-12 rounded-full bg-green-ez px-6 text-white"
+            >
+              병원 필터 보기
+            </button>
+          )}
 
           <BottomSheet
             open={openBottomSheet}
-            onOpenChange={setOpenBottomSheet}
+            onOpenChange={(open) => {
+              if (!open) setOpenBottomSheet(false);
+            }}
           />
         </>
       )}
