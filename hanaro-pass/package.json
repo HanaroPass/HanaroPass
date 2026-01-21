@@ -23,13 +23,15 @@
     "mariadb": "^3.4.5",
     "next": "16.1.4",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "lucide-react": "^0.562.0"
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.0",
     "@storybook/addon-vitest": "^10.1.11",
     "@storybook/nextjs-vite": "^10.1.11",
     "@tailwindcss/postcss": "^4",
+    "@types/navermaps": "^3.9.1",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
