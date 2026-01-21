@@ -29,7 +29,7 @@ export default function HospitalLanguageApplicationLayout({
               <AlertTitle className="font-sans font-semibold text-base text-hana-green">
                 {'우리 병원이 검색되지 않나요?'}
               </AlertTitle>
-              <AlertDescription className="mt-1 flex flex-col gap-0.3 font-sans text-black-600 text-xs leading-relaxed">
+              <AlertDescription className="mt-1 flex flex-col gap-0.5 font-sans text-black-600 text-xs leading-relaxed">
                 <span>먼저 지도 서비스에 병원을 등록해주세요.</span>
                 <span>등록 후 최대 3일 이내에 검색이 가능해집니다.</span>
               </AlertDescription>

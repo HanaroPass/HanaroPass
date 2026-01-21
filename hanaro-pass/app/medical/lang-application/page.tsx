@@ -1,4 +1,4 @@
-// app/medical/page.tsx
+// app/medical/lang-application/page.tsx
 'use client';
 
 import HospitalItem from '../components/HospitalItem';

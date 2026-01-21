@@ -35,7 +35,7 @@ export const LongNameAndAddress: Story = {
 
 export const ManyItemsPreview: Story = {
   render: (args) => (
-    <div className="w-[360px] space-y-3">
+    <div className="w-90 space-y-3">
       <HospitalItem {...args} onSelect={() => {}} />
       <HospitalItem
         name="건대 스타 병원"

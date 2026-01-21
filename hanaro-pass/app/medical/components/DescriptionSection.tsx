@@ -16,9 +16,9 @@ export default function DescriptionSection({
       </div>
 
       <div className="mt-3 w-full space-y-0.2">
-        {descriptions.map((line) => (
+        {descriptions.map((line, index) => (
           <p
-            key={line}
+            key={`${index}-${line}`}
             className="font-sans text-black-600 text-sm leading-relaxed tracking-tight"
           >
             {line}
