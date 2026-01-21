@@ -40,11 +40,6 @@
   src: url("/fonts/Hana2-Bold.woff2") format("woff2");
 }
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -99,9 +94,6 @@
   --color-gray-200: #f9fafb;
   --color-gray-100: #f0f3f4;
 
-  /* Colors - Accent */
-  --color-blue-100: #006cff;
-  --color-yellow-200: #fef9c2;
   --color-yellow-300: #ffc801;
 
   /* Colors - Accent */
