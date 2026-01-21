@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   Cross,
@@ -11,15 +11,23 @@ import {
 } from "lucide-react";
 import { ToggleButton } from "./components/ToggleButton";
 import { NaverMap } from "./components/NaverMap";
+import BottomSheet from "./components/BottomSheet";
 
 type TopType = "hospital" | "embassy" | "exchange" | null;
 
 export default function MapPage() {
   const [topSelected, setTopSelected] = useState<TopType>(null);
+
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   const [rightSelected, setRightSelected] = useState({
     bookmark: false,
     siren: false,
   });
+  const [openBottomSheet, setOpenBottomSheet] = useState(false);
 
   return (
     <main className="relative w-screen h-screen overflow-hidden bg-gray-100">
@@ -86,6 +94,34 @@ export default function MapPage() {
           onClick={() => setRightSelected((p) => ({ ...p, siren: !p.siren }))}
         />
       </div>
+
+      {mounted && (
+        <>
+          <button
+              onClick={(e) => {
+                e.currentTarget.blur(); 
+                setOpenBottomSheet(true);
+              }}
+            className="
+              absolute bottom-6 left-1/2 -translate-x-1/2
+              z-20
+              h-12 px-6
+              rounded-full
+              bg-green-ez text-white
+              text-base font-medium
+              shadow-lg
+            "
+          >
+            병원 필터 보기
+          </button>
+
+          <BottomSheet
+            open={openBottomSheet}
+            onOpenChange={setOpenBottomSheet}
+          />
+        </>
+      )}
+
     </main>
   );
 }
