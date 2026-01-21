@@ -100,7 +100,7 @@ async function getHospitalDepartments(ykiho: string) {
       .map((item: any) => {
         const code = String(item.dgsbjtCd).padStart(2, '0');
         const name = DEPT_CODE_MAP[code];
-        return name ? { deptName: `${code} - ${name}` } : null;
+        return name ? { deptName: name } : null;
       })
       .filter(Boolean) as { deptName: string }[];
   } catch (error) {
@@ -117,7 +117,7 @@ async function fetchAndSeed() {
     const params = new URLSearchParams({
       ServiceKey: SERVICE_KEY!,
       pageNo: '1',
-      numOfRows: '2000',
+      numOfRows: '10',
       sidoCd: '110000',
       sgguCd: district.sgguCd,
       _type: 'json',
@@ -152,9 +152,7 @@ async function fetchAndSeed() {
             openHours: '09:00 - 18:00',
             HospitalDept: {
               create:
-                departments.length > 0
-                  ? departments
-                  : [{ deptName: '00 - 일반의' }], // 만약에 없으면, 그냥 일반의로
+                departments.length > 0 ? departments : [{ deptName: '일반의' }], // 만약에 없으면, 그냥 일반의로
             },
             HospitalLang: {
               create: langs.map((langName) => ({ langName })),
