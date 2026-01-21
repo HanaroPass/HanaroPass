@@ -1,9 +1,9 @@
 'use client';
 
 import { useDrawerForm } from './hooks/useDrawerForm';
-import { AlienFields } from './shared/AlienFields';
+import { AlienExtraFields, AlienFields } from './shared/AlienFields';
 import { BaseDrawer } from './shared/BaseDrawer';
-import { AlienExtraFields, CommonFields } from './shared/CommonFields';
+import { CommonFields } from './shared/CommonFields';
 
 type AlienDrawerProps = {
   open: boolean;

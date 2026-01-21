@@ -2,8 +2,8 @@
 
 import { useDrawerForm } from './hooks/useDrawerForm';
 import { BaseDrawer } from './shared/BaseDrawer';
-import { CommonFields, PassportDateFields } from './shared/CommonFields';
-import { PassportFields } from './shared/PassportFields';
+import { CommonFields } from './shared/CommonFields';
+import { PassportDateFields, PassportFields } from './shared/PassportFields';
 
 type PassportDrawerProps = {
   open: boolean;
