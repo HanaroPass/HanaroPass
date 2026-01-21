@@ -2,39 +2,39 @@
 
 /* Pretendard */
 @font-face {
-  font-family: 'Pretendard';
+  font-family: "Pretendard";
   font-weight: 400;
   font-display: swap;
-  src: url('/fonts/Pretendard-Regular.woff2') format('woff2');
+  src: url("/fonts/Pretendard-Regular.woff2") format("woff2");
 }
 
 @font-face {
-  font-family: 'Pretendard';
+  font-family: "Pretendard";
   font-weight: 500;
   font-display: swap;
-  src: url('/fonts/Pretendard-Medium.woff2') format('woff2');
+  src: url("/fonts/Pretendard-Medium.woff2") format("woff2");
 }
 
 @font-face {
-  font-family: 'Pretendard';
+  font-family: "Pretendard";
   font-weight: 600;
   font-display: swap;
-  src: url('/fonts/Pretendard-SemiBold.woff2') format('woff2');
+  src: url("/fonts/Pretendard-SemiBold.woff2") format("woff2");
 }
 
 @font-face {
-  font-family: 'Pretendard';
+  font-family: "Pretendard";
   font-weight: 700;
   font-display: swap;
-  src: url('/fonts/Pretendard-Bold.woff2') format('woff2');
+  src: url("/fonts/Pretendard-Bold.woff2") format("woff2");
 }
 
 /* Hana 2.0 */
 @font-face {
-  font-family: 'Hana 2.0';
+  font-family: "Hana 2.0";
   font-weight: 700;
   font-display: swap;
-  src: url('/fonts/Hana2-Bold.woff2') format('woff2');
+  src: url("/fonts/Hana2-Bold.woff2") format("woff2");
 }
 
 :root {
@@ -45,59 +45,60 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  --font-hana: 'Hana 2.0', 'Pretendard', sans-serif;
-  
+  --font-sans:
+    "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-hana: "Hana 2.0", "Pretendard", sans-serif;
+
   /* Font sizes */
   --font-size-sm: 14px;
   --font-size-base: 16px;
   --font-size-lg: 18px;
   --font-size-xl: 22px;
-  
+
   /* Colors - Green */
-  --color-green-ez: #01A5AC;
+  --color-green-ez: #01a5ac;
   --color-hana-green: #008485;
-  --color-green-800: #5D9586;
-  --color-green-700: #61C0A6;
-  --color-green-600: #ABCEC8;
-  --color-green-500: #DCFCE7;
-  --color-green-400: #D9E8E5;
-  --color-green-300: #F0FDFA;
-  --color-green-200: #F6F8F7;
-  
+  --color-green-800: #5d9586;
+  --color-green-700: #61c0a6;
+  --color-green-600: #abcec8;
+  --color-green-500: #dcfce7;
+  --color-green-400: #d9e8e5;
+  --color-green-300: #f0fdfa;
+  --color-green-200: #f6f8f7;
+
   /* Colors - Red */
-  --color-hana-red: #E90061;
-  --color-red-800: #D2524F;
-  --color-red-600: #DE8274;
-  --color-red-400: #E9ADA0;
-  --color-red-200: #F3D8D0;
-  
+  --color-hana-red: #e90061;
+  --color-red-800: #d2524f;
+  --color-red-600: #de8274;
+  --color-red-400: #e9ada0;
+  --color-red-200: #f3d8d0;
+
   /* Colors - Gold */
-  --color-hana-gold: #AD9A5F;
-  --color-gold-800: #B4A085;
-  --color-gold-600: #D5CAB9;
-  --color-gold-400: #EDE8DF;
-  --color-gold-200: #FAF9F7;
-  
+  --color-hana-gold: #ad9a5f;
+  --color-gold-800: #b4a085;
+  --color-gold-600: #d5cab9;
+  --color-gold-400: #ede8df;
+  --color-gold-200: #faf9f7;
+
   /* Colors - Silver/Gray */
-  --color-hana-silver: #B5B5B5;
-  --color-silver-800: #B7B6B1;
-  --color-silver-600: #E5E7EB;
-  --color-silver-400: #FAFAFA;
-  
+  --color-hana-silver: #b5b5b5;
+  --color-silver-800: #b7b6b1;
+  --color-silver-600: #e5e7eb;
+  --color-silver-400: #fafafa;
+
   /* Colors - Black/Gray */
   --color-black-900: #101828;
-  --color-black-800: #4A5565;
+  --color-black-800: #4a5565;
   --color-black-600: #888988;
-  --color-black-400: #B6B6B6;
-  --color-black-200: #DEDCDD;
-  --color-white-ez: #FFFFFF;
-  --color-gray-200: #F9FAFB;
-  --color-gray-100: #F0F3F4;
-  
+  --color-black-400: #b6b6b6;
+  --color-black-200: #dedcdd;
+  --color-white-ez: #ffffff;
+  --color-gray-200: #f9fafb;
+  --color-gray-100: #f0f3f4;
+
   /* Colors - Accent */
-  --color-blue-100: #006CFF;
-  --color-yellow-200: #FEF9C2;
+  --color-blue-100: #006cff;
+  --color-yellow-200: #fef9c2;
 }
 
 @media (prefers-color-scheme: dark) {
