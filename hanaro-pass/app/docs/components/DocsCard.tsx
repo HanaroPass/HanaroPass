@@ -48,7 +48,7 @@ export default function DocsCard({ title, color, initialOpen }: DocsCardProps) {
       {isOpen ? (
         <>
           {/* 프리뷰 영역 */}
-          <div className="mt-4 ml-4 flex-justify">
+          <div className="mt-4 ml-4 flex">
             <DocsPreview name="Kelsey Kwon" />
           </div>
           {/* 기간 만료 안내 영역 */}
