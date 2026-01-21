@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import BackButton from './backButton';
+import BackButton from './BackButton';
 
 interface HeaderProps {
   title?: string;
@@ -21,9 +21,7 @@ export default function Header({
       <div className="h-[env(safe-area-inset-top)]" />
 
       <div className="flex h-16 items-center justify-between px-4">
-        <div className="flex w-12 justify-start">
-          {showBack && <BackButton />}
-        </div>
+        <div className="flex justify-start">{showBack && <BackButton />}</div>
 
         <div className="flex flex-1 justify-center overflow-hidden">
           <h1 className="truncate font-bold text-gray-900 text-lg tracking-tight">
@@ -31,7 +29,7 @@ export default function Header({
           </h1>
         </div>
 
-        <div className="flex w-12 items-center justify-end">
+        <div className="flex items-center justify-end">
           {rightElement || <div className="w-6" />}
         </div>
       </div>

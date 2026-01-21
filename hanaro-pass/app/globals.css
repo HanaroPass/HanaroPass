@@ -116,12 +116,25 @@ body {
 
 .app-shell {
   width: 375px;
-  min-height: 100dvh;
+  height: 100dvh;
   margin: 0 auto;
+  overflow: hidden;
 }
 
 @media (max-width: 768px) {
   .app-shell {
     width: 100%;
   }
+}
+
+.app-layout {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-main {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }

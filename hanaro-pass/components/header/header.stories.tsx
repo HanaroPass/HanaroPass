@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { Bell, Settings } from 'lucide-react';
-import Header from './header';
+import Header from './Header';
 
 const meta = {
   title: 'Components/Header',
