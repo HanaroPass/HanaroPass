@@ -26,11 +26,10 @@ export default function LanguageCard({
       className={`flex w-full cursor-pointer items-center justify-between rounded-lg border-2 p-4 transition-all focus:outline-none focus:ring-2 focus:ring-green-ez focus:ring-offset-2 ${
         isSelected
           ? 'border-green-ez bg-green-50'
-          : 'border-border bg-card hover:border-muted'
+          : 'border-gray-100 bg-gray-50 hover:border-gray-200 hover:bg-gray-100'
       }`}
     >
       <div className="flex items-center gap-3">
-        {/* 국기 이모지 */}
         <span className="text-2xl" aria-hidden="true">
           {lang.flag}
         </span>

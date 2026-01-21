@@ -2,6 +2,7 @@
 
 import { Globe } from 'lucide-react';
 import { useState } from 'react';
+import { Button } from '@/components/ui/button';
 import DescriptionSection from '../../components/DescriptionSection';
 import HospitalGuide from '../../components/HospitalGuide';
 import type { Language } from '../../components/LanguageCard';
@@ -36,6 +37,8 @@ export default function LanguageRegistrationPage() {
     );
   };
 
+  const isSelected = selectedIds.length > 0;
+
   return (
     <div className="flex h-full flex-col">
       <div className="flex-1 overflow-y-auto">
@@ -57,7 +60,7 @@ export default function LanguageRegistrationPage() {
           </p>
         </div>
         <div className="px-6 py-6">
-          <div className="space-y-3 pb-10">
+          <div className="space-y-3 pb-6">
             {LANGUAGES.map((lang) => (
               <LanguageCard
                 key={lang.id}
@@ -71,6 +74,19 @@ export default function LanguageRegistrationPage() {
         <div className="border-gray-200 border-t bg-white pb-8">
           <HospitalGuide text="등록하신 정보는 외국인 환자 병원을 검색할 때 표시됩니다." />
         </div>
+      </div>
+      <div className="border-gray-200 border-t bg-white px-6 py-4 pb-8">
+        <Button
+          disabled={!isSelected}
+          onClick={() => console.log('제출된 데이터:', selectedIds)}
+          className={`w-full rounded-xl py-7 font-bold text-lg transition-all ${
+            isSelected
+              ? 'bg-hana-green text-white shadow-lg hover:bg-hana-green/80 active:scale-[0.98]'
+              : 'cursor-not-allowed bg-gray-200 text-gray-400'
+          }`}
+        >
+          병원 언어 등록 신청하기 {isSelected && `(${selectedIds.length})`}
+        </Button>
       </div>
     </div>
   );
