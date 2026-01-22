@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
 import BottomSheet from './BottomSheet';
-import { DOCS_CARD_ITEMS } from '../constants/docsCardItem';
+import { DOCS_CARD_ITEMS } from '../../constants/docsCardItem';
 import DocsSelectList from './BottomSelectList';
 
 const meta: Meta = {

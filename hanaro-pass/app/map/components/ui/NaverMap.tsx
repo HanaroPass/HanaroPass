@@ -1,6 +1,13 @@
 'use client';
 
-import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
+import {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
+import type { SavedPlace } from '../../mock/savedPlaces';
 
 type Place = {
   id: number;
@@ -9,28 +16,71 @@ type Place = {
 };
 
 type NaverMapProps = {
-  onMarkerClick: (place: Place) => void;
+  onMarkerClick: (place: Place | SavedPlace) => void;
+  savedPlaces?: SavedPlace[];
+  showBookmarks?: boolean;
 };
 
 export const NaverMap = forwardRef(function NaverMap(
-  { onMarkerClick }: NaverMapProps,
+  { onMarkerClick, savedPlaces, showBookmarks }: NaverMapProps,
   ref,
 ) {
   const mapRef = useRef<naver.maps.Map | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const markersRef = useRef<naver.maps.Marker[]>([]);
   const onMarkerClickRef = useRef(onMarkerClick);
-
   const isMountedRef = useRef(true);
+  const [isMapReady, setIsMapReady] = useState(false);
 
   useEffect(() => {
     onMarkerClickRef.current = onMarkerClick;
   }, [onMarkerClick]);
 
   useEffect(() => {
-    return () => {
-      isMountedRef.current = false;
-    };
-  }, []);
+    markersRef.current.forEach((marker) => {
+      marker.setMap(null);
+    });
+    markersRef.current = [];
+
+    const currentMap = mapRef.current;
+
+    if (isMapReady && showBookmarks && savedPlaces && currentMap) {
+      const { naver } = window;
+      savedPlaces.forEach((place) => {
+        const marker = new naver.maps.Marker({
+          position: new naver.maps.LatLng(
+            Number(place.latitude),
+            Number(place.longitude),
+          ),
+          map: currentMap,
+          icon: {
+            content: `
+              <div class="w-7 h-7 bg-white rounded-full flex items-center justify-center shadow-[0_4px_8px_rgba(0,0,0,0.2)]">
+                <div class="w-6 h-6 bg-hana-green rounded-full flex items-center justify-center shadow-inner">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  style="filter: drop-shadow(0 1px 1px rgba(0,0,0,0.2));"
+                >
+                  <path d="M5 5C5 3.34315 6.34315 2 8 2H16C17.6569 2 19 3.34315 19 5V22L12 19L5 22V5Z" />
+                </svg>
+              </div>
+            </div>
+          `,
+            anchor: new naver.maps.Point(14, 14),
+          },
+        });
+        naver.maps.Event.addListener(marker, 'click', () => {
+          onMarkerClick(place);
+        });
+
+        markersRef.current.push(marker);
+      });
+    }
+  }, [isMapReady, showBookmarks, savedPlaces, onMarkerClick]);
 
   useEffect(() => {
     const NAVER_MAP_KEY = process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID;
@@ -40,8 +90,7 @@ export const NaverMap = forwardRef(function NaverMap(
     if (!NAVER_MAP_KEY || !containerRef.current) return;
 
     const initMap = () => {
-      if (!isMountedRef.current) return;
-      if (mapRef.current) return;
+      if (!isMountedRef.current || mapRef.current) return;
 
       const { naver } = window;
       if (!naver?.maps) return;
@@ -53,24 +102,23 @@ export const NaverMap = forwardRef(function NaverMap(
 
         const map = new naver.maps.Map(containerRef.current, {
           center,
-          zoom: 14,
+          zoom: 15,
           logoControl: false,
         });
 
         mapRef.current = map;
+        setIsMapReady(true);
 
-        const marker = new naver.maps.Marker({
+        const myMarker = new naver.maps.Marker({
           position: center,
           map,
           icon: {
-            content: `
-              <div class="w-4 h-4 bg-blue-600 rounded-full border-2 border-white shadow-lg"></div>
-            `,
+            content: `<div class="w-4 h-4 bg-blue-600 rounded-full border-2 border-white shadow-lg"/>`,
             anchor: new naver.maps.Point(8, 8),
           },
         });
 
-        naver.maps.Event.addListener(marker, 'click', () => {
+        naver.maps.Event.addListener(myMarker, 'click', () => {
           onMarkerClickRef.current({
             id: 1,
             name: '내 위치',
@@ -97,19 +145,20 @@ export const NaverMap = forwardRef(function NaverMap(
     if (existingScript) {
       window.naver?.maps
         ? initMap()
-        : existingScript.addEventListener('load', initMap, {
-            once: true,
-          });
-      return;
+        : existingScript.addEventListener('load', initMap, { once: true });
+    } else {
+      const script = document.createElement('script');
+      script.id = 'naver-map-script';
+      script.src = `${NAVER_MAP_SCRIPT_URL}?ncpKeyId=${NAVER_MAP_KEY}`;
+      script.async = true;
+      script.onload = initMap;
+
+      document.head.appendChild(script);
     }
 
-    const script = document.createElement('script');
-    script.id = 'naver-map-script';
-    script.src = `${NAVER_MAP_SCRIPT_URL}?ncpKeyId=${NAVER_MAP_KEY}`;
-    script.async = true;
-    script.onload = initMap;
-
-    document.head.appendChild(script);
+    return () => {
+      isMountedRef.current = false;
+    };
   }, []);
 
   useImperativeHandle(ref, () => ({
