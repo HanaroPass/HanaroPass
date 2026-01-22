@@ -146,6 +146,12 @@ export function HospitalContent({ mode, hospital }: Props) {
             <HospitalCard hospital={hospital} />
           </div>
         ))}
+
+        {filteredHospitals.length === 0 && (
+          <div className="py-10 text-center text-gray-400 text-sm">
+            조건에 맞는 병원이 없어요
+          </div>
+        )}
       </div>
 
       <div className="border-[#F0F3F4] border-t bg-white px-6 py-4">
