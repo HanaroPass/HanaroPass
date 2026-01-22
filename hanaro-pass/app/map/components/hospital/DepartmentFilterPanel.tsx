@@ -1,6 +1,6 @@
 'use client';
 
-import { DEPARTMENTS } from "../../constants/departments";
+import { DEPARTMENTS } from '../../constants/departments';
 
 interface Props {
   value: string[];

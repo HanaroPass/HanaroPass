@@ -5,16 +5,18 @@ import {
   CircleDollarSign,
   Cross,
   Landmark,
+  LocateFixed,
   Siren,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import { EmbassyContent } from './components/embassy/EmbassyContent';
 import { ExchangeContent } from './components/exchange/ExchangeContent';
+import { HospitalContent } from './components/hospital/HospitalContent';
 import { SirenContent } from './components/siren/SirenContent';
 import { MapBottomSheet } from './components/ui/MapBottomSheet';
 import { NaverMap } from './components/ui/NaverMap';
 import { ToggleButton } from './components/ui/ToggleButton';
 import { useBottomSheet } from './hooks/useBottomSheet';
-import { HospitalContent } from './components/hospital/HospitalContent';
 
 /**
  * @page MapPage
@@ -24,7 +26,7 @@ import { HospitalContent } from './components/hospital/HospitalContent';
  */
 export default function MapPage() {
   const [bookmark, setBookmark] = useState<boolean>(false);
-
+  const mapControlRef = useRef<{ centerToMyPosition: () => void }>(null);
   // 시트 관련 로직과 상태를 커스텀 훅에서 추출
   const {
     openSheet,
@@ -42,7 +44,7 @@ export default function MapPage() {
     <main className="relative h-screen w-screen overflow-hidden bg-gray-100">
       {/* 맵 레이어 */}
       <div className="absolute inset-0 z-0">
-        <NaverMap onMarkerClick={() => {}} />
+        <NaverMap ref={mapControlRef} onMarkerClick={() => {}} />
       </div>
 
       {/* 필터 그룹 */}
@@ -75,6 +77,16 @@ export default function MapPage() {
 
       {/* 우측 유틸 버튼 그룹 */}
       <div className="absolute top-[15%] right-3 z-10 flex flex-col gap-2.5">
+        <ToggleButton
+          variant="icon"
+          icon={<LocateFixed className="h-5 w-5" />}
+          active={false}
+          iconColorVariant="gray"
+          ariaLabel="내 위치 찾기"
+          onClick={() => {
+            mapControlRef.current?.centerToMyPosition();
+          }}
+        />
         <ToggleButton
           variant="icon"
           icon={
@@ -112,12 +124,8 @@ export default function MapPage() {
         {/* 컨텐츠 렌더링 영역 */}
         {openSheet === 'siren' && <SirenContent />}
         {openSheet === 'exchange' && <ExchangeContent />}
-        {openSheet === 'hospital' && (
-          <HospitalContent />
-        )}
-        {openSheet === 'embassy' && (
-          <div className="py-4 text-gray-600">대사관 정보를 확인해요.</div>
-        )}
+        {openSheet === 'hospital' && <HospitalContent />}
+        {openSheet === 'embassy' && <EmbassyContent />}
       </MapBottomSheet>
     </main>
   );

@@ -1,20 +1,25 @@
 'use client';
 
-import { locations } from '../../mock/embassyExchange';
+import { MAP_EXCHANGE_MOCK } from '../../mock/embassyExchange';
 import { PlaceCard } from '../ui/PlaceCard';
 
-// 임시
 export function ExchangeContent() {
   return (
-    <>
-      <p>환전소 바텀시트 내부 내용</p>
-      <div className="pointer-events-auto w-full max-w-md">
-        <div className="p-4">
-          {locations.map((loc) => (
-            <PlaceCard key={loc.name} data={loc} />
-          ))}
+    <div className="flex flex-col px-2">
+      {MAP_EXCHANGE_MOCK.map((loc, index) => (
+        <div
+          key={`${loc.name}-${index}`}
+          className={
+            index !== MAP_EXCHANGE_MOCK.length - 1
+              ? 'border-gray-100 border-b'
+              : ''
+          }
+        >
+          <div className="p-4">
+            <PlaceCard data={loc} />
+          </div>
         </div>
-      </div>
-    </>
+      ))}
+    </div>
   );
 }

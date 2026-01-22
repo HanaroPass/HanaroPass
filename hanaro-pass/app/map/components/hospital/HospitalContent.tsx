@@ -69,7 +69,7 @@ export function HospitalContent() {
         )}
       </div>
 
-      <div className="border-t border-[#F0F3F4] bg-white px-6 py-4">
+      <div className="border-[#F0F3F4] border-t bg-white px-6 py-4">
         <Button className="h-14 w-full rounded-xl bg-green-ez text-white">
           나에게 맞는 병원 찾기
         </Button>
@@ -82,6 +82,6 @@ function makeLabel(selected: string[], defaultLabel: string) {
   if (selected.length === 0) return defaultLabel;
   if (selected.length === 1) return selected[0];
   if (selected.length === 2) return `${selected[0]}, ${selected[1]}`;
-  
+
   return `${selected[0]}, ${selected[1]} 외 ${selected.length - 2}개`;
 }
