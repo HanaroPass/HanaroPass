@@ -13,9 +13,8 @@ const TABS = [
   { key: 'transfer', Icon: TransferIcon },
   { key: 'service', Icon: ServiceIcon },
 ];
-
-const INDICATOR_WIDTH = 52;
-const TAB_WIDTH = 60;
+const INDICATOR_WIDTH = 50;
+const TAB_WIDTH = 64;
 const GAP = 22;
 
 export default function MainWrapper({
@@ -25,7 +24,9 @@ export default function MainWrapper({
   const activeIndex = TABS.findIndex((t) => t.key === activeTab);
   const safeIndex = activeIndex === -1 ? 0 : activeIndex;
 
-  const translateX = safeIndex * (TAB_WIDTH + GAP);
+  const totalWidth = TABS.length * TAB_WIDTH + (TABS.length - 1) * GAP;
+  const translateX =
+    safeIndex * (TAB_WIDTH + GAP) + (TAB_WIDTH - INDICATOR_WIDTH) / 2;
 
   return (
     <div className="bg-green-ez">
@@ -63,7 +64,7 @@ export default function MainWrapper({
           ))}
         </section>
 
-        <div className="relative mx-auto h-2.5 w-70">
+        <div className="relative mx-auto h-2.5" style={{ width: totalWidth }}>
           <Image
             src="/images/main/indicator.svg"
             width={INDICATOR_WIDTH}
