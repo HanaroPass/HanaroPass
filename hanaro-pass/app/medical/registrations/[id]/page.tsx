@@ -10,9 +10,9 @@ import {
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React from 'react';
-import DescriptionSection from '@/app/medical/components/language/DescriptionSection';
-import HospitalGuide from '@/app/medical/components/language/HospitalGuide';
-import SectionHeader from '@/app/medical/components/language/SectionHeader';
+import DescriptionSection from '@/app/medical/components/languageRegistration/DescriptionSection';
+import HospitalGuide from '@/app/medical/components/languageRegistration/HospitalGuide';
+import SectionHeader from '@/app/medical/components/languageRegistration/SectionHeader';
 import StatusBadge from '@/app/medical/components/StatusBadge';
 import ActionButton from '@/components/header/ActionButton';
 import { Alert, AlertDescription } from '@/components/ui/alert';

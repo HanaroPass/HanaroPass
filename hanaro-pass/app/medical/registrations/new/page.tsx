@@ -4,11 +4,11 @@ import { Globe } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import ActionButton from '@/components/header/ActionButton';
-import DescriptionSection from '../../components/language/DescriptionSection';
-import HospitalGuide from '../../components/language/HospitalGuide';
-import type { Language } from '../../components/language/LanguageCard';
-import LanguageCard from '../../components/language/LanguageCard';
-import SectionHeader from '../../components/language/SectionHeader';
+import DescriptionSection from '../../components/languageRegistration/DescriptionSection';
+import HospitalGuide from '../../components/languageRegistration/HospitalGuide';
+import type { Language } from '../../components/languageRegistration/LanguageCard';
+import LanguageCard from '../../components/languageRegistration/LanguageCard';
+import SectionHeader from '../../components/languageRegistration/SectionHeader';
 
 const LANGUAGES: Language[] = [
   { id: 'en', name: '영어', sub: 'English', flag: '🇺🇸' },
