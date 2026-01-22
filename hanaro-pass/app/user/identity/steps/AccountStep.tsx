@@ -17,11 +17,16 @@ export default function AccountStep({ onSubmit, onClose }: AccountStepProps) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState<string | null>(null);
 
-  const handleSubmit = (data: Record<string, string>) => {
+  const handleDrawerSubmit = (data: Record<string, string>) => {
     console.log('계좌 정보:', data);
-    setSelectedAccount(data.account || '계좌 선택됨');
-    setIsDrawerOpen(false);
-    onSubmit(data);
+    // 실제 계좌번호나 계좌명을 저장
+    const accountInfo =
+      data.accountNumber ||
+      data.accountName ||
+      data.account ||
+      '하나은행 1234-567890-123';
+    setSelectedAccount(accountInfo);
+    setIsDrawerOpen(false); // 바텀시트 닫기
   };
 
   const handleAccountSelect = () => {
@@ -84,7 +89,13 @@ export default function AccountStep({ onSubmit, onClose }: AccountStepProps) {
               className="flex w-full cursor-pointer items-center justify-between rounded-lg border border-gray-200 bg-gray-200 p-4 text-left hover:bg-gray-50"
               onClick={handleAccountSelect}
             >
-              <span className="text-gray-600">
+              <span
+                className={
+                  selectedAccount
+                    ? 'font-medium text-gray-800'
+                    : 'text-gray-600'
+                }
+              >
                 {selectedAccount || '하나은행 계좌를 선택하세요.'}
               </span>
               <ChevronDown size={20} className="text-gray-400" />
@@ -97,8 +108,8 @@ export default function AccountStep({ onSubmit, onClose }: AccountStepProps) {
               onClick={handleConfirm}
               className={
                 selectedAccount
-                  ? 'bg-green-ez text-white'
-                  : 'bg-gray-300 text-gray-500'
+                  ? 'bg-green-ez text-white hover:bg-green-ez/90'
+                  : 'cursor-not-allowed bg-gray-300 text-gray-500'
               }
               disabled={!selectedAccount}
             />
@@ -109,7 +120,7 @@ export default function AccountStep({ onSubmit, onClose }: AccountStepProps) {
       <AccountDrawer
         open={isDrawerOpen}
         onOpenChange={setIsDrawerOpen}
-        onSubmit={handleSubmit}
+        onSubmit={handleDrawerSubmit}
       />
     </>
   );
