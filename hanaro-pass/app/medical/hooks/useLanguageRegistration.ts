@@ -15,6 +15,7 @@ export function useLanguageRegistration() {
   const [hospitalName, setHospitalName] = useState('');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [initialIds, setInitialIds] = useState<string[]>([]); // 기존에 선택된 언어들
 
   useEffect(() => {
     if (!hospitalId) return;
@@ -22,7 +23,19 @@ export function useLanguageRegistration() {
     const fetchHospital = async () => {
       const result = await getHospitalDetailAction(hospitalId);
       if (result.success) {
+        if (result.data.isPending) {
+          alert(
+            '이미 신청하여 심사 중인 내역이 있습니다.\n결과가 나올 때까지 추가 신청이 불가능합니다.',
+          );
+          router.replace(`/medical/registrations/${hospitalId}`);
+          return;
+        }
+
         setHospitalName(result.data.nameKo);
+        if (result.data.existingLangs) {
+          setSelectedIds(result.data.existingLangs);
+          setInitialIds(result.data.existingLangs);
+        }
       } else {
         alert(result.message);
         router.back();
@@ -58,6 +71,7 @@ export function useLanguageRegistration() {
   return {
     hospitalName,
     selectedIds,
+    initialIds,
     toggleLanguage,
     submitApplication,
     isSubmitting,

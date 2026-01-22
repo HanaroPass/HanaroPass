@@ -35,6 +35,7 @@ export default function LanguageRegistrationPage() {
     toggleLanguage,
     submitApplication,
     isSubmitting,
+    initialIds,
     isValid,
   } = useLanguageRegistration();
 
@@ -80,7 +81,9 @@ export default function LanguageRegistrationPage() {
           text={
             isSubmitting
               ? '신청 중...'
-              : `병원 언어 등록 신청하기 ${isValid ? `(${selectedIds.length})` : ''}`
+              : selectedIds.length > 0 && initialIds.length > 0 // 기존 데이터가 있다면
+                ? `언어 정보 수정하기 (${selectedIds.length})`
+                : `병원 언어 등록 신청하기 ${isValid ? `(${selectedIds.length})` : ''}`
           }
           onClick={submitApplication}
           className="py-7 text-lg"

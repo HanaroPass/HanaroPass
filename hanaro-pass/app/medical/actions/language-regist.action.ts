@@ -41,6 +41,25 @@ export async function searchHospitalAction(
   }
 }
 
+const NAME_TO_ID: Record<string, string> = {
+  영어: 'en',
+  중국어: 'cn',
+  일본어: 'jp',
+  베트남어: 'vn',
+  태국어: 'th',
+  필리핀어: 'ph',
+  인도네시아어: 'id',
+  캄보디아어: 'kh',
+  미얀마어: 'mm',
+  몽골어: 'mn',
+  러시아어: 'ru',
+  뱅골어: 'bd',
+  스리랑카어: 'lk',
+  네팔어: 'np',
+  우즈베키스탄어: 'uz',
+  한국어: 'kr',
+};
+
 /**
  * [병원 상세 서버 액션]
  *
@@ -54,7 +73,9 @@ export async function searchHospitalAction(
  */
 export async function getHospitalDetailAction(
   id: number,
-): Promise<ActionResult<{ nameKo: string }>> {
+): Promise<
+  ActionResult<{ nameKo: string; existingLangs: string[]; isPending: boolean }>
+> {
   try {
     const hospital = await prisma.hospital.findUnique({
       where: {
@@ -62,13 +83,34 @@ export async function getHospitalDetailAction(
       },
       select: {
         nameKo: true,
+        HospitalLang: {
+          select: { langName: true },
+        },
       },
     });
 
     if (!hospital)
       throw new HttpError('해당 ID의 병원을 찾을 수 없습니다.', 404);
 
-    return { success: true, data: hospital };
+    const pendingApp = await prisma.hospitalLanguageApplication.findFirst({
+      where: {
+        hospitalId: id,
+        status: 'PENDING',
+      },
+    });
+
+    const mappedLangs = hospital.HospitalLang.map(
+      (lang) => NAME_TO_ID[lang.langName] || lang.langName,
+    );
+
+    return {
+      success: true,
+      data: {
+        nameKo: hospital.nameKo,
+        existingLangs: mappedLangs,
+        isPending: !!pendingApp, // 신청 중인 건이 있으면 true
+      },
+    };
   } catch (err) {
     return handleActionResult(err);
   }
