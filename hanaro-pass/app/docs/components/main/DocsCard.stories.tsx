@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
-import DocsCard from '../DocsCard';
+import DocsCard from './DocsCard';
 
 const meta: Meta<typeof DocsCard> = {
   title: 'Docs/DocsCard',
