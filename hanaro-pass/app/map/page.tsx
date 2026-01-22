@@ -51,7 +51,17 @@ export default function MapPage() {
         <NaverMap
           ref={mapControlRef}
           onMarkerClick={(place) => {
-            if ('placeName' in place) {
+            if (!('placeName' in place)) return;
+
+            // 클릭한 마커가 이미 선택된 마커인지 확인
+            const isTargetAlreadySelected = selectedPlace?.id === place.id;
+
+            if (isTargetAlreadySelected) {
+              // 이미 선택된 걸 또 누르면 닫기
+              setSelectedPlace(null);
+              toggleSheet('bookmark');
+            } else {
+              // 새로운 걸 누르면 데이터 교체 후 열기/갱신
               setSelectedPlace(place);
               toggleSheet('bookmark', true);
             }
@@ -124,7 +134,7 @@ export default function MapPage() {
         />
       </div>
 
-      {/* 바텀시트 컴포넌트 조합 */}
+      {/* 바텀시트 */}
       <MapBottomSheet
         openSheet={openSheet}
         position={sheetPosition}
