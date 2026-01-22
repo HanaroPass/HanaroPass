@@ -1,12 +1,7 @@
 'use client';
 
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
-import {
-  type ReactNode,
-  type RefObject,
-  useEffect,
-  useLayoutEffect,
-} from 'react';
+import { useEffect, type ReactNode, type RefObject } from 'react';
 import {
   SHEET_TITLE,
   type SheetPosition,
@@ -48,12 +43,14 @@ export function MapBottomSheet({
    * @effect 애니메이션 제어
    * @description 시트의 좌표가 결정될 때마다 transform 트랜지션을 적용합니다.
    */
-  useLayoutEffect(() => {
-    if (!sheetRef.current) return;
+  useEffect(() => {
+    const sheetEl = sheetRef.current;
+    if (!sheetEl) return;
+
     const targetY = getTranslateValue(position);
-    sheetRef.current.style.transition =
-      'transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)';
-    sheetRef.current.style.transform = `translateY(${targetY}px)`;
+
+    sheetEl.style.transition = 'transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)';
+    sheetEl.style.transform = `translateY(${targetY}px)`;
   }, [position, getTranslateValue, sheetRef]);
 
   /**
@@ -61,28 +58,22 @@ export function MapBottomSheet({
    * half 상태일 때 스크롤이 끊기는 문제를 해결하기 위해 필수적입니다.
    */
   const getContentMaxHeight = () => {
+    const sheetEl = sheetRef.current;
+    if (!sheetEl) return '0px';
+
     if (position === 'full') return '100%';
-    if (position === 'half' && sheetRef.current) {
-      const sheetHeight = sheetRef.current.clientHeight;
+
+    if (position === 'half') {
+      const sheetHeight = sheetEl.clientHeight;
       const translateY = getTranslateValue('half');
       return `${sheetHeight - translateY - 40}px`;
     }
+
     return '0px';
   };
   /**
    * @description 시트가 열리면 body의 스크롤을 막고, 닫히면 다시 풀어줍니다.
    */
-  useEffect(() => {
-    if (openSheet) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, [openSheet]);
 
   if (!openSheet) return null;
 
