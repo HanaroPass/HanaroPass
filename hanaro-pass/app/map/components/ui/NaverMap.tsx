@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
 
 type Place = {
   id: number;
@@ -12,10 +12,12 @@ type NaverMapProps = {
   onMarkerClick: (place: Place) => void;
 };
 
-export function NaverMap({ onMarkerClick }: NaverMapProps) {
+export const NaverMap = forwardRef(function NaverMap(
+  { onMarkerClick }: NaverMapProps,
+  ref,
+) {
   const mapRef = useRef<naver.maps.Map | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
-
   const onMarkerClickRef = useRef(onMarkerClick);
 
   const isMountedRef = useRef(true);
@@ -110,5 +112,19 @@ export function NaverMap({ onMarkerClick }: NaverMapProps) {
     document.head.appendChild(script);
   }, []);
 
+  useImperativeHandle(ref, () => ({
+    centerToMyPosition: () => {
+      if (!mapRef.current) return;
+
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const { latitude, longitude } = pos.coords;
+          const newCenter = new naver.maps.LatLng(latitude, longitude);
+          mapRef.current?.panTo(newCenter);
+        },
+        () => {},
+      );
+    },
+  }));
   return <div ref={containerRef} className="h-full w-full" />;
-}
+});

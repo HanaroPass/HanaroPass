@@ -6,7 +6,7 @@ type ToggleButtonProps =
       icon: React.ReactNode;
       ariaLabel: string;
       colorVariant?: 'green' | 'red';
-      iconColorVariant?: 'green' | 'red' | 'blue' | 'yellow';
+      iconColorVariant?: 'green' | 'red' | 'blue' | 'yellow' | 'gray';
       label?: never;
     }
   | {
@@ -52,6 +52,7 @@ export function ToggleButton({
     red: 'text-hana-red',
     blue: 'text-blue-100',
     yellow: 'text-yellow-300',
+    gray: 'text-black-800',
   };
 
   return (

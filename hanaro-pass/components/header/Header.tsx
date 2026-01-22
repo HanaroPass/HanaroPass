@@ -2,7 +2,7 @@
 
 import { ChevronLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import type { ReactNode } from 'react';
+import type { PropsWithChildren, ReactNode } from 'react';
 
 type HeaderProps = {
   title?: string;
@@ -20,7 +20,8 @@ export default function Header({
   leftElement,
   rightElement,
   className = '',
-}: HeaderProps) {
+  children,
+}: PropsWithChildren<HeaderProps>) {
   const router = useRouter();
 
   const handleLeftClick = () => {
@@ -52,11 +53,15 @@ export default function Header({
               )}
         </div>
 
-        <div className="-translate-x-1/2 absolute left-1/2 max-w-[60%]">
-          <h1 className="truncate font-semibold text-base text-black-900">
-            {title}
-          </h1>
-        </div>
+        {title ? (
+          <div className="-translate-x-1/2 absolute left-1/2 max-w-[60%]">
+            <h1 className="truncate font-semibold text-base text-black-900">
+              {title}
+            </h1>
+          </div>
+        ) : (
+          children
+        )}
 
         <div className="flex justify-end">
           {rightElement || <div className="w-6" />}
