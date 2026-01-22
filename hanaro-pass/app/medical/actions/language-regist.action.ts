@@ -7,7 +7,7 @@ import {
 } from '@/lib/error-handler';
 import type { Hospital } from '@/lib/generated/prisma';
 import { prisma } from '@/lib/prisma';
-import { NAME_TO_ID } from '../constants/language';
+import { ID_TO_NAME, NAME_TO_ID } from '../constants/language';
 
 /**
  * [병원 검색 서버 액션]
@@ -111,15 +111,27 @@ export async function submitLanguageApplicationAction(
   languageIds: string[],
 ): Promise<ActionResult<null>> {
   try {
-    const requestLangsInKorean = languageIds.map((id) => NAME_TO_ID[id] || id);
-    await prisma.hospitalLanguageApplication.create({
-      data: {
-        hospitalId,
-        requestLangs: requestLangsInKorean,
-        status: 'PENDING',
-      },
-    });
+    const requestLangsInKorean = languageIds.map((id) => ID_TO_NAME[id] || id);
+    await prisma.$transaction(async (tx) => {
+      const existingPending = await tx.hospitalLanguageApplication.findFirst({
+        where: {
+          hospitalId,
+          status: 'PENDING',
+        },
+      });
 
+      if (existingPending) {
+        throw new HttpError('이미 심사 중인 신청 건이 존재합니다.', 400);
+      }
+
+      await tx.hospitalLanguageApplication.create({
+        data: {
+          hospitalId,
+          requestLangs: requestLangsInKorean,
+          status: 'PENDING',
+        },
+      });
+    });
     return { success: true, data: null };
   } catch (err) {
     return handleActionResult(err);

@@ -12,7 +12,7 @@
     "db:gen": "prisma generate",
     "db:seed": "prisma db seed",
     "db:mig": "prisma migrate dev",
-    "format": "biome format --writep",
+    "format": "biome format --write",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },

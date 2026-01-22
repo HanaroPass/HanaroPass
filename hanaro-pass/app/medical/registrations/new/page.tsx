@@ -25,7 +25,6 @@ export default function LanguageRegistrationPage() {
       <div className="flex-1 overflow-y-auto">
         <DescriptionSection
           title="외국어 진료 가능 정보 등록"
-          //   QQQ 나중에 병원 이름 동적으로 바꾸기
           descriptions={[
             `${hospitalName || '...'}에서 외국어 진료가 가능한 언어를`,
             '아래에서 선택해주세요',
