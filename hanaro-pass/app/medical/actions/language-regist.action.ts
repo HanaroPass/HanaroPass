@@ -8,11 +8,12 @@ export async function searchHospitalAction(
   query: string,
 ): Promise<ActionResult<Pick<Hospital, 'id' | 'nameKo' | 'address'>[]>> {
   try {
-    if (!query.trim()) return { success: true, data: [] };
+    const sanitizedQuery = query.replace(/\s+/g, '');
+    if (!sanitizedQuery) return { success: true, data: [] };
 
     const hospitals = await prisma.hospital.findMany({
       where: {
-        nameKo: { contains: query },
+        nameKo: { contains: sanitizedQuery },
       },
       select: {
         id: true,
