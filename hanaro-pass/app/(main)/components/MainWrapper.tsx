@@ -1,13 +1,22 @@
+import { WalletMinimal } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import type { PropsWithChildren } from 'react';
+import { cn } from '@/lib/utils';
+import RemittanceIcon from './icons/RemittanceIcon';
+import ServiceIcon from './icons/ServiceIcon';
+import TransferIcon from './icons/TransferIcon';
 
 const TABS = [
-  { key: 'pay', label: '페이' },
-  { key: 'transfer', label: '조회/이체' },
-  { key: 'remittance', label: '송금' },
-  { key: 'service', label: '서비스' },
+  { key: 'pay', Icon: WalletMinimal },
+  { key: 'remittance', Icon: RemittanceIcon },
+  { key: 'transfer', Icon: TransferIcon },
+  { key: 'service', Icon: ServiceIcon },
 ];
+
+const INDICATOR_WIDTH = 52;
+const TAB_WIDTH = 60;
+const GAP = 22;
 
 export default function MainWrapper({
   children,
@@ -15,10 +24,6 @@ export default function MainWrapper({
 }: PropsWithChildren<{ activeTab: string }>) {
   const activeIndex = TABS.findIndex((t) => t.key === activeTab);
   const safeIndex = activeIndex === -1 ? 0 : activeIndex;
-
-  const INDICATOR_WIDTH = 50;
-  const TAB_WIDTH = 60;
-  const GAP = 22;
 
   const translateX = safeIndex * (TAB_WIDTH + GAP);
 
@@ -37,7 +42,23 @@ export default function MainWrapper({
         <section className="mb-3 flex justify-center gap-5.5">
           {TABS.map((t) => (
             <Link key={t.key} href={{ pathname: '/', query: { tab: t.key } }}>
-              {t.label}
+              <div
+                className={cn(
+                  'relative flex h-16 w-16 items-center justify-center rounded-full transition-colors duration-300',
+                  activeTab === t.key ? 'bg-white-ez' : 'bg-[#65C7CA]',
+                )}
+              >
+                <t.Icon
+                  className={cn(
+                    '-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 z-1 h-10 w-10',
+                    activeTab === t.key ? 'text-green-ez' : 'text-white',
+                    'stroke-current',
+                  )}
+                />
+                {activeTab !== t.key && (
+                  <div className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 z-0 h-13 w-13 rounded-full bg-green-ez" />
+                )}
+              </div>
             </Link>
           ))}
         </section>
