@@ -230,6 +230,25 @@ async function seedDummyApplications() {
   console.log('[ 완료 ] ID 1(대기), 2(승인), 3(반려) 데이터 생성 완료.');
 }
 
+/**
+ * User 더미 데이터 생성
+ */
+async function seedUsers() {
+  console.log('[ 추가 작업 - User 더미 데이터 생성 중... ]');
+
+  // 더미 생성
+  await prisma.user.createMany({
+    data: [
+      { nickname: 'Kelsey Kwon', nationality: 'KOR' },
+      { nickname: 'John Doe', nationality: 'USA' },
+      { nickname: 'Mina Tanaka', nationality: 'JPN' },
+    ],
+  });
+
+  const count = await prisma.user.count();
+  console.log(`[ 완료 ] User 생성 완료. 현재 User 총 ${count}명`);
+}
+
 async function main() {
   if (!SERVICE_KEY) {
     console.error('SERVICE_KEY 누락');
@@ -238,13 +257,14 @@ async function main() {
 
   console.log('[ 기존 데이터 초기화 중 ]');
   // 데이터 삭제
-  await prisma.hospitalLanguageApplication.deleteMany();
   await prisma.hospitalReview.deleteMany();
   await prisma.hospitalDept.deleteMany();
   await prisma.hospitalLang.deleteMany();
   await prisma.hospital.deleteMany();
+  await prisma.user.deleteMany();
 
   // AUTO_INCREMENT 초기화
+  await prisma.$executeRaw`ALTER TABLE User AUTO_INCREMENT = 1`;
   await prisma.$executeRaw`ALTER TABLE Hospital AUTO_INCREMENT = 1`;
   await prisma.$executeRaw`ALTER TABLE HospitalDept AUTO_INCREMENT = 1`;
   await prisma.$executeRaw`ALTER TABLE HospitalLang AUTO_INCREMENT = 1`;
@@ -252,6 +272,8 @@ async function main() {
   await prisma.$executeRaw`ALTER TABLE HospitalLanguageApplication AUTO_INCREMENT = 1`;
 
   await fetchAndSeed();
+  await seedDummyApplications();
+  await seedUsers();
   await seedDummyApplications();
   console.log('[ 시딩 작업 완료! ]');
 }
