@@ -1,3 +1,7 @@
+export type ActionResult<T> =
+  | { success: true; data: T }
+  | { success: false; message: string; status: number };
+
 export class HttpError extends Error {
   status: number;
   constructor(message: string, status: number) {
@@ -14,14 +18,18 @@ export const isErrorWithMessage = (err: unknown): err is WithMessage =>
   (typeof err === 'object' &&
     err !== null &&
     'message' in err &&
-    typeof (err as any).message === 'string');
+    typeof (err as Record<string, unknown>).message === 'string');
 
 /** * Server Action은 NextResponse를 반환하지 않고
  * 직렬화 가능한 객체를 반환해야 하므로 형식을 맞춥니다.
  */
-export const handleActionResult = (err: unknown) => {
+export const handleActionResult = (err: unknown): ActionResult<never> => {
   if (err instanceof HttpError) {
-    return { success: false, message: err.message, status: err.status };
+    return {
+      success: false,
+      message: err.message,
+      status: err.status,
+    };
   }
   if (isErrorWithMessage(err)) {
     return { success: false, message: err.message, status: 500 };

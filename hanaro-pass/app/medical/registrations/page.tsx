@@ -2,25 +2,46 @@
 
 import { Info } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import SearchInput from '@/components/SearchInput/SearchInput';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import type { Hospital } from '@/lib/generated/prisma';
+import { searchHospitalAction } from '../actions/language-regist.action';
 import DescriptionSection from '../components/languageRegistration/DescriptionSection';
 import HospitalItem from '../components/languageRegistration/HospitalItem';
 
+type HospitalSearchResult = Pick<Hospital, 'id' | 'nameKo' | 'address'>;
+
 export default function MedicalPage() {
   const router = useRouter();
+
   const [searchQuery, setSearchQuery] = useState('');
+  const [hospitals, setHospitals] = useState<HospitalSearchResult[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // QQQ : 더미 데이터 - 실제로는 API 호출로 대체
-  const dummyHospitals = [
-    { id: 1, name: '서울국제의료센터', address: '서울시 강남구 테헤란로 123' },
-    { id: 2, name: '강남병원', address: '서울시 강남구 역삼로 456' },
-  ];
+  useEffect(() => {
+    const fetchHospitals = async () => {
+      if (!searchQuery.trim()) {
+        setHospitals([]);
+        return;
+      }
 
-  const filteredHospitals = dummyHospitals.filter((hospital) =>
-    hospital.name.toLowerCase().includes(searchQuery.toLowerCase()),
-  );
+      setIsLoading(true);
+
+      const result = await searchHospitalAction(searchQuery);
+
+      if (!result.success) {
+        alert(`[에러코드 -  ${result.status}] ${result.message}`);
+        setHospitals([]);
+      } else {
+        setHospitals(result.data);
+      }
+      setIsLoading(false);
+    };
+
+    const timer = setTimeout(fetchHospitals, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   return (
     <div className="flex h-full flex-col">
@@ -46,7 +67,7 @@ export default function MedicalPage() {
             검색된 병원 정보
           </h3>
 
-          {filteredHospitals.length === 0 ? (
+          {!isLoading && searchQuery.trim() !== '' && hospitals.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-10 text-center">
               <p className="font-medium font-sans text-base text-black-600">
                 검색 결과가 없습니다
@@ -57,12 +78,16 @@ export default function MedicalPage() {
             </div>
           ) : (
             <div className="space-y-4 pb-6">
-              {filteredHospitals.map((hospital) => (
+              {hospitals.map((hospital) => (
                 <HospitalItem
                   key={hospital.id}
-                  name={hospital.name}
+                  name={hospital.nameKo}
                   address={hospital.address}
-                  onSelect={() => router.push(`/medical/registrations/new`)}
+                  onSelect={() =>
+                    router.push(
+                      `/medical/registrations/new?hospitalId=${hospital.id}`,
+                    )
+                  }
                 />
               ))}
             </div>
