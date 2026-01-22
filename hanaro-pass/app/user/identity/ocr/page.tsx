@@ -3,9 +3,9 @@
 import { X } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useState } from 'react';
-import CameraCapture from '@/app/user/identity/components/CameraCapture';
-import { PassportDrawer } from '@/app/user/identity/components/bottomsheet/PassportDrawer';
 import { AlienDrawer } from '@/app/user/identity/components/bottomsheet/AlienDrawer';
+import { PassportDrawer } from '@/app/user/identity/components/bottomsheet/PassportDrawer';
+import CameraCapture from '@/app/user/identity/components/CameraCapture';
 
 function OCRPageContent() {
   const searchParams = useSearchParams();
