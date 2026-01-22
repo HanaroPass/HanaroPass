@@ -1,6 +1,6 @@
 'use client';
 
-import * as React from 'react';
+import type * as React from 'react';
 import { X } from 'lucide-react';
 
 import {
@@ -24,11 +24,11 @@ export default function BottomSheet({
 }: BottomSheetProps) {
   return (
     <Drawer open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DrawerContent className="left-1/2 w-full max-w-93.75 -translate-x-1/2">
+      <DrawerContent className="-translate-x-1/2 left-1/2 w-full max-w-93.75">
         <div className="w-full">
           {/* 헤더 */}
           <DrawerHeader className="flex flex-row items-center justify-between px-5 py-4">
-            <DrawerTitle className="font-sans text-[18px] font-bold text-black-900">
+            <DrawerTitle className="font-bold font-sans text-[18px] text-black-900">
               서류 선택
             </DrawerTitle>
 
@@ -48,9 +48,7 @@ export default function BottomSheet({
           <div className="h-px bg-black/10" />
 
           {/* 서류 리스트 */}
-          <div className="px-5 pb-8 pt-2">
-            {children}
-          </div>
+          <div className="px-5 pt-2 pb-8">{children}</div>
         </div>
       </DrawerContent>
     </Drawer>

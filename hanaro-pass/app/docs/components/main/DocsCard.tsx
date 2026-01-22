@@ -1,15 +1,16 @@
 'use client';
 
-import { ChevronUp, CreditCard } from 'lucide-react';
-import type { CardColor } from '../constants/cardColor';
-import { CARD_GRADIENT_CLASS } from '../constants/cardColor';
+import { useRouter } from 'next/navigation';
+import { CARD_GRADIENT_CLASS, type CardColor } from '../../constants/cardColor';
 import DocsPreview from './DocsPreview';
+import { ChevronUp, CreditCard } from 'lucide-react';
 
 type DocsCardProps = {
   title: string;
   color: CardColor;
   isOpen: boolean;
   onToggle: () => void;
+  docId: string;
 };
 
 export default function DocsCard({
@@ -17,7 +18,12 @@ export default function DocsCard({
   color,
   isOpen,
   onToggle,
+  docId,
 }: DocsCardProps) {
+  const router = useRouter();
+  const goDetail = () => {
+    router.push(`/docs/${docId}`);
+  };
   return (
     <div
       className={`w-83 rounded-xl shadow-[0_18px_30px_rgba(0,0,0,0.18)] ${CARD_GRADIENT_CLASS[color]} transition-[padding] duration-300 ease-in-out ${isOpen ? 'p-4 pb-10' : 'p-4 pb-15'}`}
@@ -47,9 +53,13 @@ export default function DocsCard({
       <div
         className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-175 opacity-100' : 'max-h-0 opacity-0'}`}
       >
-        <div className="mt-4 ml-4 flex">
+        <button
+          type="button"
+          onClick={goDetail}
+          className="mt-4 ml-4 inline-flex transition-transform duration-150 ease-out active:scale-[0.97]"
+        >
           <DocsPreview name="Kelsey Kwon" />
-        </div>
+        </button>
         {/* 기간 만료 안내 영역 */}
         <div className="mt-5 ml-2 flex text-white">
           <p className="font-sans text-[11px]">

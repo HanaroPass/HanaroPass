@@ -1,7 +1,7 @@
 'use client';
 
 import { ChevronRight, CreditCard } from 'lucide-react';
-import type { DocsCardItem } from '../constants/docsCardItem';
+import type { DocsCardItem } from '../../constants/docsCardItem';
 
 type DocsSelectListProps = {
   items: DocsCardItem[];
