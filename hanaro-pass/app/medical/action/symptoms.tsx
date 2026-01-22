@@ -1,16 +1,24 @@
 'use server';
 
 export async function postOpenAI(url: string, body: string) {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) throw new Error('OPEN AI API 키가 없습니다.');
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 300000);
   const response = await fetch(`https://api.openai.com/v1/${url}`, {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+      Authorization: `Bearer ${apiKey}`,
       'Content-Type': 'application/json',
     },
     body: body,
   });
+  clearTimeout(timeoutId);
+
   return response;
 }
+
 export async function postSymptomForm(formData: FormData) {
   const symptomPrompt = `
   당신은 의료 보조 AI입니다.
@@ -39,6 +47,7 @@ export async function postSymptomForm(formData: FormData) {
   const type = formData.get('type');
   const prompt = type === 'SYMPTOM' ? symptomPrompt : surgeryPrompt;
   const description = formData.get('description') as string;
+  if (!description.trim()) throw new Error('입력 값이 없습니다.');
   const images = formData.getAll('images') as File[];
   let imagesToBase64 = [];
   imagesToBase64 = await Promise.all(
@@ -71,18 +80,26 @@ export async function postSymptomForm(formData: FormData) {
   });
 
   const response = await postOpenAI('responses', body);
+  if (!response.ok) throw new Error(`${response.status} AI 요청 실패`);
   const answer = await response.json();
-  console.log(answer.output[1].content[0].text);
-  return answer.output[1].content[0].text;
+  const output = answer?.output[1]?.content[0]?.text;
+  if (!output) throw new Error('예상치 못한 API 응답 구조입니다.');
+  console.log(output);
+  return output;
 }
 
 export async function getTTS(description: string) {
+  if (description.trim()) {
+    throw new Error('번역된 문장이 없습니다.');
+  }
   const body = JSON.stringify({
     model: 'gpt-4o-mini-tts',
     voice: 'alloy',
     input: description,
   });
   const response = await postOpenAI('audio/speech', body);
+  if (!response.ok) throw new Error(`${response.status} TTS AI 요청 실패`);
+
   const arrayBuffer = await response.arrayBuffer();
   return Buffer.from(arrayBuffer).toString('base64');
 }
