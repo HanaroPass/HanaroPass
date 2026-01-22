@@ -1,18 +1,30 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import DocsCard from './DocsCard';
-import { DOCS_CARD_ITEMS } from '../../constants/docsCardItem';
 import { cn } from '@/lib/utils';
-import type { userProps } from '../../docsPageClient';
+import type { CardColor } from '../../constants/cardColor';
 
-export default function DocsCardStack({ userName }: userProps) {
+interface DocItem {
+  id: string;
+  title: string;
+  color: CardColor;
+}
+
+type DocCardProps = {
+  userName: string;
+  items: DocItem[];
+};
+
+export default function DocsCardStack({ userName, items }: DocCardProps) {
   const [openId, setOpenId] = useState('');
-  const openIndex = DOCS_CARD_ITEMS.findIndex((v) => v.id === openId);
-
+  const openIndex = useMemo(
+    () => items.findIndex((v) => v.id === openId),
+    [items, openId],
+  );
   return (
     <div className="flex flex-col">
-      {DOCS_CARD_ITEMS.map((item, idx) => {
+      {items.map((item, idx) => {
         const isOpen = openId === item.id;
 
         const extraOffset =

@@ -260,10 +260,10 @@ async function seedUsers() {
 }
 
 /**
- * Passport / ARC / UserDocument 더미 데이터 생성
+ * UserDocument 더미 데이터 생성
  */
 async function seedUserDocs() {
-  console.log('[ 추가 작업 - Passport / ARC / UserDocument 더미 생성 중... ]');
+  console.log('[ UserDocument 더미 생성 중... ]');
 
   const user = await prisma.user.findFirst();
   if (!user) {
@@ -271,31 +271,6 @@ async function seedUserDocs() {
     return;
   }
   const userId = user.id;
-
-  await prisma.passport.upsert({
-    where: { userId },
-    update: {},
-    create: {
-      userId,
-      passportNumber: `P-${userId}`,
-      gender: 'MALE',
-      issueDate: new Date('2022-01-01'),
-      expiryDate: new Date('2032-01-01'),
-      userPhotoUrl: 'https://example.com/passport-photo.jpg',
-    },
-  });
-
-  await prisma.aRC.upsert({
-    where: { userId },
-    update: {},
-    create: {
-      userId,
-      arcNumber: `ARC-${userId}`,
-      residenceStatus: 'D-2',
-      issueDate: new Date('2023-03-01'),
-      userPhotoUrl: 'https://example.com/arc-photo.jpg',
-    },
-  });
 
   // UserDocument 있으면 건너뛰기
   const existingDocTypes = await prisma.userDocument.findMany({
@@ -323,7 +298,49 @@ async function seedUserDocs() {
     });
   }
 
-  console.log('[ 완료 ] Passport / ARC / UserDocument 더미 생성 완료');
+  console.log('[ 완료 ] UserDocument 더미 생성 완료');
+}
+
+async function seedUserIdentityDocs() {
+  console.log('[ Passport / ARC 유저별 더미 생성 중... ]');
+
+  const users = await prisma.user.findMany({ select: { id: true } });
+
+  if (users.length === 0) {
+    console.warn('User가 없어 시드를 건너뜁니다.');
+    return;
+  }
+
+  for (const { id: userId } of users) {
+    // Passport (userId unique 기준 upsert)
+    await prisma.passport.upsert({
+      where: { userId },
+      update: {},
+      create: {
+        userId,
+        passportNumber: `P-${userId}`,
+        gender: 'MALE',
+        issueDate: new Date('2022-01-01'),
+        expiryDate: new Date('2032-01-01'),
+        userPhotoUrl: 'https://example.com/passport-photo.jpg',
+      },
+    });
+
+    // ARC (userId unique 기준 upsert)
+    await prisma.aRC.upsert({
+      where: { userId },
+      update: {},
+      create: {
+        userId,
+        arcNumber: `ARC-${userId}`,
+        residenceStatus: 'D-2',
+        issueDate: new Date('2023-03-01'),
+        userPhotoUrl: 'https://example.com/arc-photo.jpg',
+      },
+    });
+  }
+
+  console.log(`[ 완료 ] ${users.length}명 Passport/ARC 생성(또는 유지) 완료`);
 }
 
 async function main() {
@@ -358,6 +375,7 @@ async function main() {
   await fetchAndSeed();
   await seedUsers();
   await seedUserDocs();
+  await seedUserIdentityDocs();
   await seedDummyApplications();
   console.log('[ 시딩 작업 완료! ]');
 }

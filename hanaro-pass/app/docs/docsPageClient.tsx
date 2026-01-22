@@ -1,19 +1,43 @@
 'use client';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import DocsCardStack from './components/main/DocsCardStack';
 import BottomSheet from './components/add/BottomSheet';
-import { DOCS_CARD_ITEMS } from './constants/docsCardItem';
+import {
+  DOC_ID_TO_REQUIREMENT,
+  DOCS_CARD_ITEMS,
+} from './constants/docsCardItem';
 import Header from '@/components/header/Header';
 import DocsSelectList from './components/add/BottomSelectList';
 import { useRouter } from 'next/navigation';
+import type { getDocsStatus } from './actions/userDocs';
 
-export type userProps = {
+type UserProps = {
   userName: string;
+  docStatus: Awaited<ReturnType<typeof getDocsStatus>>;
 };
 
-export default function DocsPageClient({ userName }: userProps) {
+export default function DocsPageClient({ userName, docStatus }: UserProps) {
   const router = useRouter();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+
+  // docStatus 기반으로 보유한 서류만 필터
+  const ownedItems = useMemo(() => {
+    if (!docStatus) return [];
+
+    return DOCS_CARD_ITEMS.filter((item) => {
+      const req = DOC_ID_TO_REQUIREMENT[item.id];
+
+      if (req.kind === 'PASSPORT') return docStatus.hasPassport;
+      if (req.kind === 'ARC') return docStatus.hasARC;
+      return docStatus.hasDocType[req.docType];
+    });
+  }, [docStatus]);
+
+  // 바텀시트는 유저가 가지고있지 않은 서류만 보여주기
+  const addableItems = useMemo(() => {
+    const ownedSet = new Set(ownedItems.map((i) => i.id));
+    return DOCS_CARD_ITEMS.filter((i) => !ownedSet.has(i.id));
+  }, [ownedItems]);
 
   return (
     <>
@@ -38,19 +62,21 @@ export default function DocsPageClient({ userName }: userProps) {
         </div>
         {/* 카드 아코디언 */}
         <div className="pb-10">
-          <DocsCardStack userName={userName} />
+          <DocsCardStack userName={userName} items={ownedItems} />
         </div>
 
         {/* 바텀시트 */}
         <BottomSheet isOpen={isSheetOpen} onClose={() => setIsSheetOpen(false)}>
-          <DocsSelectList
-            items={DOCS_CARD_ITEMS}
-            onSelect={(id) => {
-              console.log('selected:', id);
-              setIsSheetOpen(false);
-              router.push(`/docs/add/${id}`);
-            }}
-          />
+          {addableItems.length > 0 ? (
+            <DocsSelectList
+              items={addableItems}
+              onSelect={(id) => {
+                console.log('selected:', id);
+                setIsSheetOpen(false);
+                router.push(`/docs/add/${id}`);
+              }}
+            />
+          ) : null}
         </BottomSheet>
       </main>
     </>
