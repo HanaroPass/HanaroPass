@@ -53,7 +53,7 @@ export default function MainWrapper({
             width={20}
             height={20}
             src="/images/main/profile.svg"
-            alt="알림"
+            alt="프로필"
           />
         </div>
       </header>

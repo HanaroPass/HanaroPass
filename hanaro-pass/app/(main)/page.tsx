@@ -16,8 +16,12 @@ export default function Page({
 }: {
   searchParams: Promise<{ tab?: string }>;
 }) {
-  const tab = use(searchParams)?.tab ?? 'pay';
-  const TabComponent = TAB_COMPONENTS[tab as keyof typeof TAB_COMPONENTS];
+  const rawTab = use(searchParams)?.tab;
+  const tab =
+    rawTab && rawTab in TAB_COMPONENTS
+      ? (rawTab as keyof typeof TAB_COMPONENTS)
+      : 'pay';
+  const TabComponent = TAB_COMPONENTS[tab];
 
   return (
     <MainWrapper activeTab={tab}>
