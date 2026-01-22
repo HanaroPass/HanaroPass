@@ -1,4 +1,3 @@
-'use server';
 import { getDocsStatus, getUserName } from './actions/userDocs';
 import DocsPageClient from './docsPageClient';
 

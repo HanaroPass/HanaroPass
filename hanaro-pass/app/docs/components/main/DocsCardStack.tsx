@@ -3,17 +3,11 @@
 import { useMemo, useState } from 'react';
 import DocsCard from './DocsCard';
 import { cn } from '@/lib/utils';
-import type { CardColor } from '../../constants/cardColor';
-
-interface DocItem {
-  id: string;
-  title: string;
-  color: CardColor;
-}
+import type { DocsCardItem } from '../../constants/docsCardItem';
 
 type DocCardProps = {
   userName: string;
-  items: DocItem[];
+  items: DocsCardItem[];
 };
 
 export default function DocsCardStack({ userName, items }: DocCardProps) {
