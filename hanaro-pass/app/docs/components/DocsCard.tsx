@@ -19,12 +19,17 @@ export default function DocsCard({
   onToggle,
 }: DocsCardProps) {
   return (
-    <section
-      className={`w-83 rounded-xl shadow-[0_18px_30px_rgba(0,0,0,0.18)] ${CARD_GRADIENT_CLASS[color]} transition-[padding] duration-300 ease-in-out ${isOpen ? 'p-3 pb-10' : 'p-3 pb-15'}`}
+    <div
+      className={`w-83 rounded-xl shadow-[0_18px_30px_rgba(0,0,0,0.18)] ${CARD_GRADIENT_CLASS[color]} transition-[padding] duration-300 ease-in-out ${isOpen ? 'p-4 pb-10' : 'p-4 pb-15'}`}
     >
       {/* 헤더 영역 */}
-      <div className="grid grid-cols-[1fr_auto] items-start text-white">
-        {/* 왼쪽: 아이콘 + 타이틀 */}
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-expanded={isOpen}
+        className="grid w-full grid-cols-[1fr_auto] items-start text-left text-white"
+      >
+        {/* 아이콘 + 타이틀 */}
         <div className="flex min-w-0 items-center gap-5">
           <div className="grid h-9 w-9 flex-none place-items-center rounded-full bg-white/20">
             <CreditCard size={20} />
@@ -32,18 +37,11 @@ export default function DocsCard({
           <p className="font-sans font-semibold text-[16px]">{title}</p>
         </div>
 
-        {/* 오른쪽: 토글 아이콘 */}
-        <button
-          type="button"
-          onClick={onToggle}
-          aria-expanded={isOpen}
-          className="grid h-9 w-9 place-items-center bg-transparent p-0"
-        >
-          <ChevronUp
-            className={`transition-transform duration-200 ease-out ${isOpen ? 'rotate-0' : 'rotate-180'}`}
-          />
-        </button>
-      </div>
+        {/* 토글 아이콘 */}
+        <ChevronUp
+          className={`transition-transform duration-200 ease-out ${isOpen ? 'rotate-0' : 'rotate-180'}`}
+        />
+      </button>
 
       {/* 프리뷰 영역 */}
       <div
@@ -59,6 +57,6 @@ export default function DocsCard({
           </p>
         </div>
       </div>
-    </section>
+    </div>
   );
 }

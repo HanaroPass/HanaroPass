@@ -8,9 +8,7 @@ type DocsPreviewProps = {
   name: string;
 };
 
-export default function DocsPreview({
-  name = 'Kelsey Kwon',
-}: DocsPreviewProps) {
+export default function DocsPreview({ name }: DocsPreviewProps) {
   return (
     <div className="relative h-41 w-65 rounded-[15px] bg-green-300 shadow-[0_12px_24px_rgba(255,255,255,0.35)]">
       {/*로고 영역 */}
