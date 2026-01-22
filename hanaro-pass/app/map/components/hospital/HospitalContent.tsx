@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import DepartmentFilterPanel from './DepartmentFilterPanel';
 import FilterPanel from './FilterPanel';
 import LanguageFilterPanel from './LanguageFilterPanel';
+import { hospitalLocations } from '@/app/map/mock/hospitalFilter.mock';
+import { HospitalCard } from './HospitalCard';
 
 type FilterType = 'language' | 'department' | null;
 
@@ -19,10 +21,22 @@ export function HospitalContent() {
   const activePill = 'bg-green-ez border-green-ez text-white';
 
   const languageLabel = makeLabel(selectedLanguages, '소통 가능 언어');
-  const departmentLabel = makeLabel(selectedDepartments, '진료과목');
+  const departmentLabel = makeLabel(selectedDepartments, '진료 과목');
+
+  const filteredHospitals = hospitalLocations.filter((hospital) => {
+    const languageMatch =
+      selectedLanguages.length === 0 ||
+      selectedLanguages.some((lang) => hospital.languages.includes(lang));
+
+    const departmentMatch =
+      selectedDepartments.length === 0 ||
+      selectedDepartments.some((dep) => hospital.departments.includes(dep));
+
+    return languageMatch && departmentMatch;
+  });
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="relative flex h-full flex-col">
       <div className="bg-white px-4 pt-1">
         <div className="flex gap-2">
           <button
@@ -49,24 +63,49 @@ export function HospitalContent() {
         </div>
       </div>
 
-      <div className="relative flex-1 overflow-y-auto px-6 pt-3">
-        {active === 'language' && (
+      {active === 'language' && (
+        <div className="absolute inset-x-0 top-14 z-30 px-6">
           <FilterPanel title="소통 가능 언어">
             <LanguageFilterPanel
               value={selectedLanguages}
               onChange={setSelectedLanguages}
             />
           </FilterPanel>
-        )}
+        </div>
+      )}
 
-        {active === 'department' && (
-          <FilterPanel title="진료과목">
+      {active === 'department' && (
+        <div className="absolute inset-x-0 top-14 z-30 px-6">
+          <FilterPanel title="진료 과목">
             <DepartmentFilterPanel
               value={selectedDepartments}
               onChange={setSelectedDepartments}
             />
           </FilterPanel>
-        )}
+        </div>
+      )}
+
+      <div className="flex-1 overflow-y-auto px-6 pt-3">
+        <div className="pt-2">
+          {filteredHospitals.map((hospital, idx) => (
+            <div
+              key={hospital.name}
+              className={
+                idx === filteredHospitals.length - 1
+                  ? ''
+                  : 'border-gray-300 border-b'
+              }
+            >
+              <HospitalCard hospital={hospital} />
+            </div>
+          ))}
+
+          {filteredHospitals.length === 0 && (
+            <div className="py-10 text-center text-gray-400 text-sm">
+              조건에 맞는 병원이 없어요
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="border-[#F0F3F4] border-t bg-white px-6 py-4">
