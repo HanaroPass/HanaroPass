@@ -4,6 +4,7 @@ import { ChevronDown, ChevronUp, X } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
+import ActionButton from '@/components/header/ActionButton';
 import Header from '@/components/header/Header';
 import { Button } from '@/components/ui/button';
 import { AlienDrawer } from './components/bottomsheet/AlienDrawer';
@@ -23,13 +24,9 @@ export default function IdentityPage() {
     router.back();
   };
 
-  const handlePassportSubmit = (_data: Record<string, string>) => {
-    // TODO: 실제 제출 로직
-  };
+  const handlePassportSubmit = (_data: Record<string, string>) => {};
 
-  const handleAlienSubmit = (_data: Record<string, string>) => {
-    // TODO: 실제 제출 로직
-  };
+  const handleAlienSubmit = (_data: Record<string, string>) => {};
 
   useEffect(() => {
     if (isGuideOpen && guideRef.current) {
@@ -59,55 +56,45 @@ export default function IdentityPage() {
         }
       />
 
-      <div className="flex min-h-[calc(100vh-60px)] flex-col bg-white p-4 pb-10 sm:p-6 lg:p-8">
+      <div className="flex min-h-[calc(100vh-60px)] flex-col bg-white p-4 pb-1 sm:p-6 sm:pb-10 lg:p-8">
         <div className="mx-auto flex w-full max-w-sm flex-1 flex-col sm:max-w-md sm:flex-none lg:max-w-lg xl:max-w-2xl">
-          {/* [핵심 수정] shrink-0 추가 
-            이 div에 shrink-0을 적용하여, 화면 높이가 부족하더라도
-            내부 콘텐츠(문구, 이미지, 버튼)가 절대 찌그러지지 않도록 합니다.
-          */}
           <div className="shrink-0">
             <div className="mb-6 sm:mb-8">
-              <h2 className="mb-2 font-semibold text-base text-gray-800 sm:text-lg lg:text-xl">
+              <h2 className="font-semibold text-gray-800 text-xl">
                 인증서 발급을 위해
               </h2>
-              <p className="font-semibold text-base text-gray-800 sm:text-lg lg:text-xl">
+              <p className="font-semibold text-gray-800 text-xl">
                 신분증을 준비해 주세요.
               </p>
             </div>
 
-            <div className="relative mb-6 rounded-lg bg-white p-4 sm:mb-8 sm:p-6 lg:p-8">
-              {/* 이미지 컨테이너 높이 명시 및 내부 이미지 비율 유지 설정 */}
-              <div className="relative flex h-40 w-full items-center justify-center sm:h-48 md:h-56">
+            <div className="relative mb-10 rounded-lg bg-white p-4 sm:mb-8 sm:p-6 lg:p-8">
+              <div className="relative flex h-60 w-full items-center justify-center sm:h-48 md:h-56">
                 <Image
                   src="/images/identity/identity_img.svg"
                   alt="신분증 스캔 이미지"
-                  fill // 부모 요소에 맞춰 채움
-                  className="object-contain" // 비율 유지하며 컨테이너 안에 표시
+                  fill
+                  className="object-contain"
                 />
               </div>
             </div>
 
-            <div className="mb-4 space-y-2 sm:mb-6 sm:space-y-3">
-              <Button
-                variant="outline"
+            <div className="mb-12 space-y-4 sm:mb-6 sm:space-y-3">
+              <ActionButton
+                text="여권"
                 onClick={() => setOpenDrawer('passport')}
-                className="w-full rounded-xl border border-hana-green bg-white py-4 font-medium text-hana-green text-sm transition-colors hover:bg-hana-green/10 sm:py-6 sm:text-base"
-              >
-                여권
-              </Button>
+                className="border border-green-ez bg-white text-green-ez hover:bg-green-ez/10"
+              />
 
-              <Button
-                variant="outline"
+              <ActionButton
+                text="외국인등록증"
                 onClick={() => setOpenDrawer('alien')}
-                className="w-full rounded-xl border border-hana-green bg-white py-4 font-medium text-hana-green text-sm transition-colors hover:bg-hana-green/10 sm:py-6 sm:text-base"
-              >
-                외국인등록증
-              </Button>
+                className="border border-green-ez bg-white text-green-ez hover:bg-green-ez/10"
+              />
             </div>
           </div>
 
-          {/* 하단 고정 영역 */}
-          <div className="mt-auto pt-8 sm:mt-20">
+          <div className="mt-auto pt-2 sm:mt-20 sm:pt-8">
             <div className="mb-4">
               <div className="w-full rounded-xl border border-silver-400 bg-silver-400 px-3 py-4 sm:px-4 sm:py-6">
                 <label className="flex cursor-pointer items-center justify-between">
@@ -147,17 +134,9 @@ export default function IdentityPage() {
               </Button>
 
               {isGuideOpen && (
-                /* 수정 사항:
-    1. bg-gray-50, rounded-lg, p-4 제거 -> 회색 박스 삭제
-    2. text-sm -> 14px 적용
-    3. font-normal -> Regular (Pretendard Regular) 적용
-    4. text-gray-800 -> 기존보다 더 진한 회색 (검정에 가까움)
-    5. px-2 -> 텍스트가 너무 딱 붙지 않게 약간의 좌우 여백 (선택사항)
-  */
                 <div className="fade-in slide-in-from-top-2 mt-4 animate-in px-2 font-normal text-gray-800 text-sm">
                   <ul className="space-y-2">
                     <li className="flex items-start">
-                      {/* 점(•) 색상은 본문보다 약간 연하게(gray-400) 하거나 같게 설정 */}
                       <span className="mr-2 shrink-0 select-none text-gray-400">
                         •
                       </span>
