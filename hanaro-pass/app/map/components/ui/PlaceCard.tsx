@@ -3,6 +3,7 @@ import { LocateFixed, Phone } from 'lucide-react';
 import Image from 'next/image';
 
 export type LocationInfo = {
+  id?: number;
   name: string;
   type: string;
   status?: string;
