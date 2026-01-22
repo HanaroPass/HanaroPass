@@ -5,7 +5,7 @@ const config: StorybookConfig = {
     '../app/**/*.stories.@(ts|tsx|mdx)',
     '../components/**/*.stories.@(ts|tsx|mdx)',
   ],
-  addons: [],
+  addons: ['@storybook/addon-docs'],
   framework: '@storybook/nextjs-vite',
   staticDirs: ['../public'],
 };

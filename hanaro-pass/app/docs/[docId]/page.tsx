@@ -4,7 +4,7 @@ import { FileText } from 'lucide-react';
 import { DOCS_CARD_ITEMS } from '../constants/docsCardItem';
 import { use } from 'react';
 import Header from '@/components/header/Header';
-import ActionButton from '@/components/header/ActionButton';
+import ActionButton from '@/components/ui/ActionButton';
 
 export type DocsProps = {
   params: Promise<{ docId: string }>;

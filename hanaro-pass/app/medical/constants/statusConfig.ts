@@ -2,7 +2,7 @@ import { AlertCircle, CheckCircle2, Clock } from 'lucide-react';
 
 export const STATUS_CONFIG = {
   pending: {
-    label: '승인 대기중',
+    label: '대기중',
     badge: {
       bg: 'bg-yellow-100',
       text: 'text-yellow-800',
@@ -18,11 +18,11 @@ export const STATUS_CONFIG = {
     message: '관리자가 확인 중입니다. 승인까지 1-2 영업일이 소요됩니다.',
   },
   approved: {
-    label: '승인 완료',
+    label: '승인완료',
     badge: {
       bg: 'bg-green-100',
       text: 'text-green-800',
-      dot: 'bg-green-500',
+      dot: 'bg-green-800',
     },
     alert: {
       bg: 'bg-green-50',

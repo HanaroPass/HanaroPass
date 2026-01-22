@@ -2,9 +2,9 @@
 
 import type { DocsProps } from '@/app/docs/[docId]/page';
 import { DOCS_CARD_ITEMS } from '@/app/docs/constants/docsCardItem';
-import ActionButton from '@/components/header/ActionButton';
 import Header from '@/components/header/Header';
 import RegistrationSummary from '@/components/result/RegistrationSummary';
+import ActionButton from '@/components/ui/ActionButton';
 import { useRouter } from 'next/navigation';
 import { use } from 'react';
 

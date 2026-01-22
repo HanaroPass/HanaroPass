@@ -41,6 +41,12 @@ enum PlaceCategory {
   SHOP
 }
 
+enum ApplicationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 // --- [ Models ] ---
 
 model User {
@@ -157,6 +163,7 @@ model Hospital {
   HospitalReview HospitalReview?
 
   @@index([latitude, longitude], map: "idx_Hospital_location")
+  hospitalLanguageApplications HospitalLanguageApplication[]
 }
 
 model HospitalDept {
@@ -187,6 +194,22 @@ model HospitalReview {
   Hospital Hospital @relation(fields: [hospitalId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "hospitalreview_ibfk_1")
 
   @@index([hospitalId], map: "fk_HospitalReview_hospital")
+}
+
+model HospitalLanguageApplication {
+  id            Int               @id @default(autoincrement()) @db.UnsignedInt
+  hospitalId    Int               @db.UnsignedInt
+  status        ApplicationStatus @default(PENDING)
+  requestLangs  Json             @db.Json
+  
+  // 처리 히스토리를 위한 시간 기록
+  createdAt     DateTime          @default(now()) @db.Timestamp(0) // 신청 일시
+  updatedAt     DateTime          @default(now()) @updatedAt @db.Timestamp(0)
+  processedAt   DateTime?         @db.Timestamp(0) // 승인/반려 처리 일시
+
+  Hospital      Hospital          @relation(fields: [hospitalId], references: [id], onDelete: Cascade)
+
+  @@index([hospitalId], map: "fk_LanguageApplication_hospital")
 }
 
 model Embassy {

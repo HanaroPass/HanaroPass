@@ -5,10 +5,10 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { use, useEffect, useRef, useState } from 'react';
 
-import ActionButton from '@/components/header/ActionButton';
 import Header from '@/components/header/Header';
 import { DOCS_CARD_ITEMS } from '../../constants/docsCardItem';
 import type { DocsProps } from '../../[docId]/page';
+import ActionButton from '@/components/ui/ActionButton';
 
 export default function DocsAddPage({ params }: DocsProps) {
   const { docId } = use(params);

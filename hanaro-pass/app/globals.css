@@ -63,6 +63,8 @@
   --color-green-400: #d9e8e5;
   --color-green-300: #f0fdfa;
   --color-green-200: #f6f8f7;
+  --color-green-mint: #cbfbf1;
+  --color-green-dark: #0f766e;
 
   /* Colors - Red */
   --color-hana-red: #e90061;
@@ -172,6 +174,13 @@ body {
 .no-scrollbar {
   -ms-overflow-style: none; /* IE/Edge */
   scrollbar-width: none; /* Firefox */
+}
+
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-decoration,
+input[type="search"]::-webkit-search-results-button,
+input[type="search"]::-webkit-search-results-decoration {
+  display: none;
 }
 
 :root {

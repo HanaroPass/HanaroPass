@@ -3,7 +3,7 @@ import StatusBadge from '@/app/medical/components/StatusBadge';
 import RegistrationSummary from './RegistrationSummary';
 
 const meta: Meta<typeof RegistrationSummary> = {
-  title: 'Medical/RegistrationSummary',
+  title: 'Components/RegistrationSummary',
   component: RegistrationSummary,
   parameters: {
     layout: 'fullscreen',

@@ -3,10 +3,10 @@
 import { Info } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import SearchInput from '@/components/SearchInput/SearchInput';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { default as DescriptionSection } from '../components/language/DescriptionSection';
-import HospitalItem from '../components/language/HospitalItem';
-import SearchInput from '../components/language/SearchInput';
+import DescriptionSection from '../components/languageRegistration/DescriptionSection';
+import HospitalItem from '../components/languageRegistration/HospitalItem';
 
 export default function MedicalPage() {
   const router = useRouter();
@@ -62,14 +62,12 @@ export default function MedicalPage() {
                   key={hospital.id}
                   name={hospital.name}
                   address={hospital.address}
-                  onSelect={() =>
-                    router.push(`/medical/lang-application/${hospital.id}`)
-                  }
+                  onSelect={() => router.push(`/medical/registrations/new`)}
                 />
               ))}
             </div>
           )}
-          <div className="border-gray-300 border-t px-6 py-6">
+          <div className="border-gray-300 border-t px-2 py-6">
             <Alert className="rounded-lg border-none bg-gray-100">
               <Info className="h-4 w-4 stroke-hana-green" />
               <AlertTitle className="font-sans font-semibold text-base text-hana-green">

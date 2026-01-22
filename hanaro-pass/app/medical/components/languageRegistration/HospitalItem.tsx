@@ -1,4 +1,4 @@
-import ActionButton from '@/components/header/ActionButton';
+import ActionButton from '@/components/ui/ActionButton';
 
 type HospitalItemProps = {
   name: string;
