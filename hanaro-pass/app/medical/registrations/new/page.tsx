@@ -1,14 +1,13 @@
 'use client';
 
 import { Globe } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
-import { useState } from 'react';
 import ActionButton from '@/components/ui/ActionButton';
 import DescriptionSection from '../../components/languageRegistration/DescriptionSection';
 import HospitalGuide from '../../components/languageRegistration/HospitalGuide';
 import type { Language } from '../../components/languageRegistration/LanguageCard';
 import LanguageCard from '../../components/languageRegistration/LanguageCard';
 import SectionHeader from '../../components/languageRegistration/SectionHeader';
+import { useLanguageRegistration } from '../../hooks/useLanguageRegistration';
 
 const LANGUAGES: Language[] = [
   { id: 'en', name: '영어', sub: 'English', flag: '🇺🇸' },
@@ -30,27 +29,14 @@ const LANGUAGES: Language[] = [
 ];
 
 export default function LanguageRegistrationPage() {
-  const router = useRouter();
-  const params = useParams();
-  const hospitalId = params.hospitalId as string; // 2. URL에서 병원 ID 추출
-
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
-
-  const toggleLanguage = (id: string) => {
-    setSelectedIds((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
-    );
-  };
-
-  const isSelected = selectedIds.length > 0;
-
-  // 등록 완료 페이지로 이동하는 핸들러
-  const handleRegister = () => {
-    // QQQ: 실제 배포 시에는 여기서 API POST 요청을 먼저 수행.
-    console.log('제출된 데이터:', selectedIds);
-
-    router.push(`/medical/registrations/new`);
-  };
+  const {
+    hospitalName,
+    selectedIds,
+    toggleLanguage,
+    submitApplication,
+    isSubmitting,
+    isValid,
+  } = useLanguageRegistration();
 
   return (
     <div className="flex h-full flex-col">
@@ -59,7 +45,7 @@ export default function LanguageRegistrationPage() {
           title="외국어 진료 가능 정보 등록"
           //   QQQ 나중에 병원 이름 동적으로 바꾸기
           descriptions={[
-            '강남 병원에서 외국어 진료가 가능한 언어를',
+            `${hospitalName || '...'}에서 외국어 진료가 가능한 언어를`,
             '아래에서 선택해주세요',
           ]}
         />
@@ -90,9 +76,13 @@ export default function LanguageRegistrationPage() {
       </div>
       <div className="border-gray-200 border-t bg-white px-6 py-4 pb-8">
         <ActionButton
-          disabled={!isSelected}
-          text={`병원 언어 등록 신청하기 ${isSelected ? `(${selectedIds.length})` : ''}`}
-          onClick={handleRegister}
+          disabled={!isValid || isSubmitting}
+          text={
+            isSubmitting
+              ? '신청 중...'
+              : `병원 언어 등록 신청하기 ${isValid ? `(${selectedIds.length})` : ''}`
+          }
+          onClick={submitApplication}
           className="py-7 text-lg"
         />
       </div>
