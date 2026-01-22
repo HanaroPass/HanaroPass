@@ -1,5 +1,7 @@
+import MenuList from './MenuList';
+
 function Pay() {
-  return <></>;
+  return <MenuList type="pay" />;
 }
 
 export default Pay;

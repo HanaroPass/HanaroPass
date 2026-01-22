@@ -1,5 +1,11 @@
+import MenuList from './MenuList';
+
 function Transfer() {
-  return <div>Transfer</div>;
+  return (
+    <div>
+      <MenuList type="transfer" />
+    </div>
+  );
 }
 
 export default Transfer;
