@@ -19,12 +19,8 @@ export default function IdentityPage() {
     router.back();
   };
 
-  const handlePassportClick = () => {
-    router.push('/user/identity/ocr?type=passport');
-  };
-
-  const handleAlienClick = () => {
-    router.push('/user/identity/ocr?type=alien');
+  const handleTypeClick = (type: 'passport' | 'alien') => {
+    router.push(`/user/identity/ocr?type=${type}`);
   };
 
   useEffect(() => {
@@ -81,13 +77,13 @@ export default function IdentityPage() {
             <div className="mb-12 space-y-4 sm:mb-6 sm:space-y-3">
               <ActionButton
                 text="여권"
-                onClick={handlePassportClick}
+                onClick={() => handleTypeClick('passport')}
                 className="border border-green-ez bg-white text-green-ez hover:bg-green-ez/10"
               />
 
               <ActionButton
                 text="외국인등록증"
-                onClick={handleAlienClick}
+                onClick={() => handleTypeClick('alien')}
                 className="border border-green-ez bg-white text-green-ez hover:bg-green-ez/10"
               />
             </div>
