@@ -1,5 +1,5 @@
 function Pay() {
-  return <div>Pay</div>;
+  return <></>;
 }
 
 export default Pay;

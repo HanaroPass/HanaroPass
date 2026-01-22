@@ -21,13 +21,16 @@ export default function Page({
 
   return (
     <MainWrapper activeTab={tab}>
-      <MainWrapper.Title>
-        {tab === 'pay' && 'EZ Pay'}
-        {tab === 'transfer' && '조회/이체'}
-        {tab === 'service' && '서비스'}
-      </MainWrapper.Title>
-
-      <TabComponent />
+      <div className="app-layout">
+        <MainWrapper.Title>
+          {tab === 'pay' && 'EZ Pay'}
+          {tab === 'transfer' && '조회/이체'}
+          {tab === 'service' && '서비스'}
+        </MainWrapper.Title>
+        <div className="app-main">
+          <TabComponent />
+        </div>
+      </div>
     </MainWrapper>
   );
 }

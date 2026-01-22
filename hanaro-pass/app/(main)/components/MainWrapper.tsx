@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import type { PropsWithChildren } from 'react';
 import { cn } from '@/lib/utils';
+import Footer from './Footer';
 import RemittanceIcon from './icons/RemittanceIcon';
 import ServiceIcon from './icons/ServiceIcon';
 import TransferIcon from './icons/TransferIcon';
@@ -30,7 +31,7 @@ export default function MainWrapper({
 
   return (
     <div className="bg-green-ez">
-      <header className="flex h-16.25 w-full items-center justify-between bg-transparent px-4.5 py-3.5">
+      <header className="sticky top-0 z-50 flex h-16.25 w-full items-center justify-between bg-green-ez px-4.5 py-3.5">
         <p className="font-hana text-sm text-white">Hana Ro Pass</p>
         <div className="flex gap-4">
           <button type="button" className="flex items-center gap-2">
@@ -97,6 +98,7 @@ export default function MainWrapper({
           {children}
         </section>
       </main>
+      <Footer />
     </div>
   );
 }
