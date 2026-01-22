@@ -22,7 +22,7 @@ export default function DocsSelectList({
             className="flex w-full items-center gap-4 py-4 text-left active:opacity-70"
           >
             <div className="grid h-10 w-10 place-items-center rounded-xl bg-black/5">
-              <CreditCard size={25} className="text-(--color-green-ez)" />
+              <CreditCard size={25} className="text-green-ez" />
             </div>
             {/* 서류 이름 */}
             <p className="flex-1 font-medium font-sans text-[16px] text-black-900">
