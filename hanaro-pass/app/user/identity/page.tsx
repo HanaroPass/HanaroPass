@@ -7,13 +7,12 @@ import { useEffect, useRef, useState } from 'react';
 import ActionButton from '@/components/header/ActionButton';
 import Header from '@/components/header/Header';
 import { Button } from '@/components/ui/button';
-import { AlienDrawer } from './components/bottomsheet/AlienDrawer';
-import { PassportDrawer } from './components/bottomsheet/PassportDrawer';
+import CameraDrawer from './components/CameraDrawer';
 
-type DrawerType = 'passport' | 'alien' | null;
+type CameraType = 'passport' | 'alien' | null;
 
 export default function IdentityPage() {
-  const [openDrawer, setOpenDrawer] = useState<DrawerType>(null);
+  const [cameraType, setCameraType] = useState<CameraType>(null);
   const [isAgreed, setIsAgreed] = useState(false);
   const [isGuideOpen, setIsGuideOpen] = useState(false);
   const router = useRouter();
@@ -23,10 +22,6 @@ export default function IdentityPage() {
   const handleClose = () => {
     router.back();
   };
-
-  const handlePassportSubmit = (_data: Record<string, string>) => {};
-
-  const handleAlienSubmit = (_data: Record<string, string>) => {};
 
   useEffect(() => {
     if (isGuideOpen && guideRef.current) {
@@ -82,13 +77,13 @@ export default function IdentityPage() {
             <div className="mb-12 space-y-4 sm:mb-6 sm:space-y-3">
               <ActionButton
                 text="여권"
-                onClick={() => setOpenDrawer('passport')}
+                onClick={() => setCameraType('passport')}
                 className="border border-green-ez bg-white text-green-ez hover:bg-green-ez/10"
               />
 
               <ActionButton
                 text="외국인등록증"
-                onClick={() => setOpenDrawer('alien')}
+                onClick={() => setCameraType('alien')}
                 className="border border-green-ez bg-white text-green-ez hover:bg-green-ez/10"
               />
             </div>
@@ -165,15 +160,11 @@ export default function IdentityPage() {
             </div>
           </div>
 
-          <PassportDrawer
-            open={openDrawer === 'passport'}
-            onOpenChange={(open) => setOpenDrawer(open ? 'passport' : null)}
-            onSubmit={handlePassportSubmit}
-          />
-          <AlienDrawer
-            open={openDrawer === 'alien'}
-            onOpenChange={(open) => setOpenDrawer(open ? 'alien' : null)}
-            onSubmit={handleAlienSubmit}
+          {/* CameraDrawer: 여권/외국인등록증 버튼 클릭 시 카메라 OCR Drawer 오픈 */}
+          <CameraDrawer
+            open={!!cameraType}
+            onClose={() => setCameraType(null)}
+            type={cameraType}
           />
         </div>
       </div>

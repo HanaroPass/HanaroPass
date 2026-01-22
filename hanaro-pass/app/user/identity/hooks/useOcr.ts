@@ -1,34 +1,31 @@
-import { FilesetResolver, TextRecognizer } from '@mediapipe/tasks-vision';
-import { useRef } from 'react';
+import { useCallback, useRef } from 'react';
 
+// 임시로 기본 OCR 구현 (실제 mediapipe 대신)
 export function useOcr() {
-  const recognizerRef = useRef<TextRecognizer | null>(null);
+  const isInitialized = useRef(false);
 
   // OCR 엔진 초기화 (최초 1회)
-  async function initOcr() {
-    if (!recognizerRef.current) {
-      const vision = await FilesetResolver.forVisionTasks(
-        'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/wasm',
-      );
-      recognizerRef.current = await TextRecognizer.createFromOptions(vision, {
-        baseOptions: {
-          modelAssetPath:
-            'https://storage.googleapis.com/mediapipe-tasks/text_recognizer/latin_ocr_v2.tflite',
-        },
-        // 한글 등 다국어 모델은 별도 경로 필요
-      });
+  const initOcr = useCallback(async () => {
+    if (!isInitialized.current) {
+      // TODO: 실제 mediapipe 연동 시 여기에 구현
+      console.log('OCR 엔진 초기화 중...');
+      isInitialized.current = true;
     }
-  }
+  }, []);
 
   // 이미지에서 텍스트 추출
-  async function recognizeText(
-    image: HTMLImageElement | HTMLCanvasElement | HTMLVideoElement,
-  ) {
-    await initOcr();
-    if (!recognizerRef.current) return '';
-    const result = await recognizerRef.current.recognize(image);
-    return result.text || '';
-  }
+  const recognizeText = useCallback(
+    async (image: HTMLImageElement | HTMLCanvasElement | HTMLVideoElement) => {
+      await initOcr();
+
+      // 임시 구현: 실제로는 mediapipe로 OCR 수행
+      console.log('OCR 수행 중...', image);
+
+      // 테스트용 더미 텍스트 반환
+      return '임시 OCR 결과: 신분증 텍스트 추출됨';
+    },
+    [initOcr],
+  );
 
   return { recognizeText };
 }
