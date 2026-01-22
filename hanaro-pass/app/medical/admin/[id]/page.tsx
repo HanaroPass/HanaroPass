@@ -68,7 +68,7 @@ export default function AdminReviewPage() {
 
         <div className="mt-4">
           <HospitalGuide
-            text={`정보가 부정확할 경우 반려 사유와 함께 반려 처리를 해주세요.\n\n승인 후에는 외국인 환자가 이 병원 정보를 실시간으로 조회할 수 있습니다.`}
+            text={`승인 후에는 외국인 환자가 이 병원 정보를 실시간으로 조회할 수 있습니다.`}
           />
         </div>
       </main>
@@ -84,7 +84,7 @@ export default function AdminReviewPage() {
 
         <ActionButton
           text="반려하기"
-          className="border-2 border-red-100 bg-white text-red-500 hover:bg-red-50"
+          className="border-none bg-red-500 text-white shadow-lg shadow-red-100 hover:bg-red-600"
           onClick={() => alert('반려 처리하시겠습니까?')}
         />
       </div>
