@@ -95,34 +95,30 @@ export default function IdentityPage() {
           </div>
 
           <div className="mt-auto pt-2 sm:mt-20 sm:pt-8">
-            <div className="mb-4">
-              <div className="w-full rounded-xl border border-silver-400 bg-silver-400 px-3 py-4 sm:px-4 sm:py-6">
-                <label className="flex cursor-pointer items-center justify-between">
-                  <span className="font-medium text-black-800 text-sm sm:text-base">
-                    전자문서 저장 동의 체크박스
-                  </span>
-                  <input
-                    type="checkbox"
-                    checked={isAgreed}
-                    onChange={(e) => setIsAgreed(e.target.checked)}
-                    className="h-5 w-5 rounded border border-gray-300 text-green-ez focus:ring-green-ez/50"
-                    style={{
-                      accentColor: '#01a5ac',
-                    }}
-                  />
-                </label>
-              </div>
+            <div className="mb-4 w-full rounded-xl border border-gray-200 border-b bg-silver-400 px-3 py-4 sm:px-4 sm:py-6">
+              <label className="flex cursor-pointer items-center justify-between">
+                <span className="font-medium text-black-800 text-sm sm:text-base">
+                  전자문서 저장 동의
+                </span>
+                <input
+                  type="checkbox"
+                  checked={isAgreed}
+                  onChange={(e) => setIsAgreed(e.target.checked)}
+                  className="h-5 w-5 rounded border border-gray-300 text-green-ez focus:ring-green-ez/50"
+                  style={{
+                    accentColor: '#01a5ac',
+                  }}
+                />
+              </label>
             </div>
-
-            <div className="mb-4 border-gray-200 border-t"></div>
 
             <div
               ref={guideRef}
-              className="scroll-mt-20 transition-all duration-300"
+              className="scroll-mt-20 border-gray-200 border-t pt-2 transition-all duration-300"
             >
               <Button
                 variant="ghost"
-                onClick={() => setIsGuideOpen(!isGuideOpen)}
+                onClick={() => setIsGuideOpen((prev) => !prev)}
                 className="flex h-auto w-full items-center justify-between px-0 py-3 text-gray-600 text-sm hover:bg-transparent"
               >
                 <span>이용안내</span>
