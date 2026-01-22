@@ -1,4 +1,4 @@
-import { MAIN_MENUS, type MainPageKey } from '@/constants/mainMennu';
+import { MAIN_MENUS, type MainPageKey } from '@/constants/mainMenu';
 import Menu from './Menu';
 
 type MenuListProps = {
