@@ -51,10 +51,10 @@ export default function AccountStep({ onSubmit, onClose }: AccountStepProps) {
         }
       />
 
-      <div className="flex min-h-[calc(100vh-60px)] flex-col bg-white p-4 sm:p-6 lg:p-8">
+      <div className="flex min-h-[calc(100vh-60px)] flex-col bg-white p-6 sm:p-6 lg:p-8">
         <div className="mx-auto flex w-full max-w-sm flex-1 flex-col sm:max-w-md lg:max-w-lg xl:max-w-2xl">
           <div className="mb-8">
-            <h2 className="mb-2 font-semibold text-gray-800 text-xl">
+            <h2 className="mb-2 font-medium text-gray-800 text-xl">
               계좌번호및후대표 본인인증 확인합니다
             </h2>
             <p className="text-gray-600 text-sm">
@@ -64,18 +64,18 @@ export default function AccountStep({ onSubmit, onClose }: AccountStepProps) {
           </div>
 
           <div className="mb-6">
-            <Label className="mb-3 block font-semibold text-base text-gray-800">
+            <Label className="mb-3 block font-Regular text-base text-gray-600">
               은행 선택
             </Label>
 
             <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-4">
-              <span className="font-medium text-gray-800">하나</span>
+              <span className="font-Regular text-gray-600">하나</span>
               <ChevronRight size={20} className="text-gray-400" />
             </div>
           </div>
 
           <div className="mb-6">
-            <Label className="mb-3 block font-semibold text-base text-gray-800">
+            <Label className="mb-3 block font-Regular text-base text-gray-600">
               하나은행 계좌번호
             </Label>
 
