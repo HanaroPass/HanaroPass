@@ -1,12 +1,14 @@
 'use client';
 import { useState } from 'react';
-import DocsCardStack from './components/DocsCardStack';
-import BottomSheet from './components/BottomSheet';
-import DocsSelectList from './components/BottomSelectList';
+import DocsCardStack from './components/main/DocsCardStack';
+import BottomSheet from './components/add/BottomSheet';
 import { DOCS_CARD_ITEMS } from './constants/docsCardItem';
 import Header from '@/components/header/Header';
+import DocsSelectList from './components/add/BottomSelectList';
+import { useRouter } from 'next/navigation';
 
 export default function DocsPage() {
+  const router = useRouter();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   return (
@@ -42,6 +44,7 @@ export default function DocsPage() {
             onSelect={(id) => {
               console.log('selected:', id);
               setIsSheetOpen(false);
+              router.push(`/docs/add/${id}`);
             }}
           />
         </BottomSheet>

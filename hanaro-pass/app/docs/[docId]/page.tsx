@@ -1,16 +1,16 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
 import { FileText } from 'lucide-react';
 import { DOCS_CARD_ITEMS } from '../constants/docsCardItem';
 import { use } from 'react';
 import Header from '@/components/header/Header';
+import ActionButton from '@/components/header/ActionButton';
 
-type DocsDetailProps = {
+export type DocsProps = {
   params: Promise<{ docId: string }>;
 };
 
-export default function DocsDetailPage({ params }: DocsDetailProps) {
+export default function DocsDetailPage({ params }: DocsProps) {
   const { docId } = use(params);
   const doc = DOCS_CARD_ITEMS.find((item) => item.id === docId);
 
@@ -39,25 +39,23 @@ export default function DocsDetailPage({ params }: DocsDetailProps) {
 
         {/* 버튼 영역 */}
         <div className="mx-auto mt-10 flex w-full max-w-84 gap-4">
-          <Button
-            variant="outline"
-            size="lg"
-            className="flex-1"
-            onClick={() => {
-              alert('삭제 기능 연결 예정');
-            }}
-          >
-            삭제
-          </Button>
-          <Button
-            size="lg"
-            className="flex-1 bg-green-ez text-white hover:bg-green-ez/90"
-            onClick={() => {
-              alert('다운로드 기능 연결 예정');
-            }}
-          >
-            다운로드
-          </Button>
+          <div className="flex-1 text-black">
+            <ActionButton
+              text="삭제"
+              onClick={() => {
+                alert('삭제 기능 연결 예정');
+              }}
+              className="bg-white text-black hover:bg-black/1 active:bg-black/3"
+            />
+          </div>
+          <div className="flex-1">
+            <ActionButton
+              text="다운로드"
+              onClick={() => {
+                alert('다운로드 기능 연결 예정');
+              }}
+            />
+          </div>
         </div>
       </main>
     </>

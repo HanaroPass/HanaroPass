@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import DocsCard from './DocsCard';
-import { DOCS_CARD_ITEMS } from '../constants/docsCardItem';
+import { DOCS_CARD_ITEMS } from '../../constants/docsCardItem';
 import { cn } from '@/lib/utils';
 
 export default function DocsCardStack() {

@@ -1,10 +1,10 @@
 'use client';
 
 import { ChevronUp, CreditCard } from 'lucide-react';
-import DocsPreview from './DocsPreview';
-import type { CardColor } from '../constants/cardColor';
-import { CARD_GRADIENT_CLASS } from '../constants/cardColor';
+import type { CardColor } from '../../constants/cardColor';
+import { CARD_GRADIENT_CLASS } from '../../constants/cardColor';
 import { useRouter } from 'next/navigation';
+import DocsPreview from './DocsPreview';
 
 type DocsCardProps = {
   title: string;
