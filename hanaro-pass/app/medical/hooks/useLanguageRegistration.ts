@@ -24,8 +24,8 @@ export function useLanguageRegistration() {
 
     const fetchHospital = async () => {
       hasFetched.current = true;
-
       const result = await getHospitalDetailAction(hospitalId);
+
       if (result.success) {
         if (result.data.isPending) {
           alert(
@@ -36,10 +36,8 @@ export function useLanguageRegistration() {
         }
 
         setHospitalName(result.data.nameKo);
-        if (result.data.existingLangs) {
-          setSelectedIds(result.data.existingLangs);
-          setInitialIds(result.data.existingLangs);
-        }
+        setSelectedIds(result.data.existingLangs);
+        setInitialIds(result.data.existingLangs);
       } else {
         alert(result.message);
         router.back();
@@ -56,7 +54,7 @@ export function useLanguageRegistration() {
   };
 
   const submitApplication = async () => {
-    if (selectedIds.length === 0) return;
+    if (selectedIds.length === 0 || !isChanged) return;
 
     setIsSubmitting(true);
     const result = await submitLanguageApplicationAction(

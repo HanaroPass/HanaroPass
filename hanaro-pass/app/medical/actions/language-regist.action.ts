@@ -7,6 +7,7 @@ import {
 } from '@/lib/error-handler';
 import type { Hospital } from '@/lib/generated/prisma';
 import { prisma } from '@/lib/prisma';
+import { NAME_TO_ID } from '../constants/language';
 
 /**
  * [병원 검색 서버 액션]
@@ -40,25 +41,6 @@ export async function searchHospitalAction(
     return handleActionResult(err);
   }
 }
-
-const NAME_TO_ID: Record<string, string> = {
-  영어: 'en',
-  중국어: 'cn',
-  일본어: 'jp',
-  베트남어: 'vn',
-  태국어: 'th',
-  필리핀어: 'ph',
-  인도네시아어: 'id',
-  캄보디아어: 'kh',
-  미얀마어: 'mm',
-  몽골어: 'mn',
-  러시아어: 'ru',
-  뱅골어: 'bd',
-  스리랑카어: 'lk',
-  네팔어: 'np',
-  우즈베키스탄어: 'uz',
-  한국어: 'kr',
-};
 
 /**
  * [병원 상세 서버 액션]
@@ -129,13 +111,14 @@ export async function getHospitalDetailAction(
  */
 export async function submitLanguageApplicationAction(
   hospitalId: number,
-  languages: string[],
+  languageIds: string[],
 ): Promise<ActionResult<null>> {
   try {
+    const requestLangsInKorean = languageIds.map((id) => NAME_TO_ID[id] || id);
     await prisma.hospitalLanguageApplication.create({
       data: {
         hospitalId,
-        requestLangs: languages,
+        requestLangs: requestLangsInKorean,
         status: 'PENDING',
       },
     });
