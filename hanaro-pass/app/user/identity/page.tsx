@@ -109,7 +109,7 @@ export default function IdentityPage() {
           {/* 하단 고정 영역 */}
           <div className="mt-auto pt-8 sm:mt-20">
             <div className="mb-4">
-              <div className="w-full rounded-xl border border-silver-400 bg-white px-3 py-4 sm:px-4 sm:py-6">
+              <div className="w-full rounded-xl border border-silver-400 bg-silver-400 px-3 py-4 sm:px-4 sm:py-6">
                 <label className="flex cursor-pointer items-center justify-between">
                   <span className="font-medium text-black-800 text-sm sm:text-base">
                     전자문서 저장 동의 체크박스
@@ -147,19 +147,44 @@ export default function IdentityPage() {
               </Button>
 
               {isGuideOpen && (
-                <div className="fade-in slide-in-from-top-2 mt-2 animate-in space-y-2 rounded-lg bg-gray-50 p-4 text-gray-500 text-xs sm:text-sm">
-                  <p className="leading-relaxed">
-                    • 하나인증서는 국세청, 정부 24, 본인확인 등에 이용할 수
-                    있습니다.
-                  </p>
-                  <p className="leading-relaxed">
-                    • 분실/도난/유효기간 만료/사진훼손 등 정상인식이 불가능한
-                    신분증은 이용할 수 없습니다.
-                  </p>
-                  <p className="leading-relaxed">
-                    • 신분증 발급기관에서 검증되지 않는 신분증은 거부될 수
-                    있습니다.
-                  </p>
+                /* 수정 사항:
+    1. bg-gray-50, rounded-lg, p-4 제거 -> 회색 박스 삭제
+    2. text-sm -> 14px 적용
+    3. font-normal -> Regular (Pretendard Regular) 적용
+    4. text-gray-800 -> 기존보다 더 진한 회색 (검정에 가까움)
+    5. px-2 -> 텍스트가 너무 딱 붙지 않게 약간의 좌우 여백 (선택사항)
+  */
+                <div className="fade-in slide-in-from-top-2 mt-4 animate-in px-2 font-normal text-gray-800 text-sm">
+                  <ul className="space-y-2">
+                    <li className="flex items-start">
+                      {/* 점(•) 색상은 본문보다 약간 연하게(gray-400) 하거나 같게 설정 */}
+                      <span className="mr-2 shrink-0 select-none text-gray-400">
+                        •
+                      </span>
+                      <span className="leading-relaxed">
+                        하나인증서는 국세청, 정부 24, 본인확인 등에 이용할 수
+                        있습니다.
+                      </span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="mr-2 shrink-0 select-none text-gray-400">
+                        •
+                      </span>
+                      <span className="leading-relaxed">
+                        분실/도난/유효기간 만료/사진훼손 등 정상인식이 불가능한
+                        신분증은 이용할 수 없습니다.
+                      </span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="mr-2 shrink-0 select-none text-gray-400">
+                        •
+                      </span>
+                      <span className="leading-relaxed">
+                        신분증 발급기관에서 검증되지 않는 신분증은 거부될 수
+                        있습니다.
+                      </span>
+                    </li>
+                  </ul>
                 </div>
               )}
             </div>
