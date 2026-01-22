@@ -9,29 +9,29 @@ import {
   Hospital,
   type LucideIcon,
 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import React from 'react';
 import DescriptionSection from '@/app/medical/components/languageRegistration/DescriptionSection';
 import HospitalGuide from '@/app/medical/components/languageRegistration/HospitalGuide';
 import SectionHeader from '@/app/medical/components/languageRegistration/SectionHeader';
-import StatusBadge from '@/app/medical/components/StatusBadge';
 import ActionButton from '@/components/header/ActionButton';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { ApplicationStatusAlert } from '../../components/ApplicationStatusAlert';
 import { InfoDetailPlate } from '../../components/InfoDetailPlate';
+import type { StatusType } from '../../constants/statusConfig';
 
 /**
  * QQQ (Integration Plan):
  * 1. useQuery 등을 이용해 병원 상세 정보 API 호출 (hospitalId 활용)
  * 2. 서버 응답 데이터에 맞춰 hospitalInfo 배열 동적 매핑
- * 3. 'rejected' 상태일 때만 반려 사유를 보여주는 조건부 렌더링 추가
  */
 export default function HospitalRegistrationDetailsPage() {
   const router = useRouter();
+  const { id } = useParams();
   // QQQ 1: API 연동 및 데이터 패칭
   // - Endpoint: GET /api/medical/lang-application/[hospitalId]
   // - 필요 데이터: { status: 'pending' | 'approved' | 'rejected', hospitalName: string, selectedLanguages: string[], createdAt: string, processedAt?: string }
   // - 고려사항: 데이터 로딩 중(isLoading)일 때 보여줄 스켈레톤 UI 필요
-  const currentStatus = 'pending';
+  const currentStatus: StatusType = 'pending';
 
   // QQQ (Database Integration Plan):
   // 1. Data Fetching:
@@ -42,9 +42,6 @@ export default function HospitalRegistrationDetailsPage() {
   // 2. Mapping:
   //    - 병원명: hospital.nameKo
   //    - 진료 가능 언어: hospital.HospitalLang.map(l => l.langName) -> UI의 '중국어 (中文)'와 포맷팅 일치 필요
-  // 3. Pending/History Issue:
-  //    - 현재 스키마에 '신청 일시'와 '진행 상태(Status)' 필드가 없음.
-  //    - Hospital 모델에 createdAt을 추가하거나, 'HospitalRegistration' 모델을 신설하여 관리 권장.
   const hospitalInfo = [
     { label: '병원 정보', icon: Hospital, content: '강남 병원' },
     {
@@ -71,26 +68,7 @@ export default function HospitalRegistrationDetailsPage() {
         />
 
         {/* QQQ : 실제 상태 연동 */}
-        <div className="mt-4 px-6">
-          <Alert className="relative rounded-2xl border-none bg-yellow-50 p-5">
-            <div className="flex items-center gap-2 pr-24">
-              <Clock className="h-5 w-5 shrink-0 text-yellow-600" />
-              <span className="whitespace-nowrap font-bold font-hana text-base text-yellow-900">
-                현재 상태
-              </span>
-            </div>
-            <div className="absolute top-5 right-5 flex-none">
-              <StatusBadge status={currentStatus} />
-            </div>
-            {/* QQQ 3: 상태별 동적 메시지 처리 */}
-            {/* - status === 'rejected'인 경우, 서버에서 'rejectReason'을 추가로 받아와 
-    - AlertDescription 하단에 '반려 사유: [사유]' 형태로 노출해야 함 
-*/}
-            <AlertDescription className="mt-7 pr-2 font-sans text-sm text-yellow-700 leading-relaxed">
-              관리자가 확인 중입니다. 승인까지 1-2 영업일이 소요됩니다.
-            </AlertDescription>
-          </Alert>
-        </div>
+        <ApplicationStatusAlert status={currentStatus} />
 
         {hospitalInfo.map((item) => (
           <React.Fragment key={item.label}>
