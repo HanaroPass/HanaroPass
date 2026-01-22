@@ -48,7 +48,7 @@ export default function AdminReviewPage() {
   return (
     <>
       <main className="app-main no-scrollbar flex flex-col pb-6 font-sans">
-        {/* 1. DescripioSection: 상단 가이드 */}
+        {/* 1. DescriptionSection: 상단 가이드 */}
         <DescriptionSection
           title="신청 심사 상세 정보"
           descriptions={[
@@ -74,6 +74,7 @@ export default function AdminReviewPage() {
       </main>
 
       <div className="flex flex-col gap-3 border-gray-100 border-t bg-white-ez px-6 py-4 pb-8">
+        {/* QQQ : 나중에 실제 데이터베이스에 연동 */}
         <ActionButton
           text="승인하기"
           onClick={() => {
