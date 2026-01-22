@@ -7,6 +7,18 @@ function Transfer() {
   return (
     <div className="flex flex-col gap-5">
       <AccountSummary />
+      <button
+        type="button"
+        className="flex h-13.25 items-center justify-center gap-1 rounded-xl border-2 border-black-200 font-semibold text-base text-black-800"
+      >
+        <Image
+          src="/images/main/accounts.svg"
+          width={25}
+          height={18}
+          alt="보유계좌조회"
+        />
+        보유계좌조회
+      </button>
       <MenuList type="transfer" />
       <Link
         href="https://www.kebhana.com/cont/mall/mall08/mall0801/mall080102/1508308_115157.jsp"
