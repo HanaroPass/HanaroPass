@@ -95,7 +95,7 @@ export const NaverMap = forwardRef(function NaverMap(
 
         const map = new naver.maps.Map(containerRef.current, {
           center,
-          zoom: 14,
+          zoom: 15,
           logoControl: false,
         });
 

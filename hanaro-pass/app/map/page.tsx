@@ -15,9 +15,10 @@ import { HospitalContent } from './components/hospital/HospitalContent';
 import { SirenContent } from './components/siren/SirenContent';
 import { MapBottomSheet } from './components/ui/MapBottomSheet';
 import { NaverMap } from './components/ui/NaverMap';
+import { PlaceCard } from './components/ui/PlaceCard';
 import { ToggleButton } from './components/ui/ToggleButton';
 import { useBottomSheet } from './hooks/useBottomSheet';
-import { SAVED_PLACES_MOCK } from './mock/savedPlaces';
+import { SAVED_PLACES_MOCK, type SavedPlace } from './mock/savedPlaces';
 
 /**
  * @page MapPage
@@ -27,8 +28,10 @@ import { SAVED_PLACES_MOCK } from './mock/savedPlaces';
  */
 export default function MapPage() {
   const [bookmark, setBookmark] = useState<boolean>(false);
+  const [selectedPlace, setSelectedPlace] = useState<SavedPlace | null>(null);
+
   const mapControlRef = useRef<{ centerToMyPosition: () => void }>(null);
-  // 시트 관련 로직과 상태를 커스텀 훅에서 추출
+
   const {
     openSheet,
     sheetPosition,
@@ -48,14 +51,17 @@ export default function MapPage() {
         <NaverMap
           ref={mapControlRef}
           onMarkerClick={(place) => {
-            console.log('마커 클릭:', place);
+            if ('placeName' in place) {
+              setSelectedPlace(place);
+              toggleSheet('bookmark', true);
+            }
           }}
           savedPlaces={SAVED_PLACES_MOCK}
           showBookmarks={bookmark}
         />
       </div>
 
-      {/* 필터 그룹 */}
+      {/* 상단 필터 그룹 */}
       <div className="absolute top-3 left-3 z-10 flex gap-2.5">
         <ToggleButton
           variant="pill"
@@ -129,7 +135,25 @@ export default function MapPage() {
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        {/* 컨텐츠 렌더링 영역 */}
+        {/* 북마크 마커 클릭 시 상세 카드 */}
+        {openSheet === 'bookmark' && selectedPlace && (
+          <div className="px-6 py-4">
+            <PlaceCard
+              data={{
+                name: selectedPlace.placeName,
+                type: selectedPlace.category,
+                address: selectedPlace.address,
+                phone: selectedPlace.phone,
+                distance: '',
+                imageUrl: '',
+                status: '',
+                explainTime: selectedPlace.openHours,
+              }}
+            />
+          </div>
+        )}
+
+        {/* 기존 컨텐츠 렌더링 영역 */}
         {openSheet === 'siren' && <SirenContent />}
         {openSheet === 'exchange' && <ExchangeContent />}
         {openSheet === 'hospital' && <HospitalContent />}
