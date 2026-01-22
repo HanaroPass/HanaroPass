@@ -7,12 +7,8 @@ import { useEffect, useRef, useState } from 'react';
 import ActionButton from '@/components/header/ActionButton';
 import Header from '@/components/header/Header';
 import { Button } from '@/components/ui/button';
-import CameraDrawer from './components/CameraDrawer';
-
-type CameraType = 'passport' | 'alien' | null;
 
 export default function IdentityPage() {
-  const [cameraType, setCameraType] = useState<CameraType>(null);
   const [isAgreed, setIsAgreed] = useState(false);
   const [isGuideOpen, setIsGuideOpen] = useState(false);
   const router = useRouter();
@@ -21,6 +17,14 @@ export default function IdentityPage() {
 
   const handleClose = () => {
     router.back();
+  };
+
+  const handlePassportClick = () => {
+    router.push('/user/identity/ocr?type=passport');
+  };
+
+  const handleAlienClick = () => {
+    router.push('/user/identity/ocr?type=alien');
   };
 
   useEffect(() => {
@@ -77,13 +81,13 @@ export default function IdentityPage() {
             <div className="mb-12 space-y-4 sm:mb-6 sm:space-y-3">
               <ActionButton
                 text="여권"
-                onClick={() => setCameraType('passport')}
+                onClick={handlePassportClick}
                 className="border border-green-ez bg-white text-green-ez hover:bg-green-ez/10"
               />
 
               <ActionButton
                 text="외국인등록증"
-                onClick={() => setCameraType('alien')}
+                onClick={handleAlienClick}
                 className="border border-green-ez bg-white text-green-ez hover:bg-green-ez/10"
               />
             </div>
@@ -159,13 +163,6 @@ export default function IdentityPage() {
               )}
             </div>
           </div>
-
-          {/* CameraDrawer: 여권/외국인등록증 버튼 클릭 시 카메라 OCR Drawer 오픈 */}
-          <CameraDrawer
-            open={!!cameraType}
-            onClose={() => setCameraType(null)}
-            type={cameraType}
-          />
         </div>
       </div>
     </>
