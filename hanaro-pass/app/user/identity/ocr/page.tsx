@@ -16,7 +16,7 @@ function OCRPageContent() {
   };
 
   const getTitle = () => {
-    return type === 'passport' ? '여권 등록' : '신분증 등록';
+    return type === 'passport' ? '여권 등록' : '외국인등록증 등록';
   };
 
   return (

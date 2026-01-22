@@ -1,21 +1,27 @@
 import { type FC, useCallback, useEffect, useRef } from 'react';
 
-interface CameraCaptureProps {
+type CameraCaptureProps = {
   type?: 'passport' | 'alien' | null;
-}
+};
 
 const CameraCapture: FC<CameraCaptureProps> = ({ type: _type }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const startCamera = useCallback(async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment' }, // 후면 카메라 우선
+      });
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
-        await videoRef.current.play();
+        videoRef.current.muted = true;
+        await videoRef.current.play().catch(() => {
+          // Autoplay 실패 시 사용자 상호작용 필요
+        });
       }
     } catch (error) {
       console.error('카메라 접근 실패:', error);
+      // TODO: 사용자에게 카메라 권한 요청 실패 알림 표시
     }
   }, []);
 
