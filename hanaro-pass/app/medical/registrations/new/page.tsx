@@ -49,7 +49,7 @@ export default function LanguageRegistrationPage() {
     // QQQ: 실제 배포 시에는 여기서 API POST 요청을 먼저 수행.
     console.log('제출된 데이터:', selectedIds);
 
-    router.push(`/medical/lang-application/${hospitalId}/complete`);
+    router.push(`/medical/registrations/new`);
   };
 
   return (
