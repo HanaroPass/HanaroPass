@@ -124,7 +124,7 @@ async function fetchAndSeed() {
     const params = new URLSearchParams({
       ServiceKey: SERVICE_KEY!,
       pageNo: '1',
-      numOfRows: '2000',
+      numOfRows: '10',
       sidoCd: '110000',
       sgguCd: district.sgguCd,
       _type: 'json',
