@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import type { HospitalPlace } from '@/app/map/mock/hospitalMap.mock';
 import { hospitalLocations } from '@/app/map/mock/hospitalFilter.mock';
-
 import { HospitalCard } from './HospitalCard';
 import DepartmentFilterPanel from './DepartmentFilterPanel';
 import FilterPanel from './FilterPanel';

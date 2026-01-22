@@ -51,7 +51,7 @@ export const NaverMap = forwardRef(function NaverMap(
     const map = mapRef.current;
     const { naver } = window;
 
-    /** 🏥 병원 마커 */
+    /** 병원 마커 */
     if (activeCategory === 'hospital' && hospitals) {
       hospitals.forEach((hospital) => {
         const marker = new naver.maps.Marker({
@@ -62,25 +62,25 @@ export const NaverMap = forwardRef(function NaverMap(
           map,
           icon: {
             content: `
-<div class="w-5 h-5 bg-white rounded-full flex items-center justify-center shadow-[0_2px_5px_rgba(0,0,0,0.2)]">
-  <div class="w-4 h-4 bg-[#F9FAFB] rounded-full flex items-center justify-center shadow-inner">
-    <svg
-      width="12"
-      height="12"
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M12 5v14M5 12h14"
-        stroke="#F43F5E" 
-        stroke-width="4.5" 
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      />
-    </svg>
-  </div>
-</div>
+              <div class="w-5 h-5 bg-white rounded-full flex items-center justify-center shadow-[0_2px_5px_rgba(0,0,0,0.2)]">
+                <div class="w-4 h-4 bg-[#F9FAFB] rounded-full flex items-center justify-center shadow-inner">
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M12 5v14M5 12h14"
+                      stroke="#F43F5E" 
+                      stroke-width="4.5" 
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </div>
+              </div>
             `,
             anchor: new naver.maps.Point(14, 14),
           },
@@ -94,7 +94,7 @@ export const NaverMap = forwardRef(function NaverMap(
       });
     }
 
-    /** ⭐ 북마크 마커 */
+    /** 북마크 마커 */
     if (showBookmarks && savedPlaces) {
       savedPlaces.forEach((place) => {
         const marker = new naver.maps.Marker({
@@ -148,21 +148,11 @@ export const NaverMap = forwardRef(function NaverMap(
         mapRef.current = map;
         setIsMapReady(true);
 
-        // 🔵 내 위치 마커
         new window.naver.maps.Marker({
           position: center,
           map,
           icon: {
-            content: `
-              <div style="
-                width:10px;
-                height:10px;
-                border-radius:50%;
-                background:#2563eb;
-                border:2px solid white;
-                box-shadow:0 2px 6px rgba(0,0,0,0.3);
-              "></div>
-            `,
+            content: `<div class="w-4 h-4 bg-blue-600 rounded-full border-2 border-white shadow-lg"/>`,
             anchor: new window.naver.maps.Point(5, 5),
           },
         });
@@ -170,22 +160,29 @@ export const NaverMap = forwardRef(function NaverMap(
 
       navigator.geolocation.getCurrentPosition(
         (pos) => renderMap(pos.coords.latitude, pos.coords.longitude),
+        // fallback: 성수역
         () => renderMap(37.5445, 127.0557),
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+        },
       );
     };
 
-    const existing = document.getElementById('naver-map-script');
+    const existingScript = document.getElementById(
+      'naver-map-script',
+    ) as HTMLScriptElement | null;
 
-    if (existing) {
+    if (existingScript) {
       window.naver?.maps
         ? initMap()
-        : existing.addEventListener('load', initMap, { once: true });
+        : existingScript.addEventListener('load', initMap, { once: true });
     } else {
       const script = document.createElement('script');
+      const NAVER_MAP_SCRIPT_URL =
+        'https://oapi.map.naver.com/openapi/v3/maps.js';
       script.id = 'naver-map-script';
-      script.src = `https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${NAVER_MAP_KEY}`;
-      script.async = true;
-      script.onload = initMap;
+      script.src = `${NAVER_MAP_SCRIPT_URL}?ncpKeyId=${NAVER_MAP_KEY}`;
       document.head.appendChild(script);
     }
 
@@ -194,20 +191,19 @@ export const NaverMap = forwardRef(function NaverMap(
     };
   }, []);
 
-  /** 외부에서 내 위치로 이동 */
   useImperativeHandle(ref, () => ({
     centerToMyPosition: () => {
       if (!mapRef.current) return;
 
-      navigator.geolocation.getCurrentPosition((pos) => {
-        const center = new window.naver.maps.LatLng(
-          pos.coords.latitude,
-          pos.coords.longitude,
-        );
-        mapRef.current?.panTo(center);
-      });
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const { latitude, longitude } = pos.coords;
+          const newCenter = new naver.maps.LatLng(latitude, longitude);
+          mapRef.current?.panTo(newCenter);
+        },
+        () => {},
+      );
     },
   }));
-
   return <div ref={containerRef} className="h-full w-full" />;
 });
