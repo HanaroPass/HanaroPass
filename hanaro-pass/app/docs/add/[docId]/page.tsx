@@ -3,12 +3,45 @@ import { Plus, Info } from 'lucide-react';
 import Header from '@/components/header/Header';
 import ActionButton from '@/components/header/ActionButton';
 import type { DocsProps } from '../../[docId]/page';
-import { use } from 'react';
+import { use, useEffect, useMemo, useRef, useState } from 'react';
 import { DOCS_CARD_ITEMS } from '../../constants/docsCardItem';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 export default function DocsAddPage({ params }: DocsProps) {
   const { docId } = use(params);
   const doc = DOCS_CARD_ITEMS.find((item) => item.id === docId);
+
+  const router = useRouter();
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const [file, setFile] = useState<File | null>(null);
+
+  // input 태그 대신 버튼 클릭
+  const handlePick = () => inputRef.current?.click();
+
+  // 파일 업로드 시 업데이트
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selected = e.target.files?.[0] ?? null;
+    setFile(selected);
+  };
+
+  // 파일 업로드 시 미리보기 URL 생성 (로컬 blob url)
+  const previewUrl = useMemo(() => {
+    if (!file) return '';
+    return URL.createObjectURL(file);
+  }, [file]);
+
+  // url 메모리 해제
+  useEffect(() => {
+    return () => {
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+    };
+  }, [previewUrl]);
+
+  const handleSubmit = () => {
+    // 추후 DB 연결 예정
+    router.push(`/docs/add/${docId}/done`);
+  };
 
   return (
     <>
@@ -20,15 +53,45 @@ export default function DocsAddPage({ params }: DocsProps) {
 
         {/* 업로드 영역 */}
         <div className="flex h-105 w-full flex-col items-center justify-center rounded-2xl border-2 border-black/20 bg-gray-100/70">
-          <Plus size={34} className="mb-6 text-gray-400" />
-
-          <p className="font-sans font-semibold text-[15px] text-black-800">
-            파일을 업로드하세요
-          </p>
-          <p className="mt-2 font-sans text-[13px] text-black-600">
-            또는 <span className="underline">여기</span>를 클릭하세요
-          </p>
+          <button
+            type="button"
+            onClick={handlePick}
+            className="flex w-full flex-col items-center justify-center px-4 py-10 text-center"
+          >
+            {previewUrl ? (
+              // 파일 업로드 시 미리 보기 영역
+              <div className="relative h-80 w-full overflow-hidden rounded-xl">
+                <Image
+                  src={previewUrl}
+                  alt="preview"
+                  fill
+                  className="object-contain"
+                  unoptimized
+                />
+              </div>
+            ) : (
+              // 파일 미업로드 시 안내 영역
+              <>
+                <Plus size={34} className="mb-6 text-gray-400" />
+                <p className="font-sans font-semibold text-[15px] text-black-800">
+                  파일을 업로드하세요
+                </p>
+                <p className="mt-2 font-sans text-[13px] text-black-600">
+                  또는 여기를 클릭하세요
+                </p>
+              </>
+            )}
+          </button>
         </div>
+
+        {/* 실제 파일 input */}
+        <input
+          ref={inputRef}
+          type="file"
+          accept="image/png,image/jpeg"
+          className="hidden"
+          onChange={handleChange}
+        />
 
         {/* 안내사항 */}
         <div className="mt-5 rounded-2xl bg-[#EAF9FB] p-4">
@@ -49,9 +112,8 @@ export default function DocsAddPage({ params }: DocsProps) {
         <div className="mt-6">
           <ActionButton
             text="등록하기"
-            onClick={() => {
-              alert('파일 업로드 기능 연결 예정');
-            }}
+            onClick={handleSubmit}
+            disabled={!file}
             className="mt-6"
           />
         </div>
