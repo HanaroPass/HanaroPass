@@ -17,6 +17,7 @@ import { MapBottomSheet } from './components/ui/MapBottomSheet';
 import { NaverMap } from './components/ui/NaverMap';
 import { ToggleButton } from './components/ui/ToggleButton';
 import { useBottomSheet } from './hooks/useBottomSheet';
+import { SAVED_PLACES_MOCK } from './mock/savedPlaces';
 
 /**
  * @page MapPage
@@ -44,7 +45,14 @@ export default function MapPage() {
     <main className="relative h-screen w-screen overflow-hidden bg-gray-100">
       {/* 맵 레이어 */}
       <div className="absolute inset-0 z-0">
-        <NaverMap ref={mapControlRef} onMarkerClick={() => {}} />
+        <NaverMap
+          ref={mapControlRef}
+          onMarkerClick={(place) => {
+            console.log('마커 클릭:', place);
+          }}
+          savedPlaces={SAVED_PLACES_MOCK}
+          showBookmarks={bookmark}
+        />
       </div>
 
       {/* 필터 그룹 */}
