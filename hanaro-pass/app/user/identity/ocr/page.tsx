@@ -15,10 +15,6 @@ function OCRPageContent() {
     router.back();
   };
 
-  const getTitle = () => {
-    return type === 'passport' ? '여권 등록' : '외국인등록증 등록';
-  };
-
   return (
     <div className="min-h-screen bg-black">
       <header className="sticky top-0 z-50 w-full bg-black text-white">
@@ -30,7 +26,7 @@ function OCRPageContent() {
 
           <div className="-translate-x-1/2 absolute left-1/2 max-w-[60%]">
             <h1 className="truncate font-semibold text-base text-white">
-              {getTitle()}
+              {type === 'passport' ? '여권 등록' : '신분증 등록'}
             </h1>
           </div>
 
