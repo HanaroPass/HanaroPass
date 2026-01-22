@@ -1,7 +1,12 @@
 'use client';
 
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
-import { type ReactNode, type RefObject, useEffect } from 'react';
+import {
+  type ReactNode,
+  type RefObject,
+  useEffect,
+  useLayoutEffect,
+} from 'react';
 import {
   SHEET_TITLE,
   type SheetPosition,
@@ -43,7 +48,7 @@ export function MapBottomSheet({
    * @effect 애니메이션 제어
    * @description 시트의 좌표가 결정될 때마다 transform 트랜지션을 적용합니다.
    */
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!sheetRef.current) return;
     const targetY = getTranslateValue(position);
     sheetRef.current.style.transition =
@@ -60,10 +65,24 @@ export function MapBottomSheet({
     if (position === 'half' && sheetRef.current) {
       const sheetHeight = sheetRef.current.clientHeight;
       const translateY = getTranslateValue('half');
-      return `${sheetHeight - translateY}px`;
+      return `${sheetHeight - translateY - 40}px`;
     }
     return '0px';
   };
+  /**
+   * @description 시트가 열리면 body의 스크롤을 막고, 닫히면 다시 풀어줍니다.
+   */
+  useEffect(() => {
+    if (openSheet) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [openSheet]);
 
   if (!openSheet) return null;
 
@@ -84,10 +103,13 @@ export function MapBottomSheet({
       </div>
 
       <div
-        className="flex-1 overflow-y-auto pb-10"
-        style={{ maxHeight: getContentMaxHeight() }}
+        className="flex-1 overflow-y-auto"
+        style={{
+          maxHeight: getContentMaxHeight(),
+          WebkitOverflowScrolling: 'touch',
+          overscrollBehavior: 'contain',
+        }}
       >
-        {' '}
         <VisuallyHidden>
           <h2>{SHEET_TITLE[openSheet]}</h2>
         </VisuallyHidden>
