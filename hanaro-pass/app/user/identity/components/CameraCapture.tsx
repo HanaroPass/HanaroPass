@@ -1,10 +1,10 @@
-import { type FC, useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 type CameraCaptureProps = {
   type?: 'passport' | 'alien' | null;
 };
 
-const CameraCapture: FC<CameraCaptureProps> = ({ type: _type }) => {
+const CameraCapture = ({ type: _type }: CameraCaptureProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const startCamera = useCallback(async () => {
