@@ -1,12 +1,14 @@
 'use client';
-import { Plus, Info } from 'lucide-react';
-import Header from '@/components/header/Header';
-import ActionButton from '@/components/header/ActionButton';
-import type { DocsProps } from '../../[docId]/page';
-import { use, useEffect, useMemo, useRef, useState } from 'react';
-import { DOCS_CARD_ITEMS } from '../../constants/docsCardItem';
-import { useRouter } from 'next/navigation';
+
+import { Info, Plus } from 'lucide-react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { use, useEffect, useMemo, useRef, useState } from 'react';
+
+import ActionButton from '@/components/header/ActionButton';
+import Header from '@/components/header/Header';
+import { DOCS_CARD_ITEMS } from '../../constants/docsCardItem';
+import type { DocsProps } from '../../[docId]/page';
 
 export default function DocsAddPage({ params }: DocsProps) {
   const { docId } = use(params);
@@ -14,9 +16,12 @@ export default function DocsAddPage({ params }: DocsProps) {
 
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement | null>(null);
+
   const [file, setFile] = useState<File | null>(null);
 
-  // input 태그 대신 버튼 클릭
+  const isPdf = file?.type === 'application/pdf';
+  const isImage = !!file?.type?.startsWith('image/');
+
   const handlePick = () => inputRef.current?.click();
 
   // 파일 업로드 시 업데이트
@@ -45,7 +50,7 @@ export default function DocsAddPage({ params }: DocsProps) {
 
   return (
     <>
-      <Header title={`${doc?.title} 등록`} />
+      <Header title={`${doc?.title ?? '서류'} 등록`} />
       <main className="min-h-dvh bg-white px-5 pt-10">
         <h2 className="mb-3 font-sans font-semibold text-[14px] text-black-900">
           서류 파일
@@ -60,14 +65,30 @@ export default function DocsAddPage({ params }: DocsProps) {
           >
             {previewUrl ? (
               // 파일 업로드 시 미리 보기 영역
-              <div className="relative h-80 w-full overflow-hidden rounded-xl">
-                <Image
-                  src={previewUrl}
-                  alt="preview"
-                  fill
-                  className="object-contain"
-                  unoptimized
-                />
+              <div className="relative h-80 w-full overflow-hidden rounded-xl bg-white">
+                {isImage ? (
+                  // 이미지일떄
+                  <Image
+                    src={previewUrl}
+                    alt="preview"
+                    fill
+                    className="object-contain"
+                    unoptimized
+                  />
+                ) : isPdf ? (
+                  // pdf일때
+                  <iframe
+                    title="pdf-preview"
+                    src={previewUrl}
+                    className="h-full w-full"
+                  />
+                ) : (
+                  <div className="grid h-full w-full place-items-center px-4">
+                    <p className="font-sans text-[13px] text-black/60">
+                      미리보기를 지원하지 않는 파일 형식입니다.
+                    </p>
+                  </div>
+                )}
               </div>
             ) : (
               // 파일 미업로드 시 안내 영역
@@ -88,7 +109,7 @@ export default function DocsAddPage({ params }: DocsProps) {
         <input
           ref={inputRef}
           type="file"
-          accept="image/png,image/jpeg"
+          accept="image/png,image/jpeg,application/pdf"
           className="hidden"
           onChange={handleChange}
         />
@@ -104,7 +125,7 @@ export default function DocsAddPage({ params }: DocsProps) {
 
           <ul className="ml-5 list-disc space-y-1 font-sans text-[13px] text-green-ez">
             <li>선명한 이미지를 업로드해 주세요</li>
-            <li>JPG, PNG 형식만 가능합니다</li>
+            <li>JPG, PNG, PDF 형식만 가능합니다</li>
             <li>최대 5MB까지 업로드 가능합니다</li>
           </ul>
         </div>
