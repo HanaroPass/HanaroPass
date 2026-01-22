@@ -2,46 +2,18 @@
 
 import { Info } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import SearchInput from '@/components/SearchInput/SearchInput';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import type { Hospital } from '@/lib/generated/prisma';
-import { searchHospitalAction } from '../actions/language-regist.action';
 import DescriptionSection from '../components/languageRegistration/DescriptionSection';
 import HospitalItem from '../components/languageRegistration/HospitalItem';
-
-type HospitalSearchResult = Pick<Hospital, 'id' | 'nameKo' | 'address'>;
+import { useHospitalSearch } from '../hooks/useHospitalSearch';
 
 export default function MedicalPage() {
   const router = useRouter();
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [hospitals, setHospitals] = useState<HospitalSearchResult[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    const fetchHospitals = async () => {
-      if (!searchQuery.trim()) {
-        setHospitals([]);
-        return;
-      }
-
-      setIsLoading(true);
-
-      const result = await searchHospitalAction(searchQuery);
-
-      if (!result.success) {
-        alert(`[에러코드 -  ${result.status}] ${result.message}`);
-        setHospitals([]);
-      } else {
-        setHospitals(result.data);
-      }
-      setIsLoading(false);
-    };
-
-    const timer = setTimeout(fetchHospitals, 300);
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
+  const { hospitals, isLoading } = useHospitalSearch(searchQuery);
 
   return (
     <div className="flex h-full flex-col">
