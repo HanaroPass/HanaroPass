@@ -3,7 +3,7 @@
 import { ChevronDown, ChevronUp, X } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Header from '@/components/header/Header';
 import { Button } from '@/components/ui/button';
 import { AlienDrawer } from './components/bottomsheet/AlienDrawer';
@@ -17,17 +17,30 @@ export default function IdentityPage() {
   const [isGuideOpen, setIsGuideOpen] = useState(false);
   const router = useRouter();
 
+  const guideRef = useRef<HTMLDivElement>(null);
+
   const handleClose = () => {
     router.back();
   };
 
   const handlePassportSubmit = (_data: Record<string, string>) => {
-    // TODO: 실제 제출 로직(API/토스트)로 대체
+    // TODO: 실제 제출 로직
   };
 
   const handleAlienSubmit = (_data: Record<string, string>) => {
-    // TODO: 실제 제출 로직(API/토스트)로 대체
+    // TODO: 실제 제출 로직
   };
+
+  useEffect(() => {
+    if (isGuideOpen && guideRef.current) {
+      setTimeout(() => {
+        guideRef.current?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+        });
+      }, 100);
+    }
+  }, [isGuideOpen]);
 
   return (
     <>
@@ -46,102 +59,110 @@ export default function IdentityPage() {
         }
       />
 
-      <div className="min-h-screen bg-white p-6">
-        <div className="mx-auto max-w-md">
-          {/* 안내 텍스트 */}
-          <div className="mb-8">
-            <h2 className="mb-2 font-semibold text-gray-800 text-lg">
-              인증서 발급을 위해
-            </h2>
-            <p className="font-semibold text-gray-800 text-lg">
-              신분증을 준비해 주세요.
-            </p>
-          </div>
-
-          <div className="relative mb-8 rounded-lg bg-white p-8">
-            <div className="flex h-48 w-full items-center justify-center">
-              <Image
-                src="/images/identity/identity_img.svg"
-                alt="신분증 스캔 이미지"
-                width={320}
-                height={192}
-                className="h-auto max-h-full max-w-full"
-              />
+      <div className="flex min-h-[calc(100vh-60px)] flex-col bg-white p-4 pb-10 sm:p-6 lg:p-8">
+        <div className="mx-auto flex w-full max-w-sm flex-1 flex-col sm:max-w-md sm:flex-none lg:max-w-lg xl:max-w-2xl">
+          {/* [핵심 수정] shrink-0 추가 
+            이 div에 shrink-0을 적용하여, 화면 높이가 부족하더라도
+            내부 콘텐츠(문구, 이미지, 버튼)가 절대 찌그러지지 않도록 합니다.
+          */}
+          <div className="shrink-0">
+            <div className="mb-6 sm:mb-8">
+              <h2 className="mb-2 font-semibold text-base text-gray-800 sm:text-lg lg:text-xl">
+                인증서 발급을 위해
+              </h2>
+              <p className="font-semibold text-base text-gray-800 sm:text-lg lg:text-xl">
+                신분증을 준비해 주세요.
+              </p>
             </div>
-          </div>
 
-          {/* 신분증 선택 버튼들 */}
-          <div className="mb-6 space-y-3">
-            <Button
-              variant="outline"
-              onClick={() => setOpenDrawer('passport')}
-              className="w-full rounded-xl border border-hana-green bg-white py-6 font-medium text-hana-green transition-colors hover:bg-hana-green/10"
-            >
-              여권
-            </Button>
-
-            <Button
-              variant="outline"
-              onClick={() => setOpenDrawer('alien')}
-              className="w-full rounded-xl border border-hana-green bg-white py-6 font-medium text-hana-green transition-colors hover:bg-hana-green/10"
-            >
-              외국인등록증
-            </Button>
-          </div>
-
-          {/* 동의 체크박스 */}
-          <div className="mt-12 mb-6">
-            <div className="w-full rounded-xl border border-silver-400 bg-white px-4 py-6">
-              <label className="flex items-center justify-between">
-                <span className="font-medium text-base text-black-800">
-                  전자문서 저장 동의 체크박스
-                </span>
-                <input
-                  type="checkbox"
-                  checked={isAgreed}
-                  onChange={(e) => setIsAgreed(e.target.checked)}
-                  className="h-5 w-5 rounded border border-gray-300 text-green-ez accent-green-ez focus:ring-green-ez/50"
+            <div className="relative mb-6 rounded-lg bg-white p-4 sm:mb-8 sm:p-6 lg:p-8">
+              {/* 이미지 컨테이너 높이 명시 및 내부 이미지 비율 유지 설정 */}
+              <div className="relative flex h-40 w-full items-center justify-center sm:h-48 md:h-56">
+                <Image
+                  src="/images/identity/identity_img.svg"
+                  alt="신분증 스캔 이미지"
+                  fill // 부모 요소에 맞춰 채움
+                  className="object-contain" // 비율 유지하며 컨테이너 안에 표시
                 />
-              </label>
+              </div>
+            </div>
+
+            <div className="mb-4 space-y-2 sm:mb-6 sm:space-y-3">
+              <Button
+                variant="outline"
+                onClick={() => setOpenDrawer('passport')}
+                className="w-full rounded-xl border border-hana-green bg-white py-4 font-medium text-hana-green text-sm transition-colors hover:bg-hana-green/10 sm:py-6 sm:text-base"
+              >
+                여권
+              </Button>
+
+              <Button
+                variant="outline"
+                onClick={() => setOpenDrawer('alien')}
+                className="w-full rounded-xl border border-hana-green bg-white py-4 font-medium text-hana-green text-sm transition-colors hover:bg-hana-green/10 sm:py-6 sm:text-base"
+              >
+                외국인등록증
+              </Button>
             </div>
           </div>
 
-          {/* 구분선 */}
-          <div className="mb-4 border-gray-200 border-t"></div>
-
-          {/* 이용안내 */}
-          <div className="mb-8">
-            <Button
-              variant="ghost"
-              onClick={() => setIsGuideOpen(!isGuideOpen)}
-              className="flex h-auto w-full items-center justify-between px-0 py-3 text-gray-600 text-sm hover:bg-transparent"
-            >
-              <span>이용안내</span>
-              {isGuideOpen ? (
-                <ChevronUp size={16} />
-              ) : (
-                <ChevronDown size={16} />
-              )}
-            </Button>
-
-            {isGuideOpen && (
-              <div className="mt-2 max-h-32 overflow-y-auto rounded-lg bg-gray-50 p-4 text-gray-600 text-sm">
-                <p>
-                  • 하나인증서는 국세청, 정부 24, 본인확인 등에 이용할 수
-                  있습니다.
-                </p>
-                <p>
-                  • 분실/도난/유효기간 만료/사진훼손 등 정상인식이 불가능한
-                  신분증은 이용할 수 없습니다.
-                </p>
-                <p>
-                  • 신분증 발급기관에서 검증되지 않는 신분증은 거부될 수
-                  있습니다.
-                </p>
-                <p>• 추가적인 이용안내 내용이 여기에 표시됩니다.</p>
-                <p>• 보다 자세한 이용내용은 고객센터를 통해 문의해주세요.</p>
+          {/* 하단 고정 영역 */}
+          <div className="mt-auto pt-8 sm:mt-20">
+            <div className="mb-4">
+              <div className="w-full rounded-xl border border-silver-400 bg-white px-3 py-4 sm:px-4 sm:py-6">
+                <label className="flex cursor-pointer items-center justify-between">
+                  <span className="font-medium text-black-800 text-sm sm:text-base">
+                    전자문서 저장 동의 체크박스
+                  </span>
+                  <input
+                    type="checkbox"
+                    checked={isAgreed}
+                    onChange={(e) => setIsAgreed(e.target.checked)}
+                    className="h-5 w-5 rounded border border-gray-300 text-green-ez focus:ring-green-ez/50"
+                    style={{
+                      accentColor: '#01a5ac',
+                    }}
+                  />
+                </label>
               </div>
-            )}
+            </div>
+
+            <div className="mb-4 border-gray-200 border-t"></div>
+
+            <div
+              ref={guideRef}
+              className="scroll-mt-20 transition-all duration-300"
+            >
+              <Button
+                variant="ghost"
+                onClick={() => setIsGuideOpen(!isGuideOpen)}
+                className="flex h-auto w-full items-center justify-between px-0 py-3 text-gray-600 text-sm hover:bg-transparent"
+              >
+                <span>이용안내</span>
+                {isGuideOpen ? (
+                  <ChevronUp size={16} />
+                ) : (
+                  <ChevronDown size={16} />
+                )}
+              </Button>
+
+              {isGuideOpen && (
+                <div className="fade-in slide-in-from-top-2 mt-2 animate-in space-y-2 rounded-lg bg-gray-50 p-4 text-gray-500 text-xs sm:text-sm">
+                  <p className="leading-relaxed">
+                    • 하나인증서는 국세청, 정부 24, 본인확인 등에 이용할 수
+                    있습니다.
+                  </p>
+                  <p className="leading-relaxed">
+                    • 분실/도난/유효기간 만료/사진훼손 등 정상인식이 불가능한
+                    신분증은 이용할 수 없습니다.
+                  </p>
+                  <p className="leading-relaxed">
+                    • 신분증 발급기관에서 검증되지 않는 신분증은 거부될 수
+                    있습니다.
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
 
           <PassportDrawer
@@ -149,7 +170,6 @@ export default function IdentityPage() {
             onOpenChange={(open) => setOpenDrawer(open ? 'passport' : null)}
             onSubmit={handlePassportSubmit}
           />
-
           <AlienDrawer
             open={openDrawer === 'alien'}
             onOpenChange={(open) => setOpenDrawer(open ? 'alien' : null)}
