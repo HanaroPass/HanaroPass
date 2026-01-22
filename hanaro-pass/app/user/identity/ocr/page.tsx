@@ -57,15 +57,17 @@ function OCRPageContent() {
       <CameraCapture type={type} />
 
       <div className="bg-black px-8 pb-6 text-left sm:pb-8 md:pb-10 lg:pb-12">
-        <p className="mb-4 font-medium text-base text-gray-300 sm:mb-5 md:mb-6">
-          단순하고 어두운 배경 위에서 촬영하면 인식률이 더 좋아집니다.
-        </p>
-        <p className="mb-4 font-medium text-base text-gray-300 sm:mb-5 md:mb-6">
-          빛 반사가 없는 곳에서 촬영하세요.
-        </p>
-        <p className="font-medium text-base text-gray-300">
-          살짝 기울여 촬영하시면 더욱 좋습니다.
-        </p>
+        <div className="flex flex-col gap-4 sm:gap-5 md:gap-6">
+          <p className="font-medium text-base text-gray-300">
+            단순하고 어두운 배경 위에서 촬영하면 인식률이 더 좋아집니다.
+          </p>
+          <p className="font-medium text-base text-gray-300">
+            빛 반사가 없는 곳에서 촬영하세요.
+          </p>
+          <p className="font-medium text-base text-gray-300">
+            살짝 기울여 촬영하시면 더욱 좋습니다.
+          </p>
+        </div>
       </div>
     </div>
   );
