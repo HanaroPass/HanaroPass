@@ -67,7 +67,7 @@ export default function MedicalPage() {
               ))}
             </div>
           )}
-          <div className="border-gray-300 border-t px-6 py-6">
+          <div className="border-gray-300 border-t px-2 py-6">
             <Alert className="rounded-lg border-none bg-gray-100">
               <Info className="h-4 w-4 stroke-hana-green" />
               <AlertTitle className="font-sans font-semibold text-base text-hana-green">
