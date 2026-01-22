@@ -51,6 +51,20 @@ export function MapBottomSheet({
     sheetRef.current.style.transform = `translateY(${targetY}px)`;
   }, [position, getTranslateValue, sheetRef]);
 
+  /**
+   * @description 현재 시트의 위치 상태에 따라 내용물 영역의 최대 높이를 계산합니다.
+   * half 상태일 때 스크롤이 끊기는 문제를 해결하기 위해 필수적입니다.
+   */
+  const getContentMaxHeight = () => {
+    if (position === 'full') return '100%';
+    if (position === 'half' && sheetRef.current) {
+      const sheetHeight = sheetRef.current.clientHeight;
+      const translateY = getTranslateValue('half');
+      return `${sheetHeight - translateY}px`;
+    }
+    return '0px';
+  };
+
   if (!openSheet) return null;
 
   return (
@@ -69,7 +83,11 @@ export function MapBottomSheet({
         <div className="h-2 w-24 rounded-full bg-gray-200" />
       </div>
 
-      <div className="flex-1 overflow-y-auto pb-1">
+      <div
+        className="flex-1 overflow-y-auto pb-10"
+        style={{ maxHeight: getContentMaxHeight() }}
+      >
+        {' '}
         <VisuallyHidden>
           <h2>{SHEET_TITLE[openSheet]}</h2>
         </VisuallyHidden>
