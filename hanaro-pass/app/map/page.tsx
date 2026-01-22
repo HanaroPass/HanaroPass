@@ -14,6 +14,7 @@ import { MapBottomSheet } from './components/ui/MapBottomSheet';
 import { NaverMap } from './components/ui/NaverMap';
 import { ToggleButton } from './components/ui/ToggleButton';
 import { useBottomSheet } from './hooks/useBottomSheet';
+import { HospitalContent } from './components/hospital/HospitalContent';
 
 /**
  * @page MapPage
@@ -112,7 +113,7 @@ export default function MapPage() {
         {openSheet === 'siren' && <SirenContent />}
         {openSheet === 'exchange' && <ExchangeContent />}
         {openSheet === 'hospital' && (
-          <div className="py-4 text-gray-600">병원 정보를 확인해요.</div>
+          <HospitalContent />
         )}
         {openSheet === 'embassy' && (
           <div className="py-4 text-gray-600">대사관 정보를 확인해요.</div>
