@@ -9,6 +9,7 @@ type AlienDrawerProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit?: (data: Record<string, string>) => void;
+  onReset?: () => void;
   className?: string;
 };
 
@@ -16,6 +17,7 @@ export function AlienDrawer({
   open,
   onOpenChange,
   onSubmit,
+  onReset,
   className,
 }: AlienDrawerProps) {
   const { formData, handleSubmit, resetForm, handleFormDataChange } =
@@ -30,7 +32,7 @@ export function AlienDrawer({
       onOpenChange={onOpenChange}
       title="외국인 등록증 정보 확인"
       onSubmit={handleSubmit}
-      onReset={resetForm}
+      onReset={onReset || resetForm}
       className={className}
       showButtons={true}
     >

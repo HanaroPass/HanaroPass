@@ -4,8 +4,8 @@ import { ChevronDown, ChevronUp, X } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
-import ActionButton from '@/components/header/ActionButton';
 import Header from '@/components/header/Header';
+import ActionButton from '@/components/ui/ActionButton';
 import { Button } from '@/components/ui/button';
 
 export default function IdentityPage() {

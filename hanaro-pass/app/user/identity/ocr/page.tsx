@@ -2,8 +2,10 @@
 
 import { X } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Suspense } from 'react';
+import { Suspense, useState } from 'react';
 import CameraCapture from '@/app/user/identity/components/CameraCapture';
+import { PassportDrawer } from '@/app/user/identity/components/bottomsheet/PassportDrawer';
+import { AlienDrawer } from '@/app/user/identity/components/bottomsheet/AlienDrawer';
 
 function OCRPageContent() {
   const searchParams = useSearchParams();
@@ -11,8 +13,25 @@ function OCRPageContent() {
   const rawType = searchParams.get('type');
   const type = rawType === 'passport' || rawType === 'alien' ? rawType : null;
 
+  // 바텀시트가 처음부터 열려있게 설정
+  const [isDrawerOpen, setIsDrawerOpen] = useState(true);
+
   const handleClose = () => {
     router.back();
+  };
+
+  // 바텀시트에서 정보 확인 완료
+  const handleSubmit = (data: Record<string, string>) => {
+    console.log('제출된 정보:', data);
+    setIsDrawerOpen(false);
+    // 여기서 다음 단계로 이동
+    router.push('/user/identity/complete'); // 예시
+  };
+
+  // 재촬영 버튼 클릭 시 바텀시트만 닫기
+  const handleRetake = () => {
+    setIsDrawerOpen(false);
+    // 바텀시트만 닫고 OCR 페이지에 머물러서 다시 촬영 가능
   };
 
   return (
@@ -65,6 +84,23 @@ function OCRPageContent() {
           </p>
         </div>
       </div>
+
+      {/* PassportDrawer 또는 AlienDrawer - 페이지 로드 시 바로 열림 */}
+      {type === 'passport' ? (
+        <PassportDrawer
+          open={isDrawerOpen}
+          onOpenChange={setIsDrawerOpen}
+          onSubmit={handleSubmit}
+          onReset={handleRetake}
+        />
+      ) : (
+        <AlienDrawer
+          open={isDrawerOpen}
+          onOpenChange={setIsDrawerOpen}
+          onSubmit={handleSubmit}
+          onReset={handleRetake}
+        />
+      )}
     </div>
   );
 }
