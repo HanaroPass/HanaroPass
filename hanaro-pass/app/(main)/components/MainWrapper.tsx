@@ -63,7 +63,7 @@ export default function MainWrapper({
             <Link key={t.key} href={{ pathname: '/', query: { tab: t.key } }}>
               <div
                 className={cn(
-                  'relative flex h-16 w-16 items-center justify-center rounded-full transition-colors duration-300',
+                  'relative flex h-16 w-16 items-center justify-center rounded-full shadow-sm',
                   activeTab === t.key ? 'bg-white-ez' : 'bg-[#65C7CA]',
                 )}
               >
@@ -75,7 +75,7 @@ export default function MainWrapper({
                   )}
                 />
                 {activeTab !== t.key && (
-                  <div className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 z-0 h-13 w-13 rounded-full bg-green-ez" />
+                  <div className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 z-0 h-13 w-13 rounded-full bg-green-ez shadow-sm" />
                 )}
               </div>
             </Link>
