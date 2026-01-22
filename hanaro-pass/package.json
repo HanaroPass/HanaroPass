@@ -12,14 +12,14 @@
     "db:gen": "prisma generate",
     "db:seed": "prisma db seed",
     "db:mig": "prisma migrate dev",
-    "format": "biome format --write",
+    "format": "biome format --writep",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
   "dependencies": {
     "@prisma/adapter-mariadb": "^7.2.0",
     "@prisma/client": "^7.2.0",
-    "@prisma/client-runtime-utils": "^7.3.0",
+    "@prisma/client-runtime-utils": "^7.2.0",
     "@radix-ui/react-accordion": "^1.2.12",
     "@radix-ui/react-checkbox": "^1.3.3",
     "@radix-ui/react-dialog": "^1.1.15",
