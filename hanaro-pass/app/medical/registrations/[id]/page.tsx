@@ -7,6 +7,7 @@ import {
   Globe,
   History,
   Hospital,
+  type LucideIcon,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React from 'react';
@@ -16,12 +17,7 @@ import SectionHeader from '@/app/medical/components/languageRegistration/Section
 import StatusBadge from '@/app/medical/components/StatusBadge';
 import ActionButton from '@/components/header/ActionButton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-
-const InfoDetailPlate = ({ children }: { children: React.ReactNode }) => (
-  <div className="mt-1 px-6 py-2">
-    <div className="rounded-2xl bg-gray-100/50 p-4">{children}</div>
-  </div>
-);
+import { InfoDetailPlate } from '../../components/InfoDetailPlate';
 
 /**
  * QQQ (Integration Plan):
@@ -98,13 +94,8 @@ export default function HospitalRegistrationDetailsPage() {
 
         {hospitalInfo.map((item) => (
           <React.Fragment key={item.label}>
-            {' '}
             <SectionHeader icon={item.icon} title={item.label} />
-            <InfoDetailPlate>
-              <div className="font-sans font-semibold text-base text-black-900">
-                {item.content}
-              </div>
-            </InfoDetailPlate>
+            <InfoDetailPlate value={item.content} />
           </React.Fragment>
         ))}
 
@@ -151,6 +142,15 @@ export default function HospitalRegistrationDetailsPage() {
   );
 }
 
+type HistoryItemProps = {
+  icon: LucideIcon;
+  iconColor: string;
+  label: string;
+  date: string;
+  isLast?: boolean;
+  isItalic?: boolean;
+};
+
 const HistoryItem = ({
   icon: Icon,
   iconColor,
@@ -158,7 +158,7 @@ const HistoryItem = ({
   date,
   isLast,
   isItalic,
-}: any) => (
+}: HistoryItemProps) => (
   <div className="relative flex w-full flex-row items-center justify-between">
     <div className="flex items-center gap-3">
       <div className="z-10 flex h-5 w-5 items-center justify-center bg-gray-100">
