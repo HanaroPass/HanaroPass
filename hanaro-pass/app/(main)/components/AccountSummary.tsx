@@ -1,3 +1,5 @@
+'use client';
+
 import { Copy } from 'lucide-react';
 
 function AccountSummary() {
@@ -8,7 +10,14 @@ function AccountSummary() {
 
         <div className="mt-1 flex items-center gap-2 text-black-600">
           <span className="text-sm">278-911435-68407</span>
-          <Copy size={15} className="cursor-pointer" />
+          <button
+            type="button"
+            onClick={() => navigator.clipboard.writeText('278-911435-68407')}
+            aria-label="계좌번호 복사"
+            className="cursor-pointer"
+          >
+            <Copy size={15} />
+          </button>
         </div>
       </div>
 
