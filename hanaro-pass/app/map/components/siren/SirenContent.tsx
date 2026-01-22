@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import React from 'react';
-import { steps } from '../constants/emergency';
+import { steps } from '../../constants/emergency';
 
 export function SirenContent() {
   return (

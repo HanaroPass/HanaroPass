@@ -1,7 +1,7 @@
 'use client';
 
-import { locations } from '../mock/embassyExchange';
-import { PlaceCard } from './PlaceCard';
+import { locations } from '../../mock/embassyExchange';
+import { PlaceCard } from '../ui/PlaceCard';
 
 // 임시
 export function ExchangeContent() {

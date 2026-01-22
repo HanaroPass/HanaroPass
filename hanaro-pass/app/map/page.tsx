@@ -8,11 +8,11 @@ import {
   Siren,
 } from 'lucide-react';
 import { useState } from 'react';
-import { ExchangeContent } from './components/ExchangeContent';
-import { MapBottomSheet } from './components/MapBottomSheet';
-import { NaverMap } from './components/NaverMap';
-import { SirenContent } from './components/SirenContent';
-import { ToggleButton } from './components/ToggleButton';
+import { ExchangeContent } from './components/exchange/ExchangeContent';
+import { SirenContent } from './components/siren/SirenContent';
+import { MapBottomSheet } from './components/ui/MapBottomSheet';
+import { NaverMap } from './components/ui/NaverMap';
+import { ToggleButton } from './components/ui/ToggleButton';
 import { useBottomSheet } from './hooks/useBottomSheet';
 
 /**

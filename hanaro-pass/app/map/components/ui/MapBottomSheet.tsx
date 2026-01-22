@@ -2,7 +2,11 @@
 
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { type ReactNode, type RefObject, useEffect } from 'react';
-import { SHEET_TITLE, type SheetPosition, type SheetType } from '../types/map';
+import {
+  SHEET_TITLE,
+  type SheetPosition,
+  type SheetType,
+} from '../../types/map';
 
 /**
  * @interface MapBottomSheetProps
