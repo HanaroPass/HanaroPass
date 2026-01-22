@@ -116,13 +116,14 @@ export const NaverMap = forwardRef(function NaverMap(
     centerToMyPosition: () => {
       if (!mapRef.current) return;
 
-      navigator.geolocation.getCurrentPosition((pos) => {
-        const { latitude, longitude } = pos.coords;
-        const newCenter = new naver.maps.LatLng(latitude, longitude);
-
-        // 내 위치로 이동
-        mapRef.current?.panTo(newCenter);
-      });
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const { latitude, longitude } = pos.coords;
+          const newCenter = new naver.maps.LatLng(latitude, longitude);
+          mapRef.current?.panTo(newCenter);
+        },
+        () => {},
+      );
     },
   }));
   return <div ref={containerRef} className="h-full w-full" />;
