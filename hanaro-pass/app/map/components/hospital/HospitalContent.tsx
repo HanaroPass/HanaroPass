@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { hospitalLocations } from '@/app/map/mock/hospitalFilter.mock';
 import { Button } from '@/components/ui/button';
 import type { HospitalPlace } from '@/app/map/mock/hospitalMap.mock';
 import { hospitalLocations } from '@/app/map/mock/hospitalFilter.mock';
@@ -154,7 +155,7 @@ export function HospitalContent({ mode, hospital }: Props) {
         )}
       </div>
 
-      <div className="border-[#F0F3F4] border-t bg-white px-6 py-4">
+      <div className="border-gray-100 border-t bg-white px-6 py-4">
         <Button className="h-14 w-full rounded-xl bg-green-ez text-white">
           AI에게 나에게 맞는 병원 추천받기
         </Button>
