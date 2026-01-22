@@ -48,8 +48,8 @@ export const NaverMap = forwardRef(function NaverMap(
           map: currentMap,
           icon: {
             content: `
-              <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-lg">
-                <div class="w-6 h-6 bg-[#01A5AC] rounded-full flex items-center justify-center shadow-inner">
+              <div class="w-7 h-7 bg-white rounded-full flex items-center justify-center shadow-[0_4px_8px_rgba(0,0,0,0.2)]">
+                <div class="w-6 h-6 bg-hana-green rounded-full flex items-center justify-center shadow-inner">
                 <svg
                   width="16"
                   height="16"

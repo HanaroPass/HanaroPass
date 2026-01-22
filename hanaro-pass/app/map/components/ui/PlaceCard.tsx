@@ -28,12 +28,14 @@ export function PlaceCard({ data }: PlaceCardProps) {
             <span className="text-black-600">{data.type}</span>
           </div>
 
-          {data.status && data.explainTime && (
-            <div className="mt-2 flex flex-row gap-2">
+          <div className="mt-2 flex flex-row gap-2">
+            {data.status && (
               <span className="text-black-900">{data.status}</span>
+            )}
+            {data.explainTime && (
               <span className="text-black-600">{data.explainTime}</span>
-            </div>
-          )}
+            )}
+          </div>
 
           <div className="mt-1 flex flex-row gap-2">
             {data.distance?.trim() && (
