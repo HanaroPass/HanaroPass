@@ -14,7 +14,7 @@ import React from 'react';
 import DescriptionSection from '@/app/medical/components/languageRegistration/DescriptionSection';
 import HospitalGuide from '@/app/medical/components/languageRegistration/HospitalGuide';
 import SectionHeader from '@/app/medical/components/languageRegistration/SectionHeader';
-import ActionButton from '@/components/header/ActionButton';
+import ActionButton from '@/components/ui/ActionButton';
 import { ApplicationStatusAlert } from '../../components/ApplicationStatusAlert';
 import { InfoDetailPlate } from '../../components/InfoDetailPlate';
 import type { StatusType } from '../../constants/statusConfig';

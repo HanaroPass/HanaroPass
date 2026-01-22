@@ -3,7 +3,7 @@
 import { Calendar, Globe, Hospital } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import React from 'react';
-import ActionButton from '@/components/header/ActionButton';
+import ActionButton from '@/components/ui/ActionButton';
 import { ApplicationStatusAlert } from '../../components/ApplicationStatusAlert';
 import { InfoDetailPlate } from '../../components/InfoDetailPlate';
 import DescriptionSection from '../../components/languageRegistration/DescriptionSection';

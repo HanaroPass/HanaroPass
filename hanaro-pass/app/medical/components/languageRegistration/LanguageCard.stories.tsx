@@ -9,7 +9,7 @@ const SAMPLE_LANG: Language = {
 };
 
 const meta: Meta<typeof LanguageCard> = {
-  title: 'Medical/LanguageCard',
+  title: 'Medical/LanguageRegistration/LanguageCard',
   component: LanguageCard,
   parameters: {
     layout: 'centered',

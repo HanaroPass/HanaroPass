@@ -8,22 +8,29 @@ import { cn } from '@/lib/utils';
 type TabsProps = {
   activeTab: StatusType;
   onTabChange: (status: StatusType) => void;
-  counts: Record<StatusType, number>;
+  counts?: Partial<Record<StatusType, number>>;
 };
 
 export function ApplicationStatusTabs({
   activeTab,
   onTabChange,
-  counts,
+  counts = {},
 }: TabsProps) {
   const statusKeys = Object.keys(STATUS_CONFIG) as StatusType[];
+  const safeCounts: Record<StatusType, number> = statusKeys.reduce(
+    (acc, key) => {
+      acc[key] = counts[key] ?? 0;
+      return acc;
+    },
+    {} as Record<StatusType, number>,
+  );
 
   return (
     <nav className="flex w-full border-(--color-border) border-b bg-(--color-white-ez)">
       {statusKeys.map((key) => {
         const config = STATUS_CONFIG[key];
         const isActive = activeTab === key;
-        const count = counts[key];
+        const count = safeCounts[key];
 
         return (
           <Button

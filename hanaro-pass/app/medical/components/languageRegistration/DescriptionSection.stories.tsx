@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import DescriptionSection from './DescriptionSection';
 
 const meta: Meta<typeof DescriptionSection> = {
-  title: 'Sections/DescriptionSection',
+  title: 'Medical/LanguageRegistration/DescriptionSection',
   component: DescriptionSection,
   parameters: {
     layout: 'fullscreen',

@@ -11,8 +11,18 @@ const preview: Preview = {
     },
     nextjs: {
       appDirectory: true,
-      pathname: '/',
-      query: {},
+      router: {
+        push: (path: string) => {
+          console.log('[router.push]', path);
+        },
+        replace: (path: string) => {
+          console.log('[router.replace]', path);
+        },
+        back: () => {},
+        forward: () => {},
+        refresh: () => {},
+        prefetch: async () => {},
+      },
     },
   },
 };

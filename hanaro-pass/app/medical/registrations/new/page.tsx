@@ -3,7 +3,7 @@
 import { Globe } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
-import ActionButton from '@/components/header/ActionButton';
+import ActionButton from '@/components/ui/ActionButton';
 import DescriptionSection from '../../components/languageRegistration/DescriptionSection';
 import HospitalGuide from '../../components/languageRegistration/HospitalGuide';
 import type { Language } from '../../components/languageRegistration/LanguageCard';
