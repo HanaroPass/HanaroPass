@@ -3,7 +3,7 @@
 import { Info, Plus } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { use, useEffect, useMemo, useRef, useState } from 'react';
+import { use, useEffect, useRef, useState } from 'react';
 
 import ActionButton from '@/components/header/ActionButton';
 import Header from '@/components/header/Header';
@@ -24,24 +24,34 @@ export default function DocsAddPage({ params }: DocsProps) {
 
   const handlePick = () => inputRef.current?.click();
 
+  const MAX_FILE_SIZE = 5 * 1024 * 1024; //5MB : 파일 크기 제한
   // 파일 업로드 시 업데이트
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0] ?? null;
+    if (selected && selected.size > MAX_FILE_SIZE) {
+      //5MB
+      alert('파일 크기는 5MB를 초과할 수 없습니다.');
+      e.target.value = '';
+      return;
+    }
     setFile(selected);
   };
 
-  // 파일 업로드 시 미리보기 URL 생성 (로컬 blob url)
-  const previewUrl = useMemo(() => {
-    if (!file) return '';
-    return URL.createObjectURL(file);
-  }, [file]);
+  const [previewUrl, setPreviewUrl] = useState<string>('');
 
-  // url 메모리 해제
+  // 파일 변경 시 미리보기 URL 생성 및 이전 URL 해제
   useEffect(() => {
+    if (!file) {
+      setPreviewUrl('');
+      return;
+    }
+    const url = URL.createObjectURL(file);
+    setPreviewUrl(url);
+
     return () => {
-      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      URL.revokeObjectURL(url);
     };
-  }, [previewUrl]);
+  }, [file]);
 
   const handleSubmit = () => {
     // 추후 DB 연결 예정

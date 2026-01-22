@@ -45,7 +45,7 @@ export default function DocsDetailPage({ params }: DocsProps) {
               onClick={() => {
                 alert('삭제 기능 연결 예정');
               }}
-              className="bg-white text-black hover:bg-black/1 active:bg-black/3"
+              className="bg-white text-black hover:bg-black/5 active:bg-black/5"
             />
           </div>
           <div className="flex-1">
