@@ -15,8 +15,10 @@ import { HospitalContent } from './components/hospital/HospitalContent';
 import { SirenContent } from './components/siren/SirenContent';
 import { MapBottomSheet } from './components/ui/MapBottomSheet';
 import { NaverMap } from './components/ui/NaverMap';
+import { PlaceCard } from './components/ui/PlaceCard';
 import { ToggleButton } from './components/ui/ToggleButton';
 import { useBottomSheet } from './hooks/useBottomSheet';
+import { SAVED_PLACES_MOCK, type SavedPlace } from './mock/savedPlaces';
 
 /**
  * @page MapPage
@@ -26,8 +28,10 @@ import { useBottomSheet } from './hooks/useBottomSheet';
  */
 export default function MapPage() {
   const [bookmark, setBookmark] = useState<boolean>(false);
+  const [selectedPlace, setSelectedPlace] = useState<SavedPlace | null>(null);
+
   const mapControlRef = useRef<{ centerToMyPosition: () => void }>(null);
-  // 시트 관련 로직과 상태를 커스텀 훅에서 추출
+
   const {
     openSheet,
     sheetPosition,
@@ -44,10 +48,30 @@ export default function MapPage() {
     <main className="relative h-screen w-screen overflow-hidden bg-gray-100">
       {/* 맵 레이어 */}
       <div className="absolute inset-0 z-0">
-        <NaverMap ref={mapControlRef} onMarkerClick={() => {}} />
+        <NaverMap
+          ref={mapControlRef}
+          onMarkerClick={(place) => {
+            if (!('placeName' in place)) return;
+
+            // 클릭한 마커가 이미 선택된 마커인지 확인
+            const isTargetAlreadySelected = selectedPlace?.id === place.id;
+
+            if (isTargetAlreadySelected) {
+              // 이미 선택된 걸 또 누르면 닫기
+              setSelectedPlace(null);
+              toggleSheet('bookmark');
+            } else {
+              // 새로운 걸 누르면 데이터 교체 후 열기/갱신
+              setSelectedPlace(place);
+              toggleSheet('bookmark', true);
+            }
+          }}
+          savedPlaces={SAVED_PLACES_MOCK}
+          showBookmarks={bookmark}
+        />
       </div>
 
-      {/* 필터 그룹 */}
+      {/* 상단 필터 그룹 */}
       <div className="absolute top-3 left-3 z-10 flex gap-2.5">
         <ToggleButton
           variant="pill"
@@ -110,7 +134,7 @@ export default function MapPage() {
         />
       </div>
 
-      {/* 바텀시트 컴포넌트 조합 */}
+      {/* 바텀시트 */}
       <MapBottomSheet
         openSheet={openSheet}
         position={sheetPosition}
@@ -121,7 +145,25 @@ export default function MapPage() {
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        {/* 컨텐츠 렌더링 영역 */}
+        {/* 북마크 마커 클릭 시 상세 카드 */}
+        {openSheet === 'bookmark' && selectedPlace && (
+          <div className="px-6 py-4">
+            <PlaceCard
+              data={{
+                name: selectedPlace.placeName,
+                type: selectedPlace.category,
+                address: selectedPlace.address,
+                phone: selectedPlace.phone,
+                distance: '',
+                imageUrl: '',
+                status: '',
+                explainTime: selectedPlace.openHours,
+              }}
+            />
+          </div>
+        )}
+
+        {/* 기존 컨텐츠 렌더링 영역 */}
         {openSheet === 'siren' && <SirenContent />}
         {openSheet === 'exchange' && <ExchangeContent />}
         {openSheet === 'hospital' && <HospitalContent />}
