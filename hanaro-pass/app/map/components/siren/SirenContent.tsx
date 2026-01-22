@@ -1,8 +1,8 @@
 import Image from 'next/image';
 import React from 'react';
-import { steps } from '../constants/emergency';
+import { steps } from '../../constants/emergency';
 
-export function SirenBottomSheet() {
+export function SirenContent() {
   return (
     <div>
       <div className="w-full">

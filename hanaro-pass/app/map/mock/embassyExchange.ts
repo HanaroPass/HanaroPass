@@ -1,4 +1,4 @@
-import type { LocationInfo } from '../components/PlaceCard';
+import type { LocationInfo } from '../components/ui/PlaceCard';
 
 export const locations: LocationInfo[] = [
   {

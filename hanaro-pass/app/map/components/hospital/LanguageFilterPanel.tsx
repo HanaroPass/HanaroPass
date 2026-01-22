@@ -1,34 +1,35 @@
 'use client';
 
-import { DEPARTMENTS } from '../constants/departments';
+import { LANGUAGES } from '../../constants/languages';
 
-interface Props {
+export default function LanguageFilterPanel({
+  value,
+  onChange,
+}: {
   value: string[];
-  onChange: (value: string[]) => void;
-}
-
-export default function DepartmentFilterPanel({ value, onChange }: Props) {
-  const toggle = (dep: string) => {
+  onChange: (v: string[]) => void;
+}) {
+  const toggle = (lang: string) => {
     onChange(
-      value.includes(dep) ? value.filter((d) => d !== dep) : [...value, dep],
+      value.includes(lang) ? value.filter((l) => l !== lang) : [...value, lang],
     );
   };
 
   return (
     <>
-      {DEPARTMENTS.map((dep) => {
-        const checked = value.includes(dep);
+      {LANGUAGES.map((lang) => {
+        const checked = value.includes(lang);
 
         return (
           <button
-            key={dep}
+            key={lang}
             type="button"
-            onClick={() => toggle(dep)}
+            onClick={() => toggle(lang)}
             className="flex h-16 w-full items-center gap-3 border-gray-200 border-b px-4 last:border-b-0"
           >
             <div
               className={`flex h-5 w-5 items-center justify-center rounded ${checked ? 'bg-green-ez' : 'border border-gray-300'}
-              `}
+      `}
             >
               {checked && (
                 <svg
@@ -49,7 +50,7 @@ export default function DepartmentFilterPanel({ value, onChange }: Props) {
               )}
             </div>
 
-            <span className="font-medium text-base">{dep}</span>
+            <span className="font-medium text-base">{lang}</span>
           </button>
         );
       })}
