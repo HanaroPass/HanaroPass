@@ -7,13 +7,8 @@ import { useEffect, useRef, useState } from 'react';
 import ActionButton from '@/components/header/ActionButton';
 import Header from '@/components/header/Header';
 import { Button } from '@/components/ui/button';
-import { AlienDrawer } from './components/bottomsheet/AlienDrawer';
-import { PassportDrawer } from './components/bottomsheet/PassportDrawer';
-
-type DrawerType = 'passport' | 'alien' | null;
 
 export default function IdentityPage() {
-  const [openDrawer, setOpenDrawer] = useState<DrawerType>(null);
   const [isAgreed, setIsAgreed] = useState(false);
   const [isGuideOpen, setIsGuideOpen] = useState(false);
   const router = useRouter();
@@ -24,9 +19,9 @@ export default function IdentityPage() {
     router.back();
   };
 
-  const handlePassportSubmit = (_data: Record<string, string>) => {};
-
-  const handleAlienSubmit = (_data: Record<string, string>) => {};
+  const handleTypeClick = (type: 'passport' | 'alien') => {
+    router.push(`/user/identity/ocr?type=${type}`);
+  };
 
   useEffect(() => {
     if (isGuideOpen && guideRef.current) {
@@ -82,13 +77,13 @@ export default function IdentityPage() {
             <div className="mb-12 space-y-4 sm:mb-6 sm:space-y-3">
               <ActionButton
                 text="여권"
-                onClick={() => setOpenDrawer('passport')}
+                onClick={() => handleTypeClick('passport')}
                 className="border border-green-ez bg-white text-green-ez hover:bg-green-ez/10"
               />
 
               <ActionButton
                 text="외국인등록증"
-                onClick={() => setOpenDrawer('alien')}
+                onClick={() => handleTypeClick('alien')}
                 className="border border-green-ez bg-white text-green-ez hover:bg-green-ez/10"
               />
             </div>
@@ -164,17 +159,6 @@ export default function IdentityPage() {
               )}
             </div>
           </div>
-
-          <PassportDrawer
-            open={openDrawer === 'passport'}
-            onOpenChange={(open) => setOpenDrawer(open ? 'passport' : null)}
-            onSubmit={handlePassportSubmit}
-          />
-          <AlienDrawer
-            open={openDrawer === 'alien'}
-            onOpenChange={(open) => setOpenDrawer(open ? 'alien' : null)}
-            onSubmit={handleAlienSubmit}
-          />
         </div>
       </div>
     </>
