@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   getHospitalDetailAction,
   submitLanguageApplicationAction,
@@ -17,10 +17,14 @@ export function useLanguageRegistration() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [initialIds, setInitialIds] = useState<string[]>([]); // 기존에 선택된 언어들
 
+  const hasFetched = useRef(false);
+
   useEffect(() => {
-    if (!hospitalId) return;
+    if (!hospitalId || hasFetched.current) return;
 
     const fetchHospital = async () => {
+      hasFetched.current = true;
+
       const result = await getHospitalDetailAction(hospitalId);
       if (result.success) {
         if (result.data.isPending) {
@@ -68,6 +72,10 @@ export function useLanguageRegistration() {
     }
   };
 
+  const isChanged =
+    JSON.stringify([...initialIds].sort()) !==
+    JSON.stringify([...selectedIds].sort());
+
   return {
     hospitalName,
     selectedIds,
@@ -75,6 +83,7 @@ export function useLanguageRegistration() {
     toggleLanguage,
     submitApplication,
     isSubmitting,
-    isValid: selectedIds.length > 0,
+    isChanged,
+    isValid: selectedIds.length > 0 && isChanged,
   };
 }
