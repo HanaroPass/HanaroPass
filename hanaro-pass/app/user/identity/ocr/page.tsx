@@ -2,12 +2,14 @@
 
 import { X } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 import CameraCapture from '@/app/user/identity/components/CameraCapture';
 
-export default function OCRPage() {
+function OCRPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const type = searchParams.get('type') as 'passport' | 'alien' | null;
+  const rawType = searchParams.get('type');
+  const type = rawType === 'passport' || rawType === 'alien' ? rawType : null;
 
   const handleClose = () => {
     router.back();
@@ -66,5 +68,13 @@ export default function OCRPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function OCRPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-black" />}>
+      <OCRPageContent />
+    </Suspense>
   );
 }
