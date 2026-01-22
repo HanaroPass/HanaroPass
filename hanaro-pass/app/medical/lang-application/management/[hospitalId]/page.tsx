@@ -111,7 +111,7 @@ export default function HospitalRegistrationDetailsPage() {
         <SectionHeader icon={History} title="처리 히스토리" />
         <div className="mt-1 px-6 py-2">
           <div className="relative rounded-2xl bg-gray-100/50 p-5">
-            <div className="absolute top-8 bottom-8 left-7.5 w-px bg-gray-500" />
+            <div className="absolute top-8 bottom-8 left-7.5 w-px bg-gray-300/80" />
 
             <div className="flex flex-col gap-8">
               {/* QQQ 4: 히스토리 타임라인 동적 생성 */}
@@ -161,7 +161,7 @@ const HistoryItem = ({
 }: any) => (
   <div className="relative flex w-full flex-row items-center justify-between">
     <div className="flex items-center gap-3">
-      <div className="z-10 flex h-5 w-5 items-center justify-center bg-[#F8F9FA]">
+      <div className="z-10 flex h-5 w-5 items-center justify-center bg-gray-100">
         <Icon className={`h-5 w-5 shrink-0 ${iconColor}`} />
       </div>
       <span className="whitespace-nowrap font-sans text-black-400 text-sm">
