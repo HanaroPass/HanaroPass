@@ -34,10 +34,10 @@ export function useBottomSheet() {
     if (!sheetRef.current) return 0;
     const sheetHeight = sheetRef.current.clientHeight;
     if (pos === 'closed') return sheetHeight;
-    if (pos === 'half') return sheetHeight / 2;
+    if (pos === 'half') return sheetHeight * 0.35;
 
     const contentHeight = contentRef.current?.scrollHeight || 0;
-    const fitPos = Math.max(0, sheetHeight - (contentHeight + 64));
+    const fitPos = Math.max(0, sheetHeight - (contentHeight + 60));
     return contentHeight > sheetHeight ? 0 : fitPos;
   }, []);
 
@@ -51,7 +51,7 @@ export function useBottomSheet() {
     setTimeout(() => {
       const contentHeight = contentRef.current?.scrollHeight || 0;
       const sheetHeight = sheetRef.current?.clientHeight || 0;
-      setSheetPosition(contentHeight > sheetHeight / 2 ? 'half' : 'full');
+      setSheetPosition(contentHeight > sheetHeight * 0.35 ? 'half' : 'full');
     }, 10);
   };
 

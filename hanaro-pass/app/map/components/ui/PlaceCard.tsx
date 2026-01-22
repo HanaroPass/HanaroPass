@@ -1,8 +1,9 @@
 'use client';
-import { LocateFixed, Phone } from 'lucide-react';
+import { Navigation, Phone } from 'lucide-react';
 import Image from 'next/image';
 
 export type LocationInfo = {
+  id?: number;
   name: string;
   type: string;
   status?: string;
@@ -69,7 +70,7 @@ export function PlaceCard({ data }: PlaceCardProps) {
           aria-label={`길찾기: ${data.name}`}
           className="flex items-center justify-center gap-2 rounded-full border border-black-200 bg-white px-2 py-1 text-black-800 text-sm"
         >
-          <LocateFixed className="h-4 w-4" />
+          <Navigation className="h-4 w-4" />
           길찾기
         </button>
       </div>
