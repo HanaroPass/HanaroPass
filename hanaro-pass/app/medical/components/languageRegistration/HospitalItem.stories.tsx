@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import HospitalItem from './HospitalItem';
 
 const meta: Meta<typeof HospitalItem> = {
-  title: 'Medical/HospitalItem',
+  title: 'Medical/LanguageRegistration/HospitalItem',
   component: HospitalItem,
   parameters: {
     layout: 'centered',

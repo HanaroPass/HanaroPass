@@ -1,10 +1,10 @@
 'use client';
 
 import { useParams, useRouter } from 'next/navigation';
-import HospitalGuide from '@/app/medical/components/language/HospitalGuide';
+import HospitalGuide from '@/app/medical/components/languageRegistration/HospitalGuide';
 import StatusBadge from '@/app/medical/components/StatusBadge';
-import ActionButton from '@/components/header/ActionButton';
 import RegistrationSummary from '@/components/result/RegistrationSummary';
+import ActionButton from '@/components/ui/ActionButton';
 
 export default function HospitalRegistrationCompletePage() {
   const params = useParams();

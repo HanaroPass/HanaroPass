@@ -3,7 +3,7 @@ import { Globe, Hospital } from 'lucide-react';
 import SectionHeader from './SectionHeader';
 
 const meta: Meta<typeof SectionHeader> = {
-  title: 'Medical/SectionHeader',
+  title: 'Medical/LanguageRegistration/SectionHeader',
   component: SectionHeader,
   parameters: {
     layout: 'fullscreen',
