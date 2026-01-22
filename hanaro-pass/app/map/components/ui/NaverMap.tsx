@@ -1,6 +1,12 @@
 'use client';
 
-import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
+import {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
 import type { SavedPlace } from '../../mock/savedPlaces';
 
 type Place = {
@@ -24,6 +30,7 @@ export const NaverMap = forwardRef(function NaverMap(
   const markersRef = useRef<naver.maps.Marker[]>([]);
   const onMarkerClickRef = useRef(onMarkerClick);
   const isMountedRef = useRef(true);
+  const [isMapReady, setIsMapReady] = useState(false);
 
   useEffect(() => {
     onMarkerClickRef.current = onMarkerClick;
@@ -37,7 +44,7 @@ export const NaverMap = forwardRef(function NaverMap(
 
     const currentMap = mapRef.current;
 
-    if (showBookmarks && savedPlaces && currentMap) {
+    if (isMapReady && showBookmarks && savedPlaces && currentMap) {
       const { naver } = window;
       savedPlaces.forEach((place) => {
         const marker = new naver.maps.Marker({
@@ -73,7 +80,7 @@ export const NaverMap = forwardRef(function NaverMap(
         markersRef.current.push(marker);
       });
     }
-  }, [showBookmarks, savedPlaces, onMarkerClick]);
+  }, [isMapReady, showBookmarks, savedPlaces, onMarkerClick]);
 
   useEffect(() => {
     const NAVER_MAP_KEY = process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID;
@@ -100,14 +107,13 @@ export const NaverMap = forwardRef(function NaverMap(
         });
 
         mapRef.current = map;
+        setIsMapReady(true);
 
         const myMarker = new naver.maps.Marker({
           position: center,
           map,
           icon: {
-            content: `
-              <div class="w-4 h-4 bg-blue-600 rounded-full border-2 border-white shadow-lg"></div>
-            `,
+            content: `<div class="w-4 h-4 bg-blue-600 rounded-full border-2 border-white shadow-lg"/>`,
             anchor: new naver.maps.Point(8, 8),
           },
         });
