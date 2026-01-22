@@ -1,37 +1,31 @@
 'use client';
 
 import { X } from 'lucide-react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { Suspense, useState } from 'react';
+import { useState } from 'react';
 import { AlienDrawer } from '@/app/user/identity/components/bottomsheet/AlienDrawer';
 import { PassportDrawer } from '@/app/user/identity/components/bottomsheet/PassportDrawer';
 import CameraCapture from '@/app/user/identity/components/CameraCapture';
 
-function OCRPageContent() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const rawType = searchParams.get('type');
-  const type = rawType === 'passport' || rawType === 'alien' ? rawType : null;
+type OCRPageContentProps = {
+  type: 'passport' | 'alien' | null;
+  onSubmit: (data: Record<string, string>) => void;
+  onClose: () => void;
+};
 
-  // 바텀시트가 처음부터 열려있게 설정
+export default function OCRPageContent({
+  type,
+  onSubmit,
+  onClose,
+}: OCRPageContentProps) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(true);
 
-  const handleClose = () => {
-    router.back();
-  };
-
-  // 바텀시트에서 정보 확인 완료
   const handleSubmit = (data: Record<string, string>) => {
     console.log('제출된 정보:', data);
-    setIsDrawerOpen(false);
-    // 여기서 다음 단계로 이동
-    router.push('/user/identity/complete'); // 예시
+    onSubmit(data);
   };
 
-  // 재촬영 버튼 클릭 시 바텀시트만 닫기
   const handleRetake = () => {
     setIsDrawerOpen(false);
-    // 바텀시트만 닫고 OCR 페이지에 머물러서 다시 촬영 가능
   };
 
   return (
@@ -52,7 +46,7 @@ function OCRPageContent() {
           <div className="flex justify-end">
             <button
               type="button"
-              onClick={handleClose}
+              onClick={onClose}
               className="p-2 text-white transition-opacity active:opacity-50"
               aria-label="닫기"
             >
@@ -85,7 +79,6 @@ function OCRPageContent() {
         </div>
       </div>
 
-      {/* PassportDrawer 또는 AlienDrawer - 페이지 로드 시 바로 열림 */}
       {type === 'passport' ? (
         <PassportDrawer
           open={isDrawerOpen}
@@ -102,13 +95,5 @@ function OCRPageContent() {
         />
       )}
     </div>
-  );
-}
-
-export default function OCRPage() {
-  return (
-    <Suspense fallback={<div className="min-h-screen bg-black" />}>
-      <OCRPageContent />
-    </Suspense>
   );
 }

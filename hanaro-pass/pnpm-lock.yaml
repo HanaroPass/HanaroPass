@@ -41,9 +41,6 @@ importers:
       '@radix-ui/react-visually-hidden':
         specifier: ^1.2.4
         version: 1.2.4(@types/react-dom@19.2.3(@types/react@19.2.9))(@types/react@19.2.9)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
-      '@use-funnel/next':
-        specifier: ^0.0.22
-        version: 0.0.22(next@16.1.4(@babel/core@7.28.6)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3)
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -1609,17 +1606,6 @@ packages:
 
   '@types/resolve@1.20.6':
     resolution: {integrity: sha512-A4STmOXPhMUtHH+S6ymgE2GiBSMqf4oTvcQZMcHzokuTLVYzXTB8ttjcgxOVaAp2lGwEdzZ0J+cRbbeevQj1UQ==}
-
-  '@use-funnel/core@0.0.13':
-    resolution: {integrity: sha512-0cFqUs0Z5QWnTG5ua2FZloKyGn3KAbA9miaFOa6RAeBmm74lilyFk4ovLe/9g1W58ZZlR3+1wbjDzyAT9yIGig==}
-    peerDependencies:
-      react: '>=16.8'
-
-  '@use-funnel/next@0.0.22':
-    resolution: {integrity: sha512-AFdROs+MfC+HxVnHNyI6jNuWmgV1YjUq6IG2ckps2PTqPLp7ZowtmVAa1k7iJxEBu/0PXqXiLstEku1V8kZACQ==}
-    peerDependencies:
-      next: '>=12'
-      react: '>=16.8'
 
   '@vitest/browser-playwright@4.0.17':
     resolution: {integrity: sha512-CE9nlzslHX6Qz//MVrjpulTC9IgtXTbJ+q7Rx1HD+IeSOWv4NHIRNHPA6dB4x01d9paEqt+TvoqZfmgq40DxEQ==}
@@ -4258,16 +4244,6 @@ snapshots:
       csstype: 3.2.3
 
   '@types/resolve@1.20.6': {}
-
-  '@use-funnel/core@0.0.13(react@19.2.3)':
-    dependencies:
-      react: 19.2.3
-
-  '@use-funnel/next@0.0.22(next@16.1.4(@babel/core@7.28.6)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3)':
-    dependencies:
-      '@use-funnel/core': 0.0.13(react@19.2.3)
-      next: 16.1.4(@babel/core@7.28.6)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
-      react: 19.2.3
 
   '@vitest/browser-playwright@4.0.17(playwright@1.57.0)(vite@7.3.1(@types/node@20.19.30)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0))(vitest@4.0.17)':
     dependencies:
