@@ -36,6 +36,12 @@ export const CustomPath: Story = {
   },
 };
 
+export const withChildren: Story = {
+  args: {
+    children: <button className="bg-green-ez">커스텀 요소</button>,
+  },
+};
+
 export const ComplexAction: Story = {
   args: {
     title: '글쓰기',
