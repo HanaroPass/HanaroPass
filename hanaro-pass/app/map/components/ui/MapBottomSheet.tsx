@@ -19,7 +19,7 @@ type MapBottomSheetProps = {
   contentRef: RefObject<HTMLDivElement | null>;
   onTouchStart: (e: React.TouchEvent) => void;
   onTouchMove: (e: React.TouchEvent) => void;
-  onTouchEnd: (e: React.TouchEvent) => void;
+  onTouchEnd: () => void;
   getTranslateValue: (pos: SheetPosition) => number;
   children: ReactNode;
 };
