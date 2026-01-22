@@ -36,14 +36,14 @@ export function HospitalApplicationCard({
       onClick={handleCardClick}
       className={cn(
         'relative flex h-auto w-full flex-col items-stretch justify-start gap-0 p-5 text-left transition-all active:scale-[0.98]',
-        'rounded-(--radius-md) border-(--color-border) bg-(--color-white-ez) font-sans shadow-sm',
+        'rounded-2xl border-(--color-border) bg-(--color-white-ez) font-sans shadow-sm',
         'hover:border-hana-green/30 hover:bg-(--color-white-ez) focus-visible:ring-2 focus-visible:ring-hana-green',
       )}
     >
       {/* 1. 상단 영역 (아이콘 + 이름 + 배지) */}
-      <div className="flex items-center gap-4">
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-sm bg-[#CBFBF1]">
-          <Hospital className="h-7 w-7 text-(--color-hana-green)" />
+      <div className="flex items-center gap-3">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-3xl bg-(--color-green-mint)">
+          <Hospital className="h-12 w-12 text-(--color-hana-green)" />
         </div>
         <div className="flex-1">
           <h3 className="font-bold text-(--color-black-900)">{name}</h3>

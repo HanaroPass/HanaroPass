@@ -54,14 +54,6 @@ const MOCK_APPLICATIONS = [
     languages: ['영어', '중국어', '일본어', '+1'],
     date: '2026.01.17 09:30',
   },
-  {
-    id: 6,
-    name: '삼성서울병원3',
-    status: 'rejected' as StatusType,
-    langCount: 4,
-    languages: ['영어', '중국어', '일본어', '+1'],
-    date: '2026.01.17 09:30',
-  },
 ];
 
 export default function AdminDashboardPage() {
@@ -92,7 +84,13 @@ export default function AdminDashboardPage() {
 
       <section className="no-scrollbar flex-1 overflow-y-auto p-6">
         <div className="flex flex-col gap-4">
-          {filteredApplications.length > 0 ? (
+          {filteredApplications.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-10 text-center">
+              <p className="font-medium font-sans text-base text-black-600">
+                신청 결과가 없습니다
+              </p>
+            </div>
+          ) : (
             filteredApplications.map((app) => (
               <HospitalApplicationCard
                 key={app.id}
@@ -104,10 +102,6 @@ export default function AdminDashboardPage() {
                 date={app.date}
               />
             ))
-          ) : (
-            <div className="flex h-60 flex-col items-center justify-center text-(--color-black-400)">
-              <p className="font-sans text-sm">해당하는 내역이 없습니다.</p>
-            </div>
           )}
         </div>
       </section>
