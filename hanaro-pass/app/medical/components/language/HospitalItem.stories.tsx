@@ -15,7 +15,7 @@ const meta: Meta<typeof HospitalItem> = {
   argTypes: {
     name: { control: 'text' },
     address: { control: 'text' },
-    onSelect: { action: 'onSelect' }, // QQQ : action으로 라우팅 하기
+    onSelect: { action: 'onSelect' },
   },
 };
 

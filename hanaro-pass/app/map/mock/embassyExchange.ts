@@ -1,10 +1,10 @@
-import type { LocationInfo } from '../components/EmbassyExchangeSheet';
+import type { LocationInfo } from '../components/ui/PlaceCard';
 
 export const locations: LocationInfo[] = [
   {
     name: '주한 파키스탄대사관',
     type: '대사관, 영사관',
-    status: '운영중',
+    status: '운영 중',
     explainTime: '17:00에 운영 종료',
     distance: '3.9km',
     address: '서울 강남구 신사동',

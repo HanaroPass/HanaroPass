@@ -1,13 +1,47 @@
-import DocsCard from './components/DocsCard';
+'use client';
+import { useState } from 'react';
+import DocsCardStack from './components/DocsCardStack';
+import BottomSheet from './components/BottomSheet';
+import DocsSelectList from './components/BottomSelectList';
+import { DOCS_CARD_ITEMS } from './constants/docsCardItem';
 
 export default function DocsPage() {
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+
   return (
-    <main>
-      <DocsCard title="모바일 여권" color="peach" />
-      <DocsCard title="모바일 외국인 신분증" color="blueSoft" />
-      <DocsCard title="외국인 학생증" color="purple" />
-      <DocsCard title="여권 사본" color="blueStrong" />
-      <DocsCard title="여권 사진" color="gray" />
+    <main className="relative min-h-dvh bg-linear-to-br from-(--color-green-ez) to-[#89D5D8] px-5 pt-4">
+      {/* 상단 타이틀 */}
+      <header className="mb-10">
+        <h1 className="font-hana font-semibold text-[14px] text-white/90 [text-shadow:0_1px_2px_rgba(0,0,0,0.5)]">
+          Hana EZ Document
+        </h1>
+      </header>
+      {/* 보유 + 추가 버튼 */}
+      <div className="mb-3 flex items-center justify-between text-white">
+        <h2 className="font-sans font-semibold text-[16px]">보유</h2>
+        <button
+          type="button"
+          onClick={() => setIsSheetOpen(true)}
+          className="rounded-3xl border border-white/70 px-3.5 py-1 font-sans font-semibold text-[14px] transition-transform active:scale-95 active:opacity-80"
+        >
+          + 추가
+        </button>
+      </div>
+      {/* 카드 아코디언 */}
+      <div className="pb-10">
+        <DocsCardStack />
+      </div>
+
+      {/* 바텀시트 */}
+      <BottomSheet isOpen={isSheetOpen} onClose={() => setIsSheetOpen(false)}>
+        <DocsSelectList
+          items={DOCS_CARD_ITEMS}
+          onSelect={(id) => {
+            console.log('selected:', id);
+            setIsSheetOpen(false);
+          }}
+        />
+      </BottomSheet>
     </main>
   );
 }

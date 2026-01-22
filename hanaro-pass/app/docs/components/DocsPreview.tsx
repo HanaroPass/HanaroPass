@@ -8,9 +8,7 @@ type DocsPreviewProps = {
   name: string;
 };
 
-export default function DocsPreview({
-  name = 'Kelsey Kwon',
-}: DocsPreviewProps) {
+export default function DocsPreview({ name }: DocsPreviewProps) {
   return (
     <div className="relative h-41 w-65 rounded-[15px] bg-green-300 shadow-[0_12px_24px_rgba(255,255,255,0.35)]">
       {/*로고 영역 */}
@@ -34,7 +32,7 @@ export default function DocsPreview({
       {/*사진 영역 */}
       <div className="absolute top-10 left-23">
         <Image
-          src="/docs/dreamCardPreview.png"
+          src="/images/docs/dreamCardPreview.png"
           alt="document preview"
           width={92}
           height={92}
