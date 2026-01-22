@@ -57,10 +57,31 @@ export function useBottomSheet() {
 
   /**
    * @function toggleSheet
-   * @description 외부 버튼 클릭 시 호출되는 메인 토글러입니다.
-   * 같은 타입을 누르면 닫고, 다른 타입을 누르면 교체합니다.
+   * @param type 시트 타입
+   * @param isMarkerClick 마커 클릭 여부
+   * @param isSamePlace 현재 선택된 장소와 클릭한 장소가 같은지 여부
    */
-  const toggleSheet = (type: SheetType) => {
+  const toggleSheet = (
+    type: SheetType,
+    isMarkerClick?: boolean,
+    isSamePlace?: boolean,
+  ) => {
+    // 같은 마커를 또 눌렀다면 시트를 닫음
+    if (openSheet === type && isMarkerClick && isSamePlace) {
+      setSheetPosition('closed');
+      setTimeout(() => setOpenSheet(null), 300);
+      return;
+    }
+
+    // 다른 마커를 눌렀을 때 (닫았다가 다시 열기)
+    if (openSheet === type && isMarkerClick) {
+      setSheetPosition('closed');
+      setTimeout(() => {
+        handleOpen(type);
+      }, 300);
+      return;
+    }
+
     if (openSheet === type) {
       setSheetPosition('closed');
       setTimeout(() => setOpenSheet(null), 300);
