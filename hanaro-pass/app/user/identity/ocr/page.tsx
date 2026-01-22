@@ -14,8 +14,7 @@ export default function OCRPage() {
   };
 
   const getTitle = () => {
-    if (type === 'passport') return '여권 등록';
-    if (type === 'alien') return '신분증 등록';
+    return type === 'passport' ? '여권 등록' : '신분증 등록';
   };
 
   return (
@@ -46,8 +45,8 @@ export default function OCRPage() {
         </div>
       </header>
 
-      <div className="bg-black px-6 py-6 text-center text-white">
-        <p className="mb-2 font-semibold text-xl">
+      <div className="bg-black px-6 py-6 text-center text-white sm:py-8 md:py-10 lg:py-12">
+        <p className="mb-2 font-semibold text-xl sm:mb-3 md:mb-4">
           {type === 'passport' ? '여권' : '신분증'} 앞면을 시각 영역에 맞추면
         </p>
         <p className="font-semibold text-xl">자동으로 촬영됩니다.</p>
@@ -55,11 +54,11 @@ export default function OCRPage() {
 
       <CameraCapture type={type} />
 
-      <div className="bg-black px-8 pb-4 text-left">
-        <p className="mb-4 font-medium text-base text-gray-300">
+      <div className="bg-black px-8 pb-6 text-left sm:pb-8 md:pb-10 lg:pb-12">
+        <p className="mb-4 font-medium text-base text-gray-300 sm:mb-5 md:mb-6">
           단순하고 어두운 배경 위에서 촬영하면 인식률이 더 좋아집니다.
         </p>
-        <p className="mb-4 font-medium text-base text-gray-300">
+        <p className="mb-4 font-medium text-base text-gray-300 sm:mb-5 md:mb-6">
           빛 반사가 없는 곳에서 촬영하세요.
         </p>
         <p className="font-medium text-base text-gray-300">

@@ -1,4 +1,4 @@
-import { type FC, useCallback, useEffect, useRef, useState } from 'react';
+import { type FC, useCallback, useEffect, useRef } from 'react';
 
 interface CameraCaptureProps {
   type?: 'passport' | 'alien' | null;
@@ -6,18 +6,16 @@ interface CameraCaptureProps {
 
 const CameraCapture: FC<CameraCaptureProps> = ({ type: _type }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [error, setError] = useState('');
 
   const startCamera = useCallback(async () => {
-    setError('');
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         await videoRef.current.play();
       }
-    } catch {
-      setError('카메라 접근에 실패했습니다.');
+    } catch (error) {
+      console.error('카메라 접근 실패:', error);
     }
   }, []);
 
@@ -36,51 +34,14 @@ const CameraCapture: FC<CameraCaptureProps> = ({ type: _type }) => {
   }, [startCamera]);
 
   return (
-    <div
-      style={{
-        background: '#000',
-        display: 'flex',
-        flexDirection: 'column',
-        color: '#fff',
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          padding: '0 24px',
-          marginBottom: '24px',
-        }}
-      >
+    <div className="flex flex-col bg-black text-white">
+      <div className="mb-12 flex flex-col items-center px-6">
         <video
           ref={videoRef}
-          style={{
-            width: '100%',
-            maxWidth: 400,
-            height: 300,
-            background: '#333',
-            borderRadius: 12,
-            objectFit: 'cover',
-          }}
+          className="h-72 w-full max-w-sm rounded-xl bg-gray-700 object-cover"
         >
           <track kind="captions" />
         </video>
-      </div>
-
-      <div style={{ padding: '0 24px 24px 24px' }}>
-        {error && (
-          <div
-            style={{
-              color: 'red',
-              textAlign: 'center',
-              fontSize: 14,
-              marginTop: 8,
-            }}
-          >
-            {error}
-          </div>
-        )}
       </div>
     </div>
   );
