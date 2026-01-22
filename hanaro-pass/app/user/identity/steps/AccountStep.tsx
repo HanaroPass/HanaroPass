@@ -22,7 +22,7 @@ export default function AccountStep({ onSubmit, onClose }: AccountStepProps) {
   return (
     <>
       <Header
-        title="계좌 확인"
+        title="하나인증서"
         rightElement={
           <Button
             variant="ghost"

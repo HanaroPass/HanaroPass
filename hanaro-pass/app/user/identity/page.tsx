@@ -1,9 +1,9 @@
 'use client';
 
-import { X } from 'lucide-react';
+import { ChevronDown, ChevronUp, X } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Header from '@/components/header/Header';
 import ActionButton from '@/components/ui/ActionButton';
 import { Button } from '@/components/ui/button';
@@ -15,7 +15,9 @@ import ResultStep from './steps/ResultStep';
 
 export default function IdentityPage() {
   const [isAgreed, setIsAgreed] = useState(false);
+  const [isGuideOpen, setIsGuideOpen] = useState(false);
   const router = useRouter();
+  const guideRef = useRef<HTMLDivElement>(null);
 
   const { currentStep, context, history } = useFunnel({
     step: 'intro',
@@ -29,6 +31,17 @@ export default function IdentityPage() {
   const handleClose = () => {
     router.back();
   };
+
+  useEffect(() => {
+    if (isGuideOpen && guideRef.current) {
+      setTimeout(() => {
+        guideRef.current?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+        });
+      }, 100);
+    }
+  }, [isGuideOpen]);
 
   // Intro Step
   if (currentStep === 'intro') {
@@ -111,6 +124,58 @@ export default function IdentityPage() {
                     }}
                   />
                 </label>
+              </div>
+
+              <div
+                ref={guideRef}
+                className="scroll-mt-20 border-gray-200 border-t pt-2 transition-all duration-300"
+              >
+                <Button
+                  variant="ghost"
+                  onClick={() => setIsGuideOpen((prev) => !prev)}
+                  className="flex h-auto w-full items-center justify-between px-0 py-3 text-gray-600 text-sm hover:bg-transparent"
+                >
+                  <span>이용안내</span>
+                  {isGuideOpen ? (
+                    <ChevronUp size={16} />
+                  ) : (
+                    <ChevronDown size={16} />
+                  )}
+                </Button>
+
+                {isGuideOpen && (
+                  <div className="fade-in slide-in-from-top-2 mt-4 animate-in px-2 font-normal text-gray-800 text-sm">
+                    <ul className="space-y-2">
+                      <li className="flex items-start">
+                        <span className="mr-2 shrink-0 select-none text-gray-400">
+                          •
+                        </span>
+                        <span className="leading-relaxed">
+                          하나인증서는 국세청, 정부 24, 본인확인 등에 이용할 수
+                          있습니다.
+                        </span>
+                      </li>
+                      <li className="flex items-start">
+                        <span className="mr-2 shrink-0 select-none text-gray-400">
+                          •
+                        </span>
+                        <span className="leading-relaxed">
+                          분실/도난/유효기간 만료/사진훼손 등 정상인식이
+                          불가능한 신분증은 이용할 수 없습니다.
+                        </span>
+                      </li>
+                      <li className="flex items-start">
+                        <span className="mr-2 shrink-0 select-none text-gray-400">
+                          •
+                        </span>
+                        <span className="leading-relaxed">
+                          신분증 발급기관에서 검증되지 않는 신분증은 거부될 수
+                          있습니다.
+                        </span>
+                      </li>
+                    </ul>
+                  </div>
+                )}
               </div>
             </div>
           </div>
