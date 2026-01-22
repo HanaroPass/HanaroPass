@@ -9,11 +9,10 @@ export const metadata: Metadata = {
 
 function layout({ children }: PropsWithChildren) {
   return (
-    <div className="app-layout">
+    <div className="app-shell">
       <Header title="K-map" />
       <main className="app-main">{children}</main>
     </div>
   );
 }
-
 export default layout;

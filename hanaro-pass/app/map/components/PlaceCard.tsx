@@ -1,5 +1,6 @@
 'use client';
 import { LocateFixed, Phone } from 'lucide-react';
+import Image from 'next/image';
 
 export type LocationInfo = {
   name: string;
@@ -12,11 +13,11 @@ export type LocationInfo = {
   imageUrl?: string;
 };
 
-type EmbassyExchangeSheetProps = {
+type PlaceCardProps = {
   data: LocationInfo;
 };
 
-export function EmbassyExchangeSheet({ data }: EmbassyExchangeSheetProps) {
+export function PlaceCard({ data }: PlaceCardProps) {
   return (
     <div className="w-full bg-white font-semibold text-sm">
       <div className="flex items-start justify-between gap-4">
@@ -40,14 +41,17 @@ export function EmbassyExchangeSheet({ data }: EmbassyExchangeSheetProps) {
         </div>
 
         <div className="shrink-0">
-          <img
-            src={
-              data.imageUrl ??
-              'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885_1280.jpg'
-            }
-            alt={`${data.name} 사진`}
-            className="h-20 w-20 rounded object-cover"
-          />
+          {data.imageUrl ? (
+            <Image
+              src={data.imageUrl}
+              width={80}
+              height={80}
+              alt={`${data.name} 사진`}
+              className="h-20 w-20 rounded object-cover"
+            />
+          ) : (
+            <div className="h-20 w-20 rounded bg-gray-100" />
+          )}
         </div>
       </div>
 

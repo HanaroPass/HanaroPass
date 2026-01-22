@@ -34,7 +34,7 @@ export default function DocsPreview({
       {/*사진 영역 */}
       <div className="absolute top-10 left-23">
         <Image
-          src="/docs/dreamCardPreview.png"
+          src="/images/docs/dreamCardPreview.png"
           alt="document preview"
           width={92}
           height={92}
