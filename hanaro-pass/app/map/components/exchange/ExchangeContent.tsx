@@ -1,6 +1,5 @@
 'use client';
 
-// 1. mock 데이터 가져오기 (경로와 이름을 확인하세요)
 import { MAP_EXCHANGE_MOCK } from '../../mock/embassyExchange';
 import { PlaceCard } from '../ui/PlaceCard';
 
