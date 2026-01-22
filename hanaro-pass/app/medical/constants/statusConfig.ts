@@ -22,7 +22,7 @@ export const STATUS_CONFIG = {
     badge: {
       bg: 'bg-green-100',
       text: 'text-green-800',
-      dot: 'bg-green-500',
+      dot: 'bg-green-800',
     },
     alert: {
       bg: 'bg-green-50',
