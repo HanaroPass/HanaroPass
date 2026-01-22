@@ -1,7 +1,7 @@
-import { WalletMinimal } from 'lucide-react';
+import { ChevronDown, WalletMinimal } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import type { PropsWithChildren, ReactNode } from 'react';
+import type { PropsWithChildren } from 'react';
 import { cn } from '@/lib/utils';
 import RemittanceIcon from './icons/RemittanceIcon';
 import ServiceIcon from './icons/ServiceIcon';
@@ -33,9 +33,27 @@ export default function MainWrapper({
       <header className="flex h-16.25 w-full items-center justify-between bg-transparent px-4.5 py-3.5">
         <p className="font-hana text-sm text-white">Hana Ro Pass</p>
         <div className="flex gap-4">
-          <button>언어 선택</button>
-          <button>알림</button>
-          <button>프로필</button>
+          <button type="button" className="flex items-center gap-2">
+            <Image
+              width={28}
+              height={19}
+              src="/images/main/korea.png"
+              alt="언어 설정 국가"
+            />
+            <ChevronDown size={20} stroke="white" />
+          </button>
+          <Image
+            width={20}
+            height={20}
+            src="/images/main/bell.svg"
+            alt="알림"
+          />
+          <Image
+            width={20}
+            height={20}
+            src="/images/main/profile.svg"
+            alt="알림"
+          />
         </div>
       </header>
 
@@ -83,7 +101,7 @@ export default function MainWrapper({
   );
 }
 
-function Title({ children }: { children: ReactNode }) {
+function Title({ children }: PropsWithChildren) {
   return (
     <div className="mb-4">
       <h1 className="font-bold text-xl">{children}</h1>
