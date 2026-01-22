@@ -61,7 +61,7 @@ export default function DocsAddPage({ params }: DocsProps) {
           <button
             type="button"
             onClick={handlePick}
-            className="flex w-full flex-col items-center justify-center px-4 py-10 text-center"
+            className="flex w-full flex-col items-center justify-center px-4 py-10 text-center transition-transform duration-150 active:scale-90"
           >
             {previewUrl ? (
               // 파일 업로드 시 미리 보기 영역
