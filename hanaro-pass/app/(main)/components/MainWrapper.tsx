@@ -1,7 +1,7 @@
 import { WalletMinimal } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import type { PropsWithChildren } from 'react';
+import type { PropsWithChildren, ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import RemittanceIcon from './icons/RemittanceIcon';
 import ServiceIcon from './icons/ServiceIcon';
@@ -82,3 +82,13 @@ export default function MainWrapper({
     </div>
   );
 }
+
+function Title({ children }: { children: ReactNode }) {
+  return (
+    <div className="mb-4">
+      <h1 className="font-bold text-xl">{children}</h1>
+    </div>
+  );
+}
+
+MainWrapper.Title = Title;
