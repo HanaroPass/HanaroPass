@@ -17,8 +17,17 @@ export default function LanguageRegistrationPage() {
     submitApplication,
     isSubmitting,
     initialIds,
+    isChanged,
     isValid,
   } = useLanguageRegistration();
+
+  const actionText = isSubmitting
+    ? '신청 중...'
+    : initialIds.length > 0
+      ? isChanged
+        ? `언어 정보 수정하기 (${selectedIds.length})`
+        : '변경 사항 없음'
+      : `병원 언어 등록 신청하기${selectedIds.length > 0 ? ` (${selectedIds.length})` : ''}`;
 
   return (
     <div className="flex h-full flex-col">
@@ -58,13 +67,7 @@ export default function LanguageRegistrationPage() {
       <div className="border-gray-200 border-t bg-white px-6 py-4 pb-8">
         <ActionButton
           disabled={!isValid || isSubmitting}
-          text={
-            isSubmitting
-              ? '신청 중...'
-              : selectedIds.length > 0 && initialIds.length > 0 // 기존 데이터가 있다면
-                ? `언어 정보 수정하기 (${selectedIds.length})`
-                : `병원 언어 등록 신청하기 ${isValid ? `(${selectedIds.length})` : ''}`
-          }
+          text={actionText}
           onClick={submitApplication}
           className="py-7 text-lg"
         />
