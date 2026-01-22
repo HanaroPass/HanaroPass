@@ -4,8 +4,9 @@ import { useState } from 'react';
 import DocsCard from './DocsCard';
 import { DOCS_CARD_ITEMS } from '../../constants/docsCardItem';
 import { cn } from '@/lib/utils';
+import type { userProps } from '../../docsPageClient';
 
-export default function DocsCardStack() {
+export default function DocsCardStack({ userName }: userProps) {
   const [openId, setOpenId] = useState('');
   const openIndex = DOCS_CARD_ITEMS.findIndex((v) => v.id === openId);
 
@@ -32,6 +33,7 @@ export default function DocsCardStack() {
               docId={item.id}
               title={item.title}
               color={item.color}
+              userName={userName}
               isOpen={isOpen}
               onToggle={() =>
                 setOpenId((prev) => (prev === item.id ? '' : item.id))

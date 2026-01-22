@@ -277,7 +277,7 @@ async function seedUserDocs() {
     update: {},
     create: {
       userId,
-      passportNumber: `P-${userId}-ENCRYPTED`,
+      passportNumber: `P-${userId}`,
       gender: 'MALE',
       issueDate: new Date('2022-01-01'),
       expiryDate: new Date('2032-01-01'),
@@ -290,7 +290,7 @@ async function seedUserDocs() {
     update: {},
     create: {
       userId,
-      arcNumber: `ARC-${userId}-ENCRYPTED`,
+      arcNumber: `ARC-${userId}`,
       residenceStatus: 'D-2',
       issueDate: new Date('2023-03-01'),
       userPhotoUrl: 'https://example.com/arc-photo.jpg',
