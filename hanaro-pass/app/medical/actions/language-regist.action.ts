@@ -73,3 +73,33 @@ export async function getHospitalDetailAction(
     return handleActionResult(err);
   }
 }
+
+/**
+ * [외국어 가능 폼 신청 제출 API]
+ *
+ * 사용자가 선택한 병원과 언어 리스트를 바탕으로 '언어 등록 신청서'를 생성.
+ * 실제 서비스 데이터(HospitalLang)에 바로 반영되지 않고, 심사를 위해 신청 테이블에 저장됩니다.
+ *
+ * * @param hospitalId - 신청 대상 병원의 고유 ID
+ * @param languages - 사용자가 선택한 언어 명칭 리스트 (예: ['영어', '일본어'])
+ * @returns {Promise<ActionResult<null>>}
+ * 성공 시 별도의 반환 데이터 없이 success: true를 리턴합니다.
+ */
+export async function submitLanguageApplicationAction(
+  hospitalId: number,
+  languages: string[],
+): Promise<ActionResult<null>> {
+  try {
+    await prisma.hospitalLanguageApplication.create({
+      data: {
+        hospitalId,
+        requestLangs: languages,
+        status: 'PENDING',
+      },
+    });
+
+    return { success: true, data: null };
+  } catch (err) {
+    return handleActionResult(err);
+  }
+}
