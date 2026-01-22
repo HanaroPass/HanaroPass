@@ -5,18 +5,28 @@ export async function postOpenAI(url: string, body: string) {
   if (!apiKey) throw new Error('OPEN AI API 키가 없습니다.');
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 300000);
-  const response = await fetch(`https://api.openai.com/v1/${url}`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: body,
-  });
-  clearTimeout(timeoutId);
+  const timeoutId = setTimeout(() => controller.abort(), 30000);
 
-  return response;
+  try {
+    const response = await fetch(`https://api.openai.com/v1/${url}`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body,
+      signal: controller.signal,
+    });
+
+    return response;
+  } catch (e) {
+    if ((e as Error).name === 'AbortError') {
+      throw new Error('AI 응답 시간이 초과되었습니다.');
+    }
+    throw e;
+  } finally {
+    clearTimeout(timeoutId);
+  }
 }
 
 export async function postSymptomForm(formData: FormData) {
