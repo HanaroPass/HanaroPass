@@ -29,6 +29,7 @@ export default function DocsCardStack() {
             )}
           >
             <DocsCard
+              docId={item.id}
               title={item.title}
               color={item.color}
               isOpen={isOpen}
