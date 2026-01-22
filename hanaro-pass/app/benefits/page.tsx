@@ -14,7 +14,7 @@ function page() {
   return (
     <div className="flex min-h-[calc(100dvh-56px)] flex-col">
       <div className="px-4 pt-2">
-        <SearchInput placeholder="쿠폰 검색" />
+        <SearchInput id="coupon-search" placeholder="쿠폰을 검색해주세요" />
         <TabsLine
           defaultValue="all"
           className="no-scrollbar mb-4 w-full overflow-auto overflow-y-hidden"

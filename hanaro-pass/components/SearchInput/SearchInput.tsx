@@ -1,48 +1,44 @@
 'use client';
 
 import { Search, XCircle } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 
 type SearchInputProps = React.InputHTMLAttributes<HTMLInputElement>;
 
 function SearchInput({
   placeholder = '내용을 입력하세요',
   onChange,
-  value: propsValue,
+  value: controlledValue,
   defaultValue,
   ...props
 }: SearchInputProps) {
-  const [internalValue, setInternalValue] = useState(
-    propsValue ?? defaultValue ?? '',
+  const [uncontrolledValue, setUncontrolledValue] = useState(
+    defaultValue ?? '',
   );
   const inputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    if (propsValue !== undefined) {
-      setInternalValue(propsValue);
-    }
-  }, [propsValue]);
+  const isControlled = controlledValue !== undefined;
+  const value = isControlled ? controlledValue : uncontrolledValue;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (propsValue === undefined) {
-      setInternalValue(e.target.value);
+    if (!isControlled) {
+      setUncontrolledValue(e.target.value);
     }
-    if (onChange) onChange(e);
+    onChange?.(e);
   };
 
   const handleClear = () => {
-    setInternalValue('');
-    if (inputRef.current) {
-      inputRef.current.focus();
+    const el = inputRef.current;
+    if (!el) return;
 
-      if (onChange) {
-        const event = {
-          target: { ...inputRef.current, value: '' },
-          currentTarget: { ...inputRef.current, value: '' },
-        } as React.ChangeEvent<HTMLInputElement>;
-        onChange(event);
-      }
+    el.value = '';
+
+    if (!isControlled) {
+      setUncontrolledValue('');
     }
+
+    el.focus();
+    el.dispatchEvent(new Event('input', { bubbles: true }));
   };
 
   return (
@@ -52,14 +48,14 @@ function SearchInput({
       <input
         ref={inputRef}
         type="search"
-        value={internalValue}
+        value={value}
         onChange={handleInputChange}
         placeholder={placeholder}
         className="flex-1 bg-transparent text-base text-black-900 outline-none placeholder:text-black-400"
         {...props}
       />
 
-      {internalValue && (
+      {value && (
         <button
           type="button"
           onClick={handleClear}
@@ -68,7 +64,6 @@ function SearchInput({
         >
           <XCircle
             size={20}
-            fill="currentColor"
             className="cursor-pointer fill-black-400 text-gray-200"
           />
         </button>
