@@ -14,10 +14,15 @@ import { ExchangeContent } from './components/exchange/ExchangeContent';
 import { HospitalContent } from './components/hospital/HospitalContent';
 import { SirenContent } from './components/siren/SirenContent';
 import { MapBottomSheet } from './components/ui/MapBottomSheet';
-import { NaverMap } from './components/ui/NaverMap';
-import { PlaceCard } from './components/ui/PlaceCard';
+import { NaverMap, type NaverMapHandle } from './components/ui/NaverMap';
+import { type LocationInfo, PlaceCard } from './components/ui/PlaceCard';
 import { ToggleButton } from './components/ui/ToggleButton';
 import { useBottomSheet } from './hooks/useBottomSheet';
+import {
+  type Embassy,
+  MAP_EMBASSY_MOCK,
+  MAP_EXCHANGE_MOCK,
+} from './mock/embassyExchange';
 import {
   HOSPITALS_MAP_MOCK,
   type HospitalPlace,
@@ -30,13 +35,23 @@ import { SAVED_PLACES_MOCK, type SavedPlace } from './mock/savedPlaces';
  * Naver Map을 배경으로 깔고, 상단 카테고리 탭과 우측 퀵 버튼, 하단 바텀시트를 조합합니다.
  * useBottomSheet 커스텀 훅을 사용하여 시트 관련 모든 로직을 주입받아 사용합니다.
  */
+
+// 카테고리 변환 맵
+const CATEGORY_MAP: Record<string, string> = {
+  CAFE: '카페',
+  FOOD: '식당',
+  SHOP: '쇼핑',
+};
+
 export default function MapPage() {
-  const [bookmark, setBookmark] = useState(false);
-  const [selectedPlace, setSelectedPlace] = useState<SavedPlace | null>(null);
+  const [bookmark, setBookmark] = useState<boolean>(false);
+  const [selectedPlace, setSelectedPlace] = useState<
+    SavedPlace | Embassy | null
+  >(null);
   const [selectedHospital, setSelectedHospital] =
     useState<HospitalPlace | null>(null);
 
-  const mapControlRef = useRef<{ centerToMyPosition: () => void }>(null);
+  const mapControlRef = useRef<NaverMapHandle>(null);
 
   const {
     openSheet,
@@ -50,6 +65,31 @@ export default function MapPage() {
     getTranslateValue,
   } = useBottomSheet();
 
+  const mapDbToInfo = (db: SavedPlace | Embassy): LocationInfo => {
+    const { address, phone } = db;
+
+    if ('category' in db) {
+      return {
+        id: db.id,
+        name: db.placeName,
+        type: CATEGORY_MAP[db.category] || '기타',
+        address,
+        phone,
+        explainTime: db.openHours,
+        distance: '',
+      };
+    } else {
+      return {
+        id: db.id,
+        name: db.placeName,
+        type: '대사관, 영사관',
+        address,
+        phone,
+        explainTime: db.openHours,
+        distance: '',
+      };
+    }
+  };
   return (
     <main className="relative h-screen w-screen overflow-hidden bg-gray-100">
       {/* 맵 레이어 */}
@@ -61,22 +101,36 @@ export default function MapPage() {
           savedPlaces={SAVED_PLACES_MOCK}
           showBookmarks={bookmark}
           onMarkerClick={(place) => {
+            // 병원
             if ('departments' in place) {
-              setSelectedHospital(place);
+              setSelectedHospital(place as HospitalPlace);
               setSelectedPlace(null);
               toggleSheet('hospital', true);
               return;
             }
 
-            const isSame = selectedPlace?.id === place.id;
-            if (isSame) {
-              setSelectedPlace(null);
-              toggleSheet('bookmark');
-            } else {
-              setSelectedPlace(place);
-              toggleSheet('bookmark', true);
+            // 대사관
+            if ('nationality' in place) return;
+
+            // 즐겨찾기 장소인 경우
+            if ('placeName' in place) {
+              const target = place as SavedPlace;
+              const isTargetAlreadySelected = selectedPlace?.id === target.id;
+
+              if (isTargetAlreadySelected) {
+                // 이미 선택된 걸 또 누르면 닫기
+                setSelectedPlace(null);
+                toggleSheet('bookmark');
+              } else {
+                // 새로운 걸 누르면 데이터 교체 후 열기/갱신
+                setSelectedPlace(target);
+                setSelectedHospital(null);
+                toggleSheet('bookmark', true);
+              }
             }
           }}
+          embassyData={MAP_EMBASSY_MOCK}
+          showEmbassy={openSheet === 'embassy'}
         />
       </div>
 
@@ -99,7 +153,17 @@ export default function MapPage() {
           icon={<Landmark className="h-4 w-4" />}
           active={openSheet === 'embassy'}
           iconColorVariant="blue"
-          onClick={() => toggleSheet('embassy')}
+          onClick={() => {
+            const isOpening = openSheet !== 'embassy';
+            toggleSheet('embassy');
+
+            if (isOpening) {
+              mapControlRef.current?.panToLocation(
+                MAP_EMBASSY_MOCK.latitude,
+                MAP_EMBASSY_MOCK.longitude,
+              );
+            }
+          }}
         />
         <ToggleButton
           variant="pill"
@@ -158,19 +222,8 @@ export default function MapPage() {
         onTouchEnd={handleTouchEnd}
       >
         {openSheet === 'bookmark' && selectedPlace && (
-          <div className="px-6 py-4">
-            <PlaceCard
-              data={{
-                name: selectedPlace.placeName,
-                type: selectedPlace.category,
-                address: selectedPlace.address,
-                phone: selectedPlace.phone,
-                distance: '',
-                imageUrl: '',
-                status: '',
-                explainTime: selectedPlace.openHours,
-              }}
-            />
+          <div className="px-2">
+            <PlaceCard data={mapDbToInfo(selectedPlace)} />
           </div>
         )}
 
@@ -182,7 +235,9 @@ export default function MapPage() {
         )}
 
         {openSheet === 'siren' && <SirenContent />}
-        {openSheet === 'exchange' && <ExchangeContent />}
+        {openSheet === 'exchange' && (
+          <ExchangeContent results={MAP_EXCHANGE_MOCK} />
+        )}
         {openSheet === 'embassy' && <EmbassyContent />}
       </MapBottomSheet>
     </main>
