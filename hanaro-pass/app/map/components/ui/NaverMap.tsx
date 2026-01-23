@@ -51,6 +51,10 @@ export type NaverMapHandle = {
   centerToMyPosition: () => void;
   panToLocation: (lat: number, lng: number) => void;
 };
+
+//마커를 화면 상단에 위치시키기 위한 위도 오프셋
+const LATITUDE_OFFSET = -0.004;
+
 export const NaverMap = forwardRef<NaverMapHandle, NaverMapProps>(
   (props, ref) => {
     const {
@@ -69,10 +73,23 @@ export const NaverMap = forwardRef<NaverMapHandle, NaverMapProps>(
     const onMarkerClickRef = useRef(onMarkerClick);
     const [isMapReady, setIsMapReady] = useState(false);
 
+    // 최신 콜백 유지를 위한 Ref 업데이트
     useEffect(() => {
       onMarkerClickRef.current = onMarkerClick;
     }, [onMarkerClick]);
 
+    // 오프셋을 적용하여 지도를 이동시키는 함수
+    const panToWithOffset = useCallback((lat: number, lng: number) => {
+      if (!mapRef.current) return;
+      const { naver } = window;
+      const centerWithOffset = new naver.maps.LatLng(
+        lat + LATITUDE_OFFSET,
+        lng,
+      );
+      mapRef.current.panTo(centerWithOffset);
+    }, []);
+
+    // 마커 생성 공통 헬퍼
     const createMarker = useCallback(
       (lat: number, lng: number, iconHtml: string, onClick: () => void) => {
         if (!mapRef.current) return null;
@@ -90,14 +107,17 @@ export const NaverMap = forwardRef<NaverMapHandle, NaverMapProps>(
     // 마커 렌더링 로직
     useEffect(() => {
       if (!isMapReady || !mapRef.current) return;
-      markersRef.current.forEach((m) => {
+
+      // 기존 마커 모두 제거
+      for (const m of markersRef.current) {
         m.setMap(null);
-      });
+      }
       markersRef.current = [];
       const newMarkers: naver.maps.Marker[] = [];
 
+      // 북마크 마커
       if (showBookmarks && savedPlaces) {
-        savedPlaces.forEach((p) => {
+        for (const p of savedPlaces) {
           const m = createMarker(
             Number(p.latitude),
             Number(p.longitude),
@@ -105,9 +125,10 @@ export const NaverMap = forwardRef<NaverMapHandle, NaverMapProps>(
             () => onMarkerClickRef.current(p),
           );
           if (m) newMarkers.push(m);
-        });
+        }
       }
 
+      // 대사관 마커
       if (showEmbassy && embassyData) {
         const m = createMarker(
           embassyData.latitude,
@@ -118,8 +139,9 @@ export const NaverMap = forwardRef<NaverMapHandle, NaverMapProps>(
         if (m) newMarkers.push(m);
       }
 
+      // 병원 마커
       if (activeCategory === 'hospital' && hospitals) {
-        hospitals.forEach((h) => {
+        for (const h of hospitals) {
           const m = createMarker(
             Number(h.latitude),
             Number(h.longitude),
@@ -127,7 +149,7 @@ export const NaverMap = forwardRef<NaverMapHandle, NaverMapProps>(
             () => onMarkerClickRef.current(h),
           );
           if (m) newMarkers.push(m);
-        });
+        }
       }
       markersRef.current = newMarkers;
     }, [
@@ -150,15 +172,21 @@ export const NaverMap = forwardRef<NaverMapHandle, NaverMapProps>(
         const container = containerRef.current;
         if (!container || mapRef.current) return;
 
+        const { naver } = window;
         const renderMap = (lat: number, lng: number) => {
+          // 초기 렌더링 시에도 오프셋 적용 좌표를 센터로 설정
+          const center = new naver.maps.LatLng(lat + LATITUDE_OFFSET, lng);
+
           const map = new naver.maps.Map(container, {
-            center: new naver.maps.LatLng(lat, lng),
+            center,
             zoom: 15,
             logoControl: false,
           });
+
           mapRef.current = map;
           setIsMapReady(true);
 
+          // 내 위치 마커
           const myMarker = new naver.maps.Marker({
             position: new naver.maps.LatLng(lat, lng),
             map,
@@ -167,6 +195,7 @@ export const NaverMap = forwardRef<NaverMapHandle, NaverMapProps>(
               anchor: new naver.maps.Point(8, 8),
             },
           });
+
           naver.maps.Event.addListener(myMarker, 'click', () =>
             onMarkerClickRef.current({
               id: 1,
@@ -206,13 +235,10 @@ export const NaverMap = forwardRef<NaverMapHandle, NaverMapProps>(
     useImperativeHandle(ref, () => ({
       centerToMyPosition: () => {
         navigator.geolocation.getCurrentPosition((pos) => {
-          mapRef.current?.panTo(
-            new naver.maps.LatLng(pos.coords.latitude, pos.coords.longitude),
-          );
+          panToWithOffset(pos.coords.latitude, pos.coords.longitude);
         });
       },
-      panToLocation: (lat, lng) =>
-        mapRef.current?.panTo(new naver.maps.LatLng(lat, lng)),
+      panToLocation: (lat, lng) => panToWithOffset(lat, lng),
     }));
 
     return <div ref={containerRef} className="h-full w-full" />;
