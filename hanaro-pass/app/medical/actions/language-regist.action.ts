@@ -1,5 +1,6 @@
 'use server';
 
+import { z } from 'zod';
 import {
   type ActionResult,
   HttpError,
@@ -7,7 +8,23 @@ import {
 } from '@/lib/error-handler';
 import type { Hospital } from '@/lib/generated/prisma';
 import { prisma } from '@/lib/prisma';
-import { ID_TO_NAME, NAME_TO_ID } from '../constants/language';
+import { type LanguageId, NAME_TO_ID } from '../constants/language';
+
+const SearchSchema = z.string().max(50);
+const IdSchema = z.number().int().positive(); // ID는 양의 정수
+const LanguageTransformSchema = z
+  .array(z.string())
+  .transform((langs) =>
+    langs
+      .map((name) => NAME_TO_ID[name])
+      .filter((id): id is LanguageId => !!id),
+  );
+const SubmitSchema = z.object({
+  hospitalId: IdSchema,
+  languageIds: z
+    .array(z.string())
+    .min(1, '최소 하나의 언어를 선택해야 합니다.'),
+});
 
 /**
  * [병원 검색 서버 액션]
@@ -21,7 +38,8 @@ export async function searchHospitalAction(
   query: string,
 ): Promise<ActionResult<Pick<Hospital, 'id' | 'nameKo' | 'address'>[]>> {
   try {
-    const sanitizedQuery = query.replace(/\s+/g, '');
+    const validatedQuery = SearchSchema.parse(query);
+    const sanitizedQuery = validatedQuery.replace(/\s+/g, '');
     if (!sanitizedQuery) return { success: true, data: [] };
 
     const hospitals = await prisma.$queryRaw<
@@ -56,9 +74,10 @@ export async function getHospitalDetailAction(
   ActionResult<{ nameKo: string; existingLangs: string[]; isPending: boolean }>
 > {
   try {
+    const validatedId = IdSchema.parse(id);
     const hospital = await prisma.hospital.findUnique({
       where: {
-        id,
+        id: validatedId,
       },
       select: {
         nameKo: true,
@@ -73,21 +92,21 @@ export async function getHospitalDetailAction(
 
     const pendingApp = await prisma.hospitalLanguageApplication.findFirst({
       where: {
-        hospitalId: id,
+        hospitalId: validatedId,
         status: 'PENDING',
       },
     });
 
-    const mappedLangs = hospital.HospitalLang.map(
-      (lang) => NAME_TO_ID[lang.langName] || lang.langName,
+    const validatedLangs = LanguageTransformSchema.parse(
+      hospital.HospitalLang.map((hl) => hl.langName),
     );
 
     return {
       success: true,
       data: {
         nameKo: hospital.nameKo,
-        existingLangs: mappedLangs,
-        isPending: !!pendingApp, // 신청 중인 건이 있으면 true
+        existingLangs: validatedLangs,
+        isPending: !!pendingApp,
       },
     };
   } catch (err) {
@@ -111,11 +130,15 @@ export async function submitLanguageApplicationAction(
   languageIds: string[],
 ): Promise<ActionResult<null>> {
   try {
-    const requestLangsInKorean = languageIds.map((id) => ID_TO_NAME[id] || id);
+    const { hospitalId: vId, languageIds: vLangs } = SubmitSchema.parse({
+      hospitalId,
+      languageIds,
+    });
+
     await prisma.$transaction(async (tx) => {
       const existingPending = await tx.hospitalLanguageApplication.findFirst({
         where: {
-          hospitalId,
+          hospitalId: vId,
           status: 'PENDING',
         },
       });
@@ -126,8 +149,8 @@ export async function submitLanguageApplicationAction(
 
       await tx.hospitalLanguageApplication.create({
         data: {
-          hospitalId,
-          requestLangs: requestLangsInKorean,
+          hospitalId: vId,
+          requestLangs: vLangs,
           status: 'PENDING',
         },
       });
