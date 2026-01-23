@@ -62,25 +62,13 @@ export const NaverMap = forwardRef(function NaverMap(
           map,
           icon: {
             content: `
-              <div class="w-5 h-5 bg-white rounded-full flex items-center justify-center shadow-[0_2px_5px_rgba(0,0,0,0.2)]">
-                <div class="w-4 h-4 bg-[#F9FAFB] rounded-full flex items-center justify-center shadow-inner">
-                  <svg
-                    width="12"
-                    height="12"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M12 5v14M5 12h14"
-                      stroke="#F43F5E" 
-                      stroke-width="4.5" 
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                  </svg>
-                </div>
+            <div class="w-5 h-5 bg-white rounded-full flex items-center justify-center shadow-[0_2px_5px_rgba(0,0,0,0.2)]">
+              <div class="w-4 h-4 bg-[#F9FAFB] rounded-full flex items-center justify-center shadow-inner">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 4.5v15M4.5 12h15" stroke="#F43F5E" stroke-width="6.5" stroke-linecap="round" stroke-line join="round"/>
+                </svg>
               </div>
+            </div>
             `,
             anchor: new naver.maps.Point(14, 14),
           },
