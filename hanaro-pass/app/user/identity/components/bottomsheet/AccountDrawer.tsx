@@ -23,6 +23,12 @@ export function AccountDrawer({
       onOpenChange,
     });
 
+  // 계좌 선택 즉시 제출
+  const handleAccountSelect = (accountData: Record<string, string>) => {
+    onSubmit?.(accountData);
+    onOpenChange(false);
+  };
+
   return (
     <BaseDrawer
       open={open}
@@ -36,6 +42,7 @@ export function AccountDrawer({
       <AccountFields
         formData={formData}
         onFormDataChange={handleFormDataChange}
+        onAccountSelect={handleAccountSelect}
       />
     </BaseDrawer>
   );
