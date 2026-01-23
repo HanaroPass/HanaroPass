@@ -23,7 +23,6 @@ export default function ResultStep({
     identityType === 'passport' ? 'passport' : 'alien',
   );
 
-  // 탭에 따른 헤더 제목 동적 변경
   const getHeaderTitle = () => {
     return activeTab === 'passport' ? '모바일 여권' : '모바일 신분증';
   };
