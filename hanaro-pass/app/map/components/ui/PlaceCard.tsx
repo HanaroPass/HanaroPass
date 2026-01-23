@@ -8,7 +8,7 @@ export type LocationInfo = {
   type: string;
   status?: string;
   explainTime?: string;
-  distance: string;
+  distance?: string;
   address: string;
   phone: string;
   imageUrl?: string;
@@ -20,7 +20,7 @@ type PlaceCardProps = {
 
 export function PlaceCard({ data }: PlaceCardProps) {
   return (
-    <div className="w-full bg-white font-semibold text-sm">
+    <div className="w-full bg-white p-4 font-semibold text-sm">
       <div className="flex items-start justify-between gap-4">
         <div className="flex flex-1 flex-col">
           <div>
