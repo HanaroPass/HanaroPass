@@ -58,6 +58,15 @@ export async function addUserDocs(
       throw new HttpError('필수 정보가 누락되었습니다.', 400);
     }
 
+    const ALLOWED_DOC_TYPES = new Set(
+      Object.values(DOC_ID_TO_REQUIREMENT)
+        .filter((r) => r.kind === 'USER_DOC')
+        .map((r) => r.docType),
+    );
+    if (!ALLOWED_DOC_TYPES.has(docType)) {
+      throw new HttpError('유효하지 않은 서류 형식입니다.', 400);
+    }
+
     if (!ALLOWED_MIME_TYPES.has(file.type)) {
       throw new HttpError('지원하지 않는 파일 형식입니다.', 400);
     }
