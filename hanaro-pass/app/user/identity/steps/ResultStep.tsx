@@ -5,9 +5,10 @@ import { useState } from 'react';
 import Header from '@/components/header/Header';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import type { IdentityType } from '../hooks/useFunnel';
 
 type ResultStepProps = {
-  identityType: 'passport' | 'alien' | null;
+  identityType: IdentityType | null;
   identityData: Record<string, string> | null;
   accountData: Record<string, string> | null;
   onClose: () => void;

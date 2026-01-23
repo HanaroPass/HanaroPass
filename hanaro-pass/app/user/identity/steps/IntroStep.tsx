@@ -6,9 +6,10 @@ import { useRef, useState } from 'react';
 import Header from '@/components/header/Header';
 import ActionButton from '@/components/ui/ActionButton';
 import { Button } from '@/components/ui/button';
+import type { IdentityType } from '../hooks/useFunnel';
 
 type IntroStepProps = {
-  onSelectIdentityType: (type: 'passport' | 'alien') => void;
+  onSelectIdentityType: (type: IdentityType) => void;
   onClose: () => void;
 };
 
@@ -74,6 +75,7 @@ export default function IntroStep({
                   alt="신분증 스캔 이미지"
                   fill
                   className="object-contain"
+                  priority
                 />
               </div>
             </div>

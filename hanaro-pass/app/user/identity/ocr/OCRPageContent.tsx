@@ -5,9 +5,10 @@ import { useState } from 'react';
 import { AlienDrawer } from '../components/bottomsheet/AlienDrawer';
 import { PassportDrawer } from '../components/bottomsheet/PassportDrawer';
 import CameraCapture from '../components/CameraCapture';
+import type { IdentityType } from '../hooks/useFunnel';
 
 type OCRPageContentProps = {
-  type: 'passport' | 'alien' | null;
+  type: IdentityType | null;
   onSubmit: (data: Record<string, string>) => void;
   onClose: () => void;
 };
