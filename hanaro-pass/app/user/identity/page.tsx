@@ -83,6 +83,14 @@ export default function IdentityPage() {
         identityData={context.identityData}
         accountData={context.accountData}
         onClose={handleClose}
+        onRegister={() => {
+          // intro로 이동하여 새로운 등록 시작
+          history.push('intro', {
+            identityType: null,
+            identityData: null,
+            accountData: null,
+          });
+        }}
       />
     );
   }
