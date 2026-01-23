@@ -3,13 +3,18 @@
 import { Info, Plus } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { use, useRef } from 'react';
+import { use, useRef, useState } from 'react';
 
 import Header from '@/components/header/Header';
 import { DOCS_CARD_ITEMS } from '../../constants/docsCardItem';
 import type { DocsProps } from '../../[docId]/page';
 import ActionButton from '@/components/ui/ActionButton';
 import { useFilePreview } from '../../hooks/useFilePreview';
+import {
+  DOC_ID_TO_REQUIREMENT,
+  type DocsCardId,
+} from '../../constants/docsCardItem';
+import { addUserDocs } from '../../actions/userDocs';
 
 export default function DocsAddPage({ params }: DocsProps) {
   const { docId } = use(params);
@@ -20,11 +25,10 @@ export default function DocsAddPage({ params }: DocsProps) {
 
   const { file, previewUrl, isPdf, isImage, setSelectedFile } =
     useFilePreview();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // 업로드 버튼 클릭 -> input
   const handlePick = () => inputRef.current?.click();
 
-  // 파일 업로드 시 업데이트
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0] ?? null;
     const res = setSelectedFile(selected);
@@ -35,9 +39,40 @@ export default function DocsAddPage({ params }: DocsProps) {
     }
   };
 
-  const handleSubmit = () => {
-    // 추후 DB 연결 예정
-    router.push(`/docs/add/${docId}/done`);
+  const handleSubmit = async () => {
+    if (!file || isSubmitting) return;
+
+    const req = DOC_ID_TO_REQUIREMENT[docId as DocsCardId];
+    if (req.kind !== 'USER_DOC') {
+      alert('이 서류는 현재 등록 방식(UserDocument 저장)을 지원하지 않습니다.');
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('docType', req.docType);
+
+      const result = await addUserDocs(formData);
+
+      if (result.success) {
+        // 저장 일시 저장해놓기 ( 다음 완료 화면에서 필요 )
+        sessionStorage.setItem(
+          'createdAt',
+          result.data.createdAt.toISOString(),
+        );
+        router.push(`/docs/add/${docId}/done`);
+      } else {
+        alert(result.message);
+        setIsSubmitting(false);
+      }
+    } catch (e) {
+      console.error(e);
+      alert('네트워크 오류가 발생했습니다.');
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -48,18 +83,16 @@ export default function DocsAddPage({ params }: DocsProps) {
           서류 파일
         </h2>
 
-        {/* 업로드 영역 */}
         <div className="flex h-105 w-full flex-col items-center justify-center rounded-2xl border-2 border-black/20 bg-gray-100/70">
           <button
             type="button"
             onClick={handlePick}
-            className="flex w-full flex-col items-center justify-center px-4 py-10 text-center transition-transform duration-150 active:scale-90"
+            disabled={isSubmitting} // 업로드 중엔 클릭 방지
+            className="flex w-full flex-col items-center justify-center px-4 py-10 text-center transition-transform duration-150 active:scale-90 disabled:opacity-50"
           >
             {previewUrl ? (
-              // 파일 업로드 시 미리 보기 영역
-              <div className="relative h-80 w-full overflow-hidden rounded-xl bg-white">
+              <div className="relative h-80 w-full overflow-hidden">
                 {isImage ? (
-                  // 이미지일떄
                   <Image
                     src={previewUrl}
                     alt="preview"
@@ -68,7 +101,6 @@ export default function DocsAddPage({ params }: DocsProps) {
                     unoptimized
                   />
                 ) : isPdf ? (
-                  // pdf일때
                   <iframe
                     title="pdf-preview"
                     src={previewUrl}
@@ -77,13 +109,12 @@ export default function DocsAddPage({ params }: DocsProps) {
                 ) : (
                   <div className="grid h-full w-full place-items-center px-4">
                     <p className="font-sans text-[13px] text-black/60">
-                      미리보기를 지원하지 않는 파일 형식입니다.
+                      미리보기를 지원하지 않습니다.
                     </p>
                   </div>
                 )}
               </div>
             ) : (
-              // 파일 미업로드 시 안내 영역
               <>
                 <Plus size={34} className="mb-6 text-gray-400" />
                 <p className="font-sans font-semibold text-[15px] text-black-800">
@@ -97,7 +128,6 @@ export default function DocsAddPage({ params }: DocsProps) {
           </button>
         </div>
 
-        {/* 실제 파일 input */}
         <input
           ref={inputRef}
           type="file"
@@ -106,7 +136,6 @@ export default function DocsAddPage({ params }: DocsProps) {
           onChange={handleChange}
         />
 
-        {/* 안내사항 */}
         <div className="mt-5 rounded-2xl bg-[#EAF9FB] p-4">
           <div className="mb-2 flex items-center gap-2">
             <Info size={18} className="text-green-ez" />
@@ -114,7 +143,6 @@ export default function DocsAddPage({ params }: DocsProps) {
               안내사항
             </p>
           </div>
-
           <ul className="ml-5 list-disc space-y-1 font-sans text-[13px] text-green-ez">
             <li>선명한 이미지를 업로드해 주세요</li>
             <li>JPG, PNG, PDF 형식만 가능합니다</li>
@@ -124,9 +152,9 @@ export default function DocsAddPage({ params }: DocsProps) {
 
         <div className="mt-6">
           <ActionButton
-            text="등록하기"
+            text={isSubmitting ? '업로드 중...' : '등록하기'} // 상태에 따른 텍스트 변경
             onClick={handleSubmit}
-            disabled={!file}
+            disabled={!file || isSubmitting} // 파일이 없거나 업로드 중일 때 비활성화
             className="mt-6"
           />
         </div>
