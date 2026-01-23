@@ -6,12 +6,14 @@ import {
   handleActionResult,
 } from '@/lib/error-handler';
 import { prisma } from '@/lib/prisma';
+import { LANGUAGES } from '../constants/language';
 import type { StatusType } from '../constants/statusConfig';
 import {
   type AdminDashboardResponse,
   AdminDashboardSchema,
   type AdminReviewDetailResponse,
   AdminReviewDetailSchema,
+  UpdateStatusSchema,
 } from '../schemas/admin-application.schema';
 
 /**
@@ -86,6 +88,62 @@ export async function getAdminReviewDetailAction(
     };
 
     return { success: true, data: AdminReviewDetailSchema.parse(result) };
+  } catch (err) {
+    return handleActionResult(err);
+  }
+}
+
+/**
+ *
+ * @param id 상태를 변경할 신청 내역의 고유 ID
+ * @param status 변경할 목표 상태 ('APPROVED' | 'REJECTED')
+ * @returns {Promise<ActionResult<null>>} 성공 시 success: true를 반환
+ * @throws {HttpError} 유효하지 않은 신청 ID이거나 이미 처리된 신청일 경우 에러 발생
+ *
+ * 400 : 신청 건이 'PENDING' 상태가 아니거나 처리 가능한 대상이 아닐 경우
+ * 404 : 해당 ID의 신청 내역을 찾을 수 없는 경우
+ */
+export async function updateApplicationStatusAction(
+  id: number,
+  status: 'APPROVED' | 'REJECTED',
+): Promise<ActionResult<null>> {
+  try {
+    const { id: vId, status: vStatus } = UpdateStatusSchema.parse({
+      id,
+      status,
+    });
+
+    await prisma.$transaction(async (tx) => {
+      const app = await tx.hospitalLanguageApplication.findUnique({
+        where: { id: vId },
+      });
+      if (!app || app.status !== 'PENDING')
+        throw new HttpError('처리 가능한 신청 내역이 아닙니다.', 400);
+
+      await tx.hospitalLanguageApplication.update({
+        where: { id: vId },
+        data: { status: vStatus, processedAt: new Date() },
+      });
+
+      if (vStatus === 'APPROVED') {
+        const langIds = app.requestLangs as string[];
+        const langNames = langIds
+          .map((langId) => LANGUAGES.find((l) => l.id === langId)?.name)
+          .filter(Boolean);
+
+        await tx.hospitalLang.deleteMany({
+          where: { hospitalId: app.hospitalId },
+        });
+        await tx.hospitalLang.createMany({
+          data: langNames.map((name) => ({
+            hospitalId: app.hospitalId,
+            langName: name as string,
+          })),
+        });
+      }
+    });
+
+    return { success: true, data: null };
   } catch (err) {
     return handleActionResult(err);
   }

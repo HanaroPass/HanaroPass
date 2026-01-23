@@ -24,6 +24,14 @@ export const AdminDashboardSchema = z.object({
   }),
 });
 
+export const UpdateStatusSchema = z.object({
+  id: z.number().int().positive({ message: '유효한 신청 ID가 필요합니다.' }),
+  status: z.enum(['APPROVED', 'REJECTED'], {
+    message: '승인 또는 반려 상태만 설정 가능합니다.',
+  }),
+});
+
 export type AdminApplicationItem = z.infer<typeof AdminApplicationSchema>;
 export type AdminReviewDetailResponse = z.infer<typeof AdminReviewDetailSchema>;
 export type AdminDashboardResponse = z.infer<typeof AdminDashboardSchema>;
+export type UpdateStatusRequest = z.infer<typeof UpdateStatusSchema>;
