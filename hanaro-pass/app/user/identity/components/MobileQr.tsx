@@ -1,5 +1,6 @@
 'use client';
 
+import QRCode from 'react-qr-code';
 import type { IdentityType } from '../hooks/useFunnel';
 
 type MobileQrProps = {
@@ -10,6 +11,13 @@ type MobileQrProps = {
 export default function MobileQr({ type, data }: MobileQrProps) {
   const isPassport = type === 'passport';
 
+  // QR 코드에 들어갈 데이터를 JSON 형태로 생성
+  const qrData = JSON.stringify({
+    type,
+    ...data,
+    timestamp: Date.now(),
+  });
+
   return (
     <div className="flex h-full flex-col space-y-6">
       {/* QR Code Card */}
@@ -18,8 +26,13 @@ export default function MobileQr({ type, data }: MobileQrProps) {
           <p className="text-sm opacity-90">잔여 시간 : 4 seconds</p>
         </div>
         <div className="mx-auto h-64 w-64 rounded-xl bg-white p-4">
-          <div className="flex h-full w-full items-center justify-center rounded-lg bg-gray-900">
-            <div className="text-white text-xs">QR CODE</div>
+          <div className="flex h-full w-full items-center justify-center">
+            <QRCode
+              value={qrData}
+              size={224}
+              style={{ height: "auto", maxWidth: "100%", width: "100%" }}
+              viewBox="0 0 256 256"
+            />
           </div>
         </div>
       </div>
