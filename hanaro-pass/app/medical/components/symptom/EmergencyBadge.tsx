@@ -8,16 +8,16 @@ export const emergencyConfig = {
 };
 
 export default function EmergencyBadge({
-  value,
+  value = '낮음',
 }: {
-  value: '낮음' | '중간' | '높음' | '매우 높음';
+  value?: '낮음' | '중간' | '높음' | '매우 높음';
 }) {
   const { color } = emergencyConfig[value];
   return (
     <div
-      className={`${color} mx-1 inline-flex h-7 items-center rounded-full border px-3 font-medium`}
+      className={`${color} inline-flex h-7 items-center rounded-full px-3 font-medium`}
     >
-      <CircleAlert className="mr-1 h-4 w-4 bg-red-" />
+      <CircleAlert className="mr-1 h-4 w-4" />
       <span>{value}</span>
     </div>
   );

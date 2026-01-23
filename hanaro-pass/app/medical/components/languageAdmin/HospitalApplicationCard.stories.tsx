@@ -11,7 +11,7 @@ const meta: Meta<typeof HospitalApplicationCard> = {
   args: {
     id: 1,
     name: '강남 병원',
-    status: 'pending' as StatusType,
+    status: 'PENDING' as StatusType,
     langCount: 3,
     languages: ['영어', '중국어', '일본어'],
     date: '2026.01.19',
@@ -26,13 +26,13 @@ export const Pending: Story = {};
 
 export const Approved: Story = {
   args: {
-    status: 'approved' as StatusType,
+    status: 'APPROVED' as StatusType,
   },
 };
 
 export const Rejected: Story = {
   args: {
-    status: 'rejected' as StatusType,
+    status: 'REJECTED' as StatusType,
   },
 };
 

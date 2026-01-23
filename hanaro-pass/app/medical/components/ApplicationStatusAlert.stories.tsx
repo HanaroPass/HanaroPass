@@ -27,25 +27,25 @@ type Story = StoryObj<typeof ApplicationStatusAlert>;
 
 export const Pending: Story = {
   args: {
-    status: 'pending' as StatusType,
+    status: 'PENDING' as StatusType,
   },
 };
 
 export const Approved: Story = {
   args: {
-    status: 'approved' as StatusType,
+    status: 'APPROVED' as StatusType,
   },
 };
 
 export const Rejected: Story = {
   args: {
-    status: 'rejected' as StatusType,
+    status: 'REJECTED' as StatusType,
   },
 };
 
 export const AdminView: Story = {
   args: {
-    status: 'pending' as StatusType,
+    status: 'PENDING' as StatusType,
     isAdmin: true,
   },
 };
