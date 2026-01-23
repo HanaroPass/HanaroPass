@@ -1,50 +1,17 @@
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import HospitalGuide from '@/app/medical/components/languageRegistration/HospitalGuide';
+import { useRouter } from 'next/navigation';
 import RegistrationSummary from '@/components/result/RegistrationSummary';
 import ActionButton from '@/components/ui/ActionButton';
-import { getRegistrationResultAction } from '../../actions/language-regist.action';
+import HospitalGuide from '../../components/languageRegistration/HospitalGuide';
 import StatusBadge from '../../components/StatusBadge';
-import type { StatusType } from '../../constants/statusConfig';
+import { useRegistrationResult } from '../../hooks/useRegistrationResult';
 
 export default function HospitalRegistrationCompletePage() {
-  const searchParams = useSearchParams();
   const router = useRouter();
-  const hospitalId = Number(searchParams.get('hospitalId'));
+  const { data, isLoading, hospitalId } = useRegistrationResult();
 
-  const [data, setData] = useState<{
-    hospitalName: string;
-    createdAt: string;
-    status: StatusType;
-  } | null>(null);
-
-  useEffect(() => {
-    if (!hospitalId) {
-      alert('유효하지 않은 접근입니다.');
-      router.push('/medical/registrations');
-      return;
-    }
-
-    const fetchResult = async () => {
-      const result = await getRegistrationResultAction(hospitalId);
-      if (result.success) {
-        setData({
-          hospitalName: result.data.hospitalName,
-          createdAt: new Date(result.data.createdAt).toLocaleString('ko-KR'),
-          status: result.data.status,
-        });
-      } else {
-        alert(result.message);
-        router.push('/medical/registrations');
-      }
-    };
-
-    fetchResult();
-  }, [hospitalId, router]);
-
-  if (!data)
+  if (isLoading || !data)
     return (
       <div className="flex h-screen items-center justify-center">
         로딩 중...
