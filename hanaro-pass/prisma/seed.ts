@@ -230,6 +230,119 @@ async function seedDummyApplications() {
   console.log('[ 완료 ] ID 1(대기), 2(승인), 3(반려) 데이터 생성 완료.');
 }
 
+/**
+ * User 더미 데이터 생성
+ * - nickname+nationality 조합이 같으면 기존 데이터 유지
+ */
+async function seedUsers() {
+  console.log('[ 추가 작업 - User 더미 데이터 생성 중... ]');
+
+  const users = [
+    { nickname: 'Kelsey Kwon', nationality: 'KOR' },
+    { nickname: 'John Doe', nationality: 'USA' },
+    { nickname: 'Mina Tanaka', nationality: 'JPN' },
+  ] as const;
+
+  for (const u of users) {
+    // nickname이 unique가 아니라서 upsert를 못 씀 -> find 후 create
+    const exists = await prisma.user.findFirst({
+      where: { nickname: u.nickname, nationality: u.nationality },
+      select: { id: true },
+    });
+
+    if (exists) continue;
+
+    await prisma.user.create({ data: u });
+  }
+
+  const count = await prisma.user.count();
+  console.log(`[ 완료 ] User 생성/확인 완료. 현재 User 총 ${count}명`);
+}
+
+/**
+ * UserDocument 더미 데이터 생성
+ */
+async function seedUserDocs() {
+  console.log('[ UserDocument 더미 생성 중... ]');
+
+  const user = await prisma.user.findFirst();
+  if (!user) {
+    console.warn('User가 없어 문서 시드를 건너뜁니다.');
+    return;
+  }
+  const userId = user.id;
+
+  // UserDocument 있으면 건너뛰기
+  const existingDocTypes = await prisma.userDocument.findMany({
+    where: { userId },
+    select: { docType: true },
+  });
+
+  const has = new Set(existingDocTypes.map((d) => d.docType));
+
+  const docsToCreate = [
+    { docType: 'PHOTO' as const, fileUrl: 'https://example.com/photo.jpg' },
+    {
+      docType: 'COPY' as const,
+      fileUrl: 'https://example.com/passport-copy.pdf',
+    },
+    {
+      docType: 'STUDENT_ID' as const,
+      fileUrl: 'https://example.com/student-id.jpg',
+    },
+  ].filter((d) => !has.has(d.docType));
+
+  if (docsToCreate.length > 0) {
+    await prisma.userDocument.createMany({
+      data: docsToCreate.map((d) => ({ userId, ...d })),
+    });
+  }
+
+  console.log('[ 완료 ] UserDocument 더미 생성 완료');
+}
+
+async function seedUserIdentityDocs() {
+  console.log('[ Passport / ARC 유저별 더미 생성 중... ]');
+
+  const users = await prisma.user.findMany({ select: { id: true } });
+
+  if (users.length === 0) {
+    console.warn('User가 없어 시드를 건너뜁니다.');
+    return;
+  }
+
+  for (const { id: userId } of users) {
+    // Passport (userId unique 기준 upsert)
+    await prisma.passport.upsert({
+      where: { userId },
+      update: {},
+      create: {
+        userId,
+        passportNumber: `P-${userId}`,
+        gender: 'MALE',
+        issueDate: new Date('2022-01-01'),
+        expiryDate: new Date('2032-01-01'),
+        userPhotoUrl: 'https://example.com/passport-photo.jpg',
+      },
+    });
+
+    // ARC (userId unique 기준 upsert)
+    await prisma.aRC.upsert({
+      where: { userId },
+      update: {},
+      create: {
+        userId,
+        arcNumber: `ARC-${userId}`,
+        residenceStatus: 'D-2',
+        issueDate: new Date('2023-03-01'),
+        userPhotoUrl: 'https://example.com/arc-photo.jpg',
+      },
+    });
+  }
+
+  console.log(`[ 완료 ] ${users.length}명 Passport/ARC 생성(또는 유지) 완료`);
+}
+
 async function main() {
   if (!SERVICE_KEY) {
     console.error('SERVICE_KEY 누락');
@@ -238,11 +351,15 @@ async function main() {
 
   console.log('[ 기존 데이터 초기화 중 ]');
   // 데이터 삭제
-  await prisma.hospitalLanguageApplication.deleteMany();
   await prisma.hospitalReview.deleteMany();
   await prisma.hospitalDept.deleteMany();
   await prisma.hospitalLang.deleteMany();
   await prisma.hospital.deleteMany();
+
+  await prisma.userDocument.deleteMany();
+  await prisma.aRC.deleteMany();
+  await prisma.passport.deleteMany();
+  await prisma.user.deleteMany();
 
   // AUTO_INCREMENT 초기화
   await prisma.$executeRaw`ALTER TABLE Hospital AUTO_INCREMENT = 1`;
@@ -250,8 +367,15 @@ async function main() {
   await prisma.$executeRaw`ALTER TABLE HospitalLang AUTO_INCREMENT = 1`;
   await prisma.$executeRaw`ALTER TABLE HospitalReview AUTO_INCREMENT = 1`;
   await prisma.$executeRaw`ALTER TABLE HospitalLanguageApplication AUTO_INCREMENT = 1`;
+  await prisma.$executeRaw`ALTER TABLE User AUTO_INCREMENT = 1`;
+  await prisma.$executeRaw`ALTER TABLE Passport AUTO_INCREMENT = 1`;
+  await prisma.$executeRaw`ALTER TABLE ARC AUTO_INCREMENT = 1`;
+  await prisma.$executeRaw`ALTER TABLE UserDocument AUTO_INCREMENT = 1`;
 
   await fetchAndSeed();
+  await seedUsers();
+  await seedUserDocs();
+  await seedUserIdentityDocs();
   await seedDummyApplications();
   console.log('[ 시딩 작업 완료! ]');
 }
