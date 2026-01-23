@@ -1,4 +1,4 @@
-import { getDocsStatus, getUserName } from './actions/userDocs';
+import { getDocsStatus, getUserName } from './actions/userDocsList';
 import DocsPageClient from './docsPageClient';
 
 export default async function Page() {
