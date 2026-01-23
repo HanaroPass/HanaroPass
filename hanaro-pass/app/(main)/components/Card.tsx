@@ -86,6 +86,10 @@ export default function Card({
     [cards.length, isAnimating],
   );
 
+  if (cards.length === 0) {
+    return null;
+  }
+
   const onTouchStart = (e: React.TouchEvent) => {
     touchStartRef.current = e.touches[0].clientX;
   };
@@ -122,7 +126,7 @@ export default function Card({
 
       <div className="flex h-7.5 items-center justify-between rounded-lg bg-[linear-gradient(91deg,#00D7B7_0.22%,#48AFAD_40.09%,#008485_100%)] px-2 text-white">
         <p className="font-bold text-[12px] opacity-70">잔액</p>
-        <p className="font-bold text-[12px] text-lg">{activeCard.balance}원</p>
+        <p className="font-bold text-[12px]">{activeCard.balance}원</p>
       </div>
 
       <button
