@@ -14,7 +14,7 @@ import {
   DOC_ID_TO_REQUIREMENT,
   type DocsCardId,
 } from '../../constants/docsCardItem';
-import { addUserDocs } from '../../actions/addUserDocs';
+import { addUserDocs } from '../../actions/userDocs';
 
 export default function DocsAddPage({ params }: DocsProps) {
   const { docId } = use(params);
@@ -91,7 +91,7 @@ export default function DocsAddPage({ params }: DocsProps) {
             className="flex w-full flex-col items-center justify-center px-4 py-10 text-center transition-transform duration-150 active:scale-90 disabled:opacity-50"
           >
             {previewUrl ? (
-              <div className="relative h-80 w-full overflow-hidden rounded-xl bg-white">
+              <div className="relative h-80 w-full overflow-hidden">
                 {isImage ? (
                   <Image
                     src={previewUrl}
