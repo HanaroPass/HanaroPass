@@ -100,10 +100,17 @@ export default function HospitalRegistrationDetailsPage() {
     ];
   }, [data, formattedLangs, formatDate]);
 
-  if (isLoading || !data) {
+  if (isLoading) {
     return (
       <div className="p-10 text-center font-sans text-black-400">
         정보를 불러오는 중...
+      </div>
+    );
+  }
+  if (!data) {
+    return (
+      <div className="p-10 text-center font-sans text-black-400">
+        정보를 불러오지 못했습니다.
       </div>
     );
   }
