@@ -43,9 +43,7 @@ export default function HospitalRegistrationCompletePage() {
       <div className="space-y-3 border-gray-100 border-t bg-white-ez px-6 py-4 pb-8">
         <ActionButton
           text="신청 내역"
-          onClick={() =>
-            router.push(`/medical/lang-application/management/${hospitalId}`)
-          }
+          onClick={() => router.push(`/medical/registrations/${hospitalId}`)}
         />
         <ActionButton
           text="처음으로"

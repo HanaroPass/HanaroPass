@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  AlertCircle,
   Calendar,
   CheckCircle2,
   Clock,
@@ -10,50 +11,84 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
-import React from 'react';
+import React, { useMemo } from 'react';
 import DescriptionSection from '@/app/medical/components/languageRegistration/DescriptionSection';
 import HospitalGuide from '@/app/medical/components/languageRegistration/HospitalGuide';
 import SectionHeader from '@/app/medical/components/languageRegistration/SectionHeader';
 import ActionButton from '@/components/ui/ActionButton';
 import { ApplicationStatusAlert } from '../../components/ApplicationStatusAlert';
 import { InfoDetailPlate } from '../../components/InfoDetailPlate';
-import type { StatusType } from '../../constants/statusConfig';
+import { useRegistrationDetail } from '../../hooks/useRegistrationDetail';
 
-/**
- * QQQ (Integration Plan):
- * 1. useQuery 등을 이용해 병원 상세 정보 API 호출 (hospitalId 활용)
- * 2. 서버 응답 데이터에 맞춰 hospitalInfo 배열 동적 매핑
- */
 export default function HospitalRegistrationDetailsPage() {
   const router = useRouter();
-  const { id } = useParams();
-  // QQQ 1: API 연동 및 데이터 패칭
-  // - Endpoint: GET /api/medical/lang-application/[hospitalId]
-  // - 필요 데이터: { status: 'pending' | 'approved' | 'rejected', hospitalName: string, selectedLanguages: string[], createdAt: string, processedAt?: string }
-  // - 고려사항: 데이터 로딩 중(isLoading)일 때 보여줄 스켈레톤 UI 필요
-  const currentStatus: StatusType = 'PENDING';
+  const params = useParams();
+  const hospitalId = Number(params.hospitalId);
 
-  // QQQ (Database Integration Plan):
-  // 1. Data Fetching:
-  //    - const hospital = await prisma.hospital.findUnique({
-  //        where: { id: hospitalId },
-  //        include: { HospitalLang: true }
-  //      });
-  // 2. Mapping:
-  //    - 병원명: hospital.nameKo
-  //    - 진료 가능 언어: hospital.HospitalLang.map(l => l.langName) -> UI의 '중국어 (中文)'와 포맷팅 일치 필요
+  console.log('전체 Params:', params);
+  console.log('가져온 hospitalId:', Number(params.hospitalId));
+
+  const { data, isLoading, formattedLangs, formatDate } =
+    useRegistrationDetail(hospitalId);
+
+  const historySteps = useMemo(() => {
+    if (!data) return [];
+
+    return [
+      {
+        label: '신청 완료',
+        date: formatDate(data.createdAt),
+        icon: CheckCircle2,
+        iconColor: 'text-teal-600',
+        isLast: false,
+        isItalic: false,
+      },
+      {
+        // REJECTED 상태일 때만 '반려 완료'로 표시
+        label: data.status === 'REJECTED' ? '반려 완료' : '승인 완료',
+        date: formatDate(data.processedAt),
+        // 상태 및 처리 여부에 따른 아이콘 분기
+        icon: !data.processedAt
+          ? Clock
+          : data.status === 'REJECTED'
+            ? AlertCircle
+            : CheckCircle2,
+        iconColor: !data.processedAt
+          ? 'text-gray-300'
+          : data.status === 'REJECTED'
+            ? 'text-red-500'
+            : 'text-teal-600',
+        isLast: true,
+        isItalic: !data.processedAt,
+      },
+    ];
+  }, [data, formatDate]);
+
+  if (isLoading || !data)
+    return <div className="p-10 text-center">정보를 불러오는 중...</div>;
+
   const hospitalInfo = [
-    { label: '병원 정보', icon: Hospital, content: '강남 병원' },
+    { label: '병원 정보', icon: Hospital, content: data.hospitalName },
     {
       label: '진료 가능 언어',
       icon: Globe,
       content: (
         <div className="flex items-center gap-3">
-          <span className="text-xl">🇨🇳</span>중국어 (中文)
+          {formattedLangs?.map((lang) => (
+            <div
+              key={lang?.id}
+              className="flex items-center gap-1.5 rounded-md border border-gray-100 bg-gray-50 px-2 py-1"
+            >
+              <span>{lang?.flag}</span>
+              <span className="text-sm">
+                {lang?.name} ({lang?.sub})
+              </span>
+            </div>
+          ))}
         </div>
       ),
     },
-    { label: '신청 일시', icon: Calendar, content: '2026. 01. 19. 09:43' },
+    { label: '신청 일시', icon: Calendar, content: formatDate(data.createdAt) },
   ];
 
   return (
@@ -67,8 +102,7 @@ export default function HospitalRegistrationDetailsPage() {
           ]}
         />
 
-        {/* QQQ : 실제 상태 연동 */}
-        <ApplicationStatusAlert status={currentStatus} />
+        <ApplicationStatusAlert status={data.status} />
 
         {hospitalInfo.map((item) => (
           <React.Fragment key={item.label}>
@@ -87,21 +121,17 @@ export default function HospitalRegistrationDetailsPage() {
               {/* - 현재는 수동 입력이나, 서버의 [ { stage: 'apply', date: '...' }, { stage: 'approve', date: '...' } ] 
     - 배열 데이터를 순회하여 HistoryItem을 동적으로 생성하도록 변경 필요
 */}
-              <HistoryItem
-                icon={CheckCircle2}
-                iconColor="text-teal-600"
-                label="신청 완료"
-                date="2026. 01. 19. 09:43"
-                isLast={false}
-              />
-              <HistoryItem
-                icon={Clock}
-                iconColor="text-gray-300"
-                label="승인 완료"
-                date="대기 중..."
-                isLast={true}
-                isItalic
-              />
+              {historySteps.map((step) => (
+                <HistoryItem
+                  key={step.label}
+                  icon={step.icon}
+                  iconColor={step.iconColor}
+                  label={step.label}
+                  date={step.date}
+                  isLast={step.isLast}
+                  isItalic={step.isItalic}
+                />
+              ))}
             </div>
           </div>
         </div>
