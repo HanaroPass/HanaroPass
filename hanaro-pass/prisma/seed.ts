@@ -351,10 +351,10 @@ async function main() {
 
   console.log('[ 기존 데이터 초기화 중 ]');
   // 데이터 삭제
-  await prisma.hospitalReview.deleteMany();
-  await prisma.hospitalDept.deleteMany();
-  await prisma.hospitalLang.deleteMany();
-  await prisma.hospital.deleteMany();
+  // await prisma.hospitalReview.deleteMany();
+  // await prisma.hospitalDept.deleteMany();
+  // await prisma.hospitalLang.deleteMany();
+  // await prisma.hospital.deleteMany();
 
   await prisma.userDocument.deleteMany();
   await prisma.aRC.deleteMany();
@@ -362,17 +362,17 @@ async function main() {
   await prisma.user.deleteMany();
 
   // AUTO_INCREMENT 초기화
-  await prisma.$executeRaw`ALTER TABLE Hospital AUTO_INCREMENT = 1`;
-  await prisma.$executeRaw`ALTER TABLE HospitalDept AUTO_INCREMENT = 1`;
-  await prisma.$executeRaw`ALTER TABLE HospitalLang AUTO_INCREMENT = 1`;
-  await prisma.$executeRaw`ALTER TABLE HospitalReview AUTO_INCREMENT = 1`;
-  await prisma.$executeRaw`ALTER TABLE HospitalLanguageApplication AUTO_INCREMENT = 1`;
+  // await prisma.$executeRaw`ALTER TABLE Hospital AUTO_INCREMENT = 1`;
+  // await prisma.$executeRaw`ALTER TABLE HospitalDept AUTO_INCREMENT = 1`;
+  // await prisma.$executeRaw`ALTER TABLE HospitalLang AUTO_INCREMENT = 1`;
+  // await prisma.$executeRaw`ALTER TABLE HospitalReview AUTO_INCREMENT = 1`;
+  // await prisma.$executeRaw`ALTER TABLE HospitalLanguageApplication AUTO_INCREMENT = 1`;
   await prisma.$executeRaw`ALTER TABLE User AUTO_INCREMENT = 1`;
   await prisma.$executeRaw`ALTER TABLE Passport AUTO_INCREMENT = 1`;
   await prisma.$executeRaw`ALTER TABLE ARC AUTO_INCREMENT = 1`;
   await prisma.$executeRaw`ALTER TABLE UserDocument AUTO_INCREMENT = 1`;
 
-  await fetchAndSeed();
+  // await fetchAndSeed();
   await seedUsers();
   await seedUserDocs();
   await seedUserIdentityDocs();
