@@ -1,19 +1,38 @@
 'use client';
 
 import { X } from 'lucide-react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { Suspense } from 'react';
-import CameraCapture from '@/app/user/identity/components/CameraCapture';
+import { useState } from 'react';
+import { AlienDrawer } from '../components/bottomsheet/AlienDrawer';
+import { PassportDrawer } from '../components/bottomsheet/PassportDrawer';
+import CameraCapture from '../components/CameraCapture';
+import type { IdentityType } from '../hooks/useFunnel';
 
-function OCRPageContent() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const rawType = searchParams.get('type');
-  const type = rawType === 'passport' || rawType === 'alien' ? rawType : null;
+type OCRPageContentProps = {
+  type: IdentityType | null;
+  onSubmit: (data: Record<string, string>) => void;
+  onClose: () => void;
+};
 
-  const handleClose = () => {
-    router.back();
+export default function OCRPageContent({
+  type,
+  onSubmit,
+  onClose,
+}: OCRPageContentProps) {
+  const [isDrawerOpen, setIsDrawerOpen] = useState(true);
+
+  const handleSubmit = (data: Record<string, string>) => {
+    console.log('제출된 정보:', data);
+    onSubmit(data);
   };
+
+  const handleRetake = () => {
+    setIsDrawerOpen(false);
+  };
+
+  // type이 null인 경우 처리
+  if (!type) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-black">
@@ -33,7 +52,7 @@ function OCRPageContent() {
           <div className="flex justify-end">
             <button
               type="button"
-              onClick={handleClose}
+              onClick={onClose}
               className="p-2 text-white transition-opacity active:opacity-50"
               aria-label="닫기"
             >
@@ -65,14 +84,22 @@ function OCRPageContent() {
           </p>
         </div>
       </div>
-    </div>
-  );
-}
 
-export default function OCRPage() {
-  return (
-    <Suspense fallback={<div className="min-h-screen bg-black" />}>
-      <OCRPageContent />
-    </Suspense>
+      {type === 'passport' ? (
+        <PassportDrawer
+          open={isDrawerOpen}
+          onOpenChange={setIsDrawerOpen}
+          onSubmit={handleSubmit}
+          onReset={handleRetake}
+        />
+      ) : (
+        <AlienDrawer
+          open={isDrawerOpen}
+          onOpenChange={setIsDrawerOpen}
+          onSubmit={handleSubmit}
+          onReset={handleRetake}
+        />
+      )}
+    </div>
   );
 }
