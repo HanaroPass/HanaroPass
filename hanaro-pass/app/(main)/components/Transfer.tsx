@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import AccountSummary from './AccountSummary';
-import MenuList from './MenuList';
+import { MenuList } from './MenuList';
 
 function Transfer() {
   return (

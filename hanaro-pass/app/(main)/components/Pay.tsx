@@ -1,4 +1,4 @@
-import MenuList from './MenuList';
+import { MenuList } from './MenuList';
 
 function Pay() {
   return <MenuList type="pay" />;
