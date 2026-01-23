@@ -31,7 +31,7 @@ export default function HospitalRegistrationDetailsPage() {
   // - Endpoint: GET /api/medical/lang-application/[hospitalId]
   // - 필요 데이터: { status: 'pending' | 'approved' | 'rejected', hospitalName: string, selectedLanguages: string[], createdAt: string, processedAt?: string }
   // - 고려사항: 데이터 로딩 중(isLoading)일 때 보여줄 스켈레톤 UI 필요
-  const currentStatus: StatusType = 'pending';
+  const currentStatus: StatusType = 'PENDING';
 
   // QQQ (Database Integration Plan):
   // 1. Data Fetching:

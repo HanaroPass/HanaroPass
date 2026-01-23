@@ -32,7 +32,6 @@ export function useRegistrationResult() {
         });
       } else {
         alert(result.message);
-        router.push('/medical/registrations');
       }
     };
 
