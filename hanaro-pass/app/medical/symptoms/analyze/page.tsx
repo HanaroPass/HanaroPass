@@ -40,13 +40,18 @@ function SymptomAnalyzeContent() {
     e.preventDefault();
     setLoading(true);
 
-    const formData = new FormData(e.currentTarget);
-    const response = await postSymptomForm(formData);
+    try {
+      const formData = new FormData(e.currentTarget);
+      const response = await postSymptomForm(formData);
 
-    setLoading(false);
-    console.log(response);
-    localStorage.setItem('symptom-result', response);
-    router.push(`/medical/symptoms/result?mode=${mode}`);
+      localStorage.setItem('symptom-result', response);
+      router.push(`/medical/symptoms/result?mode=${mode}`);
+    } catch (error) {
+      console.error('증상 분석 요청 실패', error);
+      alert('증상 분석 중 오류가 발생했습니다. 다시 시도해주세요.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
