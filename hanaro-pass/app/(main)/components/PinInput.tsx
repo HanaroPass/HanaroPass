@@ -31,6 +31,7 @@ export default function PinInput({
   useEffect(() => {
     if (pin.length !== 6) return;
 
+    // TODO: PIN 어떻게 할지 정하기
     if (pin === '111111') {
       onSuccessAction();
     } else {

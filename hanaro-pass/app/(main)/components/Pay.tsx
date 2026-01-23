@@ -25,7 +25,7 @@ export default function Pay() {
   }, [pendingCardId]);
 
   return (
-    <div className="relative flex flex-col gap-5">
+    <div className="relative flex flex-col gap-5 pb-16.25">
       <Card
         cards={MOCK_CARDS}
         unlockedCardIds={unlockedCardIds}
@@ -35,7 +35,6 @@ export default function Pay() {
       <CouponList />
       <MenuList type="pay" />
 
-      {/* pendingCardId가 존재할 때만 PIN 입력창 노출 */}
       {pendingCardId && (
         <PinInput
           onSuccessAction={handlePinSuccess}
