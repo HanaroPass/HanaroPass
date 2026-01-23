@@ -103,7 +103,7 @@ export default function Card({
   };
 
   return (
-    <div className="w-full select-none overflow-hidden rounded-4xl border border-gray-100 bg-white py-8 shadow-sm">
+    <div className="w-full select-none overflow-hidden rounded-4xl border border-gray-100 bg-white px-10 py-8 shadow-sm">
       <div
         className="relative h-48 w-full touch-none"
         style={{ perspective: '1200px' }}
@@ -120,9 +120,14 @@ export default function Card({
         ))}
       </div>
 
+      <div className="flex h-7.5 items-center justify-between rounded-lg bg-[linear-gradient(91deg,#00D7B7_0.22%,#48AFAD_40.09%,#008485_100%)] px-2 text-white">
+        <p className="font-bold text-[12px] opacity-70">잔액</p>
+        <p className="font-bold text-[12px] text-lg">{activeCard.balance}원</p>
+      </div>
+
       <button
         type="button"
-        className="relative flex h-28 w-full flex-col items-center justify-center bg-white px-4 transition-opacity active:opacity-70"
+        className="relative flex h-28 w-full flex-col items-center justify-center bg-white transition-opacity active:opacity-70"
         onClick={() => !isCurrentUnlocked && onLockClickAction(activeCard.id)}
         aria-label={
           isCurrentUnlocked
