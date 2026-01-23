@@ -21,8 +21,8 @@ export type LanguageId = (typeof LANGUAGES)[number]['id'];
 
 export const NAME_TO_ID = Object.fromEntries(
   LANGUAGES.map((lang) => [lang.name, lang.id]),
-) as Record<string, string>;
+) as Record<string, LanguageId>;
 
 export const ID_TO_NAME = Object.fromEntries(
   LANGUAGES.map((lang) => [lang.id, lang.name]),
-) as Record<string, string>;
+) as Record<LanguageId, string>;

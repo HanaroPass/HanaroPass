@@ -1,30 +1,30 @@
 'use client';
 
-import { useParams, useRouter } from 'next/navigation';
-import HospitalGuide from '@/app/medical/components/languageRegistration/HospitalGuide';
-import StatusBadge from '@/app/medical/components/StatusBadge';
+import { useRouter } from 'next/navigation';
 import RegistrationSummary from '@/components/result/RegistrationSummary';
 import ActionButton from '@/components/ui/ActionButton';
+import HospitalGuide from '../../components/languageRegistration/HospitalGuide';
+import StatusBadge from '../../components/StatusBadge';
+import { useRegistrationResult } from '../../hooks/useRegistrationResult';
 
 export default function HospitalRegistrationCompletePage() {
-  const params = useParams();
   const router = useRouter();
-  const hospitalId = params.hospitalId as string;
+  const { data, isLoading, hospitalId } = useRegistrationResult();
 
-  /**
-   * QQQ (Data Flow & Prisma Plan):
-   * 1. POST 요청 응답 처리:
-   * - /api/medical/lang-application 호출 후 반환된 신규 레코드 데이터 사용.
-   * 2. 필드 매칭:
-   * - '신청 병원': Hospital 테이블의 nameKo (id로 조회)
-   * - '신청 일시': 서버에서 생성된 Timestamp (new Date().toISOString() 등)
-   * 3. 상태 값:
-   * - 초기값은 무조건 'pending'으로 서버 응답에 포함되어야 함.
-   */
+  if (isLoading || !data)
+    return (
+      <div className="flex h-screen items-center justify-center">
+        로딩 중...
+      </div>
+    );
+
   const summaryItems = [
-    { label: '신청 병원', value: '강남병원' },
-    { label: '신청 일시', value: '2026.01.19 08:53:55' },
-    { label: '상태', value: <StatusBadge status="pending" /> },
+    { label: '신청 병원', value: data.hospitalName },
+    { label: '신청 일시', value: data.createdAt },
+    {
+      label: '상태',
+      value: <StatusBadge status={data.status} />,
+    },
   ];
 
   return (
@@ -43,9 +43,7 @@ export default function HospitalRegistrationCompletePage() {
       <div className="space-y-3 border-gray-100 border-t bg-white-ez px-6 py-4 pb-8">
         <ActionButton
           text="신청 내역"
-          onClick={() =>
-            router.push(`/medical/lang-application/management/${hospitalId}`)
-          }
+          onClick={() => router.push(`/medical/registrations/${hospitalId}`)}
         />
         <ActionButton
           text="처음으로"
