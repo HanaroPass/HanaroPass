@@ -1,17 +1,22 @@
 'use client';
 import { Loader, PlusIcon, XIcon } from 'lucide-react';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
 import { type ChangeEvent, useState } from 'react';
 import ActionButton from '@/components/ui/ActionButton';
 import { postSymptomForm } from '../../actions/symptoms';
 import SymptomRadioGroup from '../../components/symptom/SymptomRadioGroup';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 
-export default function SymptomAnalyzePage() {
+function SymptomAnalyzeContent() {
   const [images, setImages] = useState<File[]>([]);
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [isLoading, setLoading] = useState(false);
   const [isImageCntOK, setImageCntOK] = useState(true);
+  const router = useRouter();
+
+  const searchParams = useSearchParams();
+  const mode = searchParams.get('mode') ?? 'translate';
 
   const handleImages = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -30,7 +35,6 @@ export default function SymptomAnalyzePage() {
       });
     }
   };
-  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -42,7 +46,7 @@ export default function SymptomAnalyzePage() {
     setLoading(false);
     console.log(response);
     localStorage.setItem('symptom-result', response);
-    router.push('/medical/symptoms/result');
+    router.push(`/medical/symptoms/result?mode=${mode}`);
   };
 
   return (
@@ -62,7 +66,7 @@ export default function SymptomAnalyzePage() {
             혹시 작성이 어렵나요?
           </div>
           <div className="mb-2 h-14 w-full rounded-lg bg-white-ez pt-3 pl-3">
-            <div className="justify-center pb-[7px] font-medium text-black_900 text-xs leading-4">
+            <div className="justify-center pb-1.75 font-medium text-black_900 text-xs leading-4">
               TIP 01. 증상이라면
             </div>
             <div className="justify-center font-medium text-[8px] text-black_900 leading-3">
@@ -71,7 +75,7 @@ export default function SymptomAnalyzePage() {
             </div>
           </div>
           <div className="h-14 w-full rounded-lg bg-white-ez pt-3 pl-3">
-            <div className="justify-center pb-[7px] font-medium text-black-900 text-xs leading-4">
+            <div className="justify-center pb-1.75 font-medium text-black-900 text-xs leading-4">
               TIP 02. 시술이라면
             </div>
             <div className="justify-center font-medium text-[8px] text-black-900 leading-3">
@@ -151,5 +155,19 @@ export default function SymptomAnalyzePage() {
         </form>
       </div>
     </>
+  );
+}
+
+export default function SymptomAnalyzePage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="p-10 text-center text-gray-400">
+          화면을 불러오는 중입니다...
+        </div>
+      }
+    >
+      <SymptomAnalyzeContent />
+    </Suspense>
   );
 }

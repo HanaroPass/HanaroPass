@@ -1,18 +1,19 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { getTTS, type outputType, parseOutput } from '../../actions/symptoms';
+import { useRouter, useSearchParams } from 'next/navigation';
 
-export default function SymptomResultPage() {
+function SymptomResultContent() {
   const [result, setResult] = useState<outputType>();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const mode = searchParams.get('mode');
+
   useEffect(() => {
-    const parse = async () => {
-      const data = localStorage.getItem('symptom-result');
-      if (data) {
-        const result = await parseOutput(data);
-        setResult(result);
-      }
-    };
-    parse();
+    const data = localStorage.getItem('symptom-result');
+    if (!data) return;
+
+    parseOutput(data).then(setResult);
     localStorage.removeItem('symptom-result');
   }, []);
 
@@ -39,7 +40,34 @@ export default function SymptomResultPage() {
         AI 음성으로 듣기
       </button>
       <div>이 내용을 병원에 전달하면 더 원활한 예약이 가능해요</div>
-      <button>병원 추천 보러가기</button>
+
+      <div className="mt-6">
+        {mode === 'recommend' ? (
+          <button onClick={() => router.push('/medical/symptoms/recommend')}>
+            병원 추천 보러가기
+          </button>
+        ) : (
+          <button onClick={() => router.push('/map')}>지도로 돌아가기</button>
+        )}
+      </div>
     </>
+  );
+}
+
+export default function SymptomResultPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center">
+          <div className="text-center">
+            <p className="animate-pulse text-gray-500">
+              결과를 정리하고 있습니다...
+            </p>
+          </div>
+        </div>
+      }
+    >
+      <SymptomResultContent />
+    </Suspense>
   );
 }
