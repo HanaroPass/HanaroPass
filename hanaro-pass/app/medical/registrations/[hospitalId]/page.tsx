@@ -143,7 +143,16 @@ export default function HospitalRegistrationDetailsPage() {
         </div>
       </main>
 
-      <div className="border-gray-100 border-t bg-white-ez px-6 py-4 pb-8">
+      <div className="space-y-3 border-gray-100 border-t bg-white-ez px-6 py-4 pb-8">
+        {data.status === 'REJECTED' && (
+          <ActionButton
+            text="다시 신청하기"
+            onClick={() =>
+              router.push(`/medical/registrations/new?hospitalId=${hospitalId}`)
+            }
+            className="bg-hana-red transition-opacity hover:bg-hana-redtext-white-ez hover:opacity-90"
+          />
+        )}
         <ActionButton text="확인" onClick={() => router.push('/')} />
       </div>
     </>
