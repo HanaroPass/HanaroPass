@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import SearchInput from '@/components/SearchInput/SearchInput';
 import {
   TabsLine,
@@ -42,13 +43,13 @@ function page() {
           ))}
         </div>
       </div>
-      <div className="mt-auto pt-6">
+      <Link href={`/coupons/benefit/1`} className="mt-auto pt-6">
         <BenefitBanner
           variant={BENEFIT_BANNER_VARIANTS.SKI}
           countryCode="HK"
           name="Chan"
         />
-      </div>
+      </Link>
     </div>
   );
 }

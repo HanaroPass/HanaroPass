@@ -40,7 +40,7 @@ function Coupon({
         <p className="text-black-800 text-sm">{description}</p>
       </div>
       <Link
-        href={`/benefits/${id}`}
+        href={`/coupons/${id}`}
         aria-label={`${brandName} 쿠폰 받기`}
         className="flex h-12 w-12 shrink-0 items-center rounded-[14px] bg-green-ez"
       >
