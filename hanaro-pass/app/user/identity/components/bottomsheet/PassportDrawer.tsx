@@ -9,6 +9,7 @@ type PassportDrawerProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit?: (data: Record<string, string>) => void;
+  onReset?: () => void;
   className?: string;
 };
 
@@ -16,6 +17,7 @@ export function PassportDrawer({
   open,
   onOpenChange,
   onSubmit,
+  onReset,
   className,
 }: PassportDrawerProps) {
   const { formData, handleSubmit, resetForm, handleFormDataChange } =
@@ -30,7 +32,7 @@ export function PassportDrawer({
       onOpenChange={onOpenChange}
       title="여권 정보 확인"
       onSubmit={handleSubmit}
-      onReset={resetForm}
+      onReset={onReset || resetForm}
       className={className}
       showButtons={true}
     >
