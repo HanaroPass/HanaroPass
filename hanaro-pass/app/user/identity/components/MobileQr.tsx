@@ -101,7 +101,7 @@ export default function MobileQr({ type, data }: MobileQrProps) {
                   </span>
                 </div>
                 <Image
-                  src="/images/identity/USA.png"
+                  src={`/images/identity/${data.country || 'USA'}.png`}
                   alt="Country Flag"
                   width={80}
                   height={50}

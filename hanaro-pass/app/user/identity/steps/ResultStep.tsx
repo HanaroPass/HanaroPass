@@ -21,8 +21,9 @@ export default function ResultStep({
   onClose,
   onRegister,
 }: ResultStepProps) {
-  const [activeTab, setActiveTab] = useState(
-    identityType === 'passport' ? 'passport' : 'alien',
+  const DEFAULT_TAB = 'alien' as const;
+  const [activeTab, setActiveTab] = useState<'passport' | 'alien'>(
+    identityType === 'passport' ? 'passport' : DEFAULT_TAB,
   );
 
   const handleRegister = (type: IdentityType) => {
@@ -48,6 +49,7 @@ export default function ResultStep({
       >
         <div className="flex rounded-full bg-gray-100 p-1">
           <button
+            type="button"
             onClick={() => setActiveTab('passport')}
             className={`relative rounded-full px-4 py-1.5 font-medium text-sm transition-all ${
               activeTab === 'passport'
@@ -58,6 +60,7 @@ export default function ResultStep({
             여권
           </button>
           <button
+            type="button"
             onClick={() => setActiveTab('alien')}
             className={`relative rounded-full px-4 py-1.5 font-medium text-sm transition-all ${
               activeTab === 'alien'
