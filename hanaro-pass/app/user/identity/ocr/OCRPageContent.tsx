@@ -2,9 +2,9 @@
 
 import { X } from 'lucide-react';
 import { useState } from 'react';
-import { AlienDrawer } from '@/app/user/identity/components/bottomsheet/AlienDrawer';
-import { PassportDrawer } from '@/app/user/identity/components/bottomsheet/PassportDrawer';
-import CameraCapture from '@/app/user/identity/components/CameraCapture';
+import { AlienDrawer } from '../components/bottomsheet/AlienDrawer';
+import { PassportDrawer } from '../components/bottomsheet/PassportDrawer';
+import CameraCapture from '../components/CameraCapture';
 
 type OCRPageContentProps = {
   type: 'passport' | 'alien' | null;
@@ -27,6 +27,11 @@ export default function OCRPageContent({
   const handleRetake = () => {
     setIsDrawerOpen(false);
   };
+
+  // type이 null인 경우 처리
+  if (!type) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-black">
