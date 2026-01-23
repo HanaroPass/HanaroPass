@@ -124,14 +124,14 @@ export default function Card({
         ))}
       </div>
 
-      <div className="flex h-7.5 items-center justify-between rounded-lg bg-[linear-gradient(91deg,#00D7B7_0.22%,#48AFAD_40.09%,#008485_100%)] px-2 text-white">
+      <div className="mx-auto flex h-7.5 w-65 items-center justify-between rounded-lg bg-[linear-gradient(91deg,#00D7B7_0.22%,#48AFAD_40.09%,#008485_100%)] px-2 text-white">
         <p className="font-bold text-[12px] opacity-70">잔액</p>
         <p className="font-bold text-[12px]">{activeCard.balance}원</p>
       </div>
 
       <button
         type="button"
-        className="relative flex h-28 w-full flex-col items-center justify-center bg-white transition-opacity active:opacity-70"
+        className="relative mx-auto flex h-28 w-65 flex-col items-center justify-center bg-white transition-opacity active:opacity-70"
         onClick={() => !isCurrentUnlocked && onLockClickAction(activeCard.id)}
         aria-label={
           isCurrentUnlocked
