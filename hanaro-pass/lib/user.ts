@@ -22,11 +22,10 @@ export async function getUserId(): Promise<number | null> {
 
     return passportRow?.userId ?? null;
   } catch (error: unknown) {
-    if (
-      error instanceof Error &&
-      (error as any).digest === 'DYNAMIC_SERVER_USAGE'
-    ) {
-      throw error;
+    if (error instanceof Error) {
+      if ('digest' in error && error.digest === 'DYNAMIC_SERVER_USAGE') {
+        throw error;
+      }
     }
 
     console.error('getUserId 인증 에러:', error);
