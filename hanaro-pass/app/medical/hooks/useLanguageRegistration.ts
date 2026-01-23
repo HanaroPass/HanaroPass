@@ -1,26 +1,39 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   getHospitalDetailAction,
+  IdSchema,
+  SubmitSchema,
   submitLanguageApplicationAction,
 } from '../actions/language-regist.action';
+import type { LanguageId } from '../constants/language';
 
 export function useLanguageRegistration() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const hospitalId = Number(searchParams.get('hospitalId'));
+
+  const rawHospitalId = Number(searchParams.get('hospitalId'));
+  const hospitalId = IdSchema.safeParse(rawHospitalId).success
+    ? rawHospitalId
+    : null;
 
   const [hospitalName, setHospitalName] = useState('');
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [selectedIds, setSelectedIds] = useState<LanguageId[]>([]);
+  const [initialIds, setInitialIds] = useState<LanguageId[]>([]); // 기존에 선택된 언어들
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [initialIds, setInitialIds] = useState<string[]>([]); // 기존에 선택된 언어들
 
   const hasFetched = useRef(false);
 
   useEffect(() => {
-    if (!hospitalId || hasFetched.current) return;
+    if (hospitalId === null) {
+      alert('유효하지 않은 접근입니다.');
+      router.back();
+      return;
+    }
+
+    if (hasFetched.current) return;
 
     const fetchHospital = async () => {
       hasFetched.current = true;
@@ -47,14 +60,39 @@ export function useLanguageRegistration() {
     fetchHospital();
   }, [hospitalId, router]);
 
-  const toggleLanguage = (id: string) => {
+  const toggleLanguage = (id: LanguageId) => {
     setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
     );
   };
 
+  const isChanged = useMemo(() => {
+    if (initialIds.length !== selectedIds.length) return true;
+    const sortedInitial = [...initialIds].sort();
+    const sortedSelected = [...selectedIds].sort();
+    return sortedInitial.some((id, index) => id !== sortedSelected[index]);
+  }, [initialIds, selectedIds]);
+
+  const isValid = useMemo(() => {
+    const validation = SubmitSchema.safeParse({
+      hospitalId,
+      languageIds: selectedIds,
+    });
+    return validation.success && isChanged;
+  }, [hospitalId, selectedIds, isChanged]);
+
   const submitApplication = async () => {
-    if (selectedIds.length === 0 || !isChanged) return;
+    if (!hospitalId || !isValid) return;
+
+    const validation = SubmitSchema.safeParse({
+      hospitalId,
+      languageIds: selectedIds,
+    });
+
+    if (!validation.success) {
+      alert(validation.error.issues[0].message);
+      return;
+    }
 
     setIsSubmitting(true);
     const result = await submitLanguageApplicationAction(
@@ -70,10 +108,6 @@ export function useLanguageRegistration() {
     }
   };
 
-  const isChanged =
-    JSON.stringify([...initialIds].sort()) !==
-    JSON.stringify([...selectedIds].sort());
-
   return {
     hospitalName,
     selectedIds,
@@ -82,6 +116,6 @@ export function useLanguageRegistration() {
     submitApplication,
     isSubmitting,
     isChanged,
-    isValid: selectedIds.length > 0 && isChanged,
+    isValid,
   };
 }
