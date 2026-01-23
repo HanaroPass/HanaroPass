@@ -7,8 +7,8 @@ import {
   useRef,
   useState,
 } from 'react';
-import type { SavedPlace } from '../../mock/savedPlaces';
 import type { HospitalPlace } from '../../mock/hospitalMap.mock';
+import type { SavedPlace } from '../../mock/savedPlaces';
 
 type NaverMapProps = {
   onMarkerClick: (place: HospitalPlace | SavedPlace) => void;
