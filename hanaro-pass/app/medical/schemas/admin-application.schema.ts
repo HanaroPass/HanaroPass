@@ -1,11 +1,18 @@
 import { z } from 'zod';
 
-export const AdminApplicationSchema = z.object({
+export const BaseApplicationSchema = z.object({
   id: z.number(),
   hospitalName: z.string(),
   status: z.enum(['PENDING', 'APPROVED', 'REJECTED']),
   requestLangs: z.array(z.string()),
   createdAt: z.date(),
+});
+
+export const AdminApplicationSchema = BaseApplicationSchema;
+
+export const AdminReviewDetailSchema = BaseApplicationSchema.extend({
+  hospitalId: z.number(),
+  processedAt: z.date().nullable().optional(),
 });
 
 export const AdminDashboardSchema = z.object({
@@ -17,5 +24,6 @@ export const AdminDashboardSchema = z.object({
   }),
 });
 
-export type AdminDashboardResponse = z.infer<typeof AdminDashboardSchema>;
 export type AdminApplicationItem = z.infer<typeof AdminApplicationSchema>;
+export type AdminReviewDetailResponse = z.infer<typeof AdminReviewDetailSchema>;
+export type AdminDashboardResponse = z.infer<typeof AdminDashboardSchema>;
