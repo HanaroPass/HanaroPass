@@ -51,7 +51,7 @@ export default function MobileQr({ type, data }: MobileQrProps) {
   );
 
   return (
-    <div className="flex h-full flex-col space-y-6">
+    <div className="flex min-h-full flex-col space-y-6 overflow-y-auto pb-4">
       {/* 1. QR Code Card */}
       <div
         className="rounded-2xl p-6 text-white shadow-lg"
@@ -105,11 +105,11 @@ export default function MobileQr({ type, data }: MobileQrProps) {
                 <Image
                   src="/images/identity/USA.png"
                   alt="Country Flag"
-                  width={64}
-                  height={40}
+                  width={80}
+                  height={50}
                   className="mb-2 rounded border border-gray-200 shadow-sm"
                 />
-                <span className="font-bold text-gray-900 text-xl">
+                <span className="font-medium text-gray-900 text-sm">
                   {data.country || 'USA'}
                 </span>
               </div>
@@ -117,8 +117,10 @@ export default function MobileQr({ type, data }: MobileQrProps) {
 
             {/* 하단: 여권 번호 (긴 박스) */}
             <div className="flex w-full items-center justify-between rounded-2xl bg-gray-50 px-6 py-5">
-              <span className="font-medium text-gray-500">Passport Number</span>
-              <span className="font-bold text-teal-600 text-xl tracking-tight">
+              <span className="sm font-regular text-gray-800">
+                Passport Number
+              </span>
+              <span className="font-bold text-green-ez text-xl tracking-tight">
                 {data.passportNumber || 'M12345678'}
               </span>
             </div>
