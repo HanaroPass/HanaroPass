@@ -1,19 +1,36 @@
 'use client';
 
 import ActionButton from '@/components/ui/ActionButton';
+import { deleteUserDocs } from '../actions/userDocs';
+import { useRouter } from 'next/navigation';
 
 type Props = {
+  docId: string;
   fileUrl: string;
   title: string;
 };
 
-export default function DocsDetailPageClient({ fileUrl, title }: Props) {
+export default function DocsDetailPageClient({ docId, fileUrl, title }: Props) {
+  const router = useRouter();
+
   return (
     <div className="mx-auto mt-10 flex w-full max-w-84 gap-4">
       <div className="flex-1 text-black">
         <ActionButton
           text="삭제"
-          onClick={() => alert('삭제 기능 연결 예정')}
+          onClick={async () => {
+            const ok = confirm('정말 이 서류를 삭제할까요?');
+            if (!ok) return;
+            const res = await deleteUserDocs(docId);
+
+            if (!res.success) {
+              alert(res.message);
+              return;
+            }
+
+            alert('서류가 삭제되었습니다.');
+            router.push('/docs');
+          }}
           className="bg-white text-black hover:bg-black/5 active:bg-black/5"
         />
       </div>

@@ -28,11 +28,13 @@ export default async function DocsDetailPage({ params }: DocsProps) {
           <div className="rounded-2xl bg-white shadow-[0_5px_10px_rgba(0,0,0,0.18)]">
             <div className="flex h-105 flex-col items-center justify-center px-6">
               {isPdf ? (
-                <iframe
-                  src={fileUrl}
-                  title={doc?.title ?? 'document-preview'}
-                  className="h-full w-full border-none"
-                />
+                <div className="relative h-full w-full p-4">
+                  <iframe
+                    src={fileUrl}
+                    title={doc?.title ?? 'document-preview'}
+                    className="h-full w-full border-none"
+                  />
+                </div>
               ) : (
                 <div className="relative h-full w-full p-4">
                   <Image
@@ -44,7 +46,7 @@ export default async function DocsDetailPage({ params }: DocsProps) {
                   />
                 </div>
               )}
-              <div className="mt-1 mb-8 flex flex-col items-center text-center">
+              <div className="mt-2 mb-8 flex flex-col items-center text-center">
                 <p className="text-center font-sans text-[10px] text-black/45 leading-[1.4]">
                   전자서명법 기준을 준수한 안전한 인증서
                 </p>
@@ -57,7 +59,11 @@ export default async function DocsDetailPage({ params }: DocsProps) {
         </div>
 
         {/* 버튼 영역 */}
-        <DocsDetailPageClient fileUrl={fileUrl} title={doc?.title ?? '서류'} />
+        <DocsDetailPageClient
+          docId={docId}
+          fileUrl={fileUrl}
+          title={doc?.title ?? '서류'}
+        />
       </main>
     </>
   );
