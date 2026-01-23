@@ -18,7 +18,7 @@ export const Default: StoryObj = {
     return (
       <BottomSheet isOpen={open} onClose={() => setOpen(false)}>
         <DocsSelectList
-          items={DOCS_CARD_ITEMS}
+          items={[...DOCS_CARD_ITEMS]}
           onSelect={(id) => {
             console.log('selected:', id);
             setOpen(false);

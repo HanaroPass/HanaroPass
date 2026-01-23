@@ -29,3 +29,5 @@ export const DOC_ID_TO_REQUIREMENT: Record<DocsCardId, DocRequirement> = {
   copy: { kind: 'USER_DOC', docType: 'COPY' },
   photo: { kind: 'USER_DOC', docType: 'PHOTO' },
 } as const;
+
+export type UserDocType = 'PHOTO' | 'COPY' | 'STUDENT_ID';
