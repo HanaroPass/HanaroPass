@@ -4,17 +4,17 @@ import { useCallback, useState } from 'react';
 
 type FunnelStep = 'intro' | 'ocr' | 'account' | 'result';
 
-interface FunnelContext {
+type FunnelContext {
   identityType: 'passport' | 'alien' | null;
   identityData: Record<string, string> | null;
   accountData: Record<string, string> | null;
 }
 
-interface FunnelHistory {
+type FunnelHistory {
   push: (step: FunnelStep, contextUpdate?: Partial<FunnelContext>) => void;
 }
 
-interface FunnelState {
+type FunnelState {
   step: FunnelStep;
   context: FunnelContext;
 }
