@@ -5,6 +5,7 @@ import { Star } from 'lucide-react';
 type AccountFieldsProps = {
   formData: Record<string, string>;
   onFormDataChange: (data: Record<string, string>) => void;
+  onAccountSelect?: (accountData: Record<string, string>) => void;
 };
 
 type AccountOptionProps = {
@@ -12,7 +13,7 @@ type AccountOptionProps = {
   accountNumber: string;
   value: string;
   selected: boolean;
-  onSelect: (value: string) => void;
+  onSelect: (accountData: Record<string, string>) => void;
 };
 
 function AccountOption({
@@ -22,10 +23,19 @@ function AccountOption({
   selected,
   onSelect,
 }: AccountOptionProps) {
+  const handleSelect = () => {
+    onSelect({
+      selectedAccount: value,
+      accountName: name,
+      accountNumber: accountNumber,
+      account: `${name} (${accountNumber})`,
+    });
+  };
+
   return (
     <button
       type="button"
-      onClick={() => onSelect(value)}
+      onClick={handleSelect}
       className={`w-full rounded-lg border p-4 text-left transition-colors ${
         selected
           ? 'border-hana-green bg-green-50'
@@ -49,9 +59,12 @@ function AccountOption({
 export function AccountFields({
   formData,
   onFormDataChange,
+  onAccountSelect,
 }: AccountFieldsProps) {
-  const handleAccountSelect = (accountValue: string) => {
-    onFormDataChange({ ...formData, selectedAccount: accountValue });
+  const handleAccountSelect = (accountData: Record<string, string>) => {
+    onFormDataChange({ ...formData, ...accountData });
+    // 계좌 선택 즉시 부모 컴포넌트에 알림
+    onAccountSelect?.(accountData);
   };
 
   return (
