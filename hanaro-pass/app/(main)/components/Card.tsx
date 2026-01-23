@@ -64,10 +64,13 @@ export default function Card({
   const [isAnimating, setIsAnimating] = useState(false);
   const touchStartRef = useRef<number | null>(null);
 
-  const activeCard = useMemo(() => cards[activeIndex], [cards, activeIndex]);
+  const activeCard = useMemo(
+    () => cards[activeIndex] ?? null,
+    [cards, activeIndex],
+  );
   const isCurrentUnlocked = useMemo(
-    () => unlockedCardIds.has(activeCard.id),
-    [unlockedCardIds, activeCard.id],
+    () => (activeCard ? unlockedCardIds.has(activeCard.id) : false),
+    [unlockedCardIds, activeCard],
   );
 
   const handleSwipe = useCallback(
@@ -86,7 +89,7 @@ export default function Card({
     [cards.length, isAnimating],
   );
 
-  if (cards.length === 0) {
+  if (!activeCard) {
     return null;
   }
 
