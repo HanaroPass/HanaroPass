@@ -25,9 +25,6 @@ export default function HospitalRegistrationDetailsPage() {
   const params = useParams();
   const hospitalId = Number(params.hospitalId);
 
-  console.log('전체 Params:', params);
-  console.log('가져온 hospitalId:', Number(params.hospitalId));
-
   const { data, isLoading, formattedLangs, formatDate } =
     useRegistrationDetail(hospitalId);
 
@@ -150,7 +147,7 @@ export default function HospitalRegistrationDetailsPage() {
             onClick={() =>
               router.push(`/medical/registrations/new?hospitalId=${hospitalId}`)
             }
-            className="bg-hana-red transition-opacity hover:bg-hana-redtext-white-ez hover:opacity-90"
+            className="bg-hana-red text-white-ez transition-opacity hover:bg-hana-red hover:opacity-90"
           />
         )}
         <ActionButton text="확인" onClick={() => router.push('/')} />

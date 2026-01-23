@@ -19,8 +19,8 @@ export const LanguageTransformSchema = z
 
 export const RegistrationDetailSchema = z.object({
   hospitalName: z.string(),
-  status: z.enum(['PENDING', 'APPROVED', 'REJECTED']), //
-  requestLangs: z.array(z.string()), // LanguageId[]
+  status: z.enum(['PENDING', 'APPROVED', 'REJECTED']),
+  requestLangs: z.array(z.string()),
   createdAt: z.date(),
   processedAt: z.date().nullable(),
 });
