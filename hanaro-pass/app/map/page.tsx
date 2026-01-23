@@ -101,28 +101,32 @@ export default function MapPage() {
           savedPlaces={SAVED_PLACES_MOCK}
           showBookmarks={bookmark}
           onMarkerClick={(place) => {
+            // 병원
             if ('departments' in place) {
-              setSelectedHospital(place);
+              setSelectedHospital(place as HospitalPlace);
               setSelectedPlace(null);
               toggleSheet('hospital', true);
               return;
             }
 
+            // 대사관
             if ('nationality' in place) return;
-            if (!('placeName' in place)) return;
 
-            // 클릭한 마커가 이미 선택된 마커인지 확인
-            const isTargetAlreadySelected =
-              selectedPlace?.id === (place as SavedPlace).id;
+            // 3. 즐겨찾기 장소인 경우
+            if ('placeName' in place) {
+              const target = place as SavedPlace;
+              const isTargetAlreadySelected = selectedPlace?.id === target.id;
 
-            if (isTargetAlreadySelected) {
-              // 이미 선택된 걸 또 누르면 닫기
-              setSelectedPlace(null);
-              toggleSheet('bookmark');
-            } else {
-              // 새로운 걸 누르면 데이터 교체 후 열기/갱신
-              setSelectedPlace(place as SavedPlace);
-              toggleSheet('bookmark', true);
+              if (isTargetAlreadySelected) {
+                // 이미 선택된 걸 또 누르면 닫기
+                setSelectedPlace(null);
+                toggleSheet('bookmark');
+              } else {
+                // 새로운 걸 누르면 데이터 교체 후 열기/갱신
+                setSelectedPlace(target);
+                setSelectedHospital(null);
+                toggleSheet('bookmark', true);
+              }
             }
           }}
           embassyData={MAP_EMBASSY_MOCK}
