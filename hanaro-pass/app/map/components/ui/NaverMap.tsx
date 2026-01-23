@@ -8,24 +8,21 @@ import {
   useState,
 } from 'react';
 import type { SavedPlace } from '../../mock/savedPlaces';
-import type { HospitalPlace } from '../../mock/hospitalMap.mock';
+
+type Place = {
+  id: number;
+  name: string;
+  address: string;
+};
 
 type NaverMapProps = {
-  onMarkerClick: (place: HospitalPlace | SavedPlace) => void;
+  onMarkerClick: (place: Place | SavedPlace) => void;
   savedPlaces?: SavedPlace[];
   showBookmarks?: boolean;
-  hospitals?: HospitalPlace[];
-  activeCategory?: 'hospital' | 'embassy' | 'exchange' | null;
 };
 
 export const NaverMap = forwardRef(function NaverMap(
-  {
-    onMarkerClick,
-    savedPlaces,
-    showBookmarks,
-    hospitals,
-    activeCategory,
-  }: NaverMapProps,
+  { onMarkerClick, savedPlaces, showBookmarks }: NaverMapProps,
   ref,
 ) {
   const mapRef = useRef<naver.maps.Map | null>(null);
@@ -35,111 +32,75 @@ export const NaverMap = forwardRef(function NaverMap(
   const isMountedRef = useRef(true);
   const [isMapReady, setIsMapReady] = useState(false);
 
-  /** 최신 onMarkerClick 유지 */
   useEffect(() => {
     onMarkerClickRef.current = onMarkerClick;
   }, [onMarkerClick]);
 
   useEffect(() => {
-    if (!isMapReady || !mapRef.current) return;
-
     markersRef.current.forEach((marker) => {
       marker.setMap(null);
     });
     markersRef.current = [];
 
-    const map = mapRef.current;
-    const { naver } = window;
+    const currentMap = mapRef.current;
 
-    /** 병원 마커 */
-    if (activeCategory === 'hospital' && hospitals) {
-      hospitals.forEach((hospital) => {
-        const marker = new naver.maps.Marker({
-          position: new naver.maps.LatLng(
-            Number(hospital.latitude),
-            Number(hospital.longitude),
-          ),
-          map,
-          icon: {
-            content: `
-              <div class="w-5 h-5 bg-white rounded-full flex items-center justify-center shadow-[0_2px_5px_rgba(0,0,0,0.2)]">
-                <div class="w-4 h-4 bg-[#F9FAFB] rounded-full flex items-center justify-center shadow-inner">
-                  <svg
-                    width="12"
-                    height="12"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M12 5v14M5 12h14"
-                      stroke="#F43F5E" 
-                      stroke-width="4.5" 
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                  </svg>
-                </div>
-              </div>
-            `,
-            anchor: new naver.maps.Point(14, 14),
-          },
-        });
-
-        naver.maps.Event.addListener(marker, 'click', () => {
-          onMarkerClickRef.current(hospital);
-        });
-
-        markersRef.current.push(marker);
-      });
-    }
-
-    /** 북마크 마커 */
-    if (showBookmarks && savedPlaces) {
+    if (isMapReady && showBookmarks && savedPlaces && currentMap) {
+      const { naver } = window;
       savedPlaces.forEach((place) => {
         const marker = new naver.maps.Marker({
           position: new naver.maps.LatLng(
             Number(place.latitude),
             Number(place.longitude),
           ),
-          map,
+          map: currentMap,
           icon: {
             content: `
-              <div class="w-5 h-5 bg-white rounded-full flex items-center justify-center shadow-[0_4px_8px_rgba(0,0,0,0.2)]">
-                <div class="w-4 h-4 bg-hana-green rounded-full flex items-center justify-center shadow-inner text-white">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M5 5C5 3.34315 6.34315 2 8 2H16C17.6569 2 19 3.34315 19 5V22L12 19L5 22V5Z" />
-                  </svg>
-                </div>
+              <div class="w-7 h-7 bg-white rounded-full flex items-center justify-center shadow-[0_4px_8px_rgba(0,0,0,0.2)]">
+                <div class="w-6 h-6 bg-hana-green rounded-full flex items-center justify-center shadow-inner">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  style="filter: drop-shadow(0 1px 1px rgba(0,0,0,0.2));"
+                >
+                  <path d="M5 5C5 3.34315 6.34315 2 8 2H16C17.6569 2 19 3.34315 19 5V22L12 19L5 22V5Z" />
+                </svg>
               </div>
-            `,
+            </div>
+          `,
             anchor: new naver.maps.Point(14, 14),
           },
         });
-
         naver.maps.Event.addListener(marker, 'click', () => {
-          onMarkerClickRef.current(place);
+          onMarkerClick(place);
         });
 
         markersRef.current.push(marker);
       });
     }
-  }, [isMapReady, activeCategory, hospitals, savedPlaces, showBookmarks]);
+  }, [isMapReady, showBookmarks, savedPlaces, onMarkerClick]);
 
-  /** 지도 초기화 */
   useEffect(() => {
     const NAVER_MAP_KEY = process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID;
+    const NAVER_MAP_SCRIPT_URL =
+      'https://oapi.map.naver.com/openapi/v3/maps.js';
+
     if (!NAVER_MAP_KEY || !containerRef.current) return;
 
     const initMap = () => {
       if (!isMountedRef.current || mapRef.current) return;
-      if (!window.naver?.maps) return;
+
+      const { naver } = window;
+      if (!naver?.maps) return;
 
       const renderMap = (lat: number, lng: number) => {
-        if (!containerRef.current) return;
+        if (!isMountedRef.current || !containerRef.current) return;
 
-        const center = new window.naver.maps.LatLng(lat, lng);
-        const map = new window.naver.maps.Map(containerRef.current, {
+        const center = new naver.maps.LatLng(lat, lng);
+
+        const map = new naver.maps.Map(containerRef.current, {
           center,
           zoom: 15,
           logoControl: false,
@@ -148,13 +109,21 @@ export const NaverMap = forwardRef(function NaverMap(
         mapRef.current = map;
         setIsMapReady(true);
 
-        new window.naver.maps.Marker({
+        const myMarker = new naver.maps.Marker({
           position: center,
           map,
           icon: {
             content: `<div class="w-4 h-4 bg-blue-600 rounded-full border-2 border-white shadow-lg"/>`,
-            anchor: new window.naver.maps.Point(5, 5),
+            anchor: new naver.maps.Point(8, 8),
           },
+        });
+
+        naver.maps.Event.addListener(myMarker, 'click', () => {
+          onMarkerClickRef.current({
+            id: 1,
+            name: '내 위치',
+            address: '현재 위치',
+          });
         });
       };
 
@@ -179,10 +148,11 @@ export const NaverMap = forwardRef(function NaverMap(
         : existingScript.addEventListener('load', initMap, { once: true });
     } else {
       const script = document.createElement('script');
-      const NAVER_MAP_SCRIPT_URL =
-        'https://oapi.map.naver.com/openapi/v3/maps.js';
       script.id = 'naver-map-script';
       script.src = `${NAVER_MAP_SCRIPT_URL}?ncpKeyId=${NAVER_MAP_KEY}`;
+      script.async = true;
+      script.onload = initMap;
+
       document.head.appendChild(script);
     }
 
