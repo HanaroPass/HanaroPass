@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import QRCode from 'react-qr-code';
 import type { IdentityType } from '../hooks/useFunnel';
 
@@ -10,27 +11,65 @@ type MobileQrProps = {
 
 export default function MobileQr({ type, data }: MobileQrProps) {
   const isPassport = type === 'passport';
+  const [timeLeft, setTimeLeft] = useState(30);
+  const [qrKey, setQrKey] = useState(Date.now());
 
   // QR 코드에 들어갈 데이터를 JSON 형태로 생성
   const qrData = JSON.stringify({
     type,
     ...data,
-    timestamp: Date.now(),
+    timestamp: qrKey,
   });
+
+  // 타이머 관리
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          // 시간이 다 되면 새로운 QR 코드 생성
+          setTimeout(() => {
+            setQrKey(Date.now());
+            setTimeLeft(30);
+          }, 500);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  const isExpired = timeLeft === 0;
 
   return (
     <div className="flex h-full flex-col space-y-6">
       {/* QR Code Card */}
-      <div className="rounded-2xl bg-teal-500 p-6 text-white">
+      <div
+        className="rounded-2xl p-6 text-white"
+        style={{
+          background:
+            'linear-gradient(139deg, #01A5AC 0%, #5BC1C4 19.54%, #D9E8E5 98.01%)',
+        }}
+      >
         <div className="mb-4 text-center">
-          <p className="text-sm opacity-90">잔여 시간 : 4 seconds</p>
+          <p className="font-semibold text-lg opacity-90">
+            잔여 시간 : {timeLeft} seconds
+            {isExpired && (
+              <span className="ml-2 text-xs opacity-75">(Refresh)</span>
+            )}
+          </p>
         </div>
         <div className="mx-auto h-64 w-64 rounded-xl bg-white p-4">
-          <div className="flex h-full w-full items-center justify-center">
+          <div
+            className={`flex h-full w-full items-center justify-center transition-all duration-300 ${
+              isExpired ? 'opacity-100 blur-md' : ''
+            }`}
+          >
             <QRCode
               value={qrData}
               size={224}
-              style={{ height: "auto", maxWidth: "100%", width: "100%" }}
+              style={{ height: 'auto', maxWidth: '100%', width: '100%' }}
               viewBox="0 0 256 256"
             />
           </div>
