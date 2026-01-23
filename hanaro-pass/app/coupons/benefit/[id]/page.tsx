@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 
 export default function BenefitDetailPage() {
   return (
-    <div className="min-h-screen bg-white pb-24 text-black-800">
+    <div className="relative min-h-screen bg-white text-black-800">
       <main>
         <section className="px-6 py-4">
           <div className="flex items-start justify-between">
@@ -94,8 +94,8 @@ export default function BenefitDetailPage() {
         </section>
       </main>
 
-      <footer className="fixed right-0 bottom-0 left-0 px-6 py-4 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
-        <button className="flex h-14 w-full items-center justify-center rounded-xl bg-green-ez font-bold text-lg text-white transition-all active:scale-[0.98] active:opacity-90">
+      <footer className="sticky right-0 bottom-0 left-0 px-6 py-4">
+        <button className="flex h-14 w-full items-center justify-center rounded-xl bg-green-ez font-bold text-lg text-white">
           하나 더 이지 카드 만들기
         </button>
       </footer>
