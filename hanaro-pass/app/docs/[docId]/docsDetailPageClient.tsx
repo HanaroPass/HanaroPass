@@ -15,6 +15,17 @@ export default function DocsDetailPageClient({ docId, fileUrl, title }: Props) {
   const router = useRouter();
   const [isDeleting, setIsDeleting] = useState(false);
 
+  const handleDownload = () => {
+    if (!fileUrl) return;
+
+    const link = document.createElement('a');
+    link.href = fileUrl;
+    link.download = title;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="mx-auto mt-10 flex w-full max-w-84 gap-4">
       <div className="flex-1 text-black">
@@ -44,16 +55,7 @@ export default function DocsDetailPageClient({ docId, fileUrl, title }: Props) {
         <ActionButton
           text="다운로드"
           disabled={!fileUrl}
-          onClick={() => {
-            if (!fileUrl) return;
-
-            const link = document.createElement('a');
-            link.href = fileUrl;
-            link.download = title;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-          }}
+          onClick={handleDownload}
         />
       </div>
     </div>
