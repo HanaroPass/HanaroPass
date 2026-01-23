@@ -27,16 +27,18 @@ export async function searchHospitalAction(
   query: string,
 ): Promise<ActionResult<Pick<Hospital, 'id' | 'nameKo' | 'address'>[]>> {
   try {
-    const validatedQuery = SearchSchema.parse(query);
-    const sanitizedQuery = validatedQuery.replace(/\s+/g, '');
-    if (!sanitizedQuery) return { success: true, data: [] };
+    const sanitizedQuery = query.replace(/\s+/g, '');
+    if (!sanitizedQuery || sanitizedQuery.length < 2) {
+      return { success: true, data: [] };
+    }
+    const validatedQuery = SearchSchema.parse(sanitizedQuery);
 
     const hospitals = await prisma.$queryRaw<
       Pick<Hospital, 'id' | 'nameKo' | 'address'>[]
     >`
   SELECT id, nameKo, address 
   FROM Hospital 
-  WHERE REPLACE(nameKo, ' ', '') LIKE ${`%${sanitizedQuery}%`}
+  WHERE REPLACE(nameKo, ' ', '') LIKE ${`%${validatedQuery}%`}
 `;
 
     return { success: true as const, data: hospitals };

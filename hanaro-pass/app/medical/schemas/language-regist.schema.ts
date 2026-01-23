@@ -9,7 +9,7 @@ export const SubmitSchema = z.object({
     .array(z.string())
     .min(1, '최소 하나의 언어를 선택해야 합니다.'),
 });
-export const SearchSchema = z.string().min(2).max(50);
+export const SearchSchema = z.string().max(50);
 export const LanguageTransformSchema = z
   .array(z.string())
   .transform((langs) =>
