@@ -57,14 +57,14 @@ const MOCK_APPLICATIONS = [
 ];
 
 export default function AdminDashboardPage() {
-  const [activeTab, setActiveTab] = useState<StatusType>('pending');
+  const [activeTab, setActiveTab] = useState<StatusType>('PENDING');
 
   // QQQ : 실제 데이터에서 상태별 개수 계산!
   const counts = {
-    pending: MOCK_APPLICATIONS.filter((app) => app.status === 'pending').length,
-    approved: MOCK_APPLICATIONS.filter((app) => app.status === 'approved')
+    PENDING: MOCK_APPLICATIONS.filter((app) => app.status === 'PENDING').length,
+    APPROVED: MOCK_APPLICATIONS.filter((app) => app.status === 'APPROVED')
       .length,
-    rejected: MOCK_APPLICATIONS.filter((app) => app.status === 'rejected')
+    REJECTED: MOCK_APPLICATIONS.filter((app) => app.status === 'REJECTED')
       .length,
   };
 
