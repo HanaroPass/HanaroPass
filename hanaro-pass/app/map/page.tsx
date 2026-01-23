@@ -15,8 +15,14 @@ import { HospitalContent } from './components/hospital/HospitalContent';
 import { SirenContent } from './components/siren/SirenContent';
 import { MapBottomSheet } from './components/ui/MapBottomSheet';
 import { NaverMap } from './components/ui/NaverMap';
+import { PlaceCard } from './components/ui/PlaceCard';
 import { ToggleButton } from './components/ui/ToggleButton';
 import { useBottomSheet } from './hooks/useBottomSheet';
+import { SAVED_PLACES_MOCK, type SavedPlace } from './mock/savedPlaces';
+import {
+  HOSPITALS_MAP_MOCK,
+  type HospitalPlace,
+} from './mock/hospitalMap.mock';
 
 /**
  * @page MapPage
@@ -25,9 +31,13 @@ import { useBottomSheet } from './hooks/useBottomSheet';
  * useBottomSheet 커스텀 훅을 사용하여 시트 관련 모든 로직을 주입받아 사용합니다.
  */
 export default function MapPage() {
-  const [bookmark, setBookmark] = useState<boolean>(false);
+  const [bookmark, setBookmark] = useState(false);
+  const [selectedPlace, setSelectedPlace] = useState<SavedPlace | null>(null);
+  const [selectedHospital, setSelectedHospital] =
+    useState<HospitalPlace | null>(null);
+
   const mapControlRef = useRef<{ centerToMyPosition: () => void }>(null);
-  // 시트 관련 로직과 상태를 커스텀 훅에서 추출
+
   const {
     openSheet,
     sheetPosition,
@@ -44,10 +54,33 @@ export default function MapPage() {
     <main className="relative h-screen w-screen overflow-hidden bg-gray-100">
       {/* 맵 레이어 */}
       <div className="absolute inset-0 z-0">
-        <NaverMap ref={mapControlRef} onMarkerClick={() => {}} />
+        <NaverMap
+          ref={mapControlRef}
+          activeCategory={openSheet === 'hospital' ? 'hospital' : null}
+          hospitals={HOSPITALS_MAP_MOCK}
+          savedPlaces={SAVED_PLACES_MOCK}
+          showBookmarks={bookmark}
+          onMarkerClick={(place) => {
+            if ('departments' in place) {
+              setSelectedHospital(place);
+              setSelectedPlace(null);
+              toggleSheet('hospital', true);
+              return;
+            }
+
+            const isSame = selectedPlace?.id === place.id;
+            if (isSame) {
+              setSelectedPlace(null);
+              toggleSheet('bookmark');
+            } else {
+              setSelectedPlace(place);
+              toggleSheet('bookmark', true);
+            }
+          }}
+        />
       </div>
 
-      {/* 필터 그룹 */}
+      {/* 상단 필터 그룹 */}
       <div className="absolute top-3 left-3 z-10 flex gap-2.5">
         <ToggleButton
           variant="pill"
@@ -55,7 +88,10 @@ export default function MapPage() {
           icon={<Cross className="h-4 w-4" />}
           active={openSheet === 'hospital'}
           iconColorVariant="red"
-          onClick={() => toggleSheet('hospital')}
+          onClick={() => {
+            setSelectedHospital(null);
+            toggleSheet('hospital', true);
+          }}
         />
         <ToggleButton
           variant="pill"
@@ -82,7 +118,7 @@ export default function MapPage() {
           icon={<LocateFixed className="h-5 w-5" />}
           active={false}
           iconColorVariant="gray"
-          ariaLabel="내 위치 찾기"
+          ariaLabel="내 위치 토글"
           onClick={() => {
             mapControlRef.current?.centerToMyPosition();
           }}
@@ -110,7 +146,7 @@ export default function MapPage() {
         />
       </div>
 
-      {/* 바텀시트 컴포넌트 조합 */}
+      {/* 바텀시트 */}
       <MapBottomSheet
         openSheet={openSheet}
         position={sheetPosition}
@@ -121,10 +157,32 @@ export default function MapPage() {
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        {/* 컨텐츠 렌더링 영역 */}
+        {openSheet === 'bookmark' && selectedPlace && (
+          <div className="px-6 py-4">
+            <PlaceCard
+              data={{
+                name: selectedPlace.placeName,
+                type: selectedPlace.category,
+                address: selectedPlace.address,
+                phone: selectedPlace.phone,
+                distance: '',
+                imageUrl: '',
+                status: '',
+                explainTime: selectedPlace.openHours,
+              }}
+            />
+          </div>
+        )}
+
+        {openSheet === 'hospital' && (
+          <HospitalContent
+            mode={selectedHospital ? 'detail' : 'list'}
+            hospital={selectedHospital ?? undefined}
+          />
+        )}
+
         {openSheet === 'siren' && <SirenContent />}
         {openSheet === 'exchange' && <ExchangeContent />}
-        {openSheet === 'hospital' && <HospitalContent />}
         {openSheet === 'embassy' && <EmbassyContent />}
       </MapBottomSheet>
     </main>
