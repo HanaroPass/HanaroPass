@@ -12,6 +12,7 @@ import type { StatusType } from '../constants/statusConfig';
 import {
   IdSchema,
   LanguageTransformSchema,
+  type RegistrationDetailResponse,
   SearchSchema,
   SubmitSchema,
 } from '../schemas/language-regist.schema';
@@ -188,6 +189,44 @@ export async function getRegistrationResultAction(
         hospitalName: application.Hospital.nameKo,
         createdAt: application.createdAt,
         status: application.status as StatusType,
+      },
+    };
+  } catch (err) {
+    return handleActionResult(err);
+  }
+}
+
+/**
+ * 신청 내역 상세 조회
+ *
+ * 신청 내역 상세 페이지에서 신청한 병원명, 신청 시간, 상태, 요청 언어 리스트를 보여주기 위해 사용
+ */
+export async function getRegistrationDetailAction(
+  hospitalId: number,
+): Promise<ActionResult<RegistrationDetailResponse>> {
+  try {
+    const validatedId = IdSchema.parse(hospitalId);
+
+    const application = await prisma.hospitalLanguageApplication.findFirst({
+      where: { hospitalId: validatedId },
+      orderBy: { createdAt: 'desc' },
+      include: {
+        Hospital: { select: { nameKo: true } },
+      },
+    });
+
+    if (!application) {
+      throw new HttpError('신청 내역을 찾을 수 없습니다.', 404);
+    }
+
+    return {
+      success: true,
+      data: {
+        hospitalName: application.Hospital.nameKo,
+        status: application.status as StatusType,
+        requestLangs: application.requestLangs as LanguageId[], // Json 타입을 LanguageId[]로 간주
+        createdAt: application.createdAt,
+        processedAt: application.processedAt,
       },
     };
   } catch (err) {

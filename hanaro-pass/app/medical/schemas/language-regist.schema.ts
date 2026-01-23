@@ -2,7 +2,6 @@ import { z } from 'zod';
 import { type LanguageId, NAME_TO_ID } from '../constants/language';
 
 export const IdSchema = z.number().int().positive(); // ID는 양의 정수
-
 export const SubmitSchema = z.object({
   hospitalId: IdSchema,
   languageIds: z
@@ -17,3 +16,15 @@ export const LanguageTransformSchema = z
       .map((name) => NAME_TO_ID[name])
       .filter((id): id is LanguageId => !!id),
   );
+
+export const RegistrationDetailSchema = z.object({
+  hospitalName: z.string(),
+  status: z.enum(['PENDING', 'APPROVED', 'REJECTED']), //
+  requestLangs: z.array(z.string()), // LanguageId[]
+  createdAt: z.date(),
+  processedAt: z.date().nullable(),
+});
+
+export type RegistrationDetailResponse = z.infer<
+  typeof RegistrationDetailSchema
+>;
