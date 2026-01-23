@@ -4,11 +4,10 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   getHospitalDetailAction,
-  IdSchema,
-  SubmitSchema,
   submitLanguageApplicationAction,
 } from '../actions/language-regist.action';
 import type { LanguageId } from '../constants/language';
+import { IdSchema, SubmitSchema } from '../schemas/language-regist.schema';
 
 export function useLanguageRegistration() {
   const router = useRouter();

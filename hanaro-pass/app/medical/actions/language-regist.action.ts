@@ -1,6 +1,5 @@
 'use server';
 
-import { z } from 'zod';
 import {
   type ActionResult,
   HttpError,
@@ -8,23 +7,13 @@ import {
 } from '@/lib/error-handler';
 import type { Hospital } from '@/lib/generated/prisma';
 import { prisma } from '@/lib/prisma';
-import { type LanguageId, NAME_TO_ID } from '../constants/language';
-
-export const IdSchema = z.number().int().positive(); // ID는 양의 정수
-export const SubmitSchema = z.object({
-  hospitalId: IdSchema,
-  languageIds: z
-    .array(z.string())
-    .min(1, '최소 하나의 언어를 선택해야 합니다.'),
-});
-const SearchSchema = z.string().min(2).max(50);
-const LanguageTransformSchema = z
-  .array(z.string())
-  .transform((langs) =>
-    langs
-      .map((name) => NAME_TO_ID[name])
-      .filter((id): id is LanguageId => !!id),
-  );
+import type { LanguageId } from '../constants/language';
+import {
+  IdSchema,
+  LanguageTransformSchema,
+  SearchSchema,
+  SubmitSchema,
+} from '../schemas/language-regist.schema';
 
 /**
  * [병원 검색 서버 액션]
