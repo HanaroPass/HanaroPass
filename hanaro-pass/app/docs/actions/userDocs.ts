@@ -58,12 +58,13 @@ export async function addUserDocs(
       throw new HttpError('필수 정보가 누락되었습니다.', 400);
     }
 
+    if (!ALLOWED_MIME_TYPES.has(file.type)) {
+      throw new HttpError('지원하지 않는 파일 형식입니다.', 400);
+    }
+
     // 파일 확장자 추출 및 경로 설정
     const uuid = crypto.randomUUID();
-    const ext =
-      file.type === 'application/pdf'
-        ? 'pdf'
-        : file.type.split('/')[1] || 'bin';
+    const ext = MIME_TO_EXT[file.type];
     const relativePath = `uploads/${userId}/${docType}/${uuid}.${ext}`;
 
     const uploadDir = path.join(
@@ -81,16 +82,23 @@ export async function addUserDocs(
     await fs.writeFile(fullPath, buffer);
 
     // DB 저장에 파일 경로 저장
-    const created = await prisma.userDocument.create({
-      data: {
-        userId,
-        docType,
-        fileUrl: `/${relativePath}`,
-      },
-      select: {
-        createdAt: true, // 저장 일시만 가져오기
-      },
-    });
+    let created: { createdAt: Date };
+    try {
+      created = await prisma.userDocument.create({
+        data: {
+          userId,
+          docType,
+          fileUrl: `/${relativePath}`,
+        },
+        select: {
+          createdAt: true,
+        },
+      });
+    } catch (dbError) {
+      // DB 실패 시 파일 정리
+      await fs.unlink(fullPath).catch(() => {});
+      throw dbError;
+    }
 
     revalidatePath('/docs');
 
@@ -99,6 +107,20 @@ export async function addUserDocs(
     return handleActionResult(error);
   }
 }
+
+const ALLOWED_MIME_TYPES = new Set([
+  'application/pdf',
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+]);
+
+const MIME_TO_EXT: Record<string, string> = {
+  'application/pdf': 'pdf',
+  'image/jpeg': 'jpg',
+  'image/png': 'png',
+  'image/webp': 'webp',
+};
 
 // *
 // 서류 삭제

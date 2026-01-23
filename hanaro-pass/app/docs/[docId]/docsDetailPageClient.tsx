@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import ActionButton from '@/components/ui/ActionButton';
 import { deleteUserDocs } from '../actions/userDocs';
 import { useRouter } from 'next/navigation';
@@ -12,19 +13,23 @@ type Props = {
 
 export default function DocsDetailPageClient({ docId, fileUrl, title }: Props) {
   const router = useRouter();
+  const [isDeleting, setIsDeleting] = useState(false);
 
   return (
     <div className="mx-auto mt-10 flex w-full max-w-84 gap-4">
       <div className="flex-1 text-black">
         <ActionButton
-          text="삭제"
+          text={isDeleting ? '삭제 중...' : '삭제'}
+          disabled={isDeleting}
           onClick={async () => {
             const ok = confirm('정말 이 서류를 삭제할까요?');
             if (!ok) return;
+            setIsDeleting(true);
             const res = await deleteUserDocs(docId);
 
             if (!res.success) {
               alert(res.message);
+              setIsDeleting(false);
               return;
             }
 

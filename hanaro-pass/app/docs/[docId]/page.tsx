@@ -27,7 +27,11 @@ export default async function DocsDetailPage({ params }: DocsProps) {
         <div className="mx-auto w-full max-w-84">
           <div className="rounded-2xl bg-white shadow-[0_5px_10px_rgba(0,0,0,0.18)]">
             <div className="flex h-105 flex-col items-center justify-center px-6">
-              {isPdf ? (
+              {!fileUrl ? (
+                <div className="flex h-full w-full items-center justify-center">
+                  <p className="text-black/50">서류를 불러올 수 없습니다.</p>
+                </div>
+              ) : isPdf ? (
                 <div className="relative h-full w-full p-4">
                   <iframe
                     src={fileUrl}

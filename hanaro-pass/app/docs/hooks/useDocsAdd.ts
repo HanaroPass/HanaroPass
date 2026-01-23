@@ -25,7 +25,12 @@ export function useDocsAdd(docId: string) {
       formData.append('file', file);
       formData.append('docType', req.docType);
 
-      await addUserDocs(formData);
+      const result = await addUserDocs(formData);
+      if (!result.success) {
+        alert(result.message);
+        return;
+      }
+      sessionStorage.setItem('createdAt', result.data.createdAt.toISOString());
       router.push(`/docs/add/${docId}/done`);
     } catch (e) {
       console.error(e);
