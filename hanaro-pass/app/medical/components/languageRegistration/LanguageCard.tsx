@@ -1,9 +1,10 @@
 import { Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import type { LanguageId } from '../../constants/language';
 
 export type Language = {
-  id: string;
+  id: LanguageId;
   name: string;
   sub: string;
   flag: string;
@@ -12,7 +13,7 @@ export type Language = {
 type LanguageCardProps = {
   lang: Language;
   isSelected: boolean;
-  onToggle: (id: string) => void;
+  onToggle: (id: LanguageId) => void;
 };
 
 export default function LanguageCard({
