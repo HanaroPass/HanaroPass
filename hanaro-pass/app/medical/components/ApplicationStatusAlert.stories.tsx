@@ -9,13 +9,13 @@ const meta: Meta<typeof ApplicationStatusAlert> = {
     layout: 'fullscreen',
   },
   args: {
-    status: 'pending' as StatusType,
+    status: 'PENDING' as StatusType,
     isAdmin: false,
   },
   argTypes: {
     status: {
       control: 'select',
-      options: ['pending', 'approved', 'rejected'] as StatusType[],
+      options: ['PENDING', 'APPROVED', 'REJECTED'] as StatusType[],
     },
     isAdmin: { control: 'boolean' },
   },
@@ -25,27 +25,27 @@ export default meta;
 
 type Story = StoryObj<typeof ApplicationStatusAlert>;
 
-export const Pending: Story = {
+export const PENDING: Story = {
   args: {
-    status: 'pending' as StatusType,
+    status: 'PENDING' as StatusType,
   },
 };
 
-export const Approved: Story = {
+export const APPROVED: Story = {
   args: {
-    status: 'approved' as StatusType,
+    status: 'APPROVED' as StatusType,
   },
 };
 
-export const Rejected: Story = {
+export const REJECTED: Story = {
   args: {
-    status: 'rejected' as StatusType,
+    status: 'REJECTED' as StatusType,
   },
 };
 
 export const AdminView: Story = {
   args: {
-    status: 'pending' as StatusType,
+    status: 'PENDING' as StatusType,
     isAdmin: true,
   },
 };

@@ -16,8 +16,8 @@ import SectionHeader from '../../components/languageRegistration/SectionHeader';
  * - useParams()의 id를 사용하여 특정 신청 건의 상세 정보 조회 (useQuery 권장)
  * - Endpoint: GET /api/admin/medical/registrations/[id]
  * 2. Action Logic:
- * - 승인: PATCH /api/admin/medical/registrations/[id] { status: 'approved' }
- * - 반려: PATCH /api/admin/medical/registrations/[id] { status: 'rejected' }
+ * - 승인: PATCH /api/admin/medical/registrations/[id] { status: 'APPROVED' }
+ * - 반려: PATCH /api/admin/medical/registrations/[id] { status: 'REJECTED' }
  * 3. Permission:
  * - 관리자 권한(Session/Middleware) 확인 필수
  */
@@ -25,8 +25,8 @@ export default function AdminReviewPage() {
   const router = useRouter();
   const { id } = useParams();
 
-  // QQQ: 실제 DB 상태 연동 (pending | approved | rejected)
-  const currentStatus = 'pending';
+  // QQQ: 실제 DB 상태 연동 (PENDING | APPROVED | REJECTED)
+  const currentStatus = 'PENDING';
 
   // QQQ (Database Mapping):
   // - 병원명: hospital.name

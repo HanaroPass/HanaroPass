@@ -1,10 +1,7 @@
 'use client';
 
 import {
-  AlertCircle,
   Calendar,
-  CheckCircle2,
-  Clock,
   Globe,
   History,
   Hospital,
@@ -18,78 +15,101 @@ import SectionHeader from '@/app/medical/components/languageRegistration/Section
 import ActionButton from '@/components/ui/ActionButton';
 import { ApplicationStatusAlert } from '../../components/ApplicationStatusAlert';
 import { InfoDetailPlate } from '../../components/InfoDetailPlate';
+import { STATUS_CONFIG, type StatusType } from '../../constants/statusConfig';
 import { useRegistrationDetail } from '../../hooks/useRegistrationDetail';
+
+type TimelineEvent = {
+  icon: LucideIcon;
+  iconColor: string;
+  label: string;
+  date: string;
+  isItalic?: boolean;
+};
+
+const STATUS_ICON_COLORS: Record<StatusType, string> = {
+  REJECTED: 'text-hana-red',
+  APPROVED: 'text-hana-green',
+  PENDING: 'text-black-400',
+};
 
 export default function HospitalRegistrationDetailsPage() {
   const router = useRouter();
-  const params = useParams();
-  const hospitalId = Number(params.hospitalId);
+  const { hospitalId: idParam } = useParams();
+  const hospitalId = Number(idParam);
 
-  const { data, isLoading, formattedLangs, formatDate } =
+  const { data, isLoading, formattedLangs, formatDate, allApplications } =
     useRegistrationDetail(hospitalId);
+  const timelineEvents = useMemo(() => {
+    if (!allApplications || allApplications.length === 0) return [];
 
-  const historySteps = useMemo(() => {
+    return allApplications.flatMap((app, index) => {
+      const events: TimelineEvent[] = [];
+      const isLatest = index === 0;
+      const order = allApplications.length - index;
+      const statusInfo = STATUS_CONFIG[app.status as StatusType];
+
+      // 결과 처리 이벤트 (승인/반려/대기)
+      if (app.processedAt || (isLatest && app.status === 'PENDING')) {
+        events.push({
+          label: statusInfo.label,
+          date: formatDate(app.processedAt),
+          icon: statusInfo.Icon,
+          iconColor:
+            STATUS_ICON_COLORS[app.status as StatusType] || 'text-gray-300',
+          isItalic: !app.processedAt,
+        });
+      }
+
+      events.push({
+        label: isLatest ? '신청 완료' : `${order}차 신청 완료`,
+        date: formatDate(app.createdAt),
+        icon: STATUS_CONFIG.APPROVED.Icon,
+        iconColor: 'text-hana-green',
+      });
+      return events;
+    });
+  }, [allApplications, formatDate]);
+
+  const infoSections = useMemo(() => {
     if (!data) return [];
-
     return [
       {
-        label: '신청 완료',
-        date: formatDate(data.createdAt),
-        icon: CheckCircle2,
-        iconColor: 'text-teal-600',
-        isLast: false,
-        isItalic: false,
+        id: 'hospital',
+        label: '병원 정보',
+        icon: Hospital,
+        content: data.hospitalName,
       },
       {
-        // REJECTED 상태일 때만 '반려 완료'로 표시
-        label: data.status === 'REJECTED' ? '반려 완료' : '승인 완료',
-        date: formatDate(data.processedAt),
-        // 상태 및 처리 여부에 따른 아이콘 분기
-        icon: !data.processedAt
-          ? Clock
-          : data.status === 'REJECTED'
-            ? AlertCircle
-            : CheckCircle2,
-        iconColor: !data.processedAt
-          ? 'text-gray-300'
-          : data.status === 'REJECTED'
-            ? 'text-red-500'
-            : 'text-teal-600',
-        isLast: true,
-        isItalic: !data.processedAt,
+        id: 'languages',
+        label: '진료 가능 언어',
+        icon: Globe,
+        content: (
+          <div className="flex flex-wrap items-center gap-2 py-1">
+            {formattedLangs?.map((lang) => (
+              <LanguageBadge key={lang?.id} lang={lang} />
+            ))}
+          </div>
+        ),
+      },
+      {
+        id: 'date',
+        label: '최종 신청 일시',
+        icon: Calendar,
+        content: formatDate(data.createdAt),
       },
     ];
-  }, [data, formatDate]);
+  }, [data, formattedLangs, formatDate]);
 
-  if (isLoading || !data)
-    return <div className="p-10 text-center">정보를 불러오는 중...</div>;
-
-  const hospitalInfo = [
-    { label: '병원 정보', icon: Hospital, content: data.hospitalName },
-    {
-      label: '진료 가능 언어',
-      icon: Globe,
-      content: (
-        <div className="flex items-center gap-3">
-          {formattedLangs?.map((lang) => (
-            <div
-              key={lang?.id}
-              className="flex items-center gap-1.5 rounded-md border border-gray-100 bg-gray-50 px-2 py-1"
-            >
-              <span>{lang?.flag}</span>
-              <span className="text-sm">
-                {lang?.name} ({lang?.sub})
-              </span>
-            </div>
-          ))}
-        </div>
-      ),
-    },
-    { label: '신청 일시', icon: Calendar, content: formatDate(data.createdAt) },
-  ];
+  if (isLoading || !data) {
+    return (
+      <div className="p-10 text-center font-sans text-black-400">
+        정보를 불러오는 중...
+      </div>
+    );
+  }
 
   return (
-    <>
+    <div className="app-shell bg-white-ez">
       <main className="app-main no-scrollbar flex flex-col pb-6">
         <DescriptionSection
           title="등록 신청 상세 정보"
@@ -101,33 +121,20 @@ export default function HospitalRegistrationDetailsPage() {
 
         <ApplicationStatusAlert status={data.status} />
 
-        {hospitalInfo.map((item) => (
-          <React.Fragment key={item.label}>
-            <SectionHeader icon={item.icon} title={item.label} />
-            <InfoDetailPlate value={item.content} />
+        {infoSections.map((section) => (
+          <React.Fragment key={section.id}>
+            <SectionHeader icon={section.icon} title={section.label} />
+            <InfoDetailPlate value={section.content} />
           </React.Fragment>
         ))}
 
-        <SectionHeader icon={History} title="처리 히스토리" />
+        <SectionHeader icon={History} title="전체 신청 히스토리" />
         <div className="mt-1 px-6 py-2">
           <div className="relative rounded-2xl bg-gray-100/50 p-5">
-            <div className="absolute top-8 bottom-8 left-7.5 w-px bg-gray-300/80" />
-
+            <div className="absolute top-8 bottom-8 left-7.5 w-px bg-silver-600" />
             <div className="flex flex-col gap-8">
-              {/* QQQ 4: 히스토리 타임라인 동적 생성 */}
-              {/* - 현재는 수동 입력이나, 서버의 [ { stage: 'apply', date: '...' }, { stage: 'approve', date: '...' } ] 
-    - 배열 데이터를 순회하여 HistoryItem을 동적으로 생성하도록 변경 필요
-*/}
-              {historySteps.map((step) => (
-                <HistoryItem
-                  key={step.label}
-                  icon={step.icon}
-                  iconColor={step.iconColor}
-                  label={step.label}
-                  date={step.date}
-                  isLast={step.isLast}
-                  isItalic={step.isItalic}
-                />
+              {timelineEvents.map((event, idx) => (
+                <TimelineItem key={`${event.label}-${idx}`} {...event} />
               ))}
             </div>
           </div>
@@ -140,45 +147,52 @@ export default function HospitalRegistrationDetailsPage() {
         </div>
       </main>
 
-      <div className="space-y-3 border-gray-100 border-t bg-white-ez px-6 py-4 pb-8">
+      <footer className="space-y-3 border-gray-100 border-t bg-white-ez px-6 py-4 pb-8">
         {data.status === 'REJECTED' && (
           <ActionButton
             text="다시 신청하기"
             onClick={() =>
-              router.push(`/medical/registrations/new?hospitalId=${hospitalId}`)
+              router.push(
+                `/medical/registrations/new?hospitalId=${hospitalId}&parentId=${data.id}`,
+              )
             }
-            className="bg-hana-red text-white-ez transition-opacity hover:bg-hana-red hover:opacity-90"
+            className="bg-hana-red text-white-ez transition-opacity hover:opacity-90"
           />
         )}
-        <ActionButton text="확인" onClick={() => router.push('/')} />
-      </div>
-    </>
+        <ActionButton
+          text="확인"
+          onClick={() => router.push('/')}
+          className="bg-hana-green text-white-ez"
+        />
+      </footer>
+    </div>
   );
 }
 
-type HistoryItemProps = {
-  icon: LucideIcon;
-  iconColor: string;
-  label: string;
-  date: string;
-  isLast?: boolean;
-  isItalic?: boolean;
-};
+const LanguageBadge = ({ lang }: { lang: any }) => (
+  <div className="flex shrink-0 items-center gap-1.5 rounded-lg border border-silver-600 bg-white px-2.5 py-1.5 shadow-sm">
+    <span className="text-base leading-none">{lang?.flag}</span>
+    <span className="whitespace-nowrap font-sans text-black-900 text-sm">
+      {lang?.name} ({lang?.sub})
+    </span>
+  </div>
+);
 
-const HistoryItem = ({
+const TimelineItem = ({
   icon: Icon,
   iconColor,
   label,
   date,
-  isLast,
   isItalic,
-}: HistoryItemProps) => (
+}: TimelineEvent) => (
   <div className="relative flex w-full flex-row items-center justify-between">
     <div className="flex items-center gap-3">
-      <div className="z-10 flex h-5 w-5 items-center justify-center bg-gray-100">
+      <div className="z-10 flex h-5 w-5 items-center justify-center bg-[#f7f8f8]">
         <Icon className={`h-5 w-5 shrink-0 ${iconColor}`} />
       </div>
-      <span className="whitespace-nowrap font-sans text-black-400 text-sm">
+      <span
+        className={`whitespace-nowrap font-sans text-sm ${isItalic ? 'text-black-400' : 'text-black-900'}`}
+      >
         {label}
       </span>
     </div>

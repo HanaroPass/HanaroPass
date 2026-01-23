@@ -9,7 +9,7 @@ const MOCK_APPLICATIONS = [
   {
     id: 1,
     name: '서울대학교병원',
-    status: 'pending' as StatusType,
+    status: 'PENDING' as StatusType,
     langCount: 3,
     languages: ['영어', '중국어', '일본어'],
     date: '2026.01.19 14:23',
@@ -17,7 +17,7 @@ const MOCK_APPLICATIONS = [
   {
     id: 2,
     name: '강남세브란스병원',
-    status: 'pending' as StatusType,
+    status: 'PENDING' as StatusType,
     langCount: 4,
     languages: ['영어', '중국어', '일본어', '+1'],
     date: '2026.01.19 10:15',
@@ -25,7 +25,7 @@ const MOCK_APPLICATIONS = [
   {
     id: 3,
     name: '삼성서울병원',
-    status: 'approved' as StatusType,
+    status: 'APPROVED' as StatusType,
     langCount: 4,
     languages: ['영어', '중국어', '일본어', '+1'],
     date: '2026.01.17 09:30',
@@ -33,7 +33,7 @@ const MOCK_APPLICATIONS = [
   {
     id: 4,
     name: '삼성서울병원1',
-    status: 'approved' as StatusType,
+    status: 'APPROVED' as StatusType,
     langCount: 4,
     languages: ['영어', '중국어', '일본어', '+1'],
     date: '2026.01.17 09:30',
@@ -41,7 +41,7 @@ const MOCK_APPLICATIONS = [
   {
     id: 5,
     name: '삼성서울병원2',
-    status: 'approved' as StatusType,
+    status: 'APPROVED' as StatusType,
     langCount: 4,
     languages: ['영어', '중국어', '일본어', '+1'],
     date: '2026.01.17 09:30',
@@ -49,7 +49,7 @@ const MOCK_APPLICATIONS = [
   {
     id: 6,
     name: '삼성서울병원3',
-    status: 'approved' as StatusType,
+    status: 'APPROVED' as StatusType,
     langCount: 4,
     languages: ['영어', '중국어', '일본어', '+1'],
     date: '2026.01.17 09:30',
@@ -57,14 +57,14 @@ const MOCK_APPLICATIONS = [
 ];
 
 export default function AdminDashboardPage() {
-  const [activeTab, setActiveTab] = useState<StatusType>('pending');
+  const [activeTab, setActiveTab] = useState<StatusType>('PENDING');
 
   // QQQ : 실제 데이터에서 상태별 개수 계산!
   const counts = {
-    pending: MOCK_APPLICATIONS.filter((app) => app.status === 'pending').length,
-    approved: MOCK_APPLICATIONS.filter((app) => app.status === 'approved')
+    PENDING: MOCK_APPLICATIONS.filter((app) => app.status === 'PENDING').length,
+    APPROVED: MOCK_APPLICATIONS.filter((app) => app.status === 'APPROVED')
       .length,
-    rejected: MOCK_APPLICATIONS.filter((app) => app.status === 'rejected')
+    REJECTED: MOCK_APPLICATIONS.filter((app) => app.status === 'REJECTED')
       .length,
   };
 
