@@ -234,9 +234,15 @@ export const NaverMap = forwardRef<NaverMapHandle, NaverMapProps>(
 
     useImperativeHandle(ref, () => ({
       centerToMyPosition: () => {
-        navigator.geolocation.getCurrentPosition((pos) => {
-          panToWithOffset(pos.coords.latitude, pos.coords.longitude);
-        });
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            panToWithOffset(pos.coords.latitude, pos.coords.longitude);
+          },
+          () => {
+            panToWithOffset(DEFAULT_COORDS.lat, DEFAULT_COORDS.lng);
+          },
+          { enableHighAccuracy: true, timeout: 10000 },
+        );
       },
       panToLocation: (lat, lng) => panToWithOffset(lat, lng),
     }));

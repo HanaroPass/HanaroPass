@@ -10,7 +10,7 @@ export type LocationInfo = {
   explainTime?: string;
   distance?: string;
   address: string;
-  phone?: string;
+  phone: string;
   imageUrl?: string;
 };
 
