@@ -1,7 +1,7 @@
-import CouponDetail from '../components/coupon/CouponDetail';
+import CouponDetail from '../../components/coupon/CouponDetail';
 
 type PageProps = {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 };
 
 export default async function Page({ params }: PageProps) {
