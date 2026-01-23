@@ -1,25 +1,26 @@
 'use client';
 
-import { MAP_EXCHANGE_MOCK } from '../../mock/embassyExchange';
-import { PlaceCard } from '../ui/PlaceCard';
+import { type LocationInfo, PlaceCard } from '../ui/PlaceCard';
 
-export function ExchangeContent() {
+interface ExchangeContentProps {
+  results: LocationInfo[];
+}
+
+export function ExchangeContent({ results }: ExchangeContentProps) {
   return (
-    <div className="flex flex-col px-2">
-      {MAP_EXCHANGE_MOCK.map((loc, index) => (
-        <div
-          key={`${loc.name}-${index}`}
-          className={
-            index !== MAP_EXCHANGE_MOCK.length - 1
-              ? 'border-gray-100 border-b'
-              : ''
-          }
-        >
-          <div className="p-4">
-            <PlaceCard data={loc} />
+    <div className="flex flex-col">
+      {results.map((item, idx) => {
+        const isLast = idx === results.length - 1;
+
+        return (
+          <div
+            key={item.id || idx}
+            className={`px-2 ${!isLast ? 'border-gray-100 border-b' : ''}`}
+          >
+            <PlaceCard data={item} />
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

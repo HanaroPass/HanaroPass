@@ -1,7 +1,7 @@
 'use client';
 
 import { Calendar, Globe, Hospital } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import React from 'react';
 import ActionButton from '@/components/ui/ActionButton';
 import { ApplicationStatusAlert } from '../../components/ApplicationStatusAlert';
@@ -9,6 +9,7 @@ import { InfoDetailPlate } from '../../components/InfoDetailPlate';
 import DescriptionSection from '../../components/languageRegistration/DescriptionSection';
 import HospitalGuide from '../../components/languageRegistration/HospitalGuide';
 import SectionHeader from '../../components/languageRegistration/SectionHeader';
+import type { StatusType } from '../../constants/statusConfig';
 
 /**
  * QQQ (Admin Integration Plan):
@@ -23,10 +24,9 @@ import SectionHeader from '../../components/languageRegistration/SectionHeader';
  */
 export default function AdminReviewPage() {
   const router = useRouter();
-  const { id } = useParams();
 
-  // QQQ: 실제 DB 상태 연동 (pending | approved | rejected)
-  const currentStatus = 'pending';
+  // QQQ: 실제 DB 상태 연동 (PENDING | APPROVED | REJECTED)
+  const currentStatus: StatusType = 'PENDING';
 
   // QQQ (Database Mapping):
   // - 병원명: hospital.name

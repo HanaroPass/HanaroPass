@@ -1,5 +1,3 @@
-// app/map/mock/hospitalFilter.mock.ts
-
 import type { HospitalInfo } from '../components/hospital/HospitalCard';
 
 export const hospitalLocations: HospitalInfo[] = [
