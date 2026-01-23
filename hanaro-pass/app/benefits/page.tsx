@@ -31,6 +31,7 @@ function page() {
           {mockCoupons.map((coupon) => (
             <Coupon
               key={coupon.couponId}
+              id={coupon.couponId}
               brandName={coupon.brandName}
               tag={coupon.tag}
               category={coupon.category}

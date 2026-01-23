@@ -1,7 +1,9 @@
 import { Ticket } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 type CouponProps = {
+  id: number;
   brandPic: string;
   brandName: string;
   tag: string;
@@ -11,6 +13,7 @@ type CouponProps = {
 };
 
 function Coupon({
+  id,
   brandPic,
   tag,
   discount,
@@ -36,13 +39,13 @@ function Coupon({
         <p className="font-bold text-green-ez text-xl">{discount}% 할인</p>
         <p className="text-black-800 text-sm">{description}</p>
       </div>
-      <button
-        type="button"
+      <Link
+        href={`/benefits/${id}`}
         aria-label={`${brandName} 쿠폰 받기`}
-        className="h-12 w-12 shrink-0 rounded-[14px] bg-green-ez"
+        className="flex h-12 w-12 shrink-0 items-center rounded-[14px] bg-green-ez"
       >
         <Ticket className="m-auto h-6 w-6 text-white-ez" />
-      </button>
+      </Link>
     </div>
   );
 }
