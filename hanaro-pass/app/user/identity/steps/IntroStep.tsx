@@ -134,27 +134,21 @@ export default function IntroStep({
                 <div className="fade-in slide-in-from-top-2 mt-4 animate-in px-2 font-normal text-gray-800 text-sm">
                   <ul className="space-y-2">
                     <li className="flex items-start">
-                      <span className="mr-2 shrink-0 select-none text-gray-400">
-                        •
-                      </span>
+                      <span className="mr-2 shrink-0 select-none">•</span>
                       <span className="leading-relaxed">
                         하나인증서는 국세청, 정부 24, 본인확인 등에 이용할 수
                         있습니다.
                       </span>
                     </li>
                     <li className="flex items-start">
-                      <span className="mr-2 shrink-0 select-none text-gray-400">
-                        •
-                      </span>
+                      <span className="mr-2 shrink-0 select-none">•</span>
                       <span className="leading-relaxed">
                         분실/도난/유효기간 만료/사진훼손 등 정상인식이 불가능한
                         신분증은 이용할 수 없습니다.
                       </span>
                     </li>
                     <li className="flex items-start">
-                      <span className="mr-2 shrink-0 select-none text-gray-400">
-                        •
-                      </span>
+                      <span className="mr-2 shrink-0 select-none">•</span>
                       <span className="leading-relaxed">
                         신분증 발급기관에서 검증되지 않는 신분증은 거부될 수
                         있습니다.
