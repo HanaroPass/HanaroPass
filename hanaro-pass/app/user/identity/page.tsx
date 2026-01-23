@@ -3,7 +3,7 @@
 import { ChevronDown, ChevronUp, X } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import Header from '@/components/header/Header';
 import ActionButton from '@/components/ui/ActionButton';
 import { Button } from '@/components/ui/button';
@@ -32,16 +32,23 @@ export default function IdentityPage() {
     router.back();
   };
 
-  useEffect(() => {
-    if (isGuideOpen && guideRef.current) {
-      setTimeout(() => {
-        guideRef.current?.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start',
+  const handleGuideToggle = () => {
+    setIsGuideOpen((prev) => {
+      const newState = !prev;
+
+      // 가이드가 열릴 때만 스크롤
+      if (newState && guideRef.current) {
+        requestAnimationFrame(() => {
+          guideRef.current?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start',
+          });
         });
-      }, 100);
-    }
-  }, [isGuideOpen]);
+      }
+
+      return newState;
+    });
+  };
 
   // Intro Step
   if (currentStep === 'intro') {
@@ -136,7 +143,7 @@ export default function IdentityPage() {
               >
                 <Button
                   variant="ghost"
-                  onClick={() => setIsGuideOpen((prev) => !prev)}
+                  onClick={handleGuideToggle}
                   className="flex h-auto w-full items-center justify-between px-0 py-3 text-gray-600 text-sm hover:bg-transparent"
                 >
                   <span>이용안내</span>
