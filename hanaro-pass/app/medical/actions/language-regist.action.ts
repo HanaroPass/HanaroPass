@@ -7,7 +7,15 @@ import {
 } from '@/lib/error-handler';
 import type { Hospital } from '@/lib/generated/prisma';
 import { prisma } from '@/lib/prisma';
-import { ID_TO_NAME, NAME_TO_ID } from '../constants/language';
+import type { LanguageId } from '../constants/language';
+import type { StatusType } from '../constants/statusConfig';
+import {
+  IdSchema,
+  LanguageTransformSchema,
+  type RegistrationDetailResponse,
+  SearchSchema,
+  SubmitSchema,
+} from '../schemas/language-regist.schema';
 
 /**
  * [병원 검색 서버 액션]
@@ -22,14 +30,17 @@ export async function searchHospitalAction(
 ): Promise<ActionResult<Pick<Hospital, 'id' | 'nameKo' | 'address'>[]>> {
   try {
     const sanitizedQuery = query.replace(/\s+/g, '');
-    if (!sanitizedQuery) return { success: true, data: [] };
+    if (!sanitizedQuery || sanitizedQuery.length < 2) {
+      return { success: true, data: [] };
+    }
+    const validatedQuery = SearchSchema.parse(sanitizedQuery);
 
     const hospitals = await prisma.$queryRaw<
       Pick<Hospital, 'id' | 'nameKo' | 'address'>[]
     >`
   SELECT id, nameKo, address 
   FROM Hospital 
-  WHERE REPLACE(nameKo, ' ', '') LIKE ${`%${sanitizedQuery}%`}
+  WHERE REPLACE(nameKo, ' ', '') LIKE ${`%${validatedQuery}%`}
 `;
 
     return { success: true as const, data: hospitals };
@@ -50,15 +61,18 @@ export async function searchHospitalAction(
  * 성공 시 병원의 국문 명칭을 반환합니다.
  * @throws {HttpError} 병원을 찾을 수 없는 경우 404 에러를 발생시킵니다.
  */
-export async function getHospitalDetailAction(
-  id: number,
-): Promise<
-  ActionResult<{ nameKo: string; existingLangs: string[]; isPending: boolean }>
+export async function getHospitalDetailAction(id: number): Promise<
+  ActionResult<{
+    nameKo: string;
+    existingLangs: LanguageId[];
+    isPending: boolean;
+  }>
 > {
   try {
+    const validatedId = IdSchema.parse(id);
     const hospital = await prisma.hospital.findUnique({
       where: {
-        id,
+        id: validatedId,
       },
       select: {
         nameKo: true,
@@ -73,21 +87,21 @@ export async function getHospitalDetailAction(
 
     const pendingApp = await prisma.hospitalLanguageApplication.findFirst({
       where: {
-        hospitalId: id,
+        hospitalId: validatedId,
         status: 'PENDING',
       },
     });
 
-    const mappedLangs = hospital.HospitalLang.map(
-      (lang) => NAME_TO_ID[lang.langName] || lang.langName,
+    const validatedLangs = LanguageTransformSchema.parse(
+      hospital.HospitalLang.map((hl) => hl.langName),
     );
 
     return {
       success: true,
       data: {
         nameKo: hospital.nameKo,
-        existingLangs: mappedLangs,
-        isPending: !!pendingApp, // 신청 중인 건이 있으면 true
+        existingLangs: validatedLangs,
+        isPending: !!pendingApp,
       },
     };
   } catch (err) {
@@ -111,11 +125,15 @@ export async function submitLanguageApplicationAction(
   languageIds: string[],
 ): Promise<ActionResult<null>> {
   try {
-    const requestLangsInKorean = languageIds.map((id) => ID_TO_NAME[id] || id);
+    const { hospitalId: vId, languageIds: vLangs } = SubmitSchema.parse({
+      hospitalId,
+      languageIds,
+    });
+
     await prisma.$transaction(async (tx) => {
       const existingPending = await tx.hospitalLanguageApplication.findFirst({
         where: {
-          hospitalId,
+          hospitalId: vId,
           status: 'PENDING',
         },
       });
@@ -126,13 +144,91 @@ export async function submitLanguageApplicationAction(
 
       await tx.hospitalLanguageApplication.create({
         data: {
-          hospitalId,
-          requestLangs: requestLangsInKorean,
+          hospitalId: vId,
+          requestLangs: vLangs,
           status: 'PENDING',
         },
       });
     });
     return { success: true, data: null };
+  } catch (err) {
+    return handleActionResult(err);
+  }
+}
+
+/**
+ * [신청 결과 요약 조회]
+ *
+ * 완료 페이지에서 신청한 병원명, 신청 시간, 상태를 보여주기 위해 사용
+ */
+export async function getRegistrationResultAction(
+  hospitalId: number,
+): Promise<
+  ActionResult<{ hospitalName: string; createdAt: Date; status: StatusType }>
+> {
+  try {
+    const validatedId = IdSchema.parse(hospitalId);
+
+    const application = await prisma.hospitalLanguageApplication.findFirst({
+      where: { hospitalId: validatedId },
+      orderBy: { createdAt: 'desc' },
+      include: {
+        Hospital: {
+          select: { nameKo: true },
+        },
+      },
+    });
+
+    if (!application) {
+      throw new HttpError('신청 내역을 찾을 수 없습니다.', 404);
+    }
+
+    return {
+      success: true,
+      data: {
+        hospitalName: application.Hospital.nameKo,
+        createdAt: application.createdAt,
+        status: application.status as StatusType,
+      },
+    };
+  } catch (err) {
+    return handleActionResult(err);
+  }
+}
+
+/**
+ * 신청 내역 상세 조회
+ *
+ * 신청 내역 상세 페이지에서 신청한 병원명, 신청 시간, 상태, 요청 언어 리스트를 보여주기 위해 사용
+ */
+export async function getRegistrationDetailAction(
+  hospitalId: number,
+): Promise<ActionResult<RegistrationDetailResponse>> {
+  try {
+    const validatedId = IdSchema.parse(hospitalId);
+
+    const application = await prisma.hospitalLanguageApplication.findFirst({
+      where: { hospitalId: validatedId },
+      orderBy: { createdAt: 'desc' },
+      include: {
+        Hospital: { select: { nameKo: true } },
+      },
+    });
+
+    if (!application) {
+      throw new HttpError('신청 내역을 찾을 수 없습니다.', 404);
+    }
+
+    return {
+      success: true,
+      data: {
+        hospitalName: application.Hospital.nameKo,
+        status: application.status as StatusType,
+        requestLangs: application.requestLangs as LanguageId[], // Json 타입을 LanguageId[]로 간주
+        createdAt: application.createdAt,
+        processedAt: application.processedAt,
+      },
+    };
   } catch (err) {
     return handleActionResult(err);
   }

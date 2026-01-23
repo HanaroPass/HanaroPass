@@ -13,7 +13,7 @@ export function useHospitalSearch(searchQuery: string) {
   useEffect(() => {
     const sanitized = searchQuery.replace(/\s+/g, '');
 
-    if (!sanitized) {
+    if (!sanitized || sanitized.length < 2) {
       setHospitals([]);
       setIsLoading(false);
       return;

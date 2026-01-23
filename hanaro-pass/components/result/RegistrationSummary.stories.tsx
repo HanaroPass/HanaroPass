@@ -15,7 +15,7 @@ const meta: Meta<typeof RegistrationSummary> = {
     items: [
       { label: '병원 정보', value: '강남 병원' },
       { label: '진료 가능 언어', value: '중국어 (中文)' },
-      { label: '처리 상태', value: <StatusBadge status="pending" /> },
+      { label: '처리 상태', value: <StatusBadge status="PENDING" /> },
     ],
   },
   argTypes: {
@@ -39,7 +39,7 @@ export const Approved: Story = {
     items: [
       { label: '병원 정보', value: '강남 병원' },
       { label: '진료 가능 언어', value: '영어 (English)' },
-      { label: '처리 상태', value: <StatusBadge status="approved" /> },
+      { label: '처리 상태', value: <StatusBadge status="APPROVED" /> },
     ],
   },
 };
@@ -53,7 +53,7 @@ export const ManyItems: Story = {
       { label: '주소', value: '서울특별시 강남구 테헤란로 123' },
       { label: '진료 가능 언어', value: '영어, 중국어' },
       { label: '신청 일시', value: '2026. 01. 19. 09:43' },
-      { label: '처리 상태', value: <StatusBadge status="pending" /> },
+      { label: '처리 상태', value: <StatusBadge status="PENDING" /> },
     ],
   },
 };
@@ -72,7 +72,7 @@ export const LongText: Story = {
         label: '진료 가능 언어',
         value: '영어 (English), 중국어 (中文), 일본어 (日本語)',
       },
-      { label: '처리 상태', value: <StatusBadge status="pending" /> },
+      { label: '처리 상태', value: <StatusBadge status="PENDING" /> },
     ],
   },
 };
