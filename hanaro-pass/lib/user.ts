@@ -21,8 +21,15 @@ export async function getUserId(): Promise<number | null> {
     });
 
     return passportRow?.userId ?? null;
-  } catch (error) {
-    console.error('getUserId 오류:', error);
+  } catch (error: unknown) {
+    if (
+      error instanceof Error &&
+      (error as any).digest === 'DYNAMIC_SERVER_USAGE'
+    ) {
+      throw error;
+    }
+
+    console.error('getUserId 인증 에러:', error);
     return null;
   }
 }

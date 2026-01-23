@@ -6,7 +6,7 @@ import path from 'node:path';
 
 import { revalidatePath } from 'next/cache';
 
-import { getUserId } from '@/app/docs/actions/user';
+import { getUserId } from '@/lib/user';
 import {
   handleActionResult,
   HttpError,

@@ -1,7 +1,9 @@
 import { getDocsStatus, getUserName } from './actions/userDocsList';
 import DocsPageClient from './docsPageClient';
 
-export default async function Page() {
+export const dynamic = 'force-dynamic';
+
+export default async function docsPage() {
   const [userName, docStatus] = await Promise.all([
     getUserName(),
     getDocsStatus(),
