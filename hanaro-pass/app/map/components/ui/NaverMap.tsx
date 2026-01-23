@@ -8,6 +8,7 @@ import {
   useState,
 } from 'react';
 import type { Embassy } from '../../mock/embassyExchange';
+import type { HospitalPlace } from '../../mock/hospitalMap.mock';
 import type { SavedPlace } from '../../mock/savedPlaces';
 
 type Place = {
@@ -18,12 +19,14 @@ type Place = {
 
 type NaverMapProps = {
   onMarkerClick: (
-    place: Place | SavedPlace | Embassy | NaverSearchResult,
+    place: Place | HospitalPlace | SavedPlace | Embassy | NaverSearchResult,
   ) => void;
   savedPlaces?: SavedPlace[];
   embassyData?: Embassy;
   exchangeResults?: NaverSearchResult[];
   showBookmarks?: boolean;
+  hospitals?: HospitalPlace[];
+  activeCategory?: 'hospital' | 'embassy' | 'exchange' | null;
   showEmbassy?: boolean;
   showExchanges?: boolean;
 };
@@ -45,7 +48,15 @@ export type NaverSearchResult = {
 
 export const NaverMap = forwardRef<NaverMapHandle, NaverMapProps>(
   function NaverMap(
-    { onMarkerClick, savedPlaces, embassyData, showBookmarks, showEmbassy },
+    {
+      onMarkerClick,
+      savedPlaces,
+      embassyData,
+      showBookmarks,
+      showEmbassy,
+      hospitals,
+      activeCategory,
+    },
     ref,
   ) {
     const mapRef = useRef<naver.maps.Map | null>(null);
@@ -55,6 +66,11 @@ export const NaverMap = forwardRef<NaverMapHandle, NaverMapProps>(
     const isMountedRef = useRef(true);
     const [isMapReady, setIsMapReady] = useState(false);
 
+    useEffect(() => {
+      onMarkerClickRef.current = onMarkerClick;
+    }, [onMarkerClick]);
+
+    /** 최신 onMarkerClick 유지 */
     useEffect(() => {
       onMarkerClickRef.current = onMarkerClick;
     }, [onMarkerClick]);
@@ -147,6 +163,36 @@ export const NaverMap = forwardRef<NaverMapHandle, NaverMapProps>(
           });
           markersRef.current.push(marker);
         }
+        /** 병원 마커 */
+        if (activeCategory === 'hospital' && hospitals) {
+          hospitals.forEach((hospital) => {
+            const marker = new naver.maps.Marker({
+              position: new naver.maps.LatLng(
+                Number(hospital.latitude),
+                Number(hospital.longitude),
+              ),
+              currentMap,
+              icon: {
+                content: `
+            <div class="w-5 h-5 bg-white rounded-full flex items-center justify-center shadow-[0_2px_5px_rgba(0,0,0,0.2)]">
+              <div class="w-4 h-4 bg-[#F9FAFB] rounded-full flex items-center justify-center shadow-inner">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 4.5v15M4.5 12h15" stroke="#F43F5E" stroke-width="6.5" stroke-linecap="round" stroke-line join="round"/>
+                </svg>
+              </div>
+            </div>
+            `,
+                anchor: new naver.maps.Point(14, 14),
+              },
+            });
+
+            naver.maps.Event.addListener(marker, 'click', () => {
+              onMarkerClickRef.current(hospital);
+            });
+
+            markersRef.current.push(marker);
+          });
+        }
       }
     }, [
       isMapReady,
@@ -155,6 +201,8 @@ export const NaverMap = forwardRef<NaverMapHandle, NaverMapProps>(
       savedPlaces,
       embassyData,
       onMarkerClick,
+      activeCategory,
+      hospitals,
     ]);
 
     useEffect(() => {

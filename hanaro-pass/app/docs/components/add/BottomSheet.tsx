@@ -1,7 +1,7 @@
 'use client';
 
-import type * as React from 'react';
-import { X } from 'lucide-react';
+import * as React from 'react';
+import { FileX2, X } from 'lucide-react';
 
 import {
   Drawer,
@@ -22,9 +22,14 @@ export default function BottomSheet({
   onClose,
   children,
 }: BottomSheetProps) {
+  // 서류가 모두 있는 경우 추가할 서류가 없음 -> children이 비어있는지 확인
+  const isEmpty = React.Children.count(children) === 0;
   return (
     <Drawer open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DrawerContent className="-translate-x-1/2 left-1/2 w-full max-w-93.75">
+      <DrawerContent
+        className="-translate-x-1/2 left-1/2 w-full max-w-93.75"
+        aria-describedby={undefined}
+      >
         <div className="w-full">
           {/* 헤더 */}
           <DrawerHeader className="flex flex-row items-center justify-between px-5 py-4">
@@ -47,8 +52,19 @@ export default function BottomSheet({
           {/* 구분선 */}
           <div className="h-px bg-black/10" />
 
-          {/* 서류 리스트 */}
-          <div className="px-5 pt-2 pb-8">{children}</div>
+          {/* 서류 리스트 영역 */}
+          <div className="px-5 pt-2 pb-8">
+            {isEmpty ? (
+              <div className="flex flex-col items-center justify-center py-12 text-center">
+                <FileX2 className="mb-3 text-gray-300" size={48} />
+                <p className="font-medium text-gray-500 text-sm">
+                  추가할 서류가 없습니다.
+                </p>
+              </div>
+            ) : (
+              children
+            )}
+          </div>
         </div>
       </DrawerContent>
     </Drawer>
