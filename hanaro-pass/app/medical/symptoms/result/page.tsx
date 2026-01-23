@@ -10,11 +10,20 @@ function SymptomResultContent() {
   const mode = searchParams.get('mode');
 
   useEffect(() => {
-    const data = localStorage.getItem('symptom-result');
-    if (!data) return;
+    const run = async () => {
+      const data = localStorage.getItem('symptom-result');
+      if (!data) return;
 
-    parseOutput(data).then(setResult);
-    localStorage.removeItem('symptom-result');
+      try {
+        const parsed = await parseOutput(data);
+        setResult(parsed);
+        localStorage.removeItem('symptom-result');
+      } catch (e) {
+        console.error('증상 결과 파싱 실패', e);
+      }
+    };
+
+    run();
   }, []);
 
   const playAudio = async () => {

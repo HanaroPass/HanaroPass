@@ -19,8 +19,8 @@ export default function SymptomsLayout({ children }: PropsWithChildren) {
     <div className="app-layout">
       <Suspense fallback={<Header title="로딩 중..." />}>
         <SymptomsHeaderSection />
-        <div className="app-main no-scrollbar">{children}</div>
       </Suspense>
+      <div className="app-main no-scrollbar">{children}</div>
     </div>
   );
 }
