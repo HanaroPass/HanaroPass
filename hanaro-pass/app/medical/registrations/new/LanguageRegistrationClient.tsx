@@ -29,13 +29,17 @@ export default function LanguageRegistrationClient() {
         : '변경 사항 없음'
       : `병원 언어 등록 신청하기${selectedIds.length > 0 ? ` (${selectedIds.length})` : ''}`;
 
+  const hospitalLabel = hospitalName ?? '';
+
   return (
     <div className="flex h-full flex-col">
       <div className="flex-1 overflow-y-auto">
         <DescriptionSection
           title="외국어 진료 가능 정보 등록"
           descriptions={[
-            `${hospitalName || '...'}에서 외국어 진료가 가능한 언어를`,
+            hospitalLabel
+              ? `${hospitalLabel}에서 외국어 진료가 가능한 언어를`
+              : '병원 정보를 불러오는 중...',
             '아래에서 선택해주세요',
           ]}
         />

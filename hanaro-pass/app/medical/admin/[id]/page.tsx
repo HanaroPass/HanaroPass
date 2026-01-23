@@ -9,6 +9,7 @@ import { InfoDetailPlate } from '../../components/InfoDetailPlate';
 import DescriptionSection from '../../components/languageRegistration/DescriptionSection';
 import HospitalGuide from '../../components/languageRegistration/HospitalGuide';
 import SectionHeader from '../../components/languageRegistration/SectionHeader';
+import type { StatusType } from '../../constants/statusConfig';
 
 /**
  * QQQ (Admin Integration Plan):
@@ -25,7 +26,7 @@ export default function AdminReviewPage() {
   const router = useRouter();
 
   // QQQ: 실제 DB 상태 연동 (PENDING | APPROVED | REJECTED)
-  const currentStatus = 'PENDING';
+  const currentStatus: StatusType = 'PENDING';
 
   // QQQ (Database Mapping):
   // - 병원명: hospital.name

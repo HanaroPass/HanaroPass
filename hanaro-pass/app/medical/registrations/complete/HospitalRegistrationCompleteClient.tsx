@@ -6,17 +6,13 @@ import ActionButton from '@/components/ui/ActionButton';
 import HospitalGuide from '../../components/languageRegistration/HospitalGuide';
 import StatusBadge from '../../components/StatusBadge';
 import { useRegistrationResult } from '../../hooks/useRegistrationResult';
+import { LoadingScreen } from './page';
 
 export default function HospitalRegistrationCompleteClient() {
   const router = useRouter();
   const { data, isLoading, hospitalId } = useRegistrationResult();
 
-  if (isLoading || !data)
-    return (
-      <div className="flex h-screen items-center justify-center">
-        로딩 중...
-      </div>
-    );
+  if (isLoading || !data) return <LoadingScreen />;
 
   const summaryItems = [
     { label: '신청 병원', value: data.hospitalName },
