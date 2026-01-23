@@ -5,12 +5,12 @@ import { useState } from 'react';
 import Header from '@/components/header/Header';
 import { Button } from '@/components/ui/button';
 import EmptyIdentityCard from '../components/EmptyIdentityCard';
+import MobileQr from '../components/MobileQr';
 import type { IdentityType } from '../hooks/useFunnel';
 
 type ResultStepProps = {
   identityType: IdentityType | null;
   identityData: Record<string, string> | null;
-  accountData: Record<string, string> | null;
   onClose: () => void;
   onRegister?: (type: IdentityType) => void;
 };
@@ -18,7 +18,6 @@ type ResultStepProps = {
 export default function ResultStep({
   identityType,
   identityData,
-  accountData,
   onClose,
   onRegister,
 }: ResultStepProps) {
@@ -76,39 +75,7 @@ export default function ResultStep({
           {activeTab === 'passport' ? (
             <div className="flex h-full flex-col">
               {identityType === 'passport' && identityData ? (
-                <>
-                  <div className="space-y-3">
-                    {Object.entries(identityData).map(([key, value]) => (
-                      <div
-                        key={key}
-                        className="flex justify-between border-b pb-2"
-                      >
-                        <span className="text-gray-600">{key}</span>
-                        <span className="font-medium text-gray-800">
-                          {value}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-
-                  {accountData && (
-                    <div className="mt-6 rounded-lg bg-gray-50 p-4">
-                      <h4 className="mb-3 font-semibold text-base">
-                        연동 계좌
-                      </h4>
-                      <div className="space-y-2">
-                        {Object.entries(accountData).map(([key, value]) => (
-                          <div key={key} className="flex justify-between">
-                            <span className="text-gray-600 text-sm">{key}</span>
-                            <span className="font-medium text-gray-800 text-sm">
-                              {value}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </>
+                <MobileQr type="passport" data={identityData} />
               ) : (
                 <EmptyIdentityCard
                   type="passport"
@@ -119,39 +86,7 @@ export default function ResultStep({
           ) : (
             <div className="flex h-full flex-col">
               {identityType === 'alien' && identityData ? (
-                <>
-                  <div className="space-y-3">
-                    {Object.entries(identityData).map(([key, value]) => (
-                      <div
-                        key={key}
-                        className="flex justify-between border-b pb-2"
-                      >
-                        <span className="text-gray-600">{key}</span>
-                        <span className="font-medium text-gray-800">
-                          {value}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-
-                  {accountData && (
-                    <div className="mt-6 rounded-lg bg-gray-50 p-4">
-                      <h4 className="mb-3 font-semibold text-base">
-                        연동 계좌
-                      </h4>
-                      <div className="space-y-2">
-                        {Object.entries(accountData).map(([key, value]) => (
-                          <div key={key} className="flex justify-between">
-                            <span className="text-gray-600 text-sm">{key}</span>
-                            <span className="font-medium text-gray-800 text-sm">
-                              {value}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </>
+                <MobileQr type="alien" data={identityData} />
               ) : (
                 <EmptyIdentityCard
                   type="alien"
