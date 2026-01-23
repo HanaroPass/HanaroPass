@@ -203,6 +203,7 @@ model HospitalLanguageApplication {
   requestLangs  Json             @db.Json
   
   // 처리 히스토리를 위한 시간 기록
+  parentId            Int?     // 이전 신청 건의 ID (재신청일 경우)
   createdAt     DateTime          @default(now()) @db.Timestamp(0) // 신청 일시
   updatedAt     DateTime          @default(now()) @updatedAt @db.Timestamp(0)
   processedAt   DateTime?         @db.Timestamp(0) // 승인/반려 처리 일시
