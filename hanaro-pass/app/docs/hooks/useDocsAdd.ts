@@ -4,7 +4,7 @@ import {
   DOC_ID_TO_REQUIREMENT,
   type DocsCardId,
 } from '../constants/docsCardItem';
-import { addUserDocs } from '../actions/addUserDocs';
+import { addUserDocs } from '../actions/userDocs';
 
 export function useDocsAdd(docId: string) {
   const [isSubmitting, setIsSubmitting] = useState(false);

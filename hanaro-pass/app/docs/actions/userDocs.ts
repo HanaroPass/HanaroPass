@@ -1,16 +1,19 @@
 'use server';
-import { prisma } from '@/lib/prisma';
-import { getUserId } from '@/app/docs/actions/user';
-import { mkdir, writeFile } from 'fs/promises';
-import path from 'path';
-import crypto from 'crypto';
+
+import crypto from 'node:crypto';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+
 import { revalidatePath } from 'next/cache';
-import fs from 'fs/promises';
+
+import { getUserId } from '@/app/docs/actions/user';
 import {
   handleActionResult,
   HttpError,
   type ActionResult,
 } from '@/lib/error-handler';
+import { prisma } from '@/lib/prisma';
+
 import {
   DOC_ID_TO_REQUIREMENT,
   type DocsCardId,
@@ -73,9 +76,9 @@ export async function addUserDocs(
     const fullPath = path.join(process.cwd(), 'public', relativePath);
 
     // 파일 저장
-    await mkdir(uploadDir, { recursive: true });
+    await fs.mkdir(uploadDir, { recursive: true });
     const buffer = Buffer.from(await file.arrayBuffer());
-    await writeFile(fullPath, buffer);
+    await fs.writeFile(fullPath, buffer);
 
     // DB 저장에 파일 경로 저장
     const created = await prisma.userDocument.create({
@@ -136,7 +139,7 @@ export async function deleteUserDocs(
     // 파일 삭제 (없어도 에러 안 나게)
     try {
       await fs.unlink(filePath);
-    } catch (err) {
+    } catch {
       console.warn('파일 삭제 실패 (무시됨):', filePath);
     }
 
