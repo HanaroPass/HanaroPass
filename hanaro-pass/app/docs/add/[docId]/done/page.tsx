@@ -6,11 +6,11 @@ import Header from '@/components/header/Header';
 import RegistrationSummary from '@/components/result/RegistrationSummary';
 import ActionButton from '@/components/ui/ActionButton';
 import { useRouter } from 'next/navigation';
-import { use, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function DocsDonePage({ params }: DocsProps) {
   const router = useRouter();
-  const { docId } = use(params);
+  const { docId } = params;
   const doc = DOCS_CARD_ITEMS.find((item) => item.id === docId);
 
   const [uploadedAt, setUploadedAt] = useState<string | null>(null);

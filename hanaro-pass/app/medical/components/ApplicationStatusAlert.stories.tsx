@@ -15,7 +15,7 @@ const meta: Meta<typeof ApplicationStatusAlert> = {
   argTypes: {
     status: {
       control: 'select',
-      options: ['pending', 'approved', 'rejected'] as StatusType[],
+      options: ['PENDING', 'APPROVED', 'REJECTED'] as StatusType[],
     },
     isAdmin: { control: 'boolean' },
   },
