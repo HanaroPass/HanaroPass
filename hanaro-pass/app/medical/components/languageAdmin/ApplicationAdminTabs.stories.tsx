@@ -60,9 +60,9 @@ export const Interactive: Story = {
 export const WithCounts: Story = {
   args: {
     counts: {
-      pending: 3,
-      approved: 12,
-      rejected: 1,
+      PENDING: 3,
+      APPROVED: 12,
+      REJECTED: 1,
     } satisfies Counts,
   },
   render: (args) => {
