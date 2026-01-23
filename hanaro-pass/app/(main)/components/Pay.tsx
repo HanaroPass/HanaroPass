@@ -4,7 +4,7 @@ import { useCallback, useState } from 'react';
 import { MOCK_CARDS } from '../mock/mockCard';
 import Card from './Card';
 import CouponList from './CouponList';
-import MenuList from './MenuList';
+import { MenuList } from './MenuList';
 import PinInput from './PinInput';
 
 export default function Pay() {

@@ -18,6 +18,10 @@ import { NaverMap } from './components/ui/NaverMap';
 import { PlaceCard } from './components/ui/PlaceCard';
 import { ToggleButton } from './components/ui/ToggleButton';
 import { useBottomSheet } from './hooks/useBottomSheet';
+import {
+  HOSPITALS_MAP_MOCK,
+  type HospitalPlace,
+} from './mock/hospitalMap.mock';
 import { SAVED_PLACES_MOCK, type SavedPlace } from './mock/savedPlaces';
 
 /**
@@ -27,8 +31,10 @@ import { SAVED_PLACES_MOCK, type SavedPlace } from './mock/savedPlaces';
  * useBottomSheet 커스텀 훅을 사용하여 시트 관련 모든 로직을 주입받아 사용합니다.
  */
 export default function MapPage() {
-  const [bookmark, setBookmark] = useState<boolean>(false);
+  const [bookmark, setBookmark] = useState(false);
   const [selectedPlace, setSelectedPlace] = useState<SavedPlace | null>(null);
+  const [selectedHospital, setSelectedHospital] =
+    useState<HospitalPlace | null>(null);
 
   const mapControlRef = useRef<{ centerToMyPosition: () => void }>(null);
 
@@ -50,24 +56,27 @@ export default function MapPage() {
       <div className="absolute inset-0 z-0">
         <NaverMap
           ref={mapControlRef}
+          activeCategory={openSheet === 'hospital' ? 'hospital' : null}
+          hospitals={HOSPITALS_MAP_MOCK}
+          savedPlaces={SAVED_PLACES_MOCK}
+          showBookmarks={bookmark}
           onMarkerClick={(place) => {
-            if (!('placeName' in place)) return;
+            if ('departments' in place) {
+              setSelectedHospital(place);
+              setSelectedPlace(null);
+              toggleSheet('hospital', true);
+              return;
+            }
 
-            // 클릭한 마커가 이미 선택된 마커인지 확인
-            const isTargetAlreadySelected = selectedPlace?.id === place.id;
-
-            if (isTargetAlreadySelected) {
-              // 이미 선택된 걸 또 누르면 닫기
+            const isSame = selectedPlace?.id === place.id;
+            if (isSame) {
               setSelectedPlace(null);
               toggleSheet('bookmark');
             } else {
-              // 새로운 걸 누르면 데이터 교체 후 열기/갱신
               setSelectedPlace(place);
               toggleSheet('bookmark', true);
             }
           }}
-          savedPlaces={SAVED_PLACES_MOCK}
-          showBookmarks={bookmark}
         />
       </div>
 
@@ -79,7 +88,10 @@ export default function MapPage() {
           icon={<Cross className="h-4 w-4" />}
           active={openSheet === 'hospital'}
           iconColorVariant="red"
-          onClick={() => toggleSheet('hospital')}
+          onClick={() => {
+            setSelectedHospital(null);
+            toggleSheet('hospital', true);
+          }}
         />
         <ToggleButton
           variant="pill"
@@ -106,7 +118,7 @@ export default function MapPage() {
           icon={<LocateFixed className="h-5 w-5" />}
           active={false}
           iconColorVariant="gray"
-          ariaLabel="내 위치 찾기"
+          ariaLabel="내 위치 토글"
           onClick={() => {
             mapControlRef.current?.centerToMyPosition();
           }}
@@ -145,7 +157,6 @@ export default function MapPage() {
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        {/* 북마크 마커 클릭 시 상세 카드 */}
         {openSheet === 'bookmark' && selectedPlace && (
           <div className="px-6 py-4">
             <PlaceCard
@@ -163,10 +174,15 @@ export default function MapPage() {
           </div>
         )}
 
-        {/* 기존 컨텐츠 렌더링 영역 */}
+        {openSheet === 'hospital' && (
+          <HospitalContent
+            mode={selectedHospital ? 'detail' : 'list'}
+            hospital={selectedHospital ?? undefined}
+          />
+        )}
+
         {openSheet === 'siren' && <SirenContent />}
         {openSheet === 'exchange' && <ExchangeContent />}
-        {openSheet === 'hospital' && <HospitalContent />}
         {openSheet === 'embassy' && <EmbassyContent />}
       </MapBottomSheet>
     </main>

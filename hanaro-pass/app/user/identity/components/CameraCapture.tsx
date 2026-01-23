@@ -1,8 +1,9 @@
 'use client';
 import { useCallback, useEffect, useRef } from 'react';
+import type { IdentityType } from '../hooks/useFunnel';
 
 type CameraCaptureProps = {
-  type?: 'passport' | 'alien' | null;
+  type?: IdentityType | null;
 };
 
 const CameraCapture = ({ type: _type }: CameraCaptureProps) => {

@@ -5,10 +5,10 @@ import { CircleCheck } from 'lucide-react';
 import Image from 'next/image';
 
 type DocsPreviewProps = {
-  name: string;
+  userName: string;
 };
 
-export default function DocsPreview({ name }: DocsPreviewProps) {
+export default function DocsPreview({ userName }: DocsPreviewProps) {
   return (
     <div className="relative h-41 w-65 rounded-[15px] bg-green-300 shadow-[0_12px_24px_rgba(255,255,255,0.35)]">
       {/*로고 영역 */}
@@ -47,7 +47,7 @@ export default function DocsPreview({ name }: DocsPreviewProps) {
           2026.10.25.까지
         </p>
         <p className="font-sans font-semibold text-[9px] text-black-900 tracking-widest">
-          {name}
+          {userName}
         </p>
       </div>
     </div>
