@@ -1,0 +1,57 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { getRegistrationDetailAction } from '../actions/language-regist.action';
+import { LANGUAGES } from '../constants/language';
+import type { RegistrationDetailResponse } from '../schemas/language-regist.schema';
+
+export function useRegistrationDetail(hospitalId: number) {
+  const [data, setData] = useState<RegistrationDetailResponse | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (!hospitalId) return;
+
+    const fetchDetail = async () => {
+      setIsLoading(true);
+      const result = await getRegistrationDetailAction(hospitalId);
+
+      if (result.success) {
+        setData(result.data);
+      } else {
+        alert(result.message);
+      }
+      setIsLoading(false);
+    };
+
+    fetchDetail();
+  }, [hospitalId]);
+
+  const formattedLangs = data?.requestLangs
+    .map((id) => {
+      const langInfo = LANGUAGES.find((l) => l.id === id);
+      return langInfo ? { ...langInfo } : null;
+    })
+    .filter(Boolean);
+
+  const formatDate = (date: Date | null) =>
+    date
+      ? new Date(date)
+          .toLocaleString('ko-KR', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false,
+          })
+          .replace(/\. /g, '. ')
+      : '대기 중...';
+
+  return {
+    data,
+    isLoading,
+    formattedLangs,
+    formatDate,
+  };
+}
