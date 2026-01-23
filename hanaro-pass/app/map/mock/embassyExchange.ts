@@ -1,14 +1,25 @@
 import type { LocationInfo } from '../components/ui/PlaceCard';
 
-export const MAP_EMBASSY_MOCK: LocationInfo = {
-  name: '주한 파키스탄 대사관',
-  type: '대사관, 영사관',
-  status: '운영 중',
-  explainTime: '17:00에 운영 종료',
-  distance: '3.9km',
-  address: '서울 용산구 장문로 9길 39',
-  phone: '02-792-0273',
-  imageUrl: '',
+export type Embassy = {
+  id: number;
+  nationality: string;
+  placeName: string;
+  address: string;
+  openHours: string;
+  phone: string;
+  latitude: number;
+  longitude: number;
+};
+
+export const MAP_EMBASSY_MOCK: Embassy = {
+  id: 101,
+  nationality: 'Japan',
+  placeName: '주대한민국일본국대사관',
+  address: '서울특별시 종로구 율곡로 6 트윈트리타워 A동',
+  openHours: '09:30 - 17:00 (주말 휴무)',
+  phone: '02-2170-5200',
+  latitude: 37.5751,
+  longitude: 126.9801,
 };
 
 export const MAP_EXCHANGE_MOCK: LocationInfo[] = [

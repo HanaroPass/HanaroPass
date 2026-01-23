@@ -1,7 +1,7 @@
 'use client';
 
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
-import { useEffect, type ReactNode, type RefObject } from 'react';
+import { type ReactNode, type RefObject, useEffect } from 'react';
 import {
   SHEET_TITLE,
   type SheetPosition,
@@ -94,7 +94,6 @@ export function MapBottomSheet({
       </div>
 
       <div
-        className="flex-1 overflow-y-auto"
         style={{
           maxHeight: getContentMaxHeight(),
           WebkitOverflowScrolling: 'touch',

@@ -1,12 +1,12 @@
 'use client';
 
 import { useState } from 'react';
+import { hospitalLocations } from '@/app/map/mock/hospitalFilter.mock';
 import { Button } from '@/components/ui/button';
 import DepartmentFilterPanel from './DepartmentFilterPanel';
 import FilterPanel from './FilterPanel';
-import LanguageFilterPanel from './LanguageFilterPanel';
-import { hospitalLocations } from '@/app/map/mock/hospitalFilter.mock';
 import { HospitalCard } from './HospitalCard';
+import LanguageFilterPanel from './LanguageFilterPanel';
 
 type FilterType = 'language' | 'department' | null;
 
