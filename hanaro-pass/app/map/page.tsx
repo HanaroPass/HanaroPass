@@ -112,7 +112,7 @@ export default function MapPage() {
             // 대사관
             if ('nationality' in place) return;
 
-            // 3. 즐겨찾기 장소인 경우
+            // 즐겨찾기 장소인 경우
             if ('placeName' in place) {
               const target = place as SavedPlace;
               const isTargetAlreadySelected = selectedPlace?.id === target.id;

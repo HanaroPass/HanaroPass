@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { hospitalLocations } from '@/app/map/mock/hospitalFilter.mock';
 import type { HospitalPlace } from '@/app/map/mock/hospitalMap.mock';
@@ -8,7 +9,6 @@ import DepartmentFilterPanel from './DepartmentFilterPanel';
 import FilterPanel from './FilterPanel';
 import { HospitalCard } from './HospitalCard';
 import LanguageFilterPanel from './LanguageFilterPanel';
-import { useRouter } from 'next/navigation';
 
 type FilterType = 'language' | 'department' | null;
 type Mode = 'list' | 'detail';
