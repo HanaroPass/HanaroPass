@@ -18,7 +18,7 @@ import type { HospitalPlace } from '../../mock/hospitalMap.mock';
 import type { SavedPlace } from '../../mock/savedPlaces';
 
 type Place = {
-  id: number;
+  id: string;
   name: string;
   address: string;
 };
@@ -198,7 +198,7 @@ export const NaverMap = forwardRef<NaverMapHandle, NaverMapProps>(
 
           naver.maps.Event.addListener(myMarker, 'click', () =>
             onMarkerClickRef.current({
-              id: 1,
+              id: 'my-location',
               name: '내 위치',
               address: '현재 위치',
             }),
