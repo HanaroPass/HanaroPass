@@ -96,21 +96,21 @@ export const NaverMap = forwardRef<NaverMapHandle, NaverMapProps>(
               map: currentMap,
               icon: {
                 content: `
-                <div class="w-5 h-5 bg-white rounded-full flex items-center justify-center shadow-[0_4px_8px_rgba(0,0,0,0.2)]">
-                  <div class="w-4 h-4 bg-hana-green rounded-full flex items-center justify-center shadow-inner">
-                  <svg
-                    width="12"
-                    height="12"
-                    viewBox="0 0 24 24"
-                    fill="white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    style="filter: drop-shadow(0 1px 1px rgba(0,0,0,0.2));"
-                  >
-                    <path d="M5 5C5 3.34315 6.34315 2 8 2H16C17.6569 2 19 3.34315 19 5V22L12 19L5 22V5Z" />
-                  </svg>
+                  <div class="w-5 h-5 bg-white rounded-full flex items-center justify-center shadow-[0_4px_8px_rgba(0,0,0,0.2)]">
+                    <div class="w-4 h-4 bg-hana-green rounded-full flex items-center justify-center shadow-inner">
+                    <svg
+                      width="12"
+                      height="12"
+                      viewBox="0 0 24 24"
+                      fill="white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      style="filter: drop-shadow(0 1px 1px rgba(0,0,0,0.2));"
+                    >
+                      <path d="M5 5C5 3.34315 6.34315 2 8 2H16C17.6569 2 19 3.34315 19 5V22L12 19L5 22V5Z" />
+                    </svg>
+                  </div>
                 </div>
-              </div>
-            `,
+              `,
                 anchor: new naver.maps.Point(10, 10),
               },
             });
@@ -163,7 +163,8 @@ export const NaverMap = forwardRef<NaverMapHandle, NaverMapProps>(
           });
           markersRef.current.push(marker);
         }
-        /** 병원 마커 */
+
+        // 병원 마커
         if (activeCategory === 'hospital' && hospitals) {
           hospitals.forEach((hospital) => {
             const marker = new naver.maps.Marker({
@@ -174,14 +175,25 @@ export const NaverMap = forwardRef<NaverMapHandle, NaverMapProps>(
               map: currentMap,
               icon: {
                 content: `
-            <div class="w-5 h-5 bg-white rounded-full flex items-center justify-center shadow-[0_2px_5px_rgba(0,0,0,0.2)]">
-              <div class="w-4 h-4 bg-[#F9FAFB] rounded-full flex items-center justify-center shadow-inner">
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 4.5v15M4.5 12h15" stroke="#F43F5E" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-              </div>
-            </div>
-            `,
+                  <div class="w-5 h-5 bg-white rounded-full flex items-center justify-center shadow-[0_2px_5px_rgba(0,0,0,0.2)]">
+                    <div class="w-4 h-4 bg-gray-50 rounded-full flex items-center justify-center shadow-inner">
+                    <svg 
+                      width="12" 
+                      height="12" 
+                      viewBox="0 0 24 24" 
+                      fill="none" 
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path 
+                        d="M9 3H15V9H21V15H15V21H9V15H3V9H9V3Z" 
+                        fill="#F43F5E" 
+                        stroke="#F43F5E"
+                        stroke-linejoin="round"
+                      />
+                  </svg>
+                </div>
+                  </div>
+                  `,
                 anchor: new naver.maps.Point(10, 10),
               },
             });

@@ -94,6 +94,7 @@ export function MapBottomSheet({
       </div>
 
       <div
+        className="flex-1 overflow-y-auto"
         style={{
           maxHeight: getContentMaxHeight(),
           WebkitOverflowScrolling: 'touch',
