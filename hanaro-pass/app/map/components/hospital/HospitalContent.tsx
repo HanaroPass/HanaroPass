@@ -8,6 +8,7 @@ import { HospitalCard } from './HospitalCard';
 import DepartmentFilterPanel from './DepartmentFilterPanel';
 import FilterPanel from './FilterPanel';
 import LanguageFilterPanel from './LanguageFilterPanel';
+import { useRouter } from 'next/navigation';
 
 type FilterType = 'language' | 'department' | null;
 type Mode = 'list' | 'detail';
@@ -18,6 +19,7 @@ type Props = {
 };
 
 export function HospitalContent({ mode, hospital }: Props) {
+  const router = useRouter();
   const [active, setActive] = useState<FilterType>(null);
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
   const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
@@ -46,7 +48,10 @@ export function HospitalContent({ mode, hospital }: Props) {
         />
 
         <div className="mt-auto border-[#F0F3F4] border-t bg-white py-4">
-          <Button className="h-14 w-full rounded-xl bg-green-ez text-white">
+          <Button
+            className="h-14 w-full rounded-xl bg-green-ez text-white"
+            onClick={() => router.push('/medical/symptoms/analyze')}
+          >
             AI에게 진료 내용 번역 요청하기
           </Button>
         </div>
@@ -154,7 +159,10 @@ export function HospitalContent({ mode, hospital }: Props) {
       </div>
 
       <div className="border-[#F0F3F4] border-t bg-white px-6 py-4">
-        <Button className="h-14 w-full rounded-xl bg-green-ez text-white">
+        <Button
+          className="h-14 w-full rounded-xl bg-green-ez text-white"
+          onClick={() => router.push('/medical/symptoms/analyze')}
+        >
           AI에게 나에게 맞는 병원 추천받기
         </Button>
       </div>
