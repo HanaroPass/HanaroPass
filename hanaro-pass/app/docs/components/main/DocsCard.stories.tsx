@@ -16,6 +16,7 @@ export const Interactive: Story = {
     title: '모바일 외국인 신분증',
     color: 'blueSoft',
     isOpen: true,
+    userName: 'somi',
   },
   render: (args) => {
     const [open, setOpen] = useState(args.isOpen);

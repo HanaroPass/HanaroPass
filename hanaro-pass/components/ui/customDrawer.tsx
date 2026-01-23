@@ -1,6 +1,6 @@
 'use client';
 
-import * as React from 'react';
+import type * as React from 'react';
 import { Drawer as DrawerPrimitive } from 'vaul';
 import { cn } from '@/lib/utils';
 
@@ -16,10 +16,7 @@ export function DrawerOverlay({
 }: React.ComponentProps<typeof DrawerPrimitive.Overlay>) {
   return (
     <DrawerPrimitive.Overlay
-      className={cn(
-        'fixed inset-0 z-50 bg-black/50',
-        className,
-      )}
+      className={cn('fixed inset-0 z-50 bg-black/50', className)}
       {...props}
     />
   );
@@ -66,7 +63,7 @@ export function DrawerTitle({
 }: React.ComponentProps<typeof DrawerPrimitive.Title>) {
   return (
     <DrawerPrimitive.Title
-      className={cn('text-lg font-semibold', className)}
+      className={cn('font-semibold text-lg', className)}
       {...props}
     />
   );
