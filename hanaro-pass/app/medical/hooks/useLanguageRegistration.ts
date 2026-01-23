@@ -101,7 +101,7 @@ export function useLanguageRegistration() {
     setIsSubmitting(false);
 
     if (result.success) {
-      router.push('/medical/registrations/complete');
+      router.push(`/medical/registrations/complete/?hospitalId=${hospitalId}`);
     } else {
       alert(result.message);
     }

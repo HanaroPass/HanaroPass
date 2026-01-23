@@ -1,30 +1,63 @@
 'use client';
 
-import { useParams, useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import HospitalGuide from '@/app/medical/components/languageRegistration/HospitalGuide';
-import StatusBadge from '@/app/medical/components/StatusBadge';
 import RegistrationSummary from '@/components/result/RegistrationSummary';
 import ActionButton from '@/components/ui/ActionButton';
+import { getRegistrationResultAction } from '../../actions/language-regist.action';
+import StatusBadge from '../../components/StatusBadge';
+import type { StatusType } from '../../constants/statusConfig';
 
 export default function HospitalRegistrationCompletePage() {
-  const params = useParams();
+  const searchParams = useSearchParams();
   const router = useRouter();
-  const hospitalId = params.hospitalId as string;
+  const hospitalId = Number(searchParams.get('hospitalId'));
 
-  /**
-   * QQQ (Data Flow & Prisma Plan):
-   * 1. POST 요청 응답 처리:
-   * - /api/medical/lang-application 호출 후 반환된 신규 레코드 데이터 사용.
-   * 2. 필드 매칭:
-   * - '신청 병원': Hospital 테이블의 nameKo (id로 조회)
-   * - '신청 일시': 서버에서 생성된 Timestamp (new Date().toISOString() 등)
-   * 3. 상태 값:
-   * - 초기값은 무조건 'pending'으로 서버 응답에 포함되어야 함.
-   */
+  const [data, setData] = useState<{
+    hospitalName: string;
+    createdAt: string;
+    status: StatusType;
+  } | null>(null);
+
+  useEffect(() => {
+    if (!hospitalId) {
+      alert('유효하지 않은 접근입니다.');
+      router.push('/medical/registrations');
+      return;
+    }
+
+    const fetchResult = async () => {
+      const result = await getRegistrationResultAction(hospitalId);
+      if (result.success) {
+        setData({
+          hospitalName: result.data.hospitalName,
+          createdAt: new Date(result.data.createdAt).toLocaleString('ko-KR'),
+          status: result.data.status,
+        });
+      } else {
+        alert(result.message);
+        router.push('/medical/registrations');
+      }
+    };
+
+    fetchResult();
+  }, [hospitalId, router]);
+
+  if (!data)
+    return (
+      <div className="flex h-screen items-center justify-center">
+        로딩 중...
+      </div>
+    );
+
   const summaryItems = [
-    { label: '신청 병원', value: '강남병원' },
-    { label: '신청 일시', value: '2026.01.19 08:53:55' },
-    { label: '상태', value: <StatusBadge status="pending" /> },
+    { label: '신청 병원', value: data.hospitalName },
+    { label: '신청 일시', value: data.createdAt },
+    {
+      label: '상태',
+      value: <StatusBadge status={data.status} />,
+    },
   ];
 
   return (

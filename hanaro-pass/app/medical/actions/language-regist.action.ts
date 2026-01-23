@@ -8,6 +8,7 @@ import {
 import type { Hospital } from '@/lib/generated/prisma';
 import { prisma } from '@/lib/prisma';
 import type { LanguageId } from '../constants/language';
+import type { StatusType } from '../constants/statusConfig';
 import {
   IdSchema,
   LanguageTransformSchema,
@@ -149,6 +150,46 @@ export async function submitLanguageApplicationAction(
       });
     });
     return { success: true, data: null };
+  } catch (err) {
+    return handleActionResult(err);
+  }
+}
+
+/**
+ * [신청 결과 요약 조회]
+ *
+ * 완료 페이지에서 신청한 병원명, 신청 시간, 상태를 보여주기 위해 사용
+ */
+export async function getRegistrationResultAction(
+  hospitalId: number,
+): Promise<
+  ActionResult<{ hospitalName: string; createdAt: Date; status: StatusType }>
+> {
+  try {
+    const validatedId = IdSchema.parse(hospitalId);
+
+    const application = await prisma.hospitalLanguageApplication.findFirst({
+      where: { hospitalId: validatedId },
+      orderBy: { createdAt: 'desc' },
+      include: {
+        Hospital: {
+          select: { nameKo: true },
+        },
+      },
+    });
+
+    if (!application) {
+      throw new HttpError('신청 내역을 찾을 수 없습니다.', 404);
+    }
+
+    return {
+      success: true,
+      data: {
+        hospitalName: application.Hospital.nameKo,
+        createdAt: application.createdAt,
+        status: application.status as StatusType,
+      },
+    };
   } catch (err) {
     return handleActionResult(err);
   }
