@@ -3,12 +3,13 @@
 import { Info, Plus } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { use, useEffect, useRef, useState } from 'react';
+import { use, useRef } from 'react';
 
 import Header from '@/components/header/Header';
 import { DOCS_CARD_ITEMS } from '../../constants/docsCardItem';
 import type { DocsProps } from '../../[docId]/page';
 import ActionButton from '@/components/ui/ActionButton';
+import { useFilePreview } from '../../hooks/useFilePreview';
 
 export default function DocsAddPage({ params }: DocsProps) {
   const { docId } = use(params);
@@ -17,41 +18,22 @@ export default function DocsAddPage({ params }: DocsProps) {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-  const [file, setFile] = useState<File | null>(null);
+  const { file, previewUrl, isPdf, isImage, setSelectedFile } =
+    useFilePreview();
 
-  const isPdf = file?.type === 'application/pdf';
-  const isImage = !!file?.type?.startsWith('image/');
-
+  // 업로드 버튼 클릭 -> input
   const handlePick = () => inputRef.current?.click();
 
-  const MAX_FILE_SIZE = 5 * 1024 * 1024; //5MB : 파일 크기 제한
   // 파일 업로드 시 업데이트
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0] ?? null;
-    if (selected && selected.size > MAX_FILE_SIZE) {
-      //5MB
-      alert('파일 크기는 5MB를 초과할 수 없습니다.');
+    const res = setSelectedFile(selected);
+
+    if (!res.ok) {
+      alert(res.error);
       e.target.value = '';
-      return;
     }
-    setFile(selected);
   };
-
-  const [previewUrl, setPreviewUrl] = useState<string>('');
-
-  // 파일 변경 시 미리보기 URL 생성 및 이전 URL 해제
-  useEffect(() => {
-    if (!file) {
-      setPreviewUrl('');
-      return;
-    }
-    const url = URL.createObjectURL(file);
-    setPreviewUrl(url);
-
-    return () => {
-      URL.revokeObjectURL(url);
-    };
-  }, [file]);
 
   const handleSubmit = () => {
     // 추후 DB 연결 예정
