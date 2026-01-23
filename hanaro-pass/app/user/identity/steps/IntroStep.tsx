@@ -55,7 +55,7 @@ export default function IntroStep({
         }
       />
 
-      <div className="flex min-h-[calc(100vh-60px)] flex-col bg-white p-4 pb-1 sm:p-6 sm:pb-10 lg:p-8">
+      <div className="flex h-[calc(100vh-60px)] flex-col overflow-y-auto bg-white p-4 pb-1 sm:p-6 sm:pb-10 lg:p-8">
         <div className="mx-auto flex w-full max-w-sm flex-1 flex-col sm:max-w-md sm:flex-none lg:max-w-lg xl:max-w-2xl">
           <div className="shrink-0">
             <div className="mb-6 sm:mb-8">

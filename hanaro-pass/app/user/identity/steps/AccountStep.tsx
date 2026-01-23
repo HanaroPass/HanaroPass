@@ -59,7 +59,7 @@ export default function AccountStep({ onSubmit, onClose }: AccountStepProps) {
         <div className="mx-auto flex w-full max-w-sm flex-1 flex-col sm:max-w-md lg:max-w-lg xl:max-w-2xl">
           <div className="mb-8">
             <h2 className="mb-2 font-medium text-gray-800 text-xl">
-              계좌번호및휴대폰 본인인증 확인합니다
+              계좌번호 및 휴대폰 본인인증 확인합니다
             </h2>
             <p className="text-gray-600 text-sm">
               계좌번호 입력 후, 하단의 '내통장 누르시고 비밀번호를 입력해

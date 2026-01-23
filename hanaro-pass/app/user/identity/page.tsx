@@ -20,7 +20,11 @@ export default function IdentityPage() {
   });
 
   const handleClose = () => {
-    router.back();
+    if (currentStep !== 'intro') {
+      history.push('intro');
+    } else {
+      router.back();
+    }
   };
 
   // Intro Step
