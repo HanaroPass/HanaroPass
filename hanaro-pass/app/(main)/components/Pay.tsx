@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { MOCK_CARDS } from '../mock/mockCard';
 import Card from './Card';
 import CouponList from './CouponList';
@@ -8,28 +8,38 @@ import MenuList from './MenuList';
 import PinInput from './PinInput';
 
 export default function Pay() {
-  const [isUnlocked, setIsUnlocked] = useState(false);
-  const [showPin, setShowPin] = useState(false);
+  const [unlockedCardIds, setUnlockedCardIds] = useState<Set<number>>(
+    new Set(),
+  );
+  const [pendingCardId, setPendingCardId] = useState<number | null>(null);
+
+  const handleUnlockRequest = useCallback((id: number) => {
+    setPendingCardId(id);
+  }, []);
+
+  const handlePinSuccess = useCallback(() => {
+    if (pendingCardId) {
+      setUnlockedCardIds((prev) => new Set(prev).add(pendingCardId));
+      setPendingCardId(null);
+    }
+  }, [pendingCardId]);
 
   return (
     <div className="relative flex flex-col gap-5">
       <Card
-        isUnlocked={isUnlocked}
-        onLockClickAction={() => setShowPin(true)}
         cards={MOCK_CARDS}
+        unlockedCardIds={unlockedCardIds}
+        onLockClickAction={handleUnlockRequest}
       />
 
       <CouponList />
-
       <MenuList type="pay" />
 
-      {showPin && (
+      {/* pendingCardId가 존재할 때만 PIN 입력창 노출 */}
+      {pendingCardId && (
         <PinInput
-          onSuccessAction={() => {
-            setIsUnlocked(true);
-            setShowPin(false);
-          }}
-          onCloseAction={() => setShowPin(false)}
+          onSuccessAction={handlePinSuccess}
+          onCloseAction={() => setPendingCardId(null)}
         />
       )}
     </div>

@@ -2,13 +2,14 @@
 
 import { Lock } from 'lucide-react';
 import Image from 'next/image';
-import { memo, useCallback, useRef, useState } from 'react';
+import { memo, useCallback, useMemo, useRef, useState } from 'react';
+import Barcode from 'react-barcode';
 import type { CardData } from '../mock/mockCard';
 
 interface CardProps {
   cards: CardData[];
-  isUnlocked: boolean;
-  onLockClickAction: () => void;
+  unlockedCardIds: Set<number>;
+  onLockClickAction: (id: number) => void;
 }
 
 const CardItem = memo(
@@ -56,12 +57,18 @@ const CardItem = memo(
 
 export default function Card({
   cards,
-  isUnlocked,
+  unlockedCardIds,
   onLockClickAction,
 }: CardProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const touchStartRef = useRef<number | null>(null);
+
+  const activeCard = useMemo(() => cards[activeIndex], [cards, activeIndex]);
+  const isCurrentUnlocked = useMemo(
+    () => unlockedCardIds.has(activeCard.id),
+    [unlockedCardIds, activeCard.id],
+  );
 
   const handleSwipe = useCallback(
     (direction: 'NEXT' | 'PREV') => {
@@ -116,32 +123,35 @@ export default function Card({
       <button
         type="button"
         className="relative flex h-28 w-full flex-col items-center justify-center bg-white px-4 transition-opacity active:opacity-70"
-        onClick={!isUnlocked ? onLockClickAction : undefined}
+        onClick={() => !isCurrentUnlocked && onLockClickAction(activeCard.id)}
         aria-label={
-          isUnlocked
+          isCurrentUnlocked
             ? '결제 바코드 활성화됨'
             : 'PIN 번호를 입력하여 바코드 보기'
         }
       >
         <div
-          className={`h-10 w-full border transition-all duration-700 ease-in-out ${
-            !isUnlocked ? 'blur-xl' : 'blur-0'
+          className={`flex h-14 w-full items-center justify-center overflow-hidden rounded-md border bg-white transition-all duration-700 ease-in-out ${
+            !isCurrentUnlocked ? 'blur-sm' : 'blur-0'
           }`}
         >
-          <div className="h-full w-full bg-[url('https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Ean-13-registration-area.svg/1200px-Ean-13-registration-area.svg.png')] bg-center bg-contain bg-no-repeat" />
+          <Barcode
+            value={activeCard?.cardNumber ?? '000000000000'}
+            format="CODE128"
+            displayValue={false}
+            height={48}
+            width={1.6}
+            margin={0}
+          />
         </div>
 
-        {!isUnlocked && (
+        {!isCurrentUnlocked && (
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="rounded-full border border-gray-100 bg-white/90 p-3 shadow-lg">
               <Lock className="text-black-800" size={24} />
             </div>
           </div>
         )}
-
-        <p className="mt-4 text-[11px] text-gray-500 tracking-[0.2em]">
-          {isUnlocked && '8801234 567890'}
-        </p>
       </button>
     </div>
   );
