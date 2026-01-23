@@ -18,7 +18,6 @@ export default function AccountStep({ onSubmit, onClose }: AccountStepProps) {
   const [selectedAccount, setSelectedAccount] = useState<string | null>(null);
 
   const handleDrawerSubmit = (data: Record<string, string>) => {
-    console.log('계좌 정보:', data);
     // 실제 계좌번호나 계좌명을 저장
     const accountInfo =
       data.accountNumber ||
