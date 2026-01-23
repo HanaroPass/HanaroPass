@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import Barcode from 'react-barcode';
 
 interface CouponDetailProps {
@@ -8,7 +9,6 @@ interface CouponDetailProps {
   brandPic?: string;
   tag?: string;
   couponNumber?: string;
-  onBack?: () => void;
 }
 
 export default function CouponDetail({
@@ -16,10 +16,9 @@ export default function CouponDetail({
   brandName = '스타벅스',
   tag = '#커피 전문점',
   couponNumber = 'HN-2025-001234',
-  onBack,
 }: CouponDetailProps) {
   return (
-    <main className="flex flex-1 flex-col items-center px-6 pt-10">
+    <main className="flex flex-1 flex-col items-center px-6 py-10">
       <div className="mb-4 h-20 w-20 overflow-hidden rounded-full border border-gray-100 shadow-sm">
         <Image
           src={brandPic}
@@ -64,6 +63,20 @@ export default function CouponDetail({
         <p className="font-medium text-gray-400 text-sm">
           쿠폰번호: <span className="uppercase">{couponNumber}</span>
         </p>
+      </div>
+
+      <div className="mt-6 w-full px-4 text-center text-gray-800 text-xs">
+        <p className="mb-2">
+          본 쿠폰은{' '}
+          <span className="font-semibold text-gray-800">대표계좌</span>에서
+          결제됩니다.
+          <br />
+          결제 계좌 변경은 이 화면에서 할 수 없어요.
+        </p>
+
+        <Link href="/" className="inline-block underline">
+          메인으로 이동
+        </Link>
       </div>
     </main>
   );
