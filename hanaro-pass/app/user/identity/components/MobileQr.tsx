@@ -14,6 +14,7 @@ export default function MobileQr({ type, data }: MobileQrProps) {
   const isPassport = type === 'passport';
   const [timeLeft, setTimeLeft] = useState(30);
   const [qrKey, setQrKey] = useState(Date.now());
+  const [isExpired, setIsExpired] = useState(false);
 
   const qrData = JSON.stringify({
     type,
@@ -25,8 +26,13 @@ export default function MobileQr({ type, data }: MobileQrProps) {
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
-          setQrKey(Date.now());
-          return 30;
+          setIsExpired(true);
+          setTimeout(() => {
+            setQrKey(Date.now());
+            setIsExpired(false);
+            setTimeLeft(30);
+          }, 500);
+          return 0;
         }
         return prev - 1;
       });
@@ -34,8 +40,6 @@ export default function MobileQr({ type, data }: MobileQrProps) {
 
     return () => clearInterval(timer);
   }, []);
-
-  const isExpired = timeLeft === 0;
 
   const PhotoSection = (
     <div className="h-48 w-36 shrink-0 overflow-hidden rounded-xl bg-gray-200 shadow-inner">
@@ -64,7 +68,7 @@ export default function MobileQr({ type, data }: MobileQrProps) {
           <p className="font-semibold text-lg opacity-90">
             남은 시간 : {timeLeft}초
             {isExpired && (
-              <span className="ml-2 text-xs opacity-75">(갱신 중...)</span>
+              <span className="ml-2 text-xs opacity-75">(Refresh)</span>
             )}
           </p>
         </div>
