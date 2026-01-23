@@ -147,7 +147,6 @@ body {
   width: 375px;
   height: 100dvh;
   margin: 0 auto;
-  overflow: hidden;
 }
 
 @media (max-width: 768px) {

@@ -18,11 +18,11 @@ import { NaverMap } from './components/ui/NaverMap';
 import { PlaceCard } from './components/ui/PlaceCard';
 import { ToggleButton } from './components/ui/ToggleButton';
 import { useBottomSheet } from './hooks/useBottomSheet';
-import { SAVED_PLACES_MOCK, type SavedPlace } from './mock/savedPlaces';
 import {
   HOSPITALS_MAP_MOCK,
   type HospitalPlace,
 } from './mock/hospitalMap.mock';
+import { SAVED_PLACES_MOCK, type SavedPlace } from './mock/savedPlaces';
 
 /**
  * @page MapPage

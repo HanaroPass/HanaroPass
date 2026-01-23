@@ -1,7 +1,7 @@
 import { AlertCircle, CheckCircle2, Clock } from 'lucide-react';
 
 export const STATUS_CONFIG = {
-  pending: {
+  PENDING: {
     label: '대기중',
     badge: {
       bg: 'bg-yellow-100',
@@ -17,7 +17,7 @@ export const STATUS_CONFIG = {
     Icon: Clock,
     message: '관리자가 확인 중입니다. 승인까지 1-2 영업일이 소요됩니다.',
   },
-  approved: {
+  APPROVED: {
     label: '승인완료',
     badge: {
       bg: 'bg-green-100',
@@ -34,7 +34,7 @@ export const STATUS_CONFIG = {
     message:
       '승인이 완료되었습니다. 이제 외국인 환자가 병원 정보를 확인할 수 있습니다.',
   },
-  rejected: {
+  REJECTED: {
     label: '반려됨',
     badge: {
       bg: 'bg-red-100',

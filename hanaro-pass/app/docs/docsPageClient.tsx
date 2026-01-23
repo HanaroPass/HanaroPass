@@ -9,7 +9,7 @@ import {
 import Header from '@/components/header/Header';
 import DocsSelectList from './components/add/BottomSelectList';
 import { useRouter } from 'next/navigation';
-import type { getDocsStatus } from './actions/userDocs';
+import type { getDocsStatus } from './actions/userDocsList';
 
 type UserProps = {
   userName: string;
