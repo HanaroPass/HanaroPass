@@ -10,7 +10,7 @@ import type { Hospital } from '@/lib/generated/prisma';
 import { prisma } from '@/lib/prisma';
 import { type LanguageId, NAME_TO_ID } from '../constants/language';
 
-const SearchSchema = z.string().max(50);
+const SearchSchema = z.string().min(2).max(50);
 const IdSchema = z.number().int().positive(); // ID는 양의 정수
 const LanguageTransformSchema = z
   .array(z.string())
@@ -68,10 +68,12 @@ export async function searchHospitalAction(
  * 성공 시 병원의 국문 명칭을 반환합니다.
  * @throws {HttpError} 병원을 찾을 수 없는 경우 404 에러를 발생시킵니다.
  */
-export async function getHospitalDetailAction(
-  id: number,
-): Promise<
-  ActionResult<{ nameKo: string; existingLangs: string[]; isPending: boolean }>
+export async function getHospitalDetailAction(id: number): Promise<
+  ActionResult<{
+    nameKo: string;
+    existingLangs: LanguageId[];
+    isPending: boolean;
+  }>
 > {
   try {
     const validatedId = IdSchema.parse(id);
