@@ -8,6 +8,7 @@ import { ChevronUp, CreditCard } from 'lucide-react';
 type DocsCardProps = {
   title: string;
   color: CardColor;
+  userName: string;
   isOpen: boolean;
   onToggle: () => void;
   docId: string;
@@ -16,6 +17,7 @@ type DocsCardProps = {
 export default function DocsCard({
   title,
   color,
+  userName,
   isOpen,
   onToggle,
   docId,
@@ -58,7 +60,7 @@ export default function DocsCard({
           onClick={goDetail}
           className="mt-4 ml-4 inline-flex transition-transform duration-150 ease-out active:scale-[0.97]"
         >
-          <DocsPreview name="Kelsey Kwon" />
+          <DocsPreview userName={userName} />
         </button>
         {/* 기간 만료 안내 영역 */}
         <div className="mt-5 ml-2 flex text-white">
