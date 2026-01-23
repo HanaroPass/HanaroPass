@@ -19,13 +19,15 @@ export default function SymptomAnalyzePage() {
 
       if (images.length + newImages.length > 3) {
         setImageCntOK(false);
-        setImages(newImages.slice(0, 3));
       } else setImageCntOK(true);
-      const totalImages = [...images, ...newImages.slice(0, 3 - images.length)];
-      setImages(totalImages);
 
-      const urls = totalImages.map((i) => URL.createObjectURL(i));
-      setImageUrls(urls);
+      setImages(() => {
+        const totalImages = [...images, ...newImages].slice(0, 3);
+
+        const urls = totalImages.map((i) => URL.createObjectURL(i));
+        setImageUrls(urls);
+        return totalImages;
+      });
     }
   };
   const router = useRouter();
@@ -123,6 +125,9 @@ export default function SymptomAnalyzePage() {
                 <XIcon
                   onClick={() => {
                     setImages([]);
+                    imageUrls.forEach((i) => {
+                      URL.revokeObjectURL(i);
+                    });
                     setImageUrls([]);
                   }}
                   className="h-11 w-11 text-gray-400"
