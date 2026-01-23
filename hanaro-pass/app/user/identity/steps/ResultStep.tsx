@@ -4,7 +4,6 @@ import { X } from 'lucide-react';
 import { useState } from 'react';
 import Header from '@/components/header/Header';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type { IdentityType } from '../hooks/useFunnel';
 
 type ResultStepProps = {
@@ -24,14 +23,9 @@ export default function ResultStep({
     identityType === 'passport' ? 'passport' : 'alien',
   );
 
-  const getHeaderTitle = () => {
-    return activeTab === 'passport' ? '모바일 여권' : '모바일 신분증';
-  };
-
   return (
     <>
       <Header
-        title={getHeaderTitle()}
         rightElement={
           <Button
             variant="ghost"
@@ -43,116 +37,120 @@ export default function ResultStep({
             <X size={24} />
           </Button>
         }
-      />
+      >
+        <div className="flex rounded-full bg-gray-100 p-1">
+          <button
+            onClick={() => setActiveTab('passport')}
+            className={`relative rounded-full px-4 py-1.5 font-medium text-sm transition-all ${
+              activeTab === 'passport'
+                ? 'bg-black-900 text-white shadow-sm'
+                : 'text-gray-600 hover:text-gray-800'
+            }`}
+          >
+            여권
+          </button>
+          <button
+            onClick={() => setActiveTab('alien')}
+            className={`relative rounded-full px-4 py-1.5 font-medium text-sm transition-all ${
+              activeTab === 'alien'
+                ? 'bg-black-900 text-white shadow-sm'
+                : 'text-gray-600 hover:text-gray-800'
+            }`}
+          >
+            신분증
+          </button>
+        </div>
+      </Header>
 
       <div className="flex min-h-[calc(100vh-60px)] flex-col bg-white p-4 sm:p-6 lg:p-8">
         <div className="mx-auto w-full max-w-sm sm:max-w-md lg:max-w-lg xl:max-w-2xl">
-          <Tabs
-            value={activeTab}
-            onValueChange={setActiveTab}
-            className="w-full"
-          >
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="passport">모바일 여권</TabsTrigger>
-              <TabsTrigger value="alien">모바일 신분증</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="passport" className="mt-6">
-              <div className="rounded-lg border bg-white p-6 shadow-sm">
-                <h3 className="mb-4 font-semibold text-lg">여권 정보</h3>
-                {identityType === 'passport' && identityData ? (
-                  <>
-                    <div className="space-y-3">
-                      {Object.entries(identityData).map(([key, value]) => (
-                        <div
-                          key={key}
-                          className="flex justify-between border-b pb-2"
-                        >
-                          <span className="text-gray-600">{key}</span>
-                          <span className="font-medium text-gray-800">
-                            {value}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-
-                    {accountData && (
-                      <div className="mt-6 rounded-lg bg-gray-50 p-4">
-                        <h4 className="mb-3 font-semibold text-base">
-                          연동 계좌
-                        </h4>
-                        <div className="space-y-2">
-                          {Object.entries(accountData).map(([key, value]) => (
-                            <div key={key} className="flex justify-between">
-                              <span className="text-gray-600 text-sm">
-                                {key}
-                              </span>
-                              <span className="font-medium text-gray-800 text-sm">
-                                {value}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
+          {activeTab === 'passport' ? (
+            <div className="rounded-lg border bg-white p-6 shadow-sm">
+              <h3 className="mb-4 font-semibold text-lg">여권 정보</h3>
+              {identityType === 'passport' && identityData ? (
+                <>
+                  <div className="space-y-3">
+                    {Object.entries(identityData).map(([key, value]) => (
+                      <div
+                        key={key}
+                        className="flex justify-between border-b pb-2"
+                      >
+                        <span className="text-gray-600">{key}</span>
+                        <span className="font-medium text-gray-800">
+                          {value}
+                        </span>
                       </div>
-                    )}
-                  </>
-                ) : (
-                  <p className="text-center text-gray-500">
-                    등록된 여권 정보가 없습니다.
-                  </p>
-                )}
-              </div>
-            </TabsContent>
+                    ))}
+                  </div>
 
-            <TabsContent value="alien" className="mt-6">
-              <div className="rounded-lg border bg-white p-6 shadow-sm">
-                <h3 className="mb-4 font-semibold text-lg">
-                  외국인등록증 정보
-                </h3>
-                {identityType === 'alien' && identityData ? (
-                  <>
-                    <div className="space-y-3">
-                      {Object.entries(identityData).map(([key, value]) => (
-                        <div
-                          key={key}
-                          className="flex justify-between border-b pb-2"
-                        >
-                          <span className="text-gray-600">{key}</span>
-                          <span className="font-medium text-gray-800">
-                            {value}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-
-                    {accountData && (
-                      <div className="mt-6 rounded-lg bg-gray-50 p-4">
-                        <h4 className="mb-3 font-semibold text-base">
-                          연동 계좌
-                        </h4>
-                        <div className="space-y-2">
-                          {Object.entries(accountData).map(([key, value]) => (
-                            <div key={key} className="flex justify-between">
-                              <span className="text-gray-600 text-sm">
-                                {key}
-                              </span>
-                              <span className="font-medium text-gray-800 text-sm">
-                                {value}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
+                  {accountData && (
+                    <div className="mt-6 rounded-lg bg-gray-50 p-4">
+                      <h4 className="mb-3 font-semibold text-base">
+                        연동 계좌
+                      </h4>
+                      <div className="space-y-2">
+                        {Object.entries(accountData).map(([key, value]) => (
+                          <div key={key} className="flex justify-between">
+                            <span className="text-gray-600 text-sm">{key}</span>
+                            <span className="font-medium text-gray-800 text-sm">
+                              {value}
+                            </span>
+                          </div>
+                        ))}
                       </div>
-                    )}
-                  </>
-                ) : (
-                  <p className="text-center text-gray-500">
-                    등록된 신분증 정보가 없습니다.
-                  </p>
-                )}
-              </div>
-            </TabsContent>
-          </Tabs>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <p className="text-center text-gray-500">
+                  등록된 여권 정보가 없습니다.
+                </p>
+              )}
+            </div>
+          ) : (
+            <div className="rounded-lg border bg-white p-6 shadow-sm">
+              <h3 className="mb-4 font-semibold text-lg">외국인등록증 정보</h3>
+              {identityType === 'alien' && identityData ? (
+                <>
+                  <div className="space-y-3">
+                    {Object.entries(identityData).map(([key, value]) => (
+                      <div
+                        key={key}
+                        className="flex justify-between border-b pb-2"
+                      >
+                        <span className="text-gray-600">{key}</span>
+                        <span className="font-medium text-gray-800">
+                          {value}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {accountData && (
+                    <div className="mt-6 rounded-lg bg-gray-50 p-4">
+                      <h4 className="mb-3 font-semibold text-base">
+                        연동 계좌
+                      </h4>
+                      <div className="space-y-2">
+                        {Object.entries(accountData).map(([key, value]) => (
+                          <div key={key} className="flex justify-between">
+                            <span className="text-gray-600 text-sm">{key}</span>
+                            <span className="font-medium text-gray-800 text-sm">
+                              {value}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <p className="text-center text-gray-500">
+                  등록된 신분증 정보가 없습니다.
+                </p>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </>
