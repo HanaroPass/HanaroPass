@@ -91,6 +91,8 @@ export default function IdentityPage() {
                   onClick={() => {
                     history.push('ocr', {
                       identityType: 'passport',
+                      identityData: null,
+                      accountData: null,
                     });
                   }}
                   className="border border-green-ez bg-white text-green-ez hover:bg-green-ez/10"
@@ -101,6 +103,8 @@ export default function IdentityPage() {
                   onClick={() => {
                     history.push('ocr', {
                       identityType: 'alien',
+                      identityData: null,
+                      accountData: null,
                     });
                   }}
                   className="border border-green-ez bg-white text-green-ez hover:bg-green-ez/10"
@@ -191,9 +195,9 @@ export default function IdentityPage() {
         type={context.identityType}
         onSubmit={(data) => {
           if (context.identityType === 'passport') {
-            history.push('result', { identityData: data });
+            history.push('result', { identityData: data, accountData: null });
           } else {
-            history.push('account', { identityData: data });
+            history.push('account', { identityData: data, accountData: null });
           }
         }}
         onClose={handleClose}
@@ -206,7 +210,10 @@ export default function IdentityPage() {
     return (
       <AccountStep
         onSubmit={(data) => {
-          history.push('result', { accountData: data });
+          history.push('result', {
+            accountData: data,
+            identityData: context.identityData,
+          });
         }}
         onClose={handleClose}
       />
