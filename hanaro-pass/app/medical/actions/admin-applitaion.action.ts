@@ -1,11 +1,17 @@
 'use server';
 
-import { type ActionResult, handleActionResult } from '@/lib/error-handler';
+import {
+  type ActionResult,
+  HttpError,
+  handleActionResult,
+} from '@/lib/error-handler';
 import { prisma } from '@/lib/prisma';
 import type { StatusType } from '../constants/statusConfig';
 import {
   type AdminDashboardResponse,
   AdminDashboardSchema,
+  type AdminReviewDetailResponse,
+  AdminReviewDetailSchema,
 } from '../schemas/admin-application.schema';
 
 /**
@@ -46,6 +52,40 @@ export async function getAdminApplicationsAction(): Promise<
       success: true,
       data: AdminDashboardSchema.parse(result),
     };
+  } catch (err) {
+    return handleActionResult(err);
+  }
+}
+
+/**
+ * [심사 상세 정보 조회]
+ *
+ * @param id - 조회할 신청 내역의 고유 아이디
+ * @returns {Promise<ActionResult<AdminReviewDetailResponse>>}
+ * @throws {HttpError} 신청 내역이 존재하지 않을 경우 404 에러 발생
+ */
+export async function getAdminReviewDetailAction(
+  id: number,
+): Promise<ActionResult<AdminReviewDetailResponse>> {
+  try {
+    const application = await prisma.hospitalLanguageApplication.findUnique({
+      where: { id },
+      include: { Hospital: { select: { nameKo: true } } },
+    });
+
+    if (!application) throw new HttpError('신청 내역을 찾을 수 없습니다.', 404);
+
+    const result = {
+      id: application.id,
+      hospitalId: application.hospitalId,
+      hospitalName: application.Hospital.nameKo,
+      status: application.status,
+      requestLangs: application.requestLangs,
+      createdAt: application.createdAt,
+      processedAt: application.processedAt,
+    };
+
+    return { success: true, data: AdminReviewDetailSchema.parse(result) };
   } catch (err) {
     return handleActionResult(err);
   }
