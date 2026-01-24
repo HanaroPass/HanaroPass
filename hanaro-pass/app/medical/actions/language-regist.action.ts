@@ -29,19 +29,31 @@ export async function searchHospitalAction(
   query: string,
 ): Promise<ActionResult<Pick<Hospital, 'id' | 'nameKo' | 'address'>[]>> {
   try {
-    const sanitizedQuery = query.replace(/\s+/g, '');
+    const sanitizedQuery = query.trim();
+
     if (!sanitizedQuery || sanitizedQuery.length < 2) {
       return { success: true, data: [] };
     }
     const validatedQuery = SearchSchema.parse(sanitizedQuery);
 
-    const hospitals = await prisma.$queryRaw<
-      Pick<Hospital, 'id' | 'nameKo' | 'address'>[]
-    >`
-  SELECT id, nameKo, address 
-  FROM Hospital 
-  WHERE REPLACE(nameKo, ' ', '') LIKE ${`%${validatedQuery}%`}
-`;
+    const searchTerms = validatedQuery
+      .split(/\s+/)
+      .map((term) => `+${term}*`)
+      .join(' ');
+
+    const hospitals = await prisma.hospital.findMany({
+      where: {
+        nameKo: {
+          search: searchTerms,
+        },
+      },
+      select: {
+        id: true,
+        nameKo: true,
+        address: true,
+      },
+      take: 20,
+    });
 
     return { success: true as const, data: hospitals };
   } catch (err) {
