@@ -24,7 +24,7 @@ export default function CouponDetail({
           src={brandPic}
           width={80}
           height={80}
-          alt={`brandName`}
+          alt={`${brandName} 로고 이미지`}
           className="h-full w-full object-contain p-1"
         />
       </div>

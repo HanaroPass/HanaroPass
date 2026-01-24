@@ -1,7 +1,8 @@
-import { Clock, MapPin, Phone } from 'lucide-react';
+import { Clock, Heart, MapPin, Phone, Share2 } from 'lucide-react';
 import Image from 'next/image';
 import type React from 'react';
 import type { PropsWithChildren } from 'react';
+import Header from '@/components/header/Header';
 import { cn } from '@/lib/utils';
 
 const MOCK_BENEFIT_DATA = {
@@ -34,100 +35,115 @@ export default function BenefitDetailPage() {
   const data = MOCK_BENEFIT_DATA;
 
   return (
-    <div className="relative min-h-screen bg-white text-black-800">
-      <main>
-        <section className="px-6 py-4">
-          <div className="flex items-start justify-between">
-            <div>
-              <h2 className="font-black text-2xl">{data.title}</h2>
-              <p className="mt-1 text-gray-500 text-sm">{data.subTitle}</p>
+    <>
+      <Header
+        title="혜택"
+        rightElement={
+          <div className="flex gap-2">
+            <button type="button" className="p-2 text-black-900">
+              <Heart size={24} />
+            </button>
+            <button type="button" className="p-2 text-black-900">
+              <Share2 size={24} />
+            </button>
+          </div>
+        }
+      />
+      <div className="relative min-h-screen bg-white text-black-800">
+        <main>
+          <section className="px-6 py-4">
+            <div className="flex items-start justify-between">
+              <div>
+                <h2 className="font-black text-2xl">{data.title}</h2>
+                <p className="mt-1 text-gray-500 text-sm">{data.subTitle}</p>
+              </div>
+              <span className="rounded-full bg-green-ez px-4 py-1.5 font-bold text-[12px] text-white shadow-sm">
+                {data.tag}
+              </span>
             </div>
-            <span className="rounded-full bg-green-ez px-4 py-1.5 font-bold text-[12px] text-white shadow-sm">
-              {data.tag}
-            </span>
-          </div>
 
-          <div className="relative mt-6 h-28.75 w-full overflow-hidden rounded-xl">
-            <Image
-              src={data.mainImage}
-              alt={data.title}
-              fill
-              className="object-cover"
-              sizes="100vw"
-              priority
-            />
-          </div>
-        </section>
+            <div className="relative mt-6 h-28.75 w-full overflow-hidden rounded-xl">
+              <Image
+                src={data.mainImage}
+                alt={data.title}
+                fill
+                className="object-cover"
+                sizes="100vw"
+                priority
+              />
+            </div>
+          </section>
 
-        <section className="px-6 py-8">
-          <h3 className="mb-4 font-black text-lg">혜택 상세</h3>
-          <ul className="space-y-4">
-            {data.benefits.map(({ text, id }) => (
-              <ListItem key={`benefit-${id}`} color="bg-green-ez">
-                {text}
-              </ListItem>
-            ))}
-          </ul>
-        </section>
+          <section className="px-6 py-8">
+            <h3 className="mb-4 font-black text-lg">혜택 상세</h3>
+            <ul className="space-y-4">
+              {data.benefits.map(({ text, id }) => (
+                <ListItem key={`benefit-${id}`} color="bg-green-ez">
+                  {text}
+                </ListItem>
+              ))}
+            </ul>
+          </section>
 
-        <hr className="h-2 border-none bg-gray-50" />
+          <hr className="h-2 border-none bg-gray-50" />
 
-        <section className="px-6 py-8">
-          <h3 className="mb-6 font-black text-lg">이용 안내</h3>
-          <div className="space-y-6">
-            <InfoItem
-              icon={<Clock size={20} className="text-gray-400" />}
-              title="운영시간"
-              content={
-                <p className="text-gray-600 text-sm">
-                  {data.usage.operatingHours}
-                </p>
-              }
-            />
-            <InfoItem
-              icon={<Phone size={20} className="text-gray-400" />}
-              title="고객센터"
-              content={
-                <p className="text-gray-600 text-sm">
-                  {data.usage.customerPhone}
-                </p>
-              }
-            />
-            <InfoItem
-              icon={<MapPin size={20} className="text-gray-400" />}
-              title="예약 안내"
-              content={
-                <a
-                  href={data.usage.reservation}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="font-medium text-green-ez text-sm underline underline-offset-4"
-                >
-                  {data.title} 예약하러 가기
-                </a>
-              }
-            />
-          </div>
-        </section>
+          <section className="px-6 py-8">
+            <h3 className="mb-6 font-black text-lg">이용 안내</h3>
+            <div className="space-y-6">
+              <InfoItem
+                icon={<Clock size={20} className="text-gray-400" />}
+                title="운영시간"
+                content={
+                  <p className="text-gray-600 text-sm">
+                    {data.usage.operatingHours}
+                  </p>
+                }
+              />
+              <InfoItem
+                icon={<Phone size={20} className="text-gray-400" />}
+                title="고객센터"
+                content={
+                  <p className="text-gray-600 text-sm">
+                    {data.usage.customerPhone}
+                  </p>
+                }
+              />
+              <InfoItem
+                icon={<MapPin size={20} className="text-gray-400" />}
+                title="예약 안내"
+                content={
+                  <a
+                    href={data.usage.reservation}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="font-medium text-green-ez text-sm underline underline-offset-4"
+                  >
+                    {data.title} 예약하러 가기
+                  </a>
+                }
+              />
+            </div>
+          </section>
 
-        <hr className="h-2 border-none bg-gray-50" />
+          <hr className="h-2 border-none bg-gray-50" />
 
-        <section className="px-6 py-8">
-          <h3 className="mb-4 font-black text-lg">유의사항</h3>
-          <ul className="space-y-2 text-[13px] text-gray-500 leading-relaxed">
-            {data.precautions.map(({ id, text }) => (
-              <ListItem key={`pre-${id}`}>{text}</ListItem>
-            ))}
-          </ul>
-        </section>
-      </main>
+          <section className="px-6 py-8">
+            <h3 className="mb-4 font-black text-lg">유의사항</h3>
+            <ul className="space-y-2 text-[13px] text-gray-500 leading-relaxed">
+              {data.precautions.map(({ id, text }) => (
+                <ListItem key={`pre-${id}`}>{text}</ListItem>
+              ))}
+            </ul>
+          </section>
+        </main>
 
-      <footer className="sticky bottom-0 left-0 w-full px-6 py-4">
-        <button className="flex h-14 w-full items-center justify-center rounded-xl bg-green-ez font-bold text-lg text-white shadow-green-ez/20 shadow-lg transition-transform active:scale-[0.98]">
-          하나 더 이지 카드 만들기
-        </button>
-      </footer>
-    </div>
+        <footer className="sticky bottom-0 left-0 w-full px-6 py-4">
+          <button className="flex h-14 w-full items-center justify-center rounded-xl bg-green-ez font-bold text-lg text-white shadow-green-ez/20 shadow-lg transition-transform active:scale-[0.98]">
+            하나 더 이지 카드 만들기
+          </button>
+        </footer>
+      </div>
+    </>
   );
 }
 
