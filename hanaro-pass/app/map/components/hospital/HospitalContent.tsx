@@ -161,7 +161,9 @@ export function HospitalContent({ mode, hospital }: Props) {
       <div className="border-[#F0F3F4] border-t bg-white px-6 py-4">
         <Button
           className="h-14 w-full rounded-xl bg-green-ez text-white"
-          onClick={() => router.push('/medical/symptoms/analyze')}
+          onClick={() =>
+            router.push('/medical/symptoms/analyze?mode=recommend')
+          }
         >
           AI에게 나에게 맞는 병원 추천받기
         </Button>
