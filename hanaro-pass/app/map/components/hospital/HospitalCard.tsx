@@ -2,19 +2,14 @@ import { MapPin, Phone, Clock, Sparkles } from 'lucide-react';
 
 export type HospitalInfo = {
   name: string;
-  cardLanguage: string;
-  cardDepartment: string;
-
   status: '진료 중' | '진료 종료';
-
   openTime: string;
   closeTime: string;
-
   address: string;
-  phone: string;
-
-  languages: string[];
-  departments: string[];
+  phone: string | null;
+  langName: string;
+  deptName: string;
+  aiSummary?: string;
 };
 
 export function HospitalCard({ hospital }: { hospital: HospitalInfo }) {
@@ -47,12 +42,12 @@ export function HospitalCard({ hospital }: { hospital: HospitalInfo }) {
 
           {/* 언어 */}
           <div className="font-semibold text-gray-600 text-sm">
-            소통 언어: {hospital.cardLanguage}
+            소통 언어: {hospital.langName}
           </div>
 
           {/* 진료과목 */}
           <div className="font-semibold text-gray-600 text-sm">
-            진료과목: {hospital.cardDepartment}
+            진료과목: {hospital.deptName}
           </div>
 
           {/* 주소 */}
@@ -80,7 +75,7 @@ export function HospitalCard({ hospital }: { hospital: HospitalInfo }) {
         </div>
 
         <p className="mt-1 text-[13px] text-gray-600 leading-snug">
-          외국어 진료가 가능하고 대기 시간이 비교적 짧은 병원이에요.
+          {hospital.aiSummary ?? 'AI 요약 정보가 아직 없어요.'}
         </p>
       </div>
     </div>

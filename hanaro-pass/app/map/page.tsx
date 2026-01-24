@@ -8,7 +8,8 @@ import {
   LocateFixed,
   Siren,
 } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { EmbassyContent } from './components/embassy/EmbassyContent';
 import { ExchangeContent } from './components/exchange/ExchangeContent';
 import { HospitalContent } from './components/hospital/HospitalContent';
@@ -23,10 +24,7 @@ import {
   MAP_EMBASSY_MOCK,
   MAP_EXCHANGE_MOCK,
 } from './mock/embassyExchange';
-import {
-  HOSPITALS_MAP_MOCK,
-  type HospitalPlace,
-} from './mock/hospitalMap.mock';
+import { getHospitals } from './actions/hospitals';
 import { SAVED_PLACES_MOCK, type SavedPlace } from './mock/savedPlaces';
 
 /**
@@ -35,6 +33,19 @@ import { SAVED_PLACES_MOCK, type SavedPlace } from './mock/savedPlaces';
  * Naver Map을 배경으로 깔고, 상단 카테고리 탭과 우측 퀵 버튼, 하단 바텀시트를 조합합니다.
  * useBottomSheet 커스텀 훅을 사용하여 시트 관련 모든 로직을 주입받아 사용합니다.
  */
+
+type Hospital = {
+  id: number;
+  nameKo: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+  phone: string | null;
+  openHours: string;
+  languages: string[];
+  departments: string[];
+  aiSummary?: string;
+};
 
 // 카테고리 변환 맵
 const CATEGORY_MAP: Record<string, string> = {
@@ -48,8 +59,14 @@ export default function MapPage() {
   const [selectedPlace, setSelectedPlace] = useState<
     SavedPlace | Embassy | null
   >(null);
-  const [selectedHospital, setSelectedHospital] =
-    useState<HospitalPlace | null>(null);
+  const [selectedHospital, setSelectedHospital] = useState<Hospital | null>(
+    null,
+  );
+  const [hospitals, setHospitals] = useState<Hospital[]>([]);
+
+  useEffect(() => {
+    getHospitals().then(setHospitals);
+  }, []);
 
   const mapControlRef = useRef<NaverMapHandle>(null);
 
@@ -97,13 +114,13 @@ export default function MapPage() {
         <NaverMap
           ref={mapControlRef}
           activeCategory={openSheet === 'hospital' ? 'hospital' : null}
-          hospitals={HOSPITALS_MAP_MOCK}
+          hospitals={hospitals}
           savedPlaces={SAVED_PLACES_MOCK}
           showBookmarks={bookmark}
           onMarkerClick={(place) => {
             // 병원
             if ('departments' in place) {
-              setSelectedHospital(place as HospitalPlace);
+              setSelectedHospital(place as Hospital);
               setSelectedPlace(null);
               toggleSheet('hospital', true);
               return;
@@ -230,6 +247,7 @@ export default function MapPage() {
         {openSheet === 'hospital' && (
           <HospitalContent
             mode={selectedHospital ? 'detail' : 'list'}
+            hospitals={hospitals}
             hospital={selectedHospital ?? undefined}
           />
         )}
