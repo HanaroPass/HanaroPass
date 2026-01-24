@@ -1,6 +1,7 @@
 'use client';
 import { Check, Copy, Loader } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense, useEffect, useState } from 'react';
 import ActionButton from '@/components/ui/ActionButton';
 import AIResultIcon from '../../../../components/ui/AIResultIcon';
 import { getTTS, type outputType, parseOutput } from '../../actions/symptoms';
@@ -9,11 +10,13 @@ import EmergencyBadge from '../../components/symptom/EmergencyBadge';
 import Symptom from '../../components/symptom/Symptom';
 import useSymptomResult from '../../hooks/useSymptomResult';
 
-export default function SymptomResultPage() {
+function SymptomResultContent() {
   const [writtenSymptom, setWrittenSymptom] = useState('');
-  const [type, setType] = useState<'SYMPTOM' | 'PROCEDURE'>('SYMPTOM');
   const [result, setResult] = useState<outputType>();
   const [copied, setCopied] = useState(false);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const mode = searchParams.get('mode');
 
   const { isLoading, handleSubmit } = useSymptomResult();
 
@@ -21,11 +24,13 @@ export default function SymptomResultPage() {
     const parse = async () => {
       setWrittenSymptom(localStorage.getItem('written-symptom') as string);
       const data = localStorage.getItem('symptom-result');
-      if (data) {
+      if (!data) return;
+
+      try {
         const result = await parseOutput(data);
         setResult(result);
-        if (result?.주요_증상 || result?.발생_시점) setType('SYMPTOM');
-        else setType('PROCEDURE');
+      } catch (e) {
+        console.error('증상 결과 파싱 실패', e);
       }
     };
     parse();
@@ -44,14 +49,12 @@ export default function SymptomResultPage() {
   };
 
   const handleResubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    await handleSubmit(e, true);
+    await handleSubmit(e);
     setWrittenSymptom(localStorage.getItem('written-symptom') as string);
     const data = localStorage.getItem('symptom-result');
     if (data) {
       const result = await parseOutput(data);
       setResult(result);
-      if (result?.주요_증상 || result?.발생_시점) setType('SYMPTOM');
-      else setType('PROCEDURE');
     }
   };
   return (
@@ -60,10 +63,10 @@ export default function SymptomResultPage() {
         <AIResultIcon />
       </div>
       <h1 className="mt-3 text-center font-semibold text-2xl text-black-900 leading-8 tracking-tight">
-        AI가 {type === 'SYMPTOM' ? '증상' : '시술'}을 정리했어요.
+        AI가 {result?.타입 === 'SYMPTOM' ? '증상' : '시술'}을 정리했어요.
       </h1>
 
-      <div className="mt-4 h-1.5 w-96 border-gray-100 border-t" />
+      <div className="mt-4 h-1.5 border-gray-100 border-t" />
       {isLoading ? (
         <div className="flex items-center justify-center">
           <div className="flex h-58 w-82 flex-col items-center justify-center gap-2 rounded-4xl bg-[#F9FAFB] text-center font-medium text-green-ez text-sm">
@@ -72,7 +75,7 @@ export default function SymptomResultPage() {
             <div>잠시만 기다려주세요.</div>
           </div>
         </div>
-      ) : type === 'SYMPTOM' ? (
+      ) : result?.타입 === 'SYMPTOM' ? (
         <>
           <div className="my-3 ml-2 text-black-800 text-sm">AI 요약 진단</div>
           <div className="w-full rounded-2xl bg-gray-200 p-6 text-black-800 text-sm">
@@ -119,10 +122,10 @@ export default function SymptomResultPage() {
           </div>
         </>
       )}
-      <div className="mt-5 h-1.5 w-96 border-gray-100 border-t" />
+      <div className="mt-5 h-1.5 border-gray-100 border-t" />
       <div className="mt-4 text-black-800 text-sm">AI 작성 내용</div>
       <form onSubmit={handleResubmit} className="mt-5">
-        <input name="type" className="hidden" defaultValue={type} />
+        <input name="type" className="hidden" defaultValue={result?.타입} />
         <textarea
           defaultValue={writtenSymptom}
           className="black-800 mt-3 h-35 w-full resize-none rounded-2xl bg-gray-200 p-4 text-sm"
@@ -149,12 +152,38 @@ export default function SymptomResultPage() {
       <div className="-mx-6 -mt-3">
         <HospitalGuide text="이 내용을 병원에 전달하면 더 원활한 예약이 가능해요" />
       </div>
-      <div className="mt-6 h-1.5 w-96 border-gray-100 border-t" />
-      <ActionButton
-        className="mt-4"
-        onClick={() => {}}
-        text="병원 추천 보러가기"
-      />
+      <div className="mt-6 h-1.5 border-gray-100 border-t" />
+      <div className="mt-4 mb-6">
+        {mode === 'recommend' ? (
+          <ActionButton
+            onClick={() => router.push('/medical/symptoms/recommend')}
+            text="병원 추천 보러가기"
+          />
+        ) : (
+          <ActionButton
+            onClick={() => router.push('/map')}
+            text="지도로 돌아가기"
+          />
+        )}
+      </div>
     </div>
+  );
+}
+
+export default function SymptomResultPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center">
+          <div className="text-center">
+            <p className="animate-pulse text-gray-500">
+              결과를 정리하고 있습니다...
+            </p>
+          </div>
+        </div>
+      }
+    >
+      <SymptomResultContent />
+    </Suspense>
   );
 }
