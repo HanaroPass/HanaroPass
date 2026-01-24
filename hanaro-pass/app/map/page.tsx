@@ -165,7 +165,7 @@ export default function MapPage() {
           iconColorVariant="red"
           onClick={() => {
             setSelectedHospital(null);
-            toggleSheet('hospital', true);
+            toggleSheet('hospital');
           }}
         />
         <ToggleButton
