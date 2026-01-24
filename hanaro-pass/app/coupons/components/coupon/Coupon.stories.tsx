@@ -13,6 +13,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
+    id: 1,
     brandName: 'GS25',
     tag: '#편의점',
     category: 'food',

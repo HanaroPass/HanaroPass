@@ -1,7 +1,7 @@
 'use server';
 
 import { prisma } from '@/lib/prisma';
-import { getUserId } from './user';
+import { getUserId } from '@/lib/user';
 
 // 서류 보유 상태 가져오기
 export async function getDocsStatus() {

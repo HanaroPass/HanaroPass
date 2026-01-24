@@ -9,7 +9,7 @@ const meta: Meta<typeof StatusBadge> = {
     layout: 'centered',
   },
   args: {
-    status: 'pending' as StatusType,
+    status: 'PENDING' as StatusType,
   },
   argTypes: {
     status: {

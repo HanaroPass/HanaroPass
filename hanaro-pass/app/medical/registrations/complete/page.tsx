@@ -9,13 +9,7 @@ export function LoadingScreen() {
 
 export default function HospitalRegistrationCompletePage() {
   return (
-    <Suspense
-      fallback={
-        <div className="flex h-screen items-center justify-center">
-          로딩 중...
-        </div>
-      }
-    >
+    <Suspense fallback={LoadingScreen()}>
       <HospitalRegistrationCompleteClient />
     </Suspense>
   );
