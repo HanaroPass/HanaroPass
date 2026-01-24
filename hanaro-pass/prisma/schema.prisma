@@ -48,7 +48,7 @@ enum ApplicationStatus {
 }
 
 enum Role {
-  USER
+  USER 
   ADMIN
 }
 
