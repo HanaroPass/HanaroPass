@@ -7,13 +7,12 @@ import {
 } from '@/lib/error-handler';
 import type { Hospital } from '@/lib/generated/prisma';
 import { prisma } from '@/lib/prisma';
-import type { LanguageId } from '../constants/language';
+import { type LanguageId, mapLanguages } from '../constants/language';
 import type { StatusType } from '../constants/statusConfig';
 import {
   IdSchema,
   LanguageTransformSchema,
   type RegistrationDetailResponse,
-  RegistrationDetailSchema,
   SearchSchema,
   SubmitSchema,
 } from '../schemas/language-regist.schema';
@@ -124,7 +123,6 @@ export async function getHospitalDetailAction(id: number): Promise<
 export async function submitLanguageApplicationAction(
   hospitalId: number,
   languageIds: string[],
-  parentId?: number,
 ): Promise<ActionResult<null>> {
   try {
     const { hospitalId: vId, languageIds: vLangs } = SubmitSchema.parse({
@@ -149,7 +147,6 @@ export async function submitLanguageApplicationAction(
           hospitalId: vId,
           requestLangs: vLangs,
           status: 'PENDING',
-          parentId: parentId,
         },
       });
     });
@@ -210,7 +207,7 @@ export async function getRegistrationDetailAction(
   try {
     const validatedId = IdSchema.parse(hospitalId);
 
-    const applications = await prisma.hospitalLanguageApplication.findMany({
+    const application = await prisma.hospitalLanguageApplication.findFirst({
       where: { hospitalId: validatedId },
       orderBy: { createdAt: 'desc' },
       include: {
@@ -218,31 +215,19 @@ export async function getRegistrationDetailAction(
       },
     });
 
-    if (applications.length === 0) {
+    if (!application) {
       throw new HttpError('신청 내역을 찾을 수 없습니다.', 404);
     }
 
-    const latest = applications[0];
-
-    const resultData = {
-      id: latest.id,
-      parentId: latest.parentId,
-      hospitalName: latest.Hospital.nameKo,
-      status: latest.status as StatusType,
-      requestLangs: latest.requestLangs as LanguageId[],
-      createdAt: latest.createdAt,
-      processedAt: latest.processedAt,
-      allApplications: applications.map((app) => ({
-        id: app.id,
-        status: app.status as StatusType,
-        createdAt: app.createdAt,
-        processedAt: app.processedAt,
-      })),
-    };
-
     return {
       success: true,
-      data: RegistrationDetailSchema.parse(resultData),
+      data: {
+        hospitalName: application.Hospital.nameKo,
+        status: application.status as StatusType,
+        requestLangs: mapLanguages(application.requestLangs as string[]), // Json 타입을 LanguageId[]로 간주
+        createdAt: application.createdAt,
+        processedAt: application.processedAt,
+      },
     };
   } catch (err) {
     return handleActionResult(err);
