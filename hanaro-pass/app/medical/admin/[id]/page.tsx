@@ -15,14 +15,8 @@ import { LoadingScreen } from '../../registrations/complete/page';
 export default function AdminReviewPage() {
   const router = useRouter();
   const { id } = useParams();
-  const {
-    data,
-    isLoading,
-    isUpdating,
-    error,
-    handleUpdateStatus,
-    formattedLangs,
-  } = useAdminReview(Number(id));
+  const { data, isLoading, isUpdating, error, handleUpdateStatus } =
+    useAdminReview(Number(id));
 
   if (isLoading || !data) return <LoadingScreen />;
   if (error)
@@ -37,7 +31,7 @@ export default function AdminReviewPage() {
       icon: Globe,
       content: (
         <div className="flex flex-wrap gap-2">
-          {formattedLangs.map((lang: any) => (
+          {data.requestLangs.map((lang) => (
             <div
               key={lang.id}
               className="flex items-center gap-1.5 rounded-lg border border-gray-100 bg-gray-50 px-2.5 py-1"

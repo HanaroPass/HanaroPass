@@ -1,15 +1,21 @@
 import { z } from 'zod';
 
+export const LanguageInfoSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  sub: z.string().optional(),
+  flag: z.string(),
+});
+
 export const BaseApplicationSchema = z.object({
   id: z.number(),
   hospitalName: z.string(),
   status: z.enum(['PENDING', 'APPROVED', 'REJECTED']),
-  requestLangs: z.array(z.string()),
+  requestLangs: z.array(LanguageInfoSchema),
   createdAt: z.date(),
 });
 
 export const AdminApplicationSchema = BaseApplicationSchema;
-
 export const AdminReviewDetailSchema = BaseApplicationSchema.extend({
   hospitalId: z.number(),
   processedAt: z.date().nullable().optional(),

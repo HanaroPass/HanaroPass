@@ -29,10 +29,11 @@ export function useAdminApplications() {
         setData([]);
         setError(result.message);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       setData([]);
       setError(
-        err.message || '데이터를 불러오는 중 알 수 없는 오류가 발생했습니다.',
+        (err as Error).message ||
+          '데이터를 불러오는 중 알 수 없는 오류가 발생했습니다.',
       );
     } finally {
       setIsLoading(false);

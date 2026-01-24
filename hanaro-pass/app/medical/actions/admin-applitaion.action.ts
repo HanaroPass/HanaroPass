@@ -6,7 +6,7 @@ import {
   handleActionResult,
 } from '@/lib/error-handler';
 import { prisma } from '@/lib/prisma';
-import { LANGUAGES } from '../constants/language';
+import { LANGUAGES, mapLanguages } from '../constants/language';
 import type { StatusType } from '../constants/statusConfig';
 import {
   type AdminDashboardResponse,
@@ -38,7 +38,7 @@ export async function getAdminApplicationsAction(): Promise<
       id: app.id,
       hospitalName: app.Hospital.nameKo,
       status: app.status as StatusType,
-      requestLangs: app.requestLangs,
+      requestLangs: mapLanguages(app.requestLangs as string[]),
       createdAt: app.createdAt,
     }));
 
@@ -82,7 +82,7 @@ export async function getAdminReviewDetailAction(
       hospitalId: application.hospitalId,
       hospitalName: application.Hospital.nameKo,
       status: application.status,
-      requestLangs: application.requestLangs,
+      requestLangs: mapLanguages(application.requestLangs as string[]),
       createdAt: application.createdAt,
       processedAt: application.processedAt,
     };

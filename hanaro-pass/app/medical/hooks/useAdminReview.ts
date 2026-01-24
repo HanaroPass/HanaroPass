@@ -5,7 +5,6 @@ import {
   getAdminReviewDetailAction,
   updateApplicationStatusAction,
 } from '../actions/admin-applitaion.action';
-import { LANGUAGES } from '../constants/language';
 import type { AdminReviewDetailResponse } from '../schemas/admin-application.schema';
 
 export function useAdminReview(id: number) {
@@ -25,9 +24,9 @@ export function useAdminReview(id: number) {
         setData(null);
         setError(result.message);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       setData(null);
-      setError(err.message || '데이터 로딩 중 오류가 발생했습니다.');
+      setError((err as Error).message || '데이터 로딩 중 오류가 발생했습니다.');
     } finally {
       setIsLoading(false);
     }
@@ -56,17 +55,11 @@ export function useAdminReview(id: number) {
     }
   };
 
-  const formattedLangs =
-    data?.requestLangs
-      .map((langId) => LANGUAGES.find((l) => l.id === langId))
-      .filter(Boolean) || [];
-
   return {
     data,
     isLoading,
     isUpdating,
     error,
     handleUpdateStatus,
-    formattedLangs,
   };
 }

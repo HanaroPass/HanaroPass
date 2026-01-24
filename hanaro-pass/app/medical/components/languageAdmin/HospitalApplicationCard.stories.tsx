@@ -13,7 +13,11 @@ const meta: Meta<typeof HospitalApplicationCard> = {
     name: '강남 병원',
     status: 'PENDING' as StatusType,
     langCount: 3,
-    languages: ['영어', '중국어', '일본어'],
+    languages: [
+      { id: 'en', name: '영어', flag: '🇺🇸' },
+      { id: 'zh', name: '중국어', flag: '🇨🇳' },
+      { id: 'ja', name: '일본어', flag: '🇯🇵' },
+    ],
     date: '2026.01.19',
   },
 };
@@ -39,6 +43,13 @@ export const REJECTED: Story = {
 export const ManyLanguages: Story = {
   args: {
     langCount: 6,
-    languages: ['영어', '중국어', '일본어', '베트남어', '태국어', '몽골어'],
+    languages: [
+      { id: 'en', name: '영어', flag: '🇺🇸' },
+      { id: 'zh', name: '중국어', flag: '🇨🇳' },
+      { id: 'ja', name: '일본어', flag: '🇯🇵' },
+      { id: 'vi', name: '베트남어', flag: '🇻🇳' },
+      { id: 'th', name: '태국어', flag: '🇹🇭' },
+      { id: 'mn', name: '몽골어', flag: '🇲🇳' },
+    ],
   },
 };

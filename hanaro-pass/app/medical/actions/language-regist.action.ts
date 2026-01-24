@@ -7,7 +7,7 @@ import {
 } from '@/lib/error-handler';
 import type { Hospital } from '@/lib/generated/prisma';
 import { prisma } from '@/lib/prisma';
-import type { LanguageId } from '../constants/language';
+import { type LanguageId, mapLanguages } from '../constants/language';
 import type { StatusType } from '../constants/statusConfig';
 import {
   IdSchema,
@@ -224,7 +224,7 @@ export async function getRegistrationDetailAction(
       data: {
         hospitalName: application.Hospital.nameKo,
         status: application.status as StatusType,
-        requestLangs: application.requestLangs as LanguageId[], // Json 타입을 LanguageId[]로 간주
+        requestLangs: mapLanguages(application.requestLangs as string[]), // Json 타입을 LanguageId[]로 간주
         createdAt: application.createdAt,
         processedAt: application.processedAt,
       },

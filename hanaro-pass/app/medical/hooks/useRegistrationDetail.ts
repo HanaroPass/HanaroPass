@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { getRegistrationDetailAction } from '../actions/language-regist.action';
-import { LANGUAGES } from '../constants/language';
 import type { RegistrationDetailResponse } from '../schemas/language-regist.schema';
 
 export function useRegistrationDetail(hospitalId: number) {
@@ -27,13 +26,7 @@ export function useRegistrationDetail(hospitalId: number) {
     fetchDetail();
   }, [hospitalId]);
 
-  const formattedLangs = data?.requestLangs
-    .map((id) => {
-      const langInfo = LANGUAGES.find((l) => l.id === id);
-      return langInfo ? { ...langInfo } : null;
-    })
-    .filter(Boolean);
-
+  const formattedLangs = data?.requestLangs || [];
   const formatDate = (date: Date | null) =>
     date
       ? new Date(date)

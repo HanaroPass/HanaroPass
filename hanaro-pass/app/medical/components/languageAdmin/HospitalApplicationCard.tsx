@@ -11,7 +11,7 @@ type CardProps = {
   name: string;
   status: StatusType;
   langCount: number;
-  languages: string[];
+  languages: { id: string; name: string; flag: string }[];
   date: string;
 };
 
@@ -76,12 +76,15 @@ export function HospitalApplicationCard({
       {/* 3. 언어 태그 목록 */}
       <div className="mt-4 flex flex-wrap gap-2">
         {languages.map((lang) => (
-          <span
-            key={lang}
-            className="rounded-sm bg-(--color-gray-100) px-2.5 py-1 font-medium text-(--color-black-800) text-[11px]"
+          <div
+            key={lang.id}
+            className="flex items-center gap-1 rounded-sm bg-(--color-gray-100) px-2 py-0.5 text-[11px]"
           >
-            {lang}
-          </span>
+            <span>{lang.flag}</span>
+            <span className="font-medium text-(--color-black-800)">
+              {lang.name}
+            </span>
+          </div>
         ))}
       </div>
     </Button>
