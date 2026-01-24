@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { type LanguageId, NAME_TO_ID } from '../constants/language';
+import { LanguageInfoSchema } from './admin-application.schema';
 
 export const IdSchema = z.number().int().positive(); // ID는 양의 정수
 export const SubmitSchema = z.object({
@@ -17,26 +18,14 @@ export const LanguageTransformSchema = z
       .filter((id): id is LanguageId => !!id),
   );
 
-export const ApplicationHistorySchema = z.object({
-  id: z.number(),
-  status: z.enum(['PENDING', 'APPROVED', 'REJECTED']),
-  createdAt: z.coerce.date(),
-  processedAt: z.coerce.date().nullable(),
-});
-
 export const RegistrationDetailSchema = z.object({
-  id: z.number(),
-  parentId: z.number().nullable().optional(),
   hospitalName: z.string(),
   status: z.enum(['PENDING', 'APPROVED', 'REJECTED']),
-  requestLangs: z.array(z.string()),
-  createdAt: z.coerce.date(),
-  processedAt: z.coerce.date().nullable(),
-  allApplications: z.array(ApplicationHistorySchema),
+  requestLangs: z.array(LanguageInfoSchema),
+  createdAt: z.date(),
+  processedAt: z.date().nullable(),
 });
 
 export type RegistrationDetailResponse = z.infer<
   typeof RegistrationDetailSchema
 >;
-
-export type ApplicationHistoryItem = z.infer<typeof ApplicationHistorySchema>;
