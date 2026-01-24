@@ -7,9 +7,9 @@ import {
 } from '@/components/tabsLine/TabsLine';
 import { BENEFIT_BANNER_VARIANTS } from '@/constants/benefitBanner';
 import { COUPON_CATEGORY_TABS } from '@/constants/couponCategory';
-import BenefitBanner from './components/benefitBanner/BenefitBanner';
-import Coupon from './components/coupon/Coupon';
-import { mockCoupons } from './mock/mockCoupon';
+import BenefitBanner from '../components/benefitBanner/BenefitBanner';
+import Coupon from '../components/coupon/Coupon';
+import { mockCoupons } from '../mock/mockCoupon';
 
 function page() {
   return (
