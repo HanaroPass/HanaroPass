@@ -37,6 +37,11 @@ export default function SymptomAnalyzePage() {
     setLoading(true);
 
     const formData = new FormData(e.currentTarget);
+
+    localStorage.setItem(
+      'written-symptom',
+      formData.get('description') as string,
+    );
     const response = await postSymptomForm(formData);
 
     setLoading(false);

@@ -7,7 +7,7 @@ import {
 } from '@/lib/error-handler';
 import type { Hospital } from '@/lib/generated/prisma';
 import { prisma } from '@/lib/prisma';
-import type { LanguageId } from '../constants/language';
+import { type LanguageId, mapLanguages } from '../constants/language';
 import type { StatusType } from '../constants/statusConfig';
 import {
   IdSchema,
@@ -65,7 +65,7 @@ export async function getHospitalDetailAction(id: number): Promise<
   ActionResult<{
     nameKo: string;
     existingLangs: LanguageId[];
-    isPending: boolean;
+    isPENDING: boolean;
   }>
 > {
   try {
@@ -85,7 +85,7 @@ export async function getHospitalDetailAction(id: number): Promise<
     if (!hospital)
       throw new HttpError('해당 ID의 병원을 찾을 수 없습니다.', 404);
 
-    const pendingApp = await prisma.hospitalLanguageApplication.findFirst({
+    const PENDINGApp = await prisma.hospitalLanguageApplication.findFirst({
       where: {
         hospitalId: validatedId,
         status: 'PENDING',
@@ -101,7 +101,7 @@ export async function getHospitalDetailAction(id: number): Promise<
       data: {
         nameKo: hospital.nameKo,
         existingLangs: validatedLangs,
-        isPending: !!pendingApp,
+        isPENDING: !!PENDINGApp,
       },
     };
   } catch (err) {
@@ -131,14 +131,14 @@ export async function submitLanguageApplicationAction(
     });
 
     await prisma.$transaction(async (tx) => {
-      const existingPending = await tx.hospitalLanguageApplication.findFirst({
+      const existingPENDING = await tx.hospitalLanguageApplication.findFirst({
         where: {
           hospitalId: vId,
           status: 'PENDING',
         },
       });
 
-      if (existingPending) {
+      if (existingPENDING) {
         throw new HttpError('이미 심사 중인 신청 건이 존재합니다.', 400);
       }
 
@@ -224,7 +224,7 @@ export async function getRegistrationDetailAction(
       data: {
         hospitalName: application.Hospital.nameKo,
         status: application.status as StatusType,
-        requestLangs: application.requestLangs as LanguageId[], // Json 타입을 LanguageId[]로 간주
+        requestLangs: mapLanguages(application.requestLangs as string[]), // Json 타입을 LanguageId[]로 간주
         createdAt: application.createdAt,
         processedAt: application.processedAt,
       },

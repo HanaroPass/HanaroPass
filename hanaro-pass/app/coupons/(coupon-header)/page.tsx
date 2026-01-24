@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import SearchInput from '@/components/SearchInput/SearchInput';
 import {
   TabsLine,
@@ -6,9 +7,9 @@ import {
 } from '@/components/tabsLine/TabsLine';
 import { BENEFIT_BANNER_VARIANTS } from '@/constants/benefitBanner';
 import { COUPON_CATEGORY_TABS } from '@/constants/couponCategory';
-import BenefitBanner from './components/benefitBanner/BenefitBanner';
-import Coupon from './components/coupon/Coupon';
-import { mockCoupons } from './mock/mockCoupon';
+import BenefitBanner from '../components/benefitBanner/BenefitBanner';
+import Coupon from '../components/coupon/Coupon';
+import { mockCoupons } from '../mock/mockCoupon';
 
 function page() {
   return (
@@ -31,6 +32,7 @@ function page() {
           {mockCoupons.map((coupon) => (
             <Coupon
               key={coupon.couponId}
+              id={coupon.couponId}
               brandName={coupon.brandName}
               tag={coupon.tag}
               category={coupon.category}
@@ -41,13 +43,13 @@ function page() {
           ))}
         </div>
       </div>
-      <div className="mt-auto pt-6">
+      <Link href={`/coupons/benefit/1`} className="mt-auto pt-6">
         <BenefitBanner
           variant={BENEFIT_BANNER_VARIANTS.SKI}
           countryCode="HK"
           name="Chan"
         />
-      </div>
+      </Link>
     </div>
   );
 }

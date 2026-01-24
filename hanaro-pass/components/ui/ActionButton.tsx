@@ -5,6 +5,7 @@ type ActionButtonProps = {
   onClick: () => void;
   disabled?: boolean;
   className?: string;
+  invert?: boolean;
 };
 
 export default function ActionButton({
@@ -12,6 +13,7 @@ export default function ActionButton({
   onClick,
   disabled = false,
   className = '',
+  invert = false,
 }: ActionButtonProps) {
   return (
     <Button
@@ -19,7 +21,9 @@ export default function ActionButton({
       onClick={onClick}
       className={`w-full rounded-xl py-6 font-normal text-base transition-all ${
         !disabled
-          ? 'bg-hana-green text-white shadow-md hover:bg-hana-green/80 active:scale-[0.98]'
+          ? invert
+            ? 'border-2 border-hana-green bg-white text-hana-green hover:bg-hana-green/10 active:scale-[0.98]'
+            : 'bg-hana-green text-white shadow-md hover:bg-hana-green/80 active:scale-[0.98]'
           : 'cursor-not-allowed bg-gray-200 text-gray-400'
       } ${className}`}
     >

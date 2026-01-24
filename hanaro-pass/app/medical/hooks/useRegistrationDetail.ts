@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { getRegistrationDetailAction } from '../actions/language-regist.action';
-import { LANGUAGES } from '../constants/language';
 import type { RegistrationDetailResponse } from '../schemas/language-regist.schema';
 
 export function useRegistrationDetail(hospitalId: number) {
@@ -10,30 +9,31 @@ export function useRegistrationDetail(hospitalId: number) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!hospitalId) return;
+    if (!hospitalId) {
+      setData(null);
+      setIsLoading(false);
+      return;
+    }
 
     const fetchDetail = async () => {
       setIsLoading(true);
-      const result = await getRegistrationDetailAction(hospitalId);
-
-      if (result.success) {
-        setData(result.data);
-      } else {
-        alert(result.message);
+      try {
+        const result = await getRegistrationDetailAction(hospitalId);
+        if (result.success) {
+          setData(result.data);
+        } else {
+          setData(null);
+          alert(result.message);
+        }
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     };
 
     fetchDetail();
   }, [hospitalId]);
 
-  const formattedLangs = data?.requestLangs
-    .map((id) => {
-      const langInfo = LANGUAGES.find((l) => l.id === id);
-      return langInfo ? { ...langInfo } : null;
-    })
-    .filter(Boolean);
-
+  const formattedLangs = data?.requestLangs || [];
   const formatDate = (date: Date | null) =>
     date
       ? new Date(date)

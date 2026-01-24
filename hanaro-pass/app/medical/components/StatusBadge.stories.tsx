@@ -9,7 +9,7 @@ const meta: Meta<typeof StatusBadge> = {
     layout: 'centered',
   },
   args: {
-    status: 'pending' as StatusType,
+    status: 'PENDING' as StatusType,
   },
   argTypes: {
     status: {
@@ -24,15 +24,15 @@ export default meta;
 type Story = StoryObj<typeof StatusBadge>;
 
 export const Pending: Story = {
-  args: { status: 'pending' as StatusType },
+  args: { status: 'PENDING' as StatusType },
 };
 
 export const Approved: Story = {
-  args: { status: 'approved' as StatusType },
+  args: { status: 'APPROVED' as StatusType },
 };
 
 export const Rejected: Story = {
-  args: { status: 'rejected' as StatusType },
+  args: { status: 'REJECTED' as StatusType },
 };
 
 export const Playground: Story = {};

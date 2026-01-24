@@ -31,7 +31,7 @@ type Story = StoryObj<typeof RegistrationSummary>;
 
 export const Default: Story = {};
 
-export const Approved: Story = {
+export const APPROVED: Story = {
   args: {
     title: '승인이 완료되었습니다.',
     description:

@@ -61,8 +61,14 @@ export default function HospitalRegistrationDetailsPage() {
     ];
   }, [data, formatDate]);
 
-  if (isLoading || !data)
+  if (isLoading)
     return <div className="p-10 text-center">정보를 불러오는 중...</div>;
+  if (!data)
+    return (
+      <div className="p-10 text-center text-black-600">
+        정보를 불러올 수 없습니다.
+      </div>
+    );
 
   const hospitalInfo = [
     { label: '병원 정보', icon: Hospital, content: data.hospitalName },
@@ -77,9 +83,7 @@ export default function HospitalRegistrationDetailsPage() {
               className="flex items-center gap-1.5 rounded-md border border-gray-100 bg-gray-50 px-2 py-1"
             >
               <span>{lang?.flag}</span>
-              <span className="text-sm">
-                {lang?.name} ({lang?.sub})
-              </span>
+              <span className="text-sm">{lang?.name}</span>
             </div>
           ))}
         </div>
@@ -114,10 +118,6 @@ export default function HospitalRegistrationDetailsPage() {
             <div className="absolute top-8 bottom-8 left-7.5 w-px bg-gray-300/80" />
 
             <div className="flex flex-col gap-8">
-              {/* QQQ 4: 히스토리 타임라인 동적 생성 */}
-              {/* - 현재는 수동 입력이나, 서버의 [ { stage: 'apply', date: '...' }, { stage: 'approve', date: '...' } ] 
-    - 배열 데이터를 순회하여 HistoryItem을 동적으로 생성하도록 변경 필요
-*/}
               {historySteps.map((step) => (
                 <HistoryItem
                   key={step.label}
