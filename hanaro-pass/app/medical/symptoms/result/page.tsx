@@ -44,7 +44,7 @@ export default function SymptomResultPage() {
   };
 
   const handleResubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    await handleSubmit(e, true);
+    await handleSubmit(e);
     setWrittenSymptom(localStorage.getItem('written-symptom') as string);
     const data = localStorage.getItem('symptom-result');
     if (data) {
@@ -62,7 +62,6 @@ export default function SymptomResultPage() {
       <h1 className="mt-3 text-center font-semibold text-2xl text-black-900 leading-8 tracking-tight">
         AI가 {type === 'SYMPTOM' ? '증상' : '시술'}을 정리했어요.
       </h1>
-
       <div className="mt-4 h-1.5 w-96 border-gray-100 border-t" />
       {isLoading ? (
         <div className="flex items-center justify-center">
