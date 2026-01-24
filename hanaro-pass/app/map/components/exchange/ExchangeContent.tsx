@@ -19,6 +19,7 @@ export function ExchangeContent({
       <div className="flex flex-col px-2">
         <div className="flex items-center">
           <button
+            type="button"
             onClick={onBackToList}
             className="flex items-center gap-1 font-medium text-gray-600 text-sm transition-colors"
           >

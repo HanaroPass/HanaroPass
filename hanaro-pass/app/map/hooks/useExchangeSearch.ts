@@ -26,13 +26,19 @@ export function useExchangeSearch(currentMapRegion: string) {
   const searchExchanges = useCallback(async () => {
     const isSameRegion = lastSearchedRegionRef.current === currentMapRegion;
 
+    // 이미 데이터가 있고 동일 지역이면 바로 반환
     if (exchangeResults.length > 0 && isSameRegion) {
       return exchangeResults;
     }
 
     setIsLoading(true);
+
     try {
-      lastSearchedRegionRef.current = currentMapRegion;
+      // 지역이 바뀌었다면 검색 시작 전 기존 결과 초기화
+      if (!isSameRegion) {
+        setExchangeResults([]);
+      }
+
       const regions = currentMapRegion.split(' ');
       const guName = regions[0] || '';
       const dongName = regions[1] || '';
@@ -55,7 +61,9 @@ export function useExchangeSearch(currentMapRegion: string) {
 
       const itemMap = new Map<string, NaverSearchResult>();
       for (const item of allRawItems) {
-        if (!item.mapx || !item.mapy) continue;
+        if (!item.mapx || !item.mapy) {
+          continue;
+        }
         const coordinateKey = `${item.mapx}-${item.mapy}`;
         if (!itemMap.has(coordinateKey)) {
           itemMap.set(coordinateKey, {
@@ -70,10 +78,19 @@ export function useExchangeSearch(currentMapRegion: string) {
       }
 
       const uniqueResults = Array.from(itemMap.values());
+
+      // 데이터 세팅
       setExchangeResults(uniqueResults);
+
+      // 성공 시 갱신
+      lastSearchedRegionRef.current = currentMapRegion;
+
       return uniqueResults;
     } catch (error) {
       console.error('Exchange search failed:', error);
+
+      // 실패, 다음 번에 재시도 가능하도록 ref 비움
+      lastSearchedRegionRef.current = '';
       return [];
     } finally {
       setIsLoading(false);

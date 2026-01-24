@@ -14,7 +14,7 @@ export const formatExchangeData = (
   results: NaverSearchResult[],
 ): LocationInfo[] => {
   return results.map((item) => ({
-    id: Number(item.mapx),
+    id: `${item.mapx}-${item.mapy}`,
     name: item.title.replace(/<[^>]*>?/g, ''),
     type: '환전소',
     address: item.roadAddress || item.address || '',
@@ -31,7 +31,7 @@ export const mapDbToInfo = (
 ): LocationInfo => {
   if ('mapx' in db) {
     return {
-      id: Number(db.mapx),
+      id: `${db.mapx}-${db.mapy}`,
       name: db.title.replace(/<[^>]*>?/g, ''),
       type: '환전소',
       address: db.roadAddress || db.address || '',

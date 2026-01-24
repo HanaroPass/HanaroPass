@@ -57,14 +57,23 @@ export const NaverMap = forwardRef<NaverMapHandle, NaverMapProps>(
     // 외부 노출 메서드
     useImperativeHandle(ref, () => ({
       centerToMyPosition: () => {
-        navigator.geolocation.getCurrentPosition((pos) => {
-          mapRef.current?.panTo(
-            new window.naver.maps.LatLng(
-              pos.coords.latitude + LATITUDE_OFFSET,
-              pos.coords.longitude,
-            ),
-          );
-        });
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            mapRef.current?.panTo(
+              new window.naver.maps.LatLng(
+                pos.coords.latitude + LATITUDE_OFFSET,
+                pos.coords.longitude,
+              ),
+            );
+          },
+          (error) => {
+            console.error(
+              '위치 정보를 가져오는데 실패했습니다:',
+              error.message,
+            );
+            alert('위치 권한을 허용해주세요.');
+          },
+        );
       },
       panToLocation: (lat, lng) => {
         mapRef.current?.panTo(
