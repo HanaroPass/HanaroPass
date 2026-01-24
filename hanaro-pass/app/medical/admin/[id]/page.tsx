@@ -17,8 +17,8 @@ import type { StatusType } from '../../constants/statusConfig';
  * - useParams()의 id를 사용하여 특정 신청 건의 상세 정보 조회 (useQuery 권장)
  * - Endpoint: GET /api/admin/medical/registrations/[id]
  * 2. Action Logic:
- * - 승인: PATCH /api/admin/medical/registrations/[id] { status: 'approved' }
- * - 반려: PATCH /api/admin/medical/registrations/[id] { status: 'rejected' }
+ * - 승인: PATCH /api/admin/medical/registrations/[id] { status: 'APPROVED' }
+ * - 반려: PATCH /api/admin/medical/registrations/[id] { status: 'REJECTED' }
  * 3. Permission:
  * - 관리자 권한(Session/Middleware) 확인 필수
  */

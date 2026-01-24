@@ -39,7 +39,7 @@ export function useLanguageRegistration() {
       const result = await getHospitalDetailAction(hospitalId);
 
       if (result.success) {
-        if (result.data.isPending) {
+        if (result.data.isPENDING) {
           alert(
             '이미 신청하여 심사 중인 내역이 있습니다.\n결과가 나올 때까지 추가 신청이 불가능합니다.',
           );
