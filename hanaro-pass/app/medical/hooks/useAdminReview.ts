@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import {
   getAdminReviewDetailAction,
   updateApplicationStatusAction,
-} from '../actions/admin-applitaion.action';
+} from '../actions/admin-application.action';
 import type { AdminReviewDetailResponse } from '../schemas/admin-application.schema';
 
 export function useAdminReview(id: number) {
@@ -46,6 +46,7 @@ export function useAdminReview(id: number) {
       const result = await updateApplicationStatusAction(id, status);
       if (result.success) {
         alert('처리가 완료되었습니다.');
+        await fetchDetail();
         return true;
       }
       alert(result.message);

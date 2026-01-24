@@ -61,8 +61,14 @@ export default function HospitalRegistrationDetailsPage() {
     ];
   }, [data, formatDate]);
 
-  if (isLoading || !data)
+  if (isLoading)
     return <div className="p-10 text-center">정보를 불러오는 중...</div>;
+  if (!data)
+    return (
+      <div className="p-10 text-center text-black-600">
+        정보를 불러올 수 없습니다.
+      </div>
+    );
 
   const hospitalInfo = [
     { label: '병원 정보', icon: Hospital, content: data.hospitalName },

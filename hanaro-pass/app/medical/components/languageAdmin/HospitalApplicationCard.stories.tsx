@@ -15,8 +15,8 @@ const meta: Meta<typeof HospitalApplicationCard> = {
     langCount: 3,
     languages: [
       { id: 'en', name: '영어', flag: '🇺🇸' },
-      { id: 'zh', name: '중국어', flag: '🇨🇳' },
-      { id: 'ja', name: '일본어', flag: '🇯🇵' },
+      { id: 'cn', name: '중국어', flag: '🇨🇳' },
+      { id: 'jp', name: '일본어', flag: '🇯🇵' },
     ],
     date: '2026.01.19',
   },
@@ -45,9 +45,9 @@ export const ManyLanguages: Story = {
     langCount: 6,
     languages: [
       { id: 'en', name: '영어', flag: '🇺🇸' },
-      { id: 'zh', name: '중국어', flag: '🇨🇳' },
-      { id: 'ja', name: '일본어', flag: '🇯🇵' },
-      { id: 'vi', name: '베트남어', flag: '🇻🇳' },
+      { id: 'cn', name: '중국어', flag: '🇨🇳' },
+      { id: 'jp', name: '일본어', flag: '🇯🇵' },
+      { id: 'vn', name: '베트남어', flag: '🇻🇳' },
       { id: 'th', name: '태국어', flag: '🇹🇭' },
       { id: 'mn', name: '몽골어', flag: '🇲🇳' },
     ],

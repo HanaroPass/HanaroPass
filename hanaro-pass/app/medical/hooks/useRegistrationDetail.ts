@@ -9,18 +9,25 @@ export function useRegistrationDetail(hospitalId: number) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!hospitalId) return;
+    if (!hospitalId) {
+      setData(null);
+      setIsLoading(false);
+      return;
+    }
 
     const fetchDetail = async () => {
       setIsLoading(true);
-      const result = await getRegistrationDetailAction(hospitalId);
-
-      if (result.success) {
-        setData(result.data);
-      } else {
-        alert(result.message);
+      try {
+        const result = await getRegistrationDetailAction(hospitalId);
+        if (result.success) {
+          setData(result.data);
+        } else {
+          setData(null);
+          alert(result.message);
+        }
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     };
 
     fetchDetail();

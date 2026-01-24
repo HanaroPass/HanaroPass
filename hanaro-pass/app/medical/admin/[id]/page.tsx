@@ -18,10 +18,16 @@ export default function AdminReviewPage() {
   const { data, isLoading, isUpdating, error, handleUpdateStatus } =
     useAdminReview(Number(id));
 
-  if (isLoading || !data) return <LoadingScreen />;
+  if (isLoading) return <LoadingScreen />;
   if (error)
     return (
       <div className="p-10 text-center font-sans text-hana-red">{error}</div>
+    );
+  if (!data)
+    return (
+      <div className="p-10 text-center font-sans text-black-600">
+        데이터를 찾을 수 없습니다.
+      </div>
     );
 
   const infoItems = [
