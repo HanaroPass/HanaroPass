@@ -25,6 +25,7 @@ export async function getHospitals() {
     longitude: Number(h.longitude),
     phone: h.phone,
     openHours: h.openHours,
+    imageUrl: h.imageUrl,
 
     departments: h.HospitalDept.map((d) => d.deptName),
     languages: h.HospitalLang.map((l) => l.langName),

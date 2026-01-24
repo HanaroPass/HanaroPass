@@ -1,4 +1,5 @@
 import { MapPin, Phone, Clock, Sparkles } from 'lucide-react';
+import Image from 'next/image';
 
 export type HospitalInfo = {
   name: string;
@@ -9,6 +10,7 @@ export type HospitalInfo = {
   phone: string | null;
   langName: string;
   deptName: string;
+  imageUrl?: string | null;
   aiSummary?: string;
 };
 
@@ -64,7 +66,21 @@ export function HospitalCard({ hospital }: { hospital: HospitalInfo }) {
         </div>
 
         {/* 오른쪽 사진 (고정 높이) */}
-        <div className="h-36 w-24 self-start rounded-xl bg-gray-100" />
+        <div className="relative h-36 w-24 self-start overflow-hidden rounded-xl bg-gray-100">
+          {hospital.imageUrl ? (
+            <Image
+              src={hospital.imageUrl}
+              alt={`${hospital.name} 병원 이미지`}
+              fill
+              className="object-cover"
+              sizes="96px"
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center text-gray-400 text-xs">
+              이미지 없음
+            </div>
+          )}
+        </div>
       </div>
 
       {/* ================= 하단: AI 한줄 요약 (전체 폭) ================= */}

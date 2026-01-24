@@ -33,6 +33,7 @@ type Hospital = {
   address: string;
   phone: string | null;
   openHours: string;
+  imageUrl?: string | null;
   languages: string[];
   departments: string[];
   aiSummary?: string;
@@ -68,6 +69,7 @@ export function HospitalContent({ mode, hospitals, hospital }: Props) {
             phone: hospital.phone ?? '-',
             langName: hospital.languages.join(', '),
             deptName: hospital.departments.join(', '),
+            imageUrl: hospital.imageUrl,
             aiSummary: hospital.aiSummary,
           }}
         />
@@ -185,6 +187,7 @@ export function HospitalContent({ mode, hospitals, hospital }: Props) {
                   phone: h.phone,
                   langName: h.languages.join(', '),
                   deptName: h.departments.join(', '),
+                  imageUrl: h.imageUrl,
                   aiSummary: h.aiSummary,
                 }}
               />
