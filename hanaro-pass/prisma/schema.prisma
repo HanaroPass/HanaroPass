@@ -1,7 +1,6 @@
 generator client {
   provider = "prisma-client-js"
     output   = "../lib/generated/prisma"
-
 }
 
 datasource db {
@@ -169,6 +168,7 @@ model Hospital {
   HospitalReview HospitalReview?
 
   @@index([latitude, longitude], map: "idx_Hospital_location")
+  @@fulltext([nameKo, address], map: "ft_Hospital_search")
   hospitalLanguageApplications HospitalLanguageApplication[]
 }
 
