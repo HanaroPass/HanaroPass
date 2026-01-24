@@ -132,7 +132,11 @@ async function fetchAndSeed() {
 
     try {
       const response = await fetch(`${BASIS_API_URL}?${params.toString()}`);
-      const result = await response.json();
+
+      const arrayBuffer = await response.arrayBuffer();
+      const decoder = new TextDecoder('utf-8');
+      const decodedText = decoder.decode(arrayBuffer);
+      const result = JSON.parse(decodedText);
 
       if (!result.response?.body?.items) {
         console.warn(`[ 경고 ] ${district.name}: 응답 데이터가 없습니다.`);

@@ -13,7 +13,6 @@ import {
   IdSchema,
   LanguageTransformSchema,
   type RegistrationDetailResponse,
-  SearchSchema,
   SubmitSchema,
 } from '../schemas/language-regist.schema';
 
@@ -34,11 +33,9 @@ export async function searchHospitalAction(
     if (!sanitizedQuery || sanitizedQuery.length < 2) {
       return { success: true, data: [] };
     }
-    const validatedQuery = SearchSchema.parse(sanitizedQuery);
-
-    const searchTerms = validatedQuery
+    const searchTerms = sanitizedQuery
       .split(/\s+/)
-      .map((term) => `+${term}*`)
+      .map((term) => `+${term}`)
       .join(' ');
 
     const hospitals = await prisma.hospital.findMany({
