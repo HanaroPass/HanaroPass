@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useRef, useState } from 'react';
+import { fetchExchanges } from '../actions/exchange';
 import type { NaverSearchResult } from '../components/ui/NaverMap';
 
 type NaverLocalSearchItem = {
@@ -41,18 +42,14 @@ export function useExchangeSearch(currentMapRegion: string) {
 
       for (const word of keywords) {
         const queries = [
-          { q: `${guName} ${dongName} ${word}`, start: 1 },
-          { q: `${guName} ${guName} ${word}`, start: 1 },
+          `${guName} ${dongName} ${word}`,
+          `${guName} ${guName} ${word}`,
         ];
-        const pageRequests = queries.map(({ q, start }) =>
-          fetch(
-            `/map/api/search?q=${encodeURIComponent(q)}&display=20&start=${start}`,
-          )
-            .then((res) => res.json())
-            .then((data) => data.items || [])
-            .catch(() => []),
+
+        const results = await Promise.all(
+          queries.map((q) => fetchExchanges(q)),
         );
-        const results = await Promise.all(pageRequests);
+
         allRawItems = [...allRawItems, ...results.flat()];
       }
 
