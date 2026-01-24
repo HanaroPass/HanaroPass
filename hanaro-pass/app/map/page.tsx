@@ -9,7 +9,6 @@ import {
   Siren,
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { EmbassyContent } from './components/embassy/EmbassyContent';
 import { ExchangeContent } from './components/exchange/ExchangeContent';
 import { HospitalContent } from './components/hospital/HospitalContent';
@@ -34,7 +33,7 @@ import { SAVED_PLACES_MOCK, type SavedPlace } from './mock/savedPlaces';
  * useBottomSheet 커스텀 훅을 사용하여 시트 관련 모든 로직을 주입받아 사용합니다.
  */
 
-type Hospital = {
+export type Hospital = {
   id: number;
   nameKo: string;
   address: string;
@@ -65,7 +64,12 @@ export default function MapPage() {
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
 
   useEffect(() => {
-    getHospitals().then(setHospitals);
+    const loadHospitals = async () => {
+      const data = await getHospitals();
+      setHospitals(data);
+    };
+
+    loadHospitals();
   }, []);
 
   const mapControlRef = useRef<NaverMapHandle>(null);

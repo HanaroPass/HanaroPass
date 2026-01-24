@@ -14,8 +14,8 @@ import {
   NAVER_MAP_SCRIPT_URL,
 } from '../../constants/map';
 import type { Embassy } from '../../mock/embassyExchange';
-import type { HospitalPlace } from '../../mock/hospitalMap.mock';
 import type { SavedPlace } from '../../mock/savedPlaces';
+import type { Hospital } from '../../page';
 
 type Place = {
   id: string;
@@ -35,13 +35,13 @@ export type NaverSearchResult = {
 
 type NaverMapProps = {
   onMarkerClick: (
-    place: Place | HospitalPlace | SavedPlace | Embassy | NaverSearchResult,
+    place: Place | Hospital | SavedPlace | Embassy | NaverSearchResult,
   ) => void;
   savedPlaces?: SavedPlace[];
   embassyData?: Embassy;
   exchangeResults?: NaverSearchResult[];
   showBookmarks?: boolean;
-  hospitals?: HospitalPlace[];
+  hospitals?: Hospital[];
   activeCategory?: 'hospital' | 'embassy' | 'exchange' | null;
   showEmbassy?: boolean;
   showExchanges?: boolean;
@@ -143,8 +143,8 @@ export const NaverMap = forwardRef<NaverMapHandle, NaverMapProps>(
       if (activeCategory === 'hospital' && hospitals) {
         for (const h of hospitals) {
           const m = createMarker(
-            Number(h.latitude),
-            Number(h.longitude),
+            h.latitude,
+            h.longitude,
             MARKER_ICONS.hospital,
             () => onMarkerClickRef.current(h),
           );

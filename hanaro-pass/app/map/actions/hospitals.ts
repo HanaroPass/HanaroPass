@@ -21,8 +21,8 @@ export async function getHospitals() {
     id: h.id,
     nameKo: h.nameKo,
     address: h.address,
-    latitude: h.latitude,
-    longitude: h.longitude,
+    latitude: Number(h.latitude),
+    longitude: Number(h.longitude),
     phone: h.phone,
     openHours: h.openHours,
 
