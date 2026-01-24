@@ -52,12 +52,17 @@ export function useNaverMapInit(
       return;
     }
 
+    let idleListener: naver.maps.MapEventListener | null = null;
+    let isMounted = true;
+
     const initMap = () => {
-      if (!container || mapRef.current) {
+      if (!container || mapRef.current || !isMounted) {
         return;
       }
 
       const renderMap = (lat: number, lng: number) => {
+        if (!isMounted) return;
+
         const map = new window.naver.maps.Map(container, {
           center: new window.naver.maps.LatLng(lat + LATITUDE_OFFSET, lng),
           zoom: 15,
@@ -76,7 +81,12 @@ export function useNaverMapInit(
           },
         });
 
-        window.naver.maps.Event.addListener(map, 'idle', updateCenterAddress);
+        // 이벤트 리스너를 변수에 저장
+        idleListener = window.naver.maps.Event.addListener(
+          map,
+          'idle',
+          updateCenterAddress,
+        );
         updateCenterAddress();
       };
 
@@ -92,14 +102,16 @@ export function useNaverMapInit(
     };
 
     const scriptId = 'naver-map-script';
-    const existingScript = document.getElementById(scriptId);
+    const existingScript = document.getElementById(
+      scriptId,
+    ) as HTMLScriptElement | null;
 
     if (!existingScript) {
       const script = document.createElement('script');
       script.id = scriptId;
       script.src = `${NAVER_MAP_SCRIPT_URL}?ncpKeyId=${NAVER_MAP_KEY}&submodules=geocoder`;
       script.async = true;
-      script.onload = initMap;
+      script.onload = () => initMap();
       document.head.appendChild(script);
     } else {
       if (window.naver?.maps) {
@@ -108,6 +120,19 @@ export function useNaverMapInit(
         existingScript.addEventListener('load', initMap);
       }
     }
+
+    // Cleanup
+    return () => {
+      isMounted = false; // 더 이상 상태 업데이트 안 함
+
+      if (idleListener) {
+        window.naver.maps.Event.removeListener(idleListener);
+      }
+
+      if (existingScript) {
+        existingScript.removeEventListener('load', initMap);
+      }
+    };
   }, [updateCenterAddress, containerRef]);
 
   return { mapRef, isMapReady, LATITUDE_OFFSET };
