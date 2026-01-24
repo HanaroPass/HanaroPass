@@ -23,15 +23,15 @@ export default meta;
 
 type Story = StoryObj<typeof StatusBadge>;
 
-export const PENDING: Story = {
+export const Pending: Story = {
   args: { status: 'PENDING' as StatusType },
 };
 
-export const APPROVED: Story = {
+export const Approved: Story = {
   args: { status: 'APPROVED' as StatusType },
 };
 
-export const REJECTED: Story = {
+export const Rejected: Story = {
   args: { status: 'REJECTED' as StatusType },
 };
 

@@ -25,6 +25,8 @@ type Story = StoryObj<typeof ActionButton>;
 
 export const Default: Story = {};
 
+export const Inverse: Story = { args: { text: '다시 번역하기', invert: true } };
+
 export const Disabled: Story = {
   args: {
     text: '선택해주세요',
