@@ -33,10 +33,17 @@ export async function searchHospitalAction(
     if (!sanitizedQuery || sanitizedQuery.length < 2) {
       return { success: true, data: [] };
     }
-    const searchTerms = sanitizedQuery
+
+    const cleanedQuery = sanitizedQuery.replace(/[+\-><()~*"@]/g, ' ');
+    const searchTerms = cleanedQuery
       .split(/\s+/)
+      .filter((term) => term.length > 0)
       .map((term) => `+${term}`)
       .join(' ');
+
+    if (!searchTerms) {
+      return { success: true, data: [] };
+    }
 
     const hospitals = await prisma.hospital.findMany({
       where: {
