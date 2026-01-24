@@ -47,12 +47,18 @@ enum ApplicationStatus {
   REJECTED
 }
 
+enum Role {
+  USER
+  ADMIN
+}
+
 // --- [ Models ] ---
 
 model User {
   id          Int      @id @default(autoincrement()) @db.UnsignedInt
   nickname    String   @db.VarChar(100)
   nationality String   @db.VarChar(100)
+  role Role     @default(USER)
   createdAt   DateTime @default(now()) @db.Timestamp(0)
   updatedAt   DateTime @default(now()) @updatedAt @db.Timestamp(0)
 
