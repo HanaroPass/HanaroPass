@@ -6,6 +6,7 @@ import {
   updateApplicationStatusAction,
 } from '../actions/admin-application.action';
 import type { AdminReviewDetailResponse } from '../schemas/admin-application.schema';
+import { IdSchema } from '../schemas/language-regist.schema';
 
 export function useAdminReview(id: number) {
   const [data, setData] = useState<AdminReviewDetailResponse | null>(null);
@@ -17,6 +18,14 @@ export function useAdminReview(id: number) {
     try {
       setIsLoading(true);
       setError(null);
+
+      const idValidation = IdSchema.safeParse(id);
+
+      if (!idValidation.success) {
+        setData(null);
+        setError('유효하지 않은 신청 ID입니다.');
+        return;
+      }
       const result = await getAdminReviewDetailAction(id);
 
       if (result.success) setData(result.data);

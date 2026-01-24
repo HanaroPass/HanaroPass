@@ -117,13 +117,14 @@ export async function updateApplicationStatusAction(
       const app = await tx.hospitalLanguageApplication.findUnique({
         where: { id: vId },
       });
-      if (!app || app.status !== 'PENDING')
-        throw new HttpError('처리 가능한 신청 내역이 아닙니다.', 400);
+      if (!app) throw new HttpError('처리 가능한 신청 내역이 아닙니다.', 400);
 
-      await tx.hospitalLanguageApplication.update({
-        where: { id: vId },
+      const updated = await tx.hospitalLanguageApplication.updateMany({
+        where: { id: vId, status: 'PENDING' },
         data: { status: vStatus, processedAt: new Date() },
       });
+      if (updated.count === 0)
+        throw new HttpError('처리 가능한 신청 내역이 아닙니다.', 400);
 
       if (vStatus === 'APPROVED') {
         const langIds = app.requestLangs as string[];
