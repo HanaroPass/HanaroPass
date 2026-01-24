@@ -26,7 +26,7 @@ export const BENEFIT_BANNER_COPY: Record<
     badge: '특별 혜택',
     subtitle: '신나는 스키 여행 떠나요!',
     cta: '자세히 보기',
-    imageSrc: '/images/banners/banner-ski.png',
+    imageSrc: '/images/benefits/banner-ski.png',
     imageAlt: 'Ski benefit banner',
     textAlign: 'text-left',
     contentPos: { top: '70px', left: '12px' },
@@ -36,7 +36,7 @@ export const BENEFIT_BANNER_COPY: Record<
   ice_festival: {
     subtitle: '겨울 축제 즐겨봐요!',
     cta: '자세히 보기',
-    imageSrc: '/images/banners/banner-ice-festival.png',
+    imageSrc: '/images/benefits/banner-ice-festival.png',
     imageAlt: 'Ice festival benefit banner',
     textAlign: 'text-right',
     contentPos: { top: '38px', left: '170px' },
@@ -46,7 +46,7 @@ export const BENEFIT_BANNER_COPY: Record<
   winter_camping: {
     subtitle: '겨울 캠핑 어떠신가요?',
     cta: '자세히 보기',
-    imageSrc: '/images/banners/banner-winter-camping.png',
+    imageSrc: '/images/benefits/banner-winter-camping.png',
     imageAlt: 'Winter camping benefit banner',
     textAlign: 'text-center',
     contentPos: { top: '20px', left: '80px' },
@@ -56,7 +56,7 @@ export const BENEFIT_BANNER_COPY: Record<
   hot_spring: {
     subtitle: '신나는 온천 여행으로!',
     cta: '자세히 보기',
-    imageSrc: '/images/banners/banner-hot-spring.png',
+    imageSrc: '/images/benefits/banner-hot-spring.png',
     imageAlt: 'Hot spring benefit banner',
     textAlign: 'text-left',
     contentPos: { top: '20px', left: '10px' },
