@@ -4,7 +4,7 @@ import { seedCoupons } from './seed/seedCoupons';
 import { seedDummyApplications } from './seed/seedDummyApplications';
 import { seedUserDocs } from './seed/seedUserDocs';
 import { seedUserIdentityDocs } from './seed/seedUserIdentityDocs';
-import { seedUsers } from './seedUsers';
+import { seedUsers } from './seed/seedUsers';
 
 /**
  * [API 설정]

@@ -17,6 +17,7 @@ export async function seedCoupons() {
         brandPic: 'https://logo.clearbit.com/starbucks.com',
         latitude: '37.54462',
         longitude: '127.05612',
+        description: '아메리카노 포함 음료 전 메뉴 10% 할인 (1일 1회)',
       },
       {
         tag: '#카페',
@@ -27,6 +28,7 @@ export async function seedCoupons() {
         brandPic: 'https://logo.clearbit.com/atwosomeplace.com',
         latitude: '37.54398',
         longitude: '127.05510',
+        description: '케이크/디저트 포함 결제 시 15% 할인 (3만원 이상 구매)',
       },
       {
         tag: '#편의점',
@@ -37,6 +39,7 @@ export async function seedCoupons() {
         brandPic: 'https://logo.clearbit.com/gsretail.com',
         latitude: '37.54445',
         longitude: '127.05572',
+        description: '도시락/샌드위치 카테고리 3% 할인',
       },
       {
         tag: '#편의점',
@@ -47,6 +50,7 @@ export async function seedCoupons() {
         brandPic: 'https://logo.clearbit.com/cu.bgfretail.com',
         latitude: '37.54511',
         longitude: '127.05635',
+        description: '간편식/음료 구매 시 5% 즉시 할인 (2만원 이상 결제)',
       },
       {
         tag: '#치킨',
@@ -57,6 +61,7 @@ export async function seedCoupons() {
         brandPic: 'https://logo.clearbit.com/bbq.co.kr',
         latitude: '37.54340',
         longitude: '127.05488',
+        description: '치킨 메뉴 전용 12% 할인 (포장 주문 가능, 배달 제외)',
       },
       {
         tag: '#버거',
@@ -67,6 +72,7 @@ export async function seedCoupons() {
         brandPic: 'https://logo.clearbit.com/burgerking.co.kr',
         latitude: '37.54602',
         longitude: '127.05522',
+        description: '와퍼/세트 메뉴 8% 할인 (오후 2시~6시 해피타임)',
       },
 
       // -------------------------
@@ -81,6 +87,7 @@ export async function seedCoupons() {
         brandPic: 'https://logo.clearbit.com/musinsa.com',
         latitude: '37.54410',
         longitude: '127.05780',
+        description: '성수 스토어 오프라인 결제 5% 할인 (일부 브랜드 제외)',
       },
       {
         tag: '#SPA',
@@ -91,6 +98,7 @@ export async function seedCoupons() {
         brandPic: 'https://logo.clearbit.com/musinsa.com',
         latitude: '37.54372',
         longitude: '127.05820',
+        description: '기본템/아우터 포함 7% 할인 (2개 이상 구매 시 적용)',
       },
       {
         tag: '#패션',
@@ -101,9 +109,10 @@ export async function seedCoupons() {
         brandPic: 'https://logo.clearbit.com/abcmart.co.kr',
         latitude: '37.54558',
         longitude: '127.05470',
+        description: '신발/용품 10% 할인 (세일 상품 일부 제외)',
       },
       {
-        tag: '#신발',
+        tag: '#트레이닝복',
         discount: 12,
         category: 'FASHION',
         couponCode: 'HN-2025-000204',
@@ -111,6 +120,7 @@ export async function seedCoupons() {
         brandPic: 'https://logo.clearbit.com/nike.com',
         latitude: '37.54620',
         longitude: '127.05705',
+        description: '러닝/트레이닝 카테고리 12% 할인 (정가 상품 한정)',
       },
       {
         tag: '#패션',
@@ -121,6 +131,7 @@ export async function seedCoupons() {
         brandPic: 'https://logo.clearbit.com/off---white.com',
         latitude: '37.54290',
         longitude: '127.05690',
+        description: '편집샵 단독 상품 8% 할인 (액세서리/잡화 포함)',
       },
       {
         tag: '#가방',
@@ -131,6 +142,7 @@ export async function seedCoupons() {
         brandPic: 'https://logo.clearbit.com/converse.com',
         latitude: '37.54488',
         longitude: '127.05395',
+        description: '스니커즈/의류 6% 할인 (학생 인증 시 추가 혜택)',
       },
 
       // -------------------------
@@ -145,6 +157,8 @@ export async function seedCoupons() {
         brandPic: 'https://logo.clearbit.com/oliveyoung.co.kr',
         latitude: '37.54472',
         longitude: '127.05490',
+        description:
+          '뷰티/헬스 전 품목 15% 할인 (3만원 이상 구매, 일부 브랜드 제외)',
       },
       {
         tag: '#향수',
@@ -155,6 +169,7 @@ export async function seedCoupons() {
         brandPic: 'https://logo.clearbit.com/tamburins.com',
         latitude: '37.54325',
         longitude: '127.05855',
+        description: '향수/핸드크림 10% 할인 (선물 포장 무료 제공)',
       },
       {
         tag: '#스킨',
@@ -165,6 +180,7 @@ export async function seedCoupons() {
         brandPic: 'https://logo.clearbit.com/innisfree.com',
         latitude: '37.54590',
         longitude: '127.05680',
+        description: '스킨케어 라인 12% 할인 (회원 가입 시 즉시 적용)',
       },
       {
         tag: '#뷰티',
@@ -175,6 +191,7 @@ export async function seedCoupons() {
         brandPic: 'https://logo.clearbit.com/amorepacific.com',
         latitude: '37.54405',
         longitude: '127.05295',
+        description: '메이크업/립 제품 8% 할인 (2개 이상 구매 시)',
       },
       {
         tag: '#헤어',
@@ -185,16 +202,7 @@ export async function seedCoupons() {
         brandPic: 'https://logo.clearbit.com/juno.co.kr',
         latitude: '37.54640',
         longitude: '127.05595',
-      },
-      {
-        tag: '#네일',
-        discount: 18,
-        category: 'BEAUTY',
-        couponCode: 'HN-2025-000306',
-        brandName: '네일샵',
-        brandPic: 'https://logo.clearbit.com/naver.com',
-        latitude: '37.54360',
-        longitude: '127.05340',
+        description: '컷/클리닉 20% 할인 (첫 방문 고객 전용, 예약 필수)',
       },
 
       // -------------------------
@@ -202,13 +210,15 @@ export async function seedCoupons() {
       // -------------------------
       {
         tag: '#영화',
-        discount: 30,
+        discount: 10,
         category: 'ACTIVITY',
         couponCode: 'HN-2025-000404',
         brandName: 'CGV',
         brandPic: 'https://logo.clearbit.com/cgv.co.kr',
         latitude: '37.54430',
         longitude: '127.05910',
+        description:
+          '2D 영화 티켓 10% 할인 (동반 1인까지 적용, 주말/공휴일 제외)',
       },
 
       // -------------------------
@@ -223,6 +233,7 @@ export async function seedCoupons() {
         brandPic: 'https://logo.clearbit.com/booking.com',
         latitude: '37.54495',
         longitude: '127.05240',
+        description: '3만원 이상 구매시, 5% 할인',
       },
       {
         tag: '#숙박',
@@ -233,6 +244,7 @@ export async function seedCoupons() {
         brandPic: 'https://logo.clearbit.com/airbnb.com',
         latitude: '37.54280',
         longitude: '127.05730',
+        description: '3만원 이상 구매시, 5% 할인',
       },
       {
         tag: '#여행',
@@ -243,6 +255,7 @@ export async function seedCoupons() {
         brandPic: 'https://logo.clearbit.com/visitseoul.net',
         latitude: '37.54390',
         longitude: '127.05655',
+        description: '3만원 이상 구매시, 5% 할인',
       },
       {
         tag: '#숙박',
@@ -253,6 +266,7 @@ export async function seedCoupons() {
         brandPic: 'https://logo.clearbit.com/yanolja.com',
         latitude: '37.54610',
         longitude: '127.05810',
+        description: '3만원 이상 구매시, 5% 할인',
       },
       {
         tag: '#여행',
@@ -262,7 +276,9 @@ export async function seedCoupons() {
         brandName: '렌터카 서울숲',
         brandPic: 'https://logo.clearbit.com/lotte-rentacar.net',
         latitude: '37.54655',
+
         longitude: '127.05610',
+        description: '3만원 이상 구매시, 5% 할인',
       },
       {
         tag: '#숙박',
@@ -273,6 +289,7 @@ export async function seedCoupons() {
         brandPic: 'https://logo.clearbit.com/agoda.com',
         latitude: '37.54235',
         longitude: '127.05380',
+        description: '3만원 이상 구매시, 5% 할인',
       },
     ],
     skipDuplicates: true,
