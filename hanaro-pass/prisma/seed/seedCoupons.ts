@@ -1,0 +1,282 @@
+import { prisma } from '@/lib/prisma';
+
+export async function seedCoupons() {
+  console.log('[쿠폰 데이터 생성 시작]');
+
+  await prisma.coupon.createMany({
+    data: [
+      // -------------------------
+      // 'FOOD'
+      // -------------------------
+      {
+        tag: '#카페',
+        discount: 10,
+        category: 'FOOD',
+        couponCode: 'HN-2025-000101',
+        brandName: '스타벅스',
+        brandPic: 'https://logo.clearbit.com/starbucks.com',
+        latitude: '37.54462',
+        longitude: '127.05612',
+      },
+      {
+        tag: '#카페',
+        discount: 15,
+        category: 'FOOD',
+        couponCode: 'HN-2025-000102',
+        brandName: '투썸플레이스',
+        brandPic: 'https://logo.clearbit.com/atwosomeplace.com',
+        latitude: '37.54398',
+        longitude: '127.05510',
+      },
+      {
+        tag: '#편의점',
+        discount: 3,
+        category: 'FOOD',
+        couponCode: 'HN-2025-000103',
+        brandName: 'GS25',
+        brandPic: 'https://logo.clearbit.com/gsretail.com',
+        latitude: '37.54445',
+        longitude: '127.05572',
+      },
+      {
+        tag: '#편의점',
+        discount: 5,
+        category: 'FOOD',
+        couponCode: 'HN-2025-000104',
+        brandName: 'CU',
+        brandPic: 'https://logo.clearbit.com/cu.bgfretail.com',
+        latitude: '37.54511',
+        longitude: '127.05635',
+      },
+      {
+        tag: '#치킨',
+        discount: 12,
+        category: 'FOOD',
+        couponCode: 'HN-2025-000105',
+        brandName: 'BBQ',
+        brandPic: 'https://logo.clearbit.com/bbq.co.kr',
+        latitude: '37.54340',
+        longitude: '127.05488',
+      },
+      {
+        tag: '#버거',
+        discount: 8,
+        category: 'FOOD',
+        couponCode: 'HN-2025-000106',
+        brandName: '버거킹',
+        brandPic: 'https://logo.clearbit.com/burgerking.co.kr',
+        latitude: '37.54602',
+        longitude: '127.05522',
+      },
+
+      // -------------------------
+      // FASHION
+      // -------------------------
+      {
+        tag: '#SPA',
+        discount: 5,
+        category: 'FASHION',
+        couponCode: 'HN-2025-000201',
+        brandName: '무신사 스토어',
+        brandPic: 'https://logo.clearbit.com/musinsa.com',
+        latitude: '37.54410',
+        longitude: '127.05780',
+      },
+      {
+        tag: '#SPA',
+        discount: 7,
+        category: 'FASHION',
+        couponCode: 'HN-2025-000202',
+        brandName: '무신사 스탠다드',
+        brandPic: 'https://logo.clearbit.com/musinsa.com',
+        latitude: '37.54372',
+        longitude: '127.05820',
+      },
+      {
+        tag: '#패션',
+        discount: 10,
+        category: 'FASHION',
+        couponCode: 'HN-2025-000203',
+        brandName: 'ABC마트',
+        brandPic: 'https://logo.clearbit.com/abcmart.co.kr',
+        latitude: '37.54558',
+        longitude: '127.05470',
+      },
+      {
+        tag: '#신발',
+        discount: 12,
+        category: 'FASHION',
+        couponCode: 'HN-2025-000204',
+        brandName: '나이키',
+        brandPic: 'https://logo.clearbit.com/nike.com',
+        latitude: '37.54620',
+        longitude: '127.05705',
+      },
+      {
+        tag: '#패션',
+        discount: 8,
+        category: 'FASHION',
+        couponCode: 'HN-2025-000205',
+        brandName: '오프화이트 편집샵',
+        brandPic: 'https://logo.clearbit.com/off---white.com',
+        latitude: '37.54290',
+        longitude: '127.05690',
+      },
+      {
+        tag: '#가방',
+        discount: 6,
+        category: 'FASHION',
+        couponCode: 'HN-2025-000206',
+        brandName: '컨버스',
+        brandPic: 'https://logo.clearbit.com/converse.com',
+        latitude: '37.54488',
+        longitude: '127.05395',
+      },
+
+      // -------------------------
+      // BEAUTY
+      // -------------------------
+      {
+        tag: '#뷰티',
+        discount: 15,
+        category: 'BEAUTY',
+        couponCode: 'HN-2025-000301',
+        brandName: '올리브영',
+        brandPic: 'https://logo.clearbit.com/oliveyoung.co.kr',
+        latitude: '37.54472',
+        longitude: '127.05490',
+      },
+      {
+        tag: '#향수',
+        discount: 10,
+        category: 'BEAUTY',
+        couponCode: 'HN-2025-000302',
+        brandName: '탬버린즈',
+        brandPic: 'https://logo.clearbit.com/tamburins.com',
+        latitude: '37.54325',
+        longitude: '127.05855',
+      },
+      {
+        tag: '#스킨',
+        discount: 12,
+        category: 'BEAUTY',
+        couponCode: 'HN-2025-000303',
+        brandName: '이니스프리',
+        brandPic: 'https://logo.clearbit.com/innisfree.com',
+        latitude: '37.54590',
+        longitude: '127.05680',
+      },
+      {
+        tag: '#뷰티',
+        discount: 8,
+        category: 'BEAUTY',
+        couponCode: 'HN-2025-000304',
+        brandName: '아리따움',
+        brandPic: 'https://logo.clearbit.com/amorepacific.com',
+        latitude: '37.54405',
+        longitude: '127.05295',
+      },
+      {
+        tag: '#헤어',
+        discount: 20,
+        category: 'BEAUTY',
+        couponCode: 'HN-2025-000305',
+        brandName: '준오헤어',
+        brandPic: 'https://logo.clearbit.com/juno.co.kr',
+        latitude: '37.54640',
+        longitude: '127.05595',
+      },
+      {
+        tag: '#네일',
+        discount: 18,
+        category: 'BEAUTY',
+        couponCode: 'HN-2025-000306',
+        brandName: '네일샵',
+        brandPic: 'https://logo.clearbit.com/naver.com',
+        latitude: '37.54360',
+        longitude: '127.05340',
+      },
+
+      // -------------------------
+      // ACTIVITY
+      // -------------------------
+      {
+        tag: '#영화',
+        discount: 30,
+        category: 'ACTIVITY',
+        couponCode: 'HN-2025-000404',
+        brandName: 'CGV',
+        brandPic: 'https://logo.clearbit.com/cgv.co.kr',
+        latitude: '37.54430',
+        longitude: '127.05910',
+      },
+
+      // -------------------------
+      // TRAVEL
+      // -------------------------
+      {
+        tag: '#숙박',
+        discount: 12,
+        category: 'TRAVEL',
+        couponCode: 'HN-2025-000501',
+        brandName: '호텔 성수',
+        brandPic: 'https://logo.clearbit.com/booking.com',
+        latitude: '37.54495',
+        longitude: '127.05240',
+      },
+      {
+        tag: '#숙박',
+        discount: 20,
+        category: 'TRAVEL',
+        couponCode: 'HN-2025-000502',
+        brandName: '게스트하우스 성수',
+        brandPic: 'https://logo.clearbit.com/airbnb.com',
+        latitude: '37.54280',
+        longitude: '127.05730',
+      },
+      {
+        tag: '#여행',
+        discount: 10,
+        category: 'TRAVEL',
+        couponCode: 'HN-2025-000503',
+        brandName: '트래블 패스(서울)',
+        brandPic: 'https://logo.clearbit.com/visitseoul.net',
+        latitude: '37.54390',
+        longitude: '127.05655',
+      },
+      {
+        tag: '#숙박',
+        discount: 15,
+        category: 'TRAVEL',
+        couponCode: 'HN-2025-000504',
+        brandName: '모텔 성수',
+        brandPic: 'https://logo.clearbit.com/yanolja.com',
+        latitude: '37.54610',
+        longitude: '127.05810',
+      },
+      {
+        tag: '#여행',
+        discount: 8,
+        category: 'TRAVEL',
+        couponCode: 'HN-2025-000505',
+        brandName: '렌터카 서울숲',
+        brandPic: 'https://logo.clearbit.com/lotte-rentacar.net',
+        latitude: '37.54655',
+        longitude: '127.05610',
+      },
+      {
+        tag: '#숙박',
+        discount: 25,
+        category: 'TRAVEL',
+        couponCode: 'HN-2025-000506',
+        brandName: '레지던스 성수',
+        brandPic: 'https://logo.clearbit.com/agoda.com',
+        latitude: '37.54235',
+        longitude: '127.05380',
+      },
+    ],
+    skipDuplicates: true,
+  });
+
+  console.log('[쿠폰 데이터 생성 완료]');
+}

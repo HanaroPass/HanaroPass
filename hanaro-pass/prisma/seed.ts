@@ -1,5 +1,10 @@
 import 'dotenv/config';
 import { prisma } from '../lib/prisma';
+import { seedCoupons } from './seed/seedCoupons';
+import { seedDummyApplications } from './seed/seedDummyApplications';
+import { seedUserDocs } from './seed/seedUserDocs';
+import { seedUserIdentityDocs } from './seed/seedUserIdentityDocs';
+import { seedUsers } from './seedUsers';
 
 /**
  * [API 설정]
@@ -186,163 +191,6 @@ async function fetchAndSeed() {
   }
 }
 
-/**
- * [신규] ID 1, 2, 3번 병원을 대상으로 테스트 데이터 생성
- */
-async function seedDummyApplications() {
-  console.log('[ 추가 작업 - ID 1, 2, 3번 대상 테스트 데이터 생성 중... ]');
-
-  // 1. ID 1번: 신청 완료 (PENDING)
-  // 상세 페이지에서 "노란색 상태 배지"와 "대기 중 타임라인" 확인용
-  await prisma.hospitalLanguageApplication.create({
-    data: {
-      hospitalId: 1,
-      status: 'PENDING',
-      requestLangs: ['en', 'cn'], // 영어, 중국어 신청
-      createdAt: new Date('2026-01-19T09:43:00'),
-    },
-  });
-
-  // 2. ID 2번: 승인 완료 (APPROVED)
-  // 상세 페이지에서 "초록색 상태 배지"와 "승인 완료 일시" 확인용
-  await prisma.hospitalLanguageApplication.create({
-    data: {
-      hospitalId: 2,
-      status: 'APPROVED',
-      requestLangs: ['jp'], // 일본어 신청
-      createdAt: new Date('2026-01-10T14:20:00'),
-      processedAt: new Date('2026-01-11T10:00:00'), // 승인 처리됨
-    },
-  });
-
-  // 3. ID 3번: 반려 (REJECTED)
-  // 상세 페이지에서 "빨간색 상태 배지"와 "반려 일시" 확인용
-  await prisma.hospitalLanguageApplication.create({
-    data: {
-      hospitalId: 3,
-      status: 'REJECTED',
-      requestLangs: ['vi', 'th'], // 베트남어, 태국어 신청
-      createdAt: new Date('2026-01-15T11:30:00'),
-      processedAt: new Date('2026-01-16T15:00:00'), // 반려 처리됨
-    },
-  });
-
-  console.log('[ 완료 ] ID 1(대기), 2(승인), 3(반려) 데이터 생성 완료.');
-}
-
-/**
- * User 더미 데이터 생성
- * - nickname+nationality 조합이 같으면 기존 데이터 유지
- */
-async function seedUsers() {
-  console.log('[ 추가 작업 - User 더미 데이터 생성 중... ]');
-
-  const users = [
-    { nickname: 'Kelsey Kwon', nationality: 'KOR' },
-    { nickname: 'John Doe', nationality: 'USA' },
-    { nickname: 'Mina Tanaka', nationality: 'JPN' },
-  ] as const;
-
-  for (const u of users) {
-    // nickname이 unique가 아니라서 upsert를 못 씀 -> find 후 create
-    const exists = await prisma.user.findFirst({
-      where: { nickname: u.nickname, nationality: u.nationality },
-      select: { id: true },
-    });
-
-    if (exists) continue;
-
-    await prisma.user.create({ data: u });
-  }
-
-  const count = await prisma.user.count();
-  console.log(`[ 완료 ] User 생성/확인 완료. 현재 User 총 ${count}명`);
-}
-
-/**
- * UserDocument 더미 데이터 생성
- */
-async function seedUserDocs() {
-  console.log('[ UserDocument 더미 생성 중... ]');
-
-  const user = await prisma.user.findFirst();
-  if (!user) {
-    console.warn('User가 없어 문서 시드를 건너뜁니다.');
-    return;
-  }
-  const userId = user.id;
-
-  // UserDocument 있으면 건너뛰기
-  const existingDocTypes = await prisma.userDocument.findMany({
-    where: { userId },
-    select: { docType: true },
-  });
-
-  const has = new Set(existingDocTypes.map((d) => d.docType));
-
-  const docsToCreate = [
-    { docType: 'PHOTO' as const, fileUrl: 'https://example.com/photo.jpg' },
-    {
-      docType: 'COPY' as const,
-      fileUrl: 'https://example.com/passport-copy.pdf',
-    },
-    {
-      docType: 'STUDENT_ID' as const,
-      fileUrl: 'https://example.com/student-id.jpg',
-    },
-  ].filter((d) => !has.has(d.docType));
-
-  if (docsToCreate.length > 0) {
-    await prisma.userDocument.createMany({
-      data: docsToCreate.map((d) => ({ userId, ...d })),
-    });
-  }
-
-  console.log('[ 완료 ] UserDocument 더미 생성 완료');
-}
-
-async function seedUserIdentityDocs() {
-  console.log('[ Passport / ARC 유저별 더미 생성 중... ]');
-
-  const users = await prisma.user.findMany({ select: { id: true } });
-
-  if (users.length === 0) {
-    console.warn('User가 없어 시드를 건너뜁니다.');
-    return;
-  }
-
-  for (const { id: userId } of users) {
-    // Passport (userId unique 기준 upsert)
-    await prisma.passport.upsert({
-      where: { userId },
-      update: {},
-      create: {
-        userId,
-        passportNumber: `P-${userId}`,
-        gender: 'MALE',
-        issueDate: new Date('2022-01-01'),
-        expiryDate: new Date('2032-01-01'),
-        userPhotoUrl: 'https://example.com/passport-photo.jpg',
-      },
-    });
-
-    // ARC (userId unique 기준 upsert)
-    await prisma.aRC.upsert({
-      where: { userId },
-      update: {},
-      create: {
-        userId,
-        arcNumber: `ARC-${userId}`,
-        residenceStatus: 'D-2',
-        issueDate: new Date('2023-03-01'),
-        userPhotoUrl: 'https://example.com/arc-photo.jpg',
-      },
-    });
-  }
-
-  console.log(`[ 완료 ] ${users.length}명 Passport/ARC 생성(또는 유지) 완료`);
-}
-
 async function main() {
   if (!SERVICE_KEY) {
     console.error('SERVICE_KEY 누락');
@@ -377,6 +225,7 @@ async function main() {
   await seedUserDocs();
   await seedUserIdentityDocs();
   await seedDummyApplications();
+  await seedCoupons();
   console.log('[ 시딩 작업 완료! ]');
 }
 
