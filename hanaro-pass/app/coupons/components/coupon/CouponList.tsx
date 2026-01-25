@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useCallback, useState, useTransition } from 'react';
+import { useCallback, useEffect, useState, useTransition } from 'react';
 import SearchInput from '@/components/SearchInput/SearchInput';
 import {
   TabsLine,
@@ -31,22 +31,31 @@ export default function CouponListClient({
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
 
-  const [draftQuery, setDraftQuery] = useState(initialQuery);
+  const currentQuery = searchParams.get('q') ?? initialQuery;
+  const [draftQuery, setDraftQuery] = useState(currentQuery);
+
+  useEffect(() => {
+    setDraftQuery(currentQuery);
+  }, [currentQuery]);
 
   const updateParams = useCallback(
-    (updates: Record<string, string | undefined>) => {
+    (
+      updates: Record<string, string | undefined>,
+      mode: 'push' | 'replace' = 'push',
+    ) => {
       const sp = new URLSearchParams(searchParams.toString());
 
       Object.entries(updates).forEach(([key, value]) => {
-        if (!value || value === 'ALL') {
-          sp.delete(key);
-        } else {
-          sp.set(key, value.trim());
-        }
+        const trimmed = value?.trim();
+        if (!trimmed || trimmed === 'ALL') sp.delete(key);
+        else sp.set(key, trimmed);
       });
 
+      const url = `${pathname}?${sp.toString()}`;
+
       startTransition(() => {
-        router.replace(`${pathname}?${sp.toString()}`, { scroll: false });
+        if (mode === 'push') router.push(url, { scroll: false });
+        else router.replace(url, { scroll: false });
       });
     },
     [pathname, router, searchParams],
@@ -58,8 +67,18 @@ export default function CouponListClient({
         id="coupon-search"
         placeholder="쿠폰을 검색해주세요"
         value={draftQuery}
-        onChange={(e) => setDraftQuery(e.target.value)}
-        onKeyDown={(e) => e.key === 'Enter' && updateParams({ q: draftQuery })}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') updateParams({ q: draftQuery }, 'push');
+        }}
+        onClear={() => {
+          setDraftQuery('');
+          updateParams({ q: undefined }, 'push');
+        }}
+        onChange={(e) => {
+          const next = e.target.value;
+          setDraftQuery(next);
+          if (next.trim() === '') updateParams({ q: undefined }, 'replace');
+        }}
         disabled={isPending}
       />
 

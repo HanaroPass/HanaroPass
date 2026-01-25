@@ -30,6 +30,7 @@ export default function MedicalPage() {
           <SearchInput
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            onClear={() => setSearchQuery('')}
           />
         </div>
 
