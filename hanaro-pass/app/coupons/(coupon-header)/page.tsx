@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Suspense } from 'react';
 import { BENEFIT_BANNER_VARIANTS } from '@/constants/benefitBanner';
-import { getCouponsAction } from '../actions/getCouponList';
+import { getCouponsCached } from '../actions/getCouponList';
 import { CouponSearchSchema } from '../actions/getCouponList.schema';
 import BenefitBanner from '../components/benefitBanner/BenefitBanner';
 import CouponListClient from '../components/coupon/CouponList';
@@ -38,7 +38,7 @@ async function CouponListContainer({
   const params = await searchParams;
   const validated = CouponSearchSchema.parse(params);
 
-  const coupons = await getCouponsAction({
+  const coupons = await getCouponsCached({
     category: validated.category === 'ALL' ? undefined : validated.category,
     q: validated.q || undefined,
   });

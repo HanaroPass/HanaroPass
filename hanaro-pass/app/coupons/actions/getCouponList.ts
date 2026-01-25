@@ -1,5 +1,6 @@
 'use server';
 
+import { unstable_cache } from 'next/cache';
 import type { Prisma } from '@/lib/generated/prisma/client';
 import { prisma } from '@/lib/prisma';
 import {
@@ -7,6 +8,10 @@ import {
   CouponListRequestSchema,
   type CouponListResponse,
 } from './getCouponList.schema';
+
+function cacheKey(input: CouponListRequest) {
+  return `category=${input.category ?? 'ALL'}&q=${input.q ?? ''}`;
+}
 
 export async function getCouponsAction(
   raw: CouponListRequest,
@@ -54,4 +59,16 @@ export async function getCouponsAction(
     latitude: c.latitude.toString(),
     longitude: c.longitude.toString(),
   }));
+}
+
+export async function getCouponsCached(raw: CouponListRequest) {
+  const parsed = CouponListRequestSchema.parse(raw);
+
+  const cachedFn = unstable_cache(
+    async () => getCouponsAction(parsed),
+    ['coupons:list', cacheKey(parsed)],
+    { revalidate: 60, tags: ['coupons:list'] },
+  );
+
+  return cachedFn();
 }
