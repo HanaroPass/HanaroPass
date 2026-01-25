@@ -9,6 +9,8 @@ import {
   Siren,
 } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import type { SavedPlace } from '@/lib/generated/prisma';
+import { getSavedPlaces } from './actions/savedPlaces';
 import { EmbassyContent } from './components/embassy/EmbassyContent';
 import { ExchangeContent } from './components/exchange/ExchangeContent';
 import { HospitalContent } from './components/hospital/HospitalContent';
@@ -29,14 +31,17 @@ import {
   HOSPITALS_MAP_MOCK,
   type HospitalPlace,
 } from './mock/hospitalMap.mock';
-import { SAVED_PLACES_MOCK, type SavedPlace } from './mock/savedPlaces';
 import { formatExchangeData, mapDbToInfo } from './utils/mapUtils';
 
 export default function MapPage() {
   const [bookmark, setBookmark] = useState<boolean>(false);
+
+  const [savedPlaces, setSavedPlaces] = useState<SavedPlace[]>([]);
+
   const [selectedPlace, setSelectedPlace] = useState<
     SavedPlace | Embassy | NaverSearchResult | null
   >(null);
+
   const [selectedHospital, setSelectedHospital] =
     useState<HospitalPlace | null>(null);
   const [currentMapRegion, setCurrentMapRegion] = useState('');
@@ -57,6 +62,21 @@ export default function MapPage() {
     handleTouchEnd,
     getTranslateValue,
   } = useBottomSheet();
+
+  useEffect(() => {
+    const fetchPlaces = async () => {
+      try {
+        // TODO: 실제 로그인된 유저 ID를 넣어야 합니다. (현재 userId = 1)
+        const userId = 1;
+        const data = await getSavedPlaces(userId);
+        setSavedPlaces(data);
+      } catch (error) {
+        console.error('저장된 장소 불러오기 실패:', error);
+      }
+    };
+
+    fetchPlaces();
+  }, []);
 
   useEffect(() => {
     if (!currentMapRegion) return;
@@ -88,7 +108,7 @@ export default function MapPage() {
           onMapMoved={setCurrentMapRegion}
           activeCategory={openSheet === 'hospital' ? 'hospital' : null}
           hospitals={HOSPITALS_MAP_MOCK}
-          savedPlaces={SAVED_PLACES_MOCK}
+          savedPlaces={savedPlaces}
           showBookmarks={bookmark}
           onMarkerClick={handleMarkerClick}
           embassyData={MAP_EMBASSY_MOCK}

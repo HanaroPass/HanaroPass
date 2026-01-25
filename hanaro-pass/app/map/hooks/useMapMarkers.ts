@@ -1,11 +1,11 @@
 'use client';
 
 import { useCallback, useEffect, useRef } from 'react';
+import type { SavedPlace } from '@/lib/generated/prisma';
 import type { NaverSearchResult } from '../components/ui/NaverMap';
 import { MARKER_ICONS } from '../constants/map';
 import type { Embassy } from '../mock/embassyExchange';
 import type { HospitalPlace } from '../mock/hospitalMap.mock';
-import type { SavedPlace } from '../mock/savedPlaces';
 
 export type ClickablePlace =
   | SavedPlace
