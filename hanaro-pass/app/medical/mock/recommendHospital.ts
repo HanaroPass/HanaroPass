@@ -1,4 +1,4 @@
-import type { HospitalInfo } from '../components/hospital/HospitalCard';
+import { HospitalInfo } from '@/app/map/components/hospital/HospitalCard';
 
 export const hospitalLocations: HospitalInfo[] = [
   {
@@ -15,6 +15,9 @@ export const hospitalLocations: HospitalInfo[] = [
 
     languages: ['영어', '일본어'],
     departments: ['내과'],
+
+    latitude: '37.546410',
+    longitude: '127.053347',
   },
   {
     name: '강남 정형외과 의원',
@@ -30,21 +33,9 @@ export const hospitalLocations: HospitalInfo[] = [
 
     languages: ['영어'],
     departments: ['정형외과'],
-  },
-  {
-    name: '광진 국제 치과',
-    cardLanguage: '영어, 일본어',
-    cardDepartment: '치과',
 
-    status: '진료 종료',
-    openTime: '09:30',
-    closeTime: '17:00',
-
-    address: '서울 광진구 화양동',
-    phone: '02-5555-6666',
-
-    languages: ['영어', '일본어', '중국어'],
-    departments: ['치과'],
+    latitude: '37.546470',
+    longitude: '127.563347',
   },
   {
     name: '성동 글로벌 피부과',
@@ -60,5 +51,26 @@ export const hospitalLocations: HospitalInfo[] = [
 
     languages: ['영어', '중국어'],
     departments: ['피부과'],
+
+    latitude: '37.546411',
+    longitude: '127.053247',
+  },
+  {
+    name: '광진 국제 치과',
+    cardLanguage: '영어, 일본어',
+    cardDepartment: '치과',
+
+    status: '진료 종료',
+    openTime: '09:30',
+    closeTime: '17:00',
+
+    address: '서울 광진구 화양동',
+    phone: '02-5555-6666',
+
+    languages: ['영어', '일본어', '중국어'],
+    departments: ['치과'],
+
+    latitude: '37.482671',
+    longitude: '127.009591',
   },
 ];

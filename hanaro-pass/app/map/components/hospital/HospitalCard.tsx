@@ -15,6 +15,9 @@ export type HospitalInfo = {
 
   languages: string[];
   departments: string[];
+
+  latitude?: string;
+  longitude?: string;
 };
 
 export function HospitalCard({ hospital }: { hospital: HospitalInfo }) {
