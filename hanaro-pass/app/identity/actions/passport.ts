@@ -37,20 +37,29 @@ export async function savePassportData(
 
     const nickname = `${lastName} ${firstName}`.trim();
 
-    // 유저와 여권 레코드 생성
     const result = await prisma.$transaction(async (tx) => {
-      // 신규 유저 생성
-      const newUser = await tx.user.create({
+      // 기존에 동일한 여권번호를 가진 정보가 있는지 먼저 확인
+      const existingPassport = await tx.passport.findUnique({
+        where: { passportNumber },
+        select: { id: true, userId: true },
+      });
+
+      if (existingPassport) {
+        // 이미 여권이 등록된 유저라면 추가 생성 없이 기존 ID 반환
+        return existingPassport;
+      }
+
+      // 여권이 없다면, 유저 생성
+      const user = await tx.user.create({
         data: {
           nickname,
           nationality,
         },
       });
 
-      // 해당 유저의 여권 정보 생성
       return await tx.passport.create({
         data: {
-          userId: newUser.id,
+          userId: user.id,
           passportNumber,
           gender: gender as 'MALE' | 'FEMALE' | 'OTHERS',
           issueDate: new Date(issueDate),
@@ -61,7 +70,7 @@ export async function savePassportData(
       });
     });
 
-    // 세션 생성 ( 여권번호 암호화 )
+    // 세션 저장
     await savePassportToSession(passportNumber);
 
     return {
@@ -69,7 +78,6 @@ export async function savePassportData(
       data: { id: result.id },
     };
   } catch (error: unknown) {
-    // 중복된 여권번호 등에 대한 DB 에러 처리
     return handleActionResult(error);
   }
 }
