@@ -4,11 +4,16 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
 import ActionButton from '@/components/ui/ActionButton';
 import AIResultIcon from '../../../../components/ui/AIResultIcon';
-import { getTTS, type outputType, parseOutput } from '../../actions/symptoms';
+import {
+  getTTS,
+  type outputType,
+  parseOutput,
+  postSymptomForm,
+} from '../../actions/symptoms';
 import HospitalGuide from '../../components/languageRegistration/HospitalGuide';
 import EmergencyBadge from '../../components/symptom/EmergencyBadge';
 import Symptom from '../../components/symptom/Symptom';
-import useSymptomResult from '../../hooks/useSymptomResult';
+import useSymptomResubmit from '../../hooks/useSymptomResubmit';
 
 function SymptomResultContent() {
   const [writtenSymptom, setWrittenSymptom] = useState('');
@@ -17,8 +22,7 @@ function SymptomResultContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const mode = searchParams.get('mode');
-
-  const { isLoading, handleSubmit } = useSymptomResult();
+  const { isLoading, handleResubmit } = useSymptomResubmit();
 
   useEffect(() => {
     const parse = async () => {
@@ -46,16 +50,6 @@ function SymptomResultContent() {
     navigator.clipboard.writeText(result?.번역_내용 || '');
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
-  };
-
-  const handleResubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    await handleSubmit(e);
-    setWrittenSymptom(localStorage.getItem('written-symptom') as string);
-    const data = localStorage.getItem('symptom-result');
-    if (data) {
-      const result = await parseOutput(data);
-      setResult(result);
-    }
   };
   return (
     <div className="px-6">

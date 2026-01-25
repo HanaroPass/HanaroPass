@@ -26,12 +26,12 @@ export default function useSymptomResult() {
 
         const urls = totalImages.map((i) => URL.createObjectURL(i));
         setImageUrls(urls);
-        localStorage.setItem('symptom-images', JSON.stringify(urls));
 
         return totalImages;
       });
     }
   };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
@@ -41,6 +41,26 @@ export default function useSymptomResult() {
         'written-symptom',
         formData.get('description') as string,
       );
+
+      const imageDataArray = await Promise.all(
+        images
+          .filter((image) => image && image.size > 0)
+          .map(async (image) => {
+            return new Promise((resolve) => {
+              const reader = new FileReader();
+              reader.onloadend = () => {
+                resolve({
+                  name: image.name,
+                  type: image.type,
+                  base64: reader.result,
+                });
+              };
+              reader.readAsDataURL(image);
+            });
+          }),
+      );
+      localStorage.setItem('symptom-images', JSON.stringify(imageDataArray));
+
       const response = await postSymptomForm(formData);
       console.log(response);
       localStorage.setItem('symptom-result', response);
