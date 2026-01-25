@@ -1,4 +1,4 @@
-import { ChevronDown, WalletMinimal } from 'lucide-react';
+import { ArrowRight, ChevronDown, WalletMinimal } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import type { PropsWithChildren } from 'react';
@@ -22,7 +22,8 @@ const GAP = 22;
 export default function MainWrapper({
   children,
   activeTab,
-}: PropsWithChildren<{ activeTab: string }>) {
+  isRegistered = true,
+}: PropsWithChildren<{ activeTab: string; isRegistered?: boolean }>) {
   const activeIndex = TABS.findIndex((t) => t.key === activeTab);
   const safeIndex = activeIndex === -1 ? 0 : activeIndex;
 
@@ -55,41 +56,68 @@ export default function MainWrapper({
       </header>
 
       <main className="pt-2">
-        <section className="mb-3 flex justify-center gap-5.5">
-          {TABS.map((t) => (
-            <Link key={t.key} href={{ pathname: '/', query: { tab: t.key } }}>
-              <div
-                className={cn(
-                  'relative flex h-16 w-16 items-center justify-center rounded-full shadow-sm',
-                  activeTab === t.key ? 'bg-white-ez' : 'bg-[#65C7CA]',
-                )}
+        {isRegistered ? (
+          <>
+            <section className="mb-3 flex justify-center gap-5.5">
+              {TABS.map((t) => (
+                <Link
+                  key={t.key}
+                  href={{ pathname: '/', query: { tab: t.key } }}
+                >
+                  <div
+                    className={cn(
+                      'relative flex h-16 w-16 items-center justify-center rounded-full shadow-sm',
+                      activeTab === t.key ? 'bg-white-ez' : 'bg-[#65C7CA]',
+                    )}
+                  >
+                    <t.Icon
+                      className={cn(
+                        '-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 z-1 h-10 w-10',
+                        activeTab === t.key ? 'text-green-ez' : 'text-white',
+                        'stroke-current',
+                      )}
+                    />
+                    {activeTab !== t.key && (
+                      <div className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 z-0 h-13 w-13 rounded-full bg-green-ez shadow-sm" />
+                    )}
+                  </div>
+                </Link>
+              ))}
+            </section>
+
+            <div
+              className="relative mx-auto h-2.5"
+              style={{ width: totalWidth }}
+            >
+              <Image
+                src="/images/main/indicator.svg"
+                width={INDICATOR_WIDTH}
+                height={10}
+                alt="Indicator"
+                className="-bottom-px absolute left-0 transition-transform duration-300 ease-out"
+                style={{ transform: `translateX(${translateX}px)` }}
+              />
+            </div>
+          </>
+        ) : (
+          <section className="p-6">
+            <div className="flex items-center justify-between">
+              <h2 className="whitespace-pre-line font-bold text-2xl text-white leading-tight">
+                {'모바일 여권을\n'}
+                <span className="underline underline-offset-4">등록</span>
+                해주세요.
+              </h2>
+
+              <Link
+                href="/user/identity"
+                className="flex h-16 w-16 items-center justify-center rounded-full bg-white"
+                aria-label="모바일 여권 등록하기"
               >
-                <t.Icon
-                  className={cn(
-                    '-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 z-1 h-10 w-10',
-                    activeTab === t.key ? 'text-green-ez' : 'text-white',
-                    'stroke-current',
-                  )}
-                />
-                {activeTab !== t.key && (
-                  <div className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 z-0 h-13 w-13 rounded-full bg-green-ez shadow-sm" />
-                )}
-              </div>
-            </Link>
-          ))}
-        </section>
-
-        <div className="relative mx-auto h-2.5" style={{ width: totalWidth }}>
-          <Image
-            src="/images/main/indicator.svg"
-            width={INDICATOR_WIDTH}
-            height={10}
-            alt="Indicator"
-            className="-bottom-px absolute left-0 transition-transform duration-300 ease-out"
-            style={{ transform: `translateX(${translateX}px)` }}
-          />
-        </div>
-
+                <ArrowRight size={35} className="text-green-ez" />
+              </Link>
+            </div>
+          </section>
+        )}
         <section className="rounded-t-4xl bg-white px-4 pt-5 pb-7">
           {children}
         </section>

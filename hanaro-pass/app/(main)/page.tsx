@@ -4,6 +4,7 @@ import { getUserCardsAction } from './actions/getUserCards.action';
 import CouponListLoader from './components/CouponList.loader';
 
 import MainWrapper from './components/MainWrapper';
+import PassportUnregisteredContent from './components/PassportUnregisteredContent';
 import Pay from './components/Pay';
 import Service from './components/Service';
 import Transfer from './components/Transfer';
@@ -25,6 +26,16 @@ export default async function Page({
     rawTab && rawTab in TAB_COMPONENTS
       ? (rawTab as keyof typeof TAB_COMPONENTS)
       : 'pay';
+
+  const hasPassport = false; // TODO: 액션 연결
+  if (!hasPassport) {
+    return (
+      <MainWrapper activeTab={tab} isRegistered={false}>
+        <MainWrapper.Title>환율 정보</MainWrapper.Title>
+        <PassportUnregisteredContent />
+      </MainWrapper>
+    );
+  }
 
   const TabComponent = TAB_COMPONENTS[tab];
   const cardsPromise = tab === 'pay' ? getUserCardsAction() : undefined;
