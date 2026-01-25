@@ -1,5 +1,9 @@
+import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
-import { getCouponById } from '../../actions/getCoupon';
+import {
+  type CouponDetailResponse,
+  getCouponById,
+} from '../../actions/getCoupon';
 import CouponDetail from '../../components/coupon/CouponDetail';
 
 export const revalidate = 3600;
@@ -15,8 +19,12 @@ type PageProps = {
 
 export default async function Page({ params }: PageProps) {
   const { id } = await params;
-
-  const coupon = await getCouponById({ id });
+  let coupon: CouponDetailResponse;
+  try {
+    coupon = await getCouponById({ id });
+  } catch {
+    notFound();
+  }
 
   return (
     <CouponDetail

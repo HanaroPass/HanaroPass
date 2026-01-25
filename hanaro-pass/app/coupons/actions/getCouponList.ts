@@ -9,19 +9,13 @@ import {
   type CouponListResponse,
 } from './getCouponList.schema';
 
-function cacheKey(input: CouponListRequest) {
-  return `category=${input.category ?? 'ALL'}&q=${input.q ?? ''}`;
-}
-
-export async function getCouponsAction(
-  raw: CouponListRequest,
+async function queryCoupons(
+  input: CouponListRequest,
 ): Promise<CouponListResponse[]> {
-  const { category, q } = CouponListRequestSchema.parse(raw);
+  const { category, q } = input;
 
   const where: Prisma.CouponWhereInput = {};
-
   if (category) where.category = category;
-
   if (q) {
     where.OR = [
       { brandName: { contains: q } },
@@ -61,11 +55,15 @@ export async function getCouponsAction(
   }));
 }
 
+function cacheKey(input: CouponListRequest) {
+  return `category=${input.category ?? 'ALL'}&q=${input.q ?? ''}`;
+}
+
 export async function getCouponsCached(raw: CouponListRequest) {
   const parsed = CouponListRequestSchema.parse(raw);
 
   const cachedFn = unstable_cache(
-    async () => getCouponsAction(parsed),
+    () => queryCoupons(parsed),
     ['coupons:list', cacheKey(parsed)],
     { revalidate: 60, tags: ['coupons:list'] },
   );
