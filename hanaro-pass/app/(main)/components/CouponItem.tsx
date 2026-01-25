@@ -1,11 +1,18 @@
 import Image from 'next/image';
-import type { CouponItemType } from './CouponList';
 
-type Props = {
+type CouponItemType = {
+  id: string;
+  brand: string;
+  distanceLabel: string;
+  tag: string;
+  logo: string;
+};
+
+type CouponItemProps = {
   item: CouponItemType;
 };
 
-export default function CouponItem({ item }: Props) {
+export default function CouponItem({ item }: CouponItemProps) {
   return (
     <div className="flex min-h-19.25 w-17.5 shrink-0 flex-col items-center rounded-2xl border border-gray-100 bg-[#F7FAFB] p-3">
       <div className="rounded-full bg-green-ez px-3 py-1 text-[10px] text-white">

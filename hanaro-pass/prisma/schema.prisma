@@ -130,6 +130,7 @@ model Coupon {
   longitude  Decimal        @db.Decimal(11, 8)
   description String        @db.VarChar(100)
 
+  @@index([latitude, longitude], map: "idx_coupon_location")
   @@map("Coupons")
 }
 

@@ -1,4 +1,5 @@
 import { use } from 'react';
+import CouponListServer from './components/CouponList.server';
 import MainWrapper from './components/MainWrapper';
 import Pay from './components/Pay';
 import Service from './components/Service';
@@ -21,7 +22,14 @@ export default function Page({
     rawTab && rawTab in TAB_COMPONENTS
       ? (rawTab as keyof typeof TAB_COMPONENTS)
       : 'pay';
+
   const TabComponent = TAB_COMPONENTS[tab];
+
+  const lat = 37.4979;
+  const lng = 127.0276;
+
+  const couponList =
+    tab === 'pay' ? <CouponListServer lat={lat} lng={lng} /> : null;
 
   return (
     <MainWrapper activeTab={tab}>
@@ -31,8 +39,13 @@ export default function Page({
           {tab === 'transfer' && '조회/이체'}
           {tab === 'service' && '서비스'}
         </MainWrapper.Title>
+
         <div className="app-main">
-          <TabComponent />
+          {tab === 'pay' || tab === 'remittance' ? (
+            <TabComponent couponList={couponList} />
+          ) : (
+            <TabComponent />
+          )}
         </div>
       </div>
     </MainWrapper>
