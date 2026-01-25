@@ -25,7 +25,6 @@ export function AlienDrawer({
     const result = await saveArcData(data);
 
     if (result.success) {
-      alert('외국인 등록증 정보가 안전하게 저장되었습니다.');
       if (onSubmit) onSubmit(data);
       onOpenChange(false);
     } else {
