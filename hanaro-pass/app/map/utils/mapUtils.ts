@@ -1,6 +1,8 @@
 import type { NaverSearchResult } from '../components/ui/NaverMap';
 import type { LocationInfo } from '../components/ui/PlaceCard';
+import type { ClickablePlace } from '../hooks/useMapMarkers';
 import type { Embassy } from '../mock/embassyExchange';
+import type { HospitalPlace } from '../mock/hospitalMap.mock';
 import type { SavedPlace } from '../mock/savedPlaces';
 
 const CATEGORY_MAP: Record<string, string> = {
@@ -54,3 +56,20 @@ export const mapDbToInfo = (
     distance: '',
   };
 };
+
+const hasKey = <T extends object>(obj: T, key: string): boolean => key in obj;
+
+export const isHospitalPlace = (
+  place: ClickablePlace,
+): place is HospitalPlace => hasKey(place, 'departments');
+
+export const isEmbassy = (place: ClickablePlace): place is Embassy =>
+  hasKey(place, 'nationality');
+
+export const isExchangePlace = (
+  place: ClickablePlace,
+): place is NaverSearchResult =>
+  hasKey(place, 'mapx') && hasKey(place, 'title');
+
+export const isSavedPlace = (place: ClickablePlace): place is SavedPlace =>
+  hasKey(place, 'placeName');

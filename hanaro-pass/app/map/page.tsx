@@ -23,6 +23,7 @@ import { PlaceCard } from './components/ui/PlaceCard';
 import { ToggleButton } from './components/ui/ToggleButton';
 import { useBottomSheet } from './hooks/useBottomSheet';
 import { useExchangeSearch } from './hooks/useExchangeSearch';
+import { useMarkerClick } from './hooks/useMarkerClick';
 import { type Embassy, MAP_EMBASSY_MOCK } from './mock/embassyExchange';
 import {
   HOSPITALS_MAP_MOCK,
@@ -38,7 +39,7 @@ export default function MapPage() {
   >(null);
   const [selectedHospital, setSelectedHospital] =
     useState<HospitalPlace | null>(null);
-  const [currentMapRegion, setCurrentMapRegion] = useState<string>('');
+  const [currentMapRegion, setCurrentMapRegion] = useState('');
 
   const mapControlRef = useRef<NaverMapHandle>(null);
 
@@ -71,6 +72,14 @@ export default function MapPage() {
     toggleSheet('exchange');
   }, [openSheet, toggleSheet, searchExchanges]);
 
+  const { handleMarkerClick } = useMarkerClick({
+    selectedPlace,
+    selectedHospital,
+    setSelectedPlace,
+    setSelectedHospital,
+    toggleSheet,
+  });
+
   return (
     <main className="relative h-screen w-screen overflow-hidden bg-gray-100">
       <div className="absolute inset-0 z-0">
@@ -81,55 +90,7 @@ export default function MapPage() {
           hospitals={HOSPITALS_MAP_MOCK}
           savedPlaces={SAVED_PLACES_MOCK}
           showBookmarks={bookmark}
-          onMarkerClick={(place) => {
-            if ('departments' in place) {
-              const target = place as HospitalPlace;
-              if (selectedHospital?.id === target.id) {
-                setSelectedHospital(null);
-                toggleSheet('hospital');
-              } else {
-                setSelectedHospital(target);
-                setSelectedPlace(null);
-                toggleSheet('hospital', true);
-              }
-              return;
-            }
-
-            if ('nationality' in place) return;
-
-            if ('mapx' in place && 'title' in place) {
-              const target = place as NaverSearchResult;
-              const isSame =
-                selectedPlace &&
-                'mapx' in selectedPlace &&
-                selectedPlace.mapx === target.mapx;
-              if (isSame) {
-                toggleSheet('exchange');
-                setSelectedPlace(null);
-              } else {
-                setSelectedPlace(target);
-                setSelectedHospital(null);
-                toggleSheet('exchange', true);
-              }
-              return;
-            }
-
-            if ('placeName' in place) {
-              const target = place as SavedPlace;
-              const isSame =
-                selectedPlace &&
-                'id' in selectedPlace &&
-                selectedPlace.id === target.id;
-              if (isSame) {
-                setSelectedPlace(null);
-                toggleSheet('bookmark');
-              } else {
-                setSelectedPlace(target);
-                setSelectedHospital(null);
-                toggleSheet('bookmark', true);
-              }
-            }
-          }}
+          onMarkerClick={handleMarkerClick}
           embassyData={MAP_EMBASSY_MOCK}
           showEmbassy={openSheet === 'embassy'}
           exchangeResults={exchangeResults}

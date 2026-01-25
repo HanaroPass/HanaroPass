@@ -39,7 +39,7 @@ export type NaverMapHandle = {
 
 export const NaverMap = forwardRef<NaverMapHandle, NaverMapProps>(
   (props, ref) => {
-    const containerRef = useRef<HTMLDivElement | null>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
 
     // 지도 초기화 훅
     const { mapRef, isMapReady, LATITUDE_OFFSET } = useNaverMapInit(

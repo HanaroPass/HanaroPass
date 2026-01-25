@@ -1,8 +1,8 @@
 'use client';
 
 import { useCallback, useRef, useState } from 'react';
-import { fetchExchanges } from '../actions/exchange';
 import type { NaverSearchResult } from '../components/ui/NaverMap';
+import { fetchExchanges } from '../services/naver';
 
 type NaverLocalSearchItem = {
   title: string;
@@ -20,50 +20,43 @@ export function useExchangeSearch(currentMapRegion: string) {
   const [exchangeResults, setExchangeResults] = useState<NaverSearchResult[]>(
     [],
   );
-  const lastSearchedRegionRef = useRef<string>('');
+  const lastSearchedRegionRef = useRef('');
   const [isLoading, setIsLoading] = useState(false);
 
   const searchExchanges = useCallback(async () => {
     const isSameRegion = lastSearchedRegionRef.current === currentMapRegion;
 
-    // 이미 데이터가 있고 동일 지역이면 바로 반환
-    if (exchangeResults.length > 0 && isSameRegion) {
-      return exchangeResults;
-    }
+    if (isSameRegion) return exchangeResults;
 
     setIsLoading(true);
 
     try {
-      // 지역이 바뀌었다면 검색 시작 전 기존 결과 초기화
-      if (!isSameRegion) {
-        setExchangeResults([]);
-      }
-
       const regions = currentMapRegion.split(' ');
       const guName = regions[0] || '';
       const dongName = regions[1] || '';
       const keywords = ['환전', '환전소', '머니박스', '무인환전'];
 
-      let allRawItems: NaverLocalSearchItem[] = [];
+      const allQueries = keywords.flatMap((word) => [
+        `${guName} ${guName} ${word}`,
+        `${guName} ${dongName} ${word}`,
+        `${dongName} ${word}`,
+      ]);
 
-      for (const word of keywords) {
-        const queries = [
-          `${guName} ${dongName} ${word}`,
-          `${guName} ${guName} ${word}`,
-        ];
+      const results = await Promise.allSettled(
+        allQueries.map((q) => fetchExchanges(q)),
+      );
 
-        const results = await Promise.all(
-          queries.map((q) => fetchExchanges(q)),
-        );
-
-        allRawItems = [...allRawItems, ...results.flat()];
-      }
+      const allRawItems = results.reduce((acc, result) => {
+        if (result.status === 'fulfilled') {
+          acc.push(...result.value);
+        }
+        return acc;
+      }, [] as NaverLocalSearchItem[]);
 
       const itemMap = new Map<string, NaverSearchResult>();
       for (const item of allRawItems) {
-        if (!item.mapx || !item.mapy) {
-          continue;
-        }
+        if (!item.mapx || !item.mapy) continue;
+
         const coordinateKey = `${item.mapx}-${item.mapy}`;
         if (!itemMap.has(coordinateKey)) {
           itemMap.set(coordinateKey, {
