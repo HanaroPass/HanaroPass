@@ -34,7 +34,7 @@ export function BaseDrawer({
 }: BaseDrawerProps) {
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className={className || 'mx-auto max-w-md'}>
+      <DrawerContent className={className || 'mx-auto max-w-93.75'}>
         <DrawerHeader className="relative border-b">
           <DrawerTitle className="text-center font-semibold text-base">
             {title}
