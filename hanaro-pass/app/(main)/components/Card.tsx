@@ -4,10 +4,10 @@ import { Lock } from 'lucide-react';
 import Image from 'next/image';
 import { memo, useCallback, useMemo, useRef, useState } from 'react';
 import Barcode from 'react-barcode';
-import type { CardData } from '../mock/mockCard';
+import type { UserCardResponse } from '../actions/getUserCards.schema';
 
 interface CardProps {
-  cards: CardData[];
+  cards: UserCardResponse[];
   unlockedCardIds: Set<number>;
   onLockClickAction: (id: number) => void;
 }
@@ -18,7 +18,7 @@ const CardItem = memo(
     index,
     activeIndex,
   }: {
-    card: CardData;
+    card: UserCardResponse;
     index: number;
     activeIndex: number;
   }) => {
@@ -39,11 +39,11 @@ const CardItem = memo(
         style={style}
       >
         <div
-          className={`h-41.25 w-65.5 overflow-hidden rounded-xl ${card.color} shadow-lg ring-1 ring-black/5`}
+          className={`h-41.25 w-65.5 overflow-hidden rounded-xl shadow-lg ring-1 ring-black/5`}
         >
           <Image
             src={card.imageUrl}
-            alt={card.name}
+            alt={card.cardType}
             width={262}
             height={165}
             className="h-full w-full select-none object-cover"
@@ -129,7 +129,9 @@ export default function Card({
 
       <div className="mx-auto flex h-7.5 w-65 items-center justify-between rounded-lg bg-[linear-gradient(91deg,#00D7B7_0.22%,#48AFAD_40.09%,#008485_100%)] px-2 text-white">
         <p className="font-bold text-[12px] opacity-70">잔액</p>
-        <p className="font-bold text-[12px]">{activeCard.balance}원</p>
+        <p className="font-bold text-[12px]">
+          {Number(activeCard.balance).toLocaleString()}원
+        </p>
       </div>
 
       <button

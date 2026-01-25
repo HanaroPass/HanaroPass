@@ -1,4 +1,6 @@
-import { use } from 'react';
+import { Loader } from 'lucide-react';
+import { Suspense } from 'react';
+import { getUserCardsAction } from './actions/getUserCards.action';
 import MainWrapper from './components/MainWrapper';
 import Pay from './components/Pay';
 import Service from './components/Service';
@@ -11,17 +13,19 @@ const TAB_COMPONENTS = {
   service: Service,
 } as const;
 
-export default function Page({
+export default async function Page({
   searchParams,
 }: {
   searchParams: Promise<{ tab?: string }>;
 }) {
-  const rawTab = use(searchParams)?.tab;
+  const { tab: rawTab } = await searchParams;
   const tab =
     rawTab && rawTab in TAB_COMPONENTS
       ? (rawTab as keyof typeof TAB_COMPONENTS)
       : 'pay';
+
   const TabComponent = TAB_COMPONENTS[tab];
+  const cardsPromise = tab === 'pay' ? getUserCardsAction() : null;
 
   return (
     <MainWrapper activeTab={tab}>
@@ -32,7 +36,15 @@ export default function Page({
           {tab === 'service' && '서비스'}
         </MainWrapper.Title>
         <div className="app-main">
-          <TabComponent />
+          <Suspense
+            fallback={
+              <div className="flex justify-center py-10">
+                <Loader className="animate-spin text-green-ez" />
+              </div>
+            }
+          >
+            <TabComponent cardsPromise={cardsPromise} />
+          </Suspense>
         </div>
       </div>
     </MainWrapper>

@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import { prisma } from '../lib/prisma';
+import { seedUserCards } from './seed/seedUserCards';
 
 /**
  * [API 설정]
@@ -377,6 +378,9 @@ async function main() {
   await seedUserDocs();
   await seedUserIdentityDocs();
   await seedDummyApplications();
+
+  await seedUserCards();
+
   console.log('[ 시딩 작업 완료! ]');
 }
 

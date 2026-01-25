@@ -42,7 +42,7 @@ export const COUPON_MOCKS: CouponItemType[] = [
 
 function CouponList() {
   return (
-    <div className="no-scrollbar flex justify-center gap-5 overflow-x-auto">
+    <div className="no-scrollbar flex w-full justify-center gap-1 overflow-x-auto">
       {COUPON_MOCKS.map((item) => (
         <CouponItem key={item.id} item={item} />
       ))}
