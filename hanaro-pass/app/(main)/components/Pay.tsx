@@ -23,16 +23,18 @@ export default function Pay({ cardsPromise }: PayProps) {
     setPendingCardId(id);
   }, []);
 
-  const handlePinSuccess = useCallback(() => {
-    if (pendingCardId) {
-      setUnlockedCardIds((prev) => {
-        const next = new Set(prev);
-        next.add(pendingCardId);
-        return next;
-      });
-      setPendingCardId(null);
-    }
-  }, [pendingCardId]);
+  const handlePinSuccess = useCallback((cardId: number | null) => {
+    if (cardId == null) return;
+
+    setUnlockedCardIds((prev) => {
+      if (prev.has(cardId)) return prev;
+      const next = new Set(prev);
+      next.add(cardId);
+      return next;
+    });
+
+    setPendingCardId(null);
+  }, []);
 
   return (
     <div className="relative flex flex-col gap-5 pb-16.25">
@@ -47,7 +49,7 @@ export default function Pay({ cardsPromise }: PayProps) {
 
       {pendingCardId && (
         <PinInput
-          onSuccessAction={handlePinSuccess}
+          onSuccessAction={() => handlePinSuccess(pendingCardId)}
           onCloseAction={() => setPendingCardId(null)}
         />
       )}
