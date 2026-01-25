@@ -7,7 +7,6 @@ import {
   HttpError,
   type ActionResult,
 } from '@/lib/error-handler';
-import { revalidatePath } from 'next/cache';
 
 export async function savePassportData(
   data: Record<string, string>,
@@ -64,8 +63,6 @@ export async function savePassportData(
 
     // 세션 생성 ( 여권번호 암호화 )
     await savePassportToSession(passportNumber);
-
-    revalidatePath('/docs');
 
     return {
       success: true,
