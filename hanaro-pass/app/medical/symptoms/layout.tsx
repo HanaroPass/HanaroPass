@@ -1,18 +1,18 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import type { PropsWithChildren } from 'react';
 import { Suspense } from 'react';
 import Header from '@/components/header/Header';
 
 function SymptomsHeaderSection() {
-  const pathname = usePathname();
-  const title= pathname.startsWith('/medical/symptoms/recommend')? 'AI 병원 추천' : 'AI 번역';
+  const searchParams = useSearchParams();
+  const mode = searchParams.get('mode');
 
-  return <Header title={title} />
-  
+  const title = mode === 'recommend' ? 'AI 병원 추천' : 'AI 번역';
+
+  return <Header title={title} />;
 }
-
 export default function SymptomsLayout({ children }: PropsWithChildren) {
   return (
     <div className="app-layout">
