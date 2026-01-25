@@ -53,7 +53,9 @@ export function useMarkerClick({
         const isSame =
           selectedPlace &&
           'mapx' in selectedPlace &&
-          selectedPlace.mapx === place.mapx;
+          'mapy' in selectedPlace &&
+          selectedPlace.mapx === place.mapx &&
+          selectedPlace.mapy === place.mapy;
         if (isSame) {
           toggleSheet('exchange');
           setSelectedPlace(null);

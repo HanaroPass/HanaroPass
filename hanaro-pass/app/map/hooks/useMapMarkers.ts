@@ -138,11 +138,13 @@ export function useMapMarkers({
     }
   }, [isMapReady, map, activeCategory, hospitals, createMarker, onMarkerClick]);
 
-  // 환전소 마커 관리 (지오코딩 비동기 로직 포함)
+  // 환전소 마커 관리
   useEffect(() => {
     if (!isMapReady || !map) return;
 
-    // 환전소를 꺼야할 때 처리
+    // 취소 플래그
+    let cancelled = false;
+
     if (!showExchanges || !exchangeResults || exchangeResults.length === 0) {
       exchangeMarkersRef.current.forEach((m) => {
         m.setMap(null);
@@ -197,7 +199,12 @@ export function useMapMarkers({
     });
 
     Promise.all(geocodePromises).then((results) => {
-      if (!showExchanges || currentExchangeKeyRef.current !== resultsKey)
+      // 데이터가 왔을 때 이미 이펙트가 끝났다면 무시
+      if (
+        cancelled ||
+        !showExchanges ||
+        currentExchangeKeyRef.current !== resultsKey
+      )
         return;
 
       exchangeMarkersRef.current = results
@@ -213,6 +220,11 @@ export function useMapMarkers({
         })
         .filter((m): m is naver.maps.Marker => m !== null);
     });
+
+    // 클린업 함수에서 플래그를 true로 변경
+    return () => {
+      cancelled = true;
+    };
   }, [
     isMapReady,
     map,
