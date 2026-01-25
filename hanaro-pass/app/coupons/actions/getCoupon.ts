@@ -1,7 +1,7 @@
 'use server';
 
 import { z } from 'zod';
-import type { CouponCategory } from '@/constants/couponCategory';
+import type { CouponCategory } from '@/lib/generated/prisma/client';
 import { prisma } from '@/lib/prisma';
 
 const CouponDetailRequest = z.object({

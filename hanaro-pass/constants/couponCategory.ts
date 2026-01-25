@@ -6,5 +6,3 @@ export const COUPON_CATEGORY_TABS = [
   { value: 'ACTIVITY', label: '액티비티' },
   { value: 'TRAVEL', label: '여행/숙박' },
 ] as const;
-
-export type CouponCategory = (typeof COUPON_CATEGORY_TABS)[number]['value'];
