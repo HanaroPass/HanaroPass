@@ -2,23 +2,50 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { hospitalLocations } from '@/app/map/mock/hospitalFilter.mock';
-import type { HospitalPlace } from '@/app/map/mock/hospitalMap.mock';
 import { Button } from '@/components/ui/button';
 import DepartmentFilterPanel from './DepartmentFilterPanel';
 import FilterPanel from './FilterPanel';
 import { HospitalCard } from './HospitalCard';
 import LanguageFilterPanel from './LanguageFilterPanel';
 
+function getHospitalStatus(openHours: string): '진료 중' | '진료 종료' {
+  const [open, close] = openHours.split('-');
+  const now = new Date();
+
+  const [openH, openM] = open.split(':').map(Number);
+  const [closeH, closeM] = close.split(':').map(Number);
+
+  const openTime = new Date(now);
+  openTime.setHours(openH, openM, 0, 0);
+
+  const closeTime = new Date(now);
+  closeTime.setHours(closeH, closeM, 0, 0);
+
+  return now >= openTime && now < closeTime ? '진료 중' : '진료 종료';
+}
+
 type FilterType = 'language' | 'department' | null;
 type Mode = 'list' | 'detail';
 
-type Props = {
-  mode: Mode;
-  hospital?: HospitalPlace;
+type Hospital = {
+  id: number;
+  nameKo: string;
+  address: string;
+  phone: string | null;
+  openHours: string;
+  imageUrl?: string | null;
+  languages: string[];
+  departments: string[];
+  aiSummary?: string;
 };
 
-export function HospitalContent({ mode, hospital }: Props) {
+type Props = {
+  mode: Mode;
+  hospitals: Hospital[];
+  hospital?: Hospital;
+};
+
+export function HospitalContent({ mode, hospitals, hospital }: Props) {
   const router = useRouter();
   const [active, setActive] = useState<FilterType>(null);
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
@@ -34,16 +61,16 @@ export function HospitalContent({ mode, hospital }: Props) {
       <div className="flex h-full flex-col px-6 pt-2">
         <HospitalCard
           hospital={{
-            name: hospital.name,
-            cardLanguage: hospital.languages.join(', '),
-            cardDepartment: hospital.departments.join(', '),
-            status: '진료 중',
+            name: hospital.nameKo,
+            status: getHospitalStatus(hospital.openHours),
             openTime: hospital.openHours.split('-')[0],
             closeTime: hospital.openHours.split('-')[1],
             address: hospital.address,
-            phone: hospital.phone,
-            languages: hospital.languages,
-            departments: hospital.departments,
+            phone: hospital.phone ?? '-',
+            langName: hospital.languages.join(', '),
+            deptName: hospital.departments.join(', '),
+            imageUrl: hospital.imageUrl,
+            aiSummary: hospital.aiSummary,
           }}
         />
 
@@ -71,14 +98,14 @@ export function HospitalContent({ mode, hospital }: Props) {
   const languageLabel = makeLabel(selectedLanguages, '소통 가능 언어');
   const departmentLabel = makeLabel(selectedDepartments, '진료 과목');
 
-  const filteredHospitals = hospitalLocations.filter((hospital) => {
+  const filteredHospitals = hospitals.filter((h) => {
     const languageMatch =
       selectedLanguages.length === 0 ||
-      selectedLanguages.some((lang) => hospital.languages.includes(lang));
+      selectedLanguages.some((lang) => h.languages.includes(lang));
 
     const departmentMatch =
       selectedDepartments.length === 0 ||
-      selectedDepartments.some((dep) => hospital.departments.includes(dep));
+      selectedDepartments.some((dep) => h.departments.includes(dep));
 
     return languageMatch && departmentMatch;
   });
@@ -138,24 +165,35 @@ export function HospitalContent({ mode, hospital }: Props) {
 
       {/* 병원 리스트 */}
       <div className="flex-1 overflow-y-auto px-6 pt-3">
-        {filteredHospitals.map((hospital, idx) => (
-          <div
-            key={hospital.name}
-            className={
-              idx === filteredHospitals.length - 1
-                ? ''
-                : 'border-gray-300 border-b'
-            }
-          >
-            <HospitalCard hospital={hospital} />
-          </div>
-        ))}
+        {filteredHospitals.map((h, idx) => {
+          const [openTime, closeTime] = h.openHours.split('-');
 
-        {filteredHospitals.length === 0 && (
-          <div className="py-10 text-center text-gray-400 text-sm">
-            조건에 맞는 병원이 없어요
-          </div>
-        )}
+          return (
+            <div
+              key={h.id}
+              className={
+                idx === filteredHospitals.length - 1
+                  ? ''
+                  : 'border-gray-300 border-b'
+              }
+            >
+              <HospitalCard
+                hospital={{
+                  name: h.nameKo,
+                  status: getHospitalStatus(h.openHours),
+                  openTime,
+                  closeTime,
+                  address: h.address,
+                  phone: h.phone ?? '-',
+                  langName: h.languages.join(', '),
+                  deptName: h.departments.join(', '),
+                  imageUrl: h.imageUrl,
+                  aiSummary: h.aiSummary,
+                }}
+              />
+            </div>
+          );
+        })}
       </div>
 
       <div className="border-[#F0F3F4] border-t bg-white px-6 py-4">
