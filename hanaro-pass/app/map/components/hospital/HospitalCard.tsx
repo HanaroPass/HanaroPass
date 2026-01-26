@@ -1,6 +1,7 @@
 import { MapPin, Phone, Clock, Sparkles } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
+import AIResultIcon from '../../../../components/ui/AIResultIcon';
 
 export type HospitalInfo = {
   name: string;
@@ -106,8 +107,8 @@ export function HospitalCard({ hospital }: { hospital: HospitalInfo }) {
       {/* ================= 하단: AI 한줄 요약 (전체 폭) ================= */}
       <div className="mt-5 rounded-xl border bg-gray-50 px-4 py-3">
         <div className="flex items-center gap-2 font-semibold text-gray-800 text-sm">
-          <Sparkles className="h-4 w-4 text-teal-500" />
-          AI 한줄 요약
+          <AIResultIcon size="sm" />
+          <span>AI 한줄 요약</span>
         </div>
 
         <p className="mt-1 text-[13px] text-gray-600 leading-snug">
