@@ -33,6 +33,7 @@ export default function useSymptomResult() {
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    if (isLoading) return;
     e.preventDefault();
     setLoading(true);
     try {

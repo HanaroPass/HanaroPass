@@ -4,9 +4,8 @@ import Image from 'next/image';
 import ActionButton from '@/components/ui/ActionButton';
 import SymptomRadioGroup from '../../components/symptom/SymptomRadioGroup';
 import useSymptomResult from '../../hooks/useSymptomResult';
-import { Suspense } from 'react';
 
-function SymptomAnalyzeContent() {
+export default function SymptomAnalyzeContent() {
   const {
     images,
     imageUrls,
@@ -117,19 +116,5 @@ function SymptomAnalyzeContent() {
         </form>
       </div>
     </>
-  );
-}
-
-export default function SymptomAnalyzePage() {
-  return (
-    <Suspense
-      fallback={
-        <div className="p-10 text-center text-gray-400">
-          화면을 불러오는 중입니다...
-        </div>
-      }
-    >
-      <SymptomAnalyzeContent />
-    </Suspense>
   );
 }

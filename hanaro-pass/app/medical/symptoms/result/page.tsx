@@ -1,21 +1,16 @@
 'use client';
 import { Check, Copy, Loader } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Suspense, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import ActionButton from '@/components/ui/ActionButton';
 import AIResultIcon from '../../../../components/ui/AIResultIcon';
-import {
-  getTTS,
-  type outputType,
-  parseOutput,
-  postSymptomForm,
-} from '../../actions/symptoms';
+import { getTTS, type outputType, parseOutput } from '../../actions/symptoms';
 import HospitalGuide from '../../components/languageRegistration/HospitalGuide';
 import EmergencyBadge from '../../components/symptom/EmergencyBadge';
 import Symptom from '../../components/symptom/Symptom';
 import useSymptomResubmit from '../../hooks/useSymptomResubmit';
 
-function SymptomResultContent() {
+export default function SymptomResultContent() {
   const [writtenSymptom, setWrittenSymptom] = useState('');
   const [result, setResult] = useState<outputType>();
   const [copied, setCopied] = useState(false);
@@ -125,7 +120,16 @@ function SymptomResultContent() {
           className="black-800 mt-3 h-35 w-full resize-none rounded-2xl bg-gray-200 p-4 text-sm"
           name="description"
         />
-        <ActionButton onClick={() => {}} text="다시 번역하기" invert={true} />
+        {isLoading ? (
+          <ActionButton
+            onClick={() => {}}
+            text="번역 및 분석 중..."
+            disabled
+            invert={true}
+          />
+        ) : (
+          <ActionButton onClick={() => {}} text="다시 번역하기" />
+        )}
       </form>
       <div className="mt-7 text-black-800 text-sm">AI 번역 내용</div>
       <div className="relative mt-3 mb-7 w-full rounded-2xl bg-gray-200 p-6 text-black-800 text-sm">
@@ -137,7 +141,7 @@ function SymptomResultContent() {
             <Check className="h-4.5 w-4.5 text-green-600" />
           ) : (
             <Copy className="h-4.5 w-4.5" />
-          )}{' '}
+          )}
         </button>
 
         <div>{result?.번역_내용}</div>
@@ -150,34 +154,22 @@ function SymptomResultContent() {
       <div className="mt-4 mb-6">
         {mode === 'recommend' ? (
           <ActionButton
-            onClick={() => router.push('/medical/symptoms/recommend')}
+            onClick={() => {
+              localStorage.removeItem('symptom-images');
+              router.push('/medical/symptoms/recommend');
+            }}
             text="병원 추천 보러가기"
           />
         ) : (
           <ActionButton
-            onClick={() => router.push('/map')}
+            onClick={() => {
+              localStorage.removeItem('symptom-images');
+              router.push('/map');
+            }}
             text="지도로 돌아가기"
           />
         )}
       </div>
     </div>
-  );
-}
-
-export default function SymptomResultPage() {
-  return (
-    <Suspense
-      fallback={
-        <div className="flex min-h-screen items-center justify-center">
-          <div className="text-center">
-            <p className="animate-pulse text-gray-500">
-              결과를 정리하고 있습니다...
-            </p>
-          </div>
-        </div>
-      }
-    >
-      <SymptomResultContent />
-    </Suspense>
   );
 }
