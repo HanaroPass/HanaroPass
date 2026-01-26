@@ -1,11 +1,11 @@
 'use server';
 
 import { prisma } from '@/lib/prisma';
-import { getUserId } from '@/lib/user';
+import { getUserIdFromSession } from '@/lib/session';
 
 // 서류 보유 상태 가져오기
 export async function getDocsStatus() {
-  const userId = await getUserId();
+  const userId = await getUserIdFromSession();
   if (!userId) return null;
 
   const [passport, arc, docs] = await Promise.all([
@@ -29,17 +29,4 @@ export async function getDocsStatus() {
       PHOTO: docTypes.has('PHOTO'),
     },
   };
-}
-
-// 사용자 이름 가져오기
-export async function getUserName() {
-  const userId = await getUserId();
-  if (!userId) return null;
-
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { nickname: true },
-  });
-
-  return user?.nickname ?? null;
 }

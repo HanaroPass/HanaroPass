@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { type LanguageId, NAME_TO_ID } from '../constants/language';
-import { LanguageInfoSchema } from './admin-application.schema';
+import { LanguageInfoSchema } from './adminApplication.schema';
 
 export const IdSchema = z.number().int().positive(); // ID는 양의 정수
 export const SubmitSchema = z.object({
