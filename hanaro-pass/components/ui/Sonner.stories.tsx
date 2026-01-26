@@ -4,7 +4,7 @@ import { Toaster } from '@/components/ui/sonner';
 import { Button } from '@/components/ui/button';
 
 const meta: Meta = {
-  title: 'Components/Common/Toast',
+  title: 'Components/PopUp/Toast',
   parameters: {
     layout: 'centered',
   },
