@@ -16,6 +16,7 @@ import {
   AdminReviewDetailSchema,
   UpdateStatusSchema,
 } from '../schemas/adminApplication.schema';
+import { triggerPushNotification } from './push.action';
 
 /**
  * [관리자 대시보드 데이터 조회]
@@ -123,6 +124,9 @@ export async function updateApplicationStatusAction(
     await prisma.$transaction(async (tx) => {
       const app = await tx.hospitalLanguageApplication.findUnique({
         where: { id: vId },
+        include: {
+          Hospital: { select: { nameKo: true } },
+        },
       });
       if (!app) throw new HttpError('처리 가능한 신청 내역이 아닙니다.', 400);
 
@@ -149,6 +153,18 @@ export async function updateApplicationStatusAction(
           })),
         });
       }
+
+      const pushTitle = '[하나로패스] 신청 심사 결과 안내';
+      const pushBody =
+        vStatus === 'APPROVED'
+          ? `축하합니다! ${app.Hospital.nameKo}의 신청이 승인되었습니다. `
+          : `안타깝게도 ${app.Hospital.nameKo}의 신청이 반려되었습니다.`;
+
+      const targetUrl = '/medical/status'; // 알림 클릭 시 이동할 페이지
+
+      triggerPushNotification(app.userId, pushTitle, pushBody, targetUrl).catch(
+        (err) => console.error('[알림 오류]:', err),
+      );
     });
 
     return { success: true, data: null };
