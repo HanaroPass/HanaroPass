@@ -95,7 +95,7 @@ export function PlaceCard({ data }: PlaceCardProps) {
         <button
           type="button"
           onClick={handleNavigation}
-          aria-label={`길찾기: ${data.name}`}
+          aria-label={`네이버 지도 연결: ${data.name}`}
           className="flex items-center justify-center gap-2 rounded-full border border-black-200 bg-white px-2 py-1 text-black-800 text-sm"
         >
           <Globe className="h-4 w-4" />
