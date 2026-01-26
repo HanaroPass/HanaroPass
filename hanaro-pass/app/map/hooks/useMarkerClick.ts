@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import type { SavedPlace } from '@/lib/generated/prisma';
 import type { NaverSearchResult } from '../components/ui/NaverMap';
 import type { Embassy } from '../mock/embassyExchange';
-import type { HospitalPlace } from '../mock/hospitalMap.mock';
+import type { Hospital } from '../page';
 import {
   isEmbassy,
   isExchangePlace,
@@ -15,11 +15,11 @@ type SheetType = 'hospital' | 'embassy' | 'exchange' | 'bookmark' | 'siren';
 
 type UseMarkerClickProps = {
   selectedPlace: SavedPlace | Embassy | NaverSearchResult | null;
-  selectedHospital: HospitalPlace | null;
+  selectedHospital: Hospital | null;
   setSelectedPlace: (
     place: SavedPlace | Embassy | NaverSearchResult | null,
   ) => void;
-  setSelectedHospital: (hospital: HospitalPlace | null) => void;
+  setSelectedHospital: (hospital: Hospital | null) => void;
   toggleSheet: (type: SheetType, open?: boolean) => void;
 };
 
@@ -34,12 +34,13 @@ export function useMarkerClick({
     (place: ClickablePlace) => {
       // 병원
       if (isHospitalPlace(place)) {
+        setSelectedPlace(null);
+
         if (selectedHospital?.id === place.id) {
           setSelectedHospital(null);
           toggleSheet('hospital');
         } else {
           setSelectedHospital(place);
-          setSelectedPlace(null);
           toggleSheet('hospital', true);
         }
         return;

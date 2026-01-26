@@ -5,7 +5,7 @@ import type { SavedPlace } from '@/lib/generated/prisma';
 import { type ClickablePlace, useMapMarkers } from '../../hooks/useMapMarkers';
 import { useNaverMapInit } from '../../hooks/useNaverMapInit';
 import type { Embassy } from '../../mock/embassyExchange';
-import type { HospitalPlace } from '../../mock/hospitalMap.mock';
+import type { Hospital } from '../../page';
 
 export type NaverSearchResult = {
   title: string;
@@ -26,7 +26,7 @@ type NaverMapProps = {
   embassyData?: Embassy;
   exchangeResults?: NaverSearchResult[];
   showBookmarks?: boolean;
-  hospitals?: HospitalPlace[];
+  hospitals?: Hospital[];
   activeCategory?: 'hospital' | 'embassy' | 'exchange' | null;
   showEmbassy?: boolean;
   showExchanges?: boolean;

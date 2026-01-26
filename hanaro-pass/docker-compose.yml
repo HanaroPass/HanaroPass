@@ -13,9 +13,13 @@ services:
     command:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
+      - --skip-character-set-client-handshake
       - --log_bin_trust_function_creators=1
       - --default-time-zone=Asia/Seoul
       - --innodb_ft_min_token_size=2
+      - --innodb_ft_enable_stopword=OFF
+      - --init-connect='SET NAMES utf8mb4'
+
     
     volumes:
       - ./mysql:/var/lib/mysql

@@ -5,18 +5,18 @@ import type { SavedPlace } from '@/lib/generated/prisma';
 import type { NaverSearchResult } from '../components/ui/NaverMap';
 import { MARKER_ICONS } from '../constants/map';
 import type { Embassy } from '../mock/embassyExchange';
-import type { HospitalPlace } from '../mock/hospitalMap.mock';
+import type { Hospital } from '../page';
 
 export type ClickablePlace =
   | SavedPlace
   | Embassy
   | NaverSearchResult
-  | HospitalPlace;
+  | Hospital;
 
 type UseMapMarkersProps = {
   map: naver.maps.Map | null;
   isMapReady: boolean;
-  hospitals?: HospitalPlace[];
+  hospitals?: Hospital[];
   savedPlaces?: SavedPlace[];
   embassyData?: Embassy;
   exchangeResults?: NaverSearchResult[];

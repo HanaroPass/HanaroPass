@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { SavedPlace } from '@/lib/generated/prisma';
+import { getHospitals } from './actions/hospitals';
 import { getSavedPlaces } from './actions/savedPlaces';
 import { EmbassyContent } from './components/embassy/EmbassyContent';
 import { ExchangeContent } from './components/exchange/ExchangeContent';
@@ -27,11 +28,28 @@ import { useBottomSheet } from './hooks/useBottomSheet';
 import { useExchangeSearch } from './hooks/useExchangeSearch';
 import { useMarkerClick } from './hooks/useMarkerClick';
 import { type Embassy, MAP_EMBASSY_MOCK } from './mock/embassyExchange';
-import {
-  HOSPITALS_MAP_MOCK,
-  type HospitalPlace,
-} from './mock/hospitalMap.mock';
 import { formatExchangeData, mapDbToInfo } from './utils/mapUtils';
+
+/**
+ * @page MapPage
+ * @description 지도 기반 서비스의 메인 페이지입니다.
+ * Naver Map을 배경으로 깔고, 상단 카테고리 탭과 우측 퀵 버튼, 하단 바텀시트를 조합합니다.
+ * useBottomSheet 커스텀 훅을 사용하여 시트 관련 모든 로직을 주입받아 사용합니다.
+ */
+
+export type Hospital = {
+  id: number;
+  nameKo: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+  phone: string | null;
+  openHours: string;
+  languages: string[];
+  departments: string[];
+  imageUrl?: string | null;
+  aiSummary?: string;
+};
 
 export default function MapPage() {
   const [bookmark, setBookmark] = useState<boolean>(false);
@@ -41,10 +59,25 @@ export default function MapPage() {
   const [selectedPlace, setSelectedPlace] = useState<
     SavedPlace | Embassy | NaverSearchResult | null
   >(null);
-
-  const [selectedHospital, setSelectedHospital] =
-    useState<HospitalPlace | null>(null);
+  const [selectedHospital, setSelectedHospital] = useState<Hospital | null>(
+    null,
+  );
+  const [hospitals, setHospitals] = useState<Hospital[]>([]);
   const [currentMapRegion, setCurrentMapRegion] = useState('');
+
+  useEffect(() => {
+    const loadHospitals = async () => {
+      try {
+        const data = await getHospitals();
+        setHospitals(data);
+      } catch (error) {
+        console.error('병원 목록을 불러오는데 실패했습니다.', error);
+        setHospitals([]);
+      }
+    };
+
+    loadHospitals();
+  }, []);
 
   const mapControlRef = useRef<NaverMapHandle>(null);
 
@@ -112,7 +145,7 @@ export default function MapPage() {
           ref={mapControlRef}
           onMapMoved={setCurrentMapRegion}
           activeCategory={openSheet === 'hospital' ? 'hospital' : null}
-          hospitals={HOSPITALS_MAP_MOCK}
+          hospitals={hospitals}
           savedPlaces={savedPlaces}
           showBookmarks={bookmark}
           onMarkerClick={handleMarkerClick}
@@ -132,7 +165,7 @@ export default function MapPage() {
           iconColorVariant="red"
           onClick={() => {
             setSelectedHospital(null);
-            toggleSheet('hospital', true);
+            toggleSheet('hospital');
           }}
         />
         <ToggleButton
@@ -212,6 +245,7 @@ export default function MapPage() {
         {openSheet === 'hospital' && (
           <HospitalContent
             mode={selectedHospital ? 'detail' : 'list'}
+            hospitals={hospitals}
             hospital={selectedHospital ?? undefined}
           />
         )}

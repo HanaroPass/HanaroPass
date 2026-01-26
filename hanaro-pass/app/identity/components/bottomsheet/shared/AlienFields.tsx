@@ -27,12 +27,12 @@ function DatePicker({
   onChange: (date: string) => void;
 }) {
   const [date, setDate] = useState<Date | undefined>(() =>
-    value ? parse(value, 'yyyy.MM.dd', new Date()) : undefined,
+    value ? parse(value, 'yyyy-MM-dd', new Date()) : undefined,
   );
 
   useEffect(() => {
     if (value) {
-      setDate(parse(value, 'yyyy.MM.dd', new Date()));
+      setDate(parse(value, 'yyyy-MM-dd', new Date()));
     } else {
       setDate(undefined);
     }
@@ -47,7 +47,7 @@ function DatePicker({
           className="h-12 w-full justify-start border-0 bg-gray-50 text-left font-normal"
         >
           {date ? (
-            format(date, 'yyyy.MM.dd', { locale: ko })
+            format(date, 'yyyy-MM-dd', { locale: ko })
           ) : (
             <span className="text-gray-400">날짜 선택</span>
           )}
@@ -61,7 +61,7 @@ function DatePicker({
           onSelect={(newDate) => {
             setDate(newDate);
             if (newDate) {
-              onChange(format(newDate, 'yyyy.MM.dd'));
+              onChange(format(newDate, 'yyyy-MM-dd'));
             }
           }}
           locale={ko}
@@ -123,8 +123,8 @@ export function AlienExtraFields({
         <Input
           type="text"
           placeholder="D-8"
-          value={formData.residenceType || ''}
-          onChange={(e) => updateField('residenceType', e.target.value)}
+          value={formData.residenceStatus || ''}
+          onChange={(e) => updateField('residenceStatus', e.target.value)}
           className="h-12 border-0 bg-gray-50"
         />
       </div>
@@ -134,7 +134,7 @@ export function AlienExtraFields({
         <Label className="font-normal text-gray-600 text-sm">발급일자</Label>
         <DatePicker
           value={formData.issueDate}
-          onChange={(date) => updateField('issueDate', date)}
+          onChange={(date) => updateField('issuedDate', date)}
         />
       </div>
     </>

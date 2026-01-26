@@ -34,12 +34,12 @@ function DatePicker({
   onChange: (date: string) => void;
 }) {
   const [date, setDate] = useState<Date | undefined>(() =>
-    value ? parse(value, 'yyyy.MM.dd', new Date()) : undefined,
+    value ? parse(value, 'yyyy-MM-dd', new Date()) : undefined,
   );
 
   useEffect(() => {
     if (value) {
-      setDate(parse(value, 'yyyy.MM.dd', new Date()));
+      setDate(parse(value, 'yyyy-MM-dd', new Date()));
     } else {
       setDate(undefined);
     }
@@ -54,7 +54,7 @@ function DatePicker({
           className="h-12 w-full justify-start border-0 bg-gray-50 text-left font-normal"
         >
           {date ? (
-            format(date, 'yyyy.MM.dd', { locale: ko })
+            format(date, 'yyyy-MM-dd', { locale: ko })
           ) : (
             <span className="text-gray-400">날짜 선택</span>
           )}
@@ -68,7 +68,7 @@ function DatePicker({
           onSelect={(newDate) => {
             setDate(newDate);
             if (newDate) {
-              onChange(format(newDate, 'yyyy.MM.dd'));
+              onChange(format(newDate, 'yyyy-MM-dd'));
             }
           }}
           locale={ko}
@@ -108,8 +108,8 @@ export function PassportFields({
             <SelectValue placeholder="선택하세요" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="M">M</SelectItem>
-            <SelectItem value="F">F</SelectItem>
+            <SelectItem value="MALE">M</SelectItem>
+            <SelectItem value="FEMALE">F</SelectItem>
           </SelectContent>
         </Select>
       </div>

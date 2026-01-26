@@ -1,6 +1,6 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { getRegistrationResultAction } from '../actions/language-regist.action';
+import { getRegistrationResultAction } from '../actions/languageRegist.action';
 import type { StatusType } from '../constants/statusConfig';
 
 export function useRegistrationResult() {
