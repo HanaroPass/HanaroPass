@@ -16,9 +16,16 @@ export default function AuthStatusWrapper() {
 
   useEffect(() => {
     const fetchStatus = async () => {
-      const result = await checkAuthStatusAction();
-      setIsLoggedIn(result.success);
-      setIsLoading(false);
+      try {
+        const result = await checkAuthStatusAction();
+        setIsLoggedIn(result.success);
+      } catch (error) {
+        console.error('인증 상태 확인 중 오류 발생:', error);
+        alert('인증 상태 확인 중 오류가 발생했습니다.');
+        setIsLoggedIn(false);
+      } finally {
+        setIsLoading(false);
+      }
     };
     if (!isPending) {
       fetchStatus();
