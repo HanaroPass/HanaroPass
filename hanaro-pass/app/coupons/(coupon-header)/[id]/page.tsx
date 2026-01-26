@@ -1,4 +1,17 @@
+import { notFound } from 'next/navigation';
+import { prisma } from '@/lib/prisma';
+import {
+  type CouponDetailResponse,
+  getCouponById,
+} from '../../actions/getCoupon';
 import CouponDetail from '../../components/coupon/CouponDetail';
+
+export const revalidate = 3600;
+
+export async function generateStaticParams() {
+  const coupons = await prisma.coupon.findMany({ select: { id: true } });
+  return coupons.map((coupon) => ({ id: coupon.id.toString() }));
+}
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -6,21 +19,19 @@ type PageProps = {
 
 export default async function Page({ params }: PageProps) {
   const { id } = await params;
-
-  const data = {
-    brandPic:
-      'https://blog.kakaocdn.net/dna/lMgCJ/btqVvPDO1IB/AAAAAAAAAAAAAAAAAAAAAMppshZ7hQfAA8C0R-uK8w62V9O4BJYwNvifeBrHKjK8/img.jpg?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1769871599&allow_ip=&allow_referer=&signature=rXZhIFRLxIpT%2FxAqf7MMHNb%2Bdgc%3D',
-    brandName: '스타벅스',
-    tag: '#커피 전문점',
-    couponNumber: `HN-${id}-001234`,
-  };
+  let coupon: CouponDetailResponse;
+  try {
+    coupon = await getCouponById({ id });
+  } catch {
+    notFound();
+  }
 
   return (
     <CouponDetail
-      brandPic={data.brandPic}
-      brandName={data.brandName}
-      tag={data.tag}
-      couponNumber={data.couponNumber}
+      brandPic={coupon.brandPic}
+      brandName={coupon.brandName}
+      tag={coupon.tag ?? ''}
+      couponNumber={coupon.couponCode}
     />
   );
 }

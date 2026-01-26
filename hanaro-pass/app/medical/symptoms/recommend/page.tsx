@@ -94,8 +94,13 @@ export default function SymptomRecommendPage() {
   const checked = 'border-green-ez text-green-ez';
 
   return (
+<<<<<<< HEAD
     <div className="">
       <div className="space-y-4 px-4 py-6">
+=======
+    <div className="app-layout">
+      <div className="app-main space-y-4 px-4 py-6">
+>>>>>>> 247c92ce9df496738cede6cc1a78782afec23f43
         <h2 className="font-semibold text-lg">HANA 손님의 맞춤형 병원</h2>
         <p className="text-gray-500 text-sm">
           외국인 진료가 가능한 병원이에요.
