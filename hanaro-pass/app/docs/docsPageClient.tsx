@@ -75,7 +75,7 @@ export default function DocsPageClient({ userName, docStatus }: UserProps) {
                 setIsSheetOpen(false);
                 // 여권 혹은 외국인등록증을 선택한 경우 인트로 페이지로 이동
                 if (id === 'passport' || id === 'arc') {
-                  router.push('/identity?step=intro');
+                  router.push('/identity?step=intro&from=docs');
                 } else {
                   // 기타 일반 서류
                   router.push(`/docs/add/${id}`);

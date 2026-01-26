@@ -5,16 +5,16 @@ import { getUserIdFromSession } from '@/lib/session';
 
 export type IdentityPayload =
   | { type: 'passport'; data: Record<string, string> }
-  | { type: 'alien'; data: Record<string, string> }
+  | { type: 'arc'; data: Record<string, string> }
   | { type: null; data: null };
 
 // 신분증 or 여권 보유
 export async function getIdentityData(): Promise<{
   passport: Record<string, string> | null;
-  alien: Record<string, string> | null;
+  arc: Record<string, string> | null;
 }> {
   const userId = await getUserIdFromSession();
-  if (!userId) return { passport: null, alien: null };
+  if (!userId) return { passport: null, arc: null };
 
   const [passport, arc] = await Promise.all([
     prisma.passport.findUnique({
@@ -51,11 +51,11 @@ export async function getIdentityData(): Promise<{
         }
       : null,
 
-    alien: arc
+    arc: arc
       ? {
           arcNumber: arc.arcNumber,
           residenceStatus: arc.residenceStatus,
-          issuedDate: toDateString(arc.issueDate),
+          issueDate: toDateString(arc.issueDate),
           userPhotoUrl: arc.userPhotoUrl ?? '',
         }
       : null,

@@ -35,10 +35,9 @@ export default function ResultStep({
     string,
     string
   > | null>(null);
-  const [alienData, setAlienData] = useState<Record<string, string> | null>(
-    null,
-  );
+  const [arcData, setArcData] = useState<Record<string, string> | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -46,22 +45,24 @@ export default function ResultStep({
     const fetchData = async () => {
       try {
         setIsLoading(true);
+        setError(null);
         const res = await getIdentityData();
 
         if (!mounted) return;
 
         setPassportData(res.passport);
-        setAlienData(res.alien);
+        setArcData(res.arc);
 
         if (typeParam) {
           setActiveTab(typeParam);
         } else {
           // 파라미터가 없으면 데이터가 있는 쪽으로 자동 전환
           if (res.passport) setActiveTab('passport');
-          else if (res.alien) setActiveTab('arc');
+          else if (res.arc) setActiveTab('arc');
         }
       } catch (error) {
         console.error('Failed to fetch identity data:', error);
+        if (mounted) setError('데이터를 불러오는데 실패했습니다.');
       } finally {
         if (mounted) setIsLoading(false);
       }
@@ -84,8 +85,8 @@ export default function ResultStep({
     if (initialData && activeTab === identityType) {
       return initialData;
     }
-    return activeTab === 'passport' ? passportData : alienData;
-  }, [activeTab, identityType, initialData, passportData, alienData]);
+    return activeTab === 'passport' ? passportData : arcData;
+  }, [activeTab, identityType, initialData, passportData, arcData]);
 
   return (
     <>
@@ -125,6 +126,10 @@ export default function ResultStep({
           {isLoading ? (
             <div className="flex h-full items-center justify-center">
               로딩 중...
+            </div>
+          ) : error ? (
+            <div className="flex h-full items-center justify-center text-red-500">
+              {error}
             </div>
           ) : currentDisplayData ? (
             <div className="flex h-full flex-col">

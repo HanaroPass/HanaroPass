@@ -27,20 +27,27 @@ export default function IntroStep({
   const guideRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    let mounted = true;
+
     const checkUserIdentity = async () => {
       try {
         const res = await getIdentityData();
+        if (!mounted) return;
         // 데이터가 있으면 true, 없으면 false (null 체크)
         setHasPassport(!!res.passport);
-        setHasArc(!!res.alien);
+        setHasArc(!!res.arc);
       } catch (error) {
         console.error('데이터 로드 실패:', error);
       } finally {
-        setIsLoading(false);
+        if (mounted) setIsLoading(false);
       }
     };
 
     checkUserIdentity();
+
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   const handleGuideToggle = () => {

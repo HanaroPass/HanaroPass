@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import AccountStep from './steps/AccountStep';
 import IntroStep from './steps/IntroStep';
 import ResultStep from './steps/ResultStep';
-import { logout } from './actions/test';
+// import { logout } from './actions/test';
 import { useFunnel } from './hooks/useFunnel';
 import OCRPageContent from './ocr/OCRPageContent';
 
@@ -53,7 +53,7 @@ export default function IdentityPageClient() {
   if (currentStep === 'intro') {
     return (
       <>
-        {/* 테스트를 위한 로그아웃 버튼 */}
+        {/* 테스트를 위한 로그아웃 버튼
         <button
           type="button"
           onClick={async () => {
@@ -66,7 +66,7 @@ export default function IdentityPageClient() {
           }}
         >
           로그아웃(세션삭제)
-        </button>
+        </button> */}
 
         <IntroStep
           onSelectIdentityType={(type) => {
