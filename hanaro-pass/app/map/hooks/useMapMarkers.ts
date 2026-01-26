@@ -99,15 +99,12 @@ export function useMapMarkers({
   useEffect(() => {
     if (!isMapReady || !map) return;
 
-    // 1. 기존 마커 싹 지우기
     embassyMarkersRef.current.forEach((m) => {
       m.setMap(null);
     });
     embassyMarkersRef.current = [];
 
-    // 2. 새 마커 생성
     if (showEmbassy && embassyData) {
-      // 🌟 배열이므로 forEach로 반복해야 합니다.
       embassyData.forEach((embassy) => {
         const m = createMarker(
           Number(embassy.latitude),
@@ -116,7 +113,6 @@ export function useMapMarkers({
           () => onMarkerClick(embassy),
         );
 
-        // 생성된 마커 저장
         if (m) embassyMarkersRef.current.push(m);
       });
     }

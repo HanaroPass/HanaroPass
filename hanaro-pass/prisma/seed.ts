@@ -347,7 +347,6 @@ async function seedUserIdentityDocs() {
 async function seedEmbassies() {
   console.log('[ 대사관 데이터 시딩 시작 ]');
 
-  // 데이터가 많지 않으므로 createMany로 한 번에 밀어 넣습니다.
   await prisma.embassy.createMany({
     data: EMBASSY_DATA,
   });
