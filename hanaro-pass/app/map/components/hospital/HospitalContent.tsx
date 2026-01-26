@@ -67,8 +67,8 @@ export function HospitalContent({ mode, hospitals, hospital }: Props) {
             closeTime: hospital.openHours.split('-')[1],
             address: hospital.address,
             phone: hospital.phone ?? '-',
-            langName: hospital.languages.join(', '),
-            deptName: hospital.departments.join(', '),
+            languages: hospital.languages.join(', '),
+            departments: hospital.departments,
             imageUrl: hospital.imageUrl,
             aiSummary: hospital.aiSummary,
           }}
@@ -106,7 +106,6 @@ export function HospitalContent({ mode, hospitals, hospital }: Props) {
     const departmentMatch =
       selectedDepartments.length === 0 ||
       selectedDepartments.some((dep) => h.departments.includes(dep));
-
     return languageMatch && departmentMatch;
   });
 
@@ -185,8 +184,8 @@ export function HospitalContent({ mode, hospitals, hospital }: Props) {
                   closeTime,
                   address: h.address,
                   phone: h.phone ?? '-',
-                  langName: h.languages.join(', '),
-                  deptName: h.departments.join(', '),
+                  languages: h.languages.join(', '),
+                  departments: h.departments,
                   imageUrl: h.imageUrl,
                   aiSummary: h.aiSummary,
                 }}
