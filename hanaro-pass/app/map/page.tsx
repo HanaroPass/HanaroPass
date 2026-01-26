@@ -63,8 +63,13 @@ export default function MapPage() {
 
   useEffect(() => {
     const loadHospitals = async () => {
-      const data = await getHospitals();
-      setHospitals(data);
+      try {
+        const data = await getHospitals();
+        setHospitals(data);
+      } catch (error) {
+        console.error('병원 목록을 불러오는데 실패했습니다.', error);
+        setHospitals([]);
+      }
     };
 
     loadHospitals();

@@ -170,7 +170,7 @@ export function HospitalContent({ mode, hospitals, hospital }: Props) {
 
           return (
             <div
-              key={h.nameKo}
+              key={h.id}
               className={
                 idx === filteredHospitals.length - 1
                   ? ''
@@ -184,7 +184,7 @@ export function HospitalContent({ mode, hospitals, hospital }: Props) {
                   openTime,
                   closeTime,
                   address: h.address,
-                  phone: h.phone,
+                  phone: h.phone ?? '-',
                   langName: h.languages.join(', '),
                   deptName: h.departments.join(', '),
                   imageUrl: h.imageUrl,

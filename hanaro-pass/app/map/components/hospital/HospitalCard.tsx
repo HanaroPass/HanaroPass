@@ -61,7 +61,7 @@ export function HospitalCard({ hospital }: { hospital: HospitalInfo }) {
           {/* 전화 */}
           <div className="flex items-center gap-2 text-gray-500 text-sm">
             <Phone className="h-4 w-4 shrink-0" />
-            <span>{hospital.phone}</span>
+            <span>{hospital.phone ?? '-'}</span>
           </div>
         </div>
 
