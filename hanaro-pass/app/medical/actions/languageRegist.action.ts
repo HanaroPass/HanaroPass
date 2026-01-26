@@ -14,7 +14,7 @@ import {
   LanguageTransformSchema,
   type RegistrationDetailResponse,
   SubmitSchema,
-} from '../schemas/language-regist.schema';
+} from '../schemas/languageRegist.schema';
 
 /**
  * [병원 검색 서버 액션]
