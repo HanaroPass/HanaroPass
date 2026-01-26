@@ -9,6 +9,9 @@ import {
   Siren,
 } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import type { SavedPlace } from '@/lib/generated/prisma';
+import { getHospitals } from './actions/hospitals';
+import { getSavedPlaces } from './actions/savedPlaces';
 import { EmbassyContent } from './components/embassy/EmbassyContent';
 import { ExchangeContent } from './components/exchange/ExchangeContent';
 import { HospitalContent } from './components/hospital/HospitalContent';
@@ -25,8 +28,6 @@ import { useBottomSheet } from './hooks/useBottomSheet';
 import { useExchangeSearch } from './hooks/useExchangeSearch';
 import { useMarkerClick } from './hooks/useMarkerClick';
 import { type Embassy, MAP_EMBASSY_MOCK } from './mock/embassyExchange';
-import { getHospitals } from './actions/hospitals';
-import { SAVED_PLACES_MOCK, type SavedPlace } from './mock/savedPlaces';
 import { formatExchangeData, mapDbToInfo } from './utils/mapUtils';
 
 /**
@@ -52,6 +53,9 @@ export type Hospital = {
 
 export default function MapPage() {
   const [bookmark, setBookmark] = useState<boolean>(false);
+
+  const [savedPlaces, setSavedPlaces] = useState<SavedPlace[]>([]);
+
   const [selectedPlace, setSelectedPlace] = useState<
     SavedPlace | Embassy | NaverSearchResult | null
   >(null);
@@ -93,6 +97,26 @@ export default function MapPage() {
   } = useBottomSheet();
 
   useEffect(() => {
+    const fetchPlaces = async () => {
+      try {
+        // TODO: 실제 로그인된 유저 ID를 넣어야 합니다. (현재 userId = 1)
+        const userId = 1;
+
+        const result = await getSavedPlaces(userId);
+
+        if (result.success) {
+          setSavedPlaces(result.data);
+        } else {
+          console.error('저장된 장소 불러오기 실패:', result.message);
+        }
+      } catch (error) {
+        console.error('네트워크 오류:', error);
+      }
+    };
+
+    fetchPlaces();
+  }, []);
+  useEffect(() => {
     if (!currentMapRegion) return;
   }, [currentMapRegion]);
 
@@ -122,7 +146,7 @@ export default function MapPage() {
           onMapMoved={setCurrentMapRegion}
           activeCategory={openSheet === 'hospital' ? 'hospital' : null}
           hospitals={hospitals}
-          savedPlaces={SAVED_PLACES_MOCK}
+          savedPlaces={savedPlaces}
           showBookmarks={bookmark}
           onMarkerClick={handleMarkerClick}
           embassyData={MAP_EMBASSY_MOCK}

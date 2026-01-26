@@ -1,9 +1,9 @@
+import type { SavedPlace } from '@/lib/generated/prisma';
 import type { NaverSearchResult } from '../components/ui/NaverMap';
 import type { LocationInfo } from '../components/ui/PlaceCard';
 import type { ClickablePlace } from '../hooks/useMapMarkers';
 import type { Embassy } from '../mock/embassyExchange';
 import type { Hospital } from '../page';
-import type { SavedPlace } from '../mock/savedPlaces';
 
 const CATEGORY_MAP: Record<string, string> = {
   CAFE: '카페',

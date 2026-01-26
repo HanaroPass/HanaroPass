@@ -1,19 +1,9 @@
-export type SavedPlace = {
-  id: number;
-  userId: number;
-  placeName: string;
-  category: 'CAFE' | 'FOOD' | 'SHOP';
-  latitude: string;
-  longitude: string;
-  address: string;
-  openHours: string;
-  phone: string;
-};
+import type { SavedPlace } from '@/lib/generated/prisma';
 
-export const SAVED_PLACES_MOCK: SavedPlace[] = [
+type SavedPlaceConstantData = Omit<SavedPlace, 'id' | 'userId'>;
+
+export const SAVED_PLACES_MOCK: SavedPlaceConstantData[] = [
   {
-    id: 1,
-    userId: 100,
     placeName: '디올 성수',
     category: 'SHOP',
     latitude: '37.5437583',
@@ -23,8 +13,6 @@ export const SAVED_PLACES_MOCK: SavedPlace[] = [
     phone: '02-310-1883',
   },
   {
-    id: 2,
-    userId: 100,
     placeName: '뉴뉴랩 성수점',
     category: 'SHOP',
     latitude: '37.5415196',
@@ -34,8 +22,6 @@ export const SAVED_PLACES_MOCK: SavedPlace[] = [
     phone: '0507-1382-7625',
   },
   {
-    id: 3,
-    userId: 100,
     placeName: '탬버린즈 성수 플래그십스토어',
     category: 'SHOP',
     latitude: '37.5437797919676',
@@ -45,8 +31,6 @@ export const SAVED_PLACES_MOCK: SavedPlace[] = [
     phone: '0507-1491-2126',
   },
   {
-    id: 4,
-    userId: 100,
     placeName: '시홍쓰',
     category: 'FOOD',
     latitude: '37.5460801',
@@ -56,8 +40,6 @@ export const SAVED_PLACES_MOCK: SavedPlace[] = [
     phone: '0507-1491-4333',
   },
   {
-    id: 5,
-    userId: 100,
     placeName: '페레힐',
     category: 'FOOD',
     latitude: '37.5438758',
@@ -67,8 +49,6 @@ export const SAVED_PLACES_MOCK: SavedPlace[] = [
     phone: '0507-1435-8101',
   },
   {
-    id: 6,
-    userId: 100,
     placeName: '로우키',
     category: 'CAFE',
     latitude: '37.5444719061481',
@@ -78,8 +58,6 @@ export const SAVED_PLACES_MOCK: SavedPlace[] = [
     phone: '070-8810-2010',
   },
   {
-    id: 7,
-    userId: 100,
     placeName: '보난자커피 군자 카페&로스터리',
     category: 'CAFE',
     latitude: '37.5516078',
@@ -89,8 +67,6 @@ export const SAVED_PLACES_MOCK: SavedPlace[] = [
     phone: '070-4110-3113',
   },
   {
-    id: 8,
-    userId: 100,
     placeName: '무신사 스토어 성수 대림창고',
     category: 'SHOP',
     latitude: '37.5415518',
@@ -100,8 +76,6 @@ export const SAVED_PLACES_MOCK: SavedPlace[] = [
     phone: '02-6459-7199',
   },
   {
-    id: 9,
-    userId: 100,
     placeName: '온량',
     category: 'FOOD',
     latitude: '37.5468691',
@@ -111,8 +85,6 @@ export const SAVED_PLACES_MOCK: SavedPlace[] = [
     phone: '0507-1361-3643',
   },
   {
-    id: 10,
-    userId: 100,
     placeName: '포어플랜',
     category: 'CAFE',
     latitude: '37.5482373',
@@ -122,8 +94,6 @@ export const SAVED_PLACES_MOCK: SavedPlace[] = [
     phone: '0507-1305-7686',
   },
   {
-    id: 11,
-    userId: 100,
     placeName: 'LCDC SEOUL',
     category: 'SHOP',
     latitude: '37.5415795',
@@ -133,8 +103,6 @@ export const SAVED_PLACES_MOCK: SavedPlace[] = [
     phone: '02-3409-5975',
   },
   {
-    id: 12,
-    userId: 100,
     placeName: '피치스 도원',
     category: 'SHOP',
     latitude: '37.5445466',
@@ -144,8 +112,6 @@ export const SAVED_PLACES_MOCK: SavedPlace[] = [
     phone: '02-467-3330',
   },
   {
-    id: 13,
-    userId: 100,
     placeName: '할머니의 레시피',
     category: 'FOOD',
     latitude: '37.546133',
@@ -155,8 +121,6 @@ export const SAVED_PLACES_MOCK: SavedPlace[] = [
     phone: '0507-1429-5101',
   },
   {
-    id: 14,
-    userId: 100,
     placeName: '블루보틀 성수 카페',
     category: 'CAFE',
     latitude: '37.5480352',
@@ -166,8 +130,6 @@ export const SAVED_PLACES_MOCK: SavedPlace[] = [
     phone: '1533-6906',
   },
   {
-    id: 15,
-    userId: 100,
     placeName: '매운향솥',
     category: 'FOOD',
     latitude: '37.5391489',
@@ -177,8 +139,6 @@ export const SAVED_PLACES_MOCK: SavedPlace[] = [
     phone: '02-6461-0016',
   },
   {
-    id: 16,
-    userId: 100,
     placeName: '코끼리베이글 성수',
     category: 'CAFE',
     latitude: '37.546016',
@@ -188,8 +148,6 @@ export const SAVED_PLACES_MOCK: SavedPlace[] = [
     phone: '02-498-0077',
   },
   {
-    id: 17,
-    userId: 100,
     placeName: '너디블루',
     category: 'CAFE',
     latitude: '37.5854577',
@@ -197,5 +155,50 @@ export const SAVED_PLACES_MOCK: SavedPlace[] = [
     address: '서울 동대문구 전농로36길 9 1층, 2층 너디블루',
     openHours: '12:00-23:00',
     phone: '0507-1421-1310',
+  },
+  {
+    placeName: '마쿠 마라탕',
+    category: 'FOOD',
+    latitude: '37.5585529',
+    longitude: '127.0401467',
+    address: '서울 성동구 마조로3길 6',
+    openHours: '11:00-22:00',
+    phone: '02-2295-4567',
+  },
+  {
+    placeName: '오소록 답십리점',
+    category: 'FOOD',
+    latitude: '37.5679702',
+    longitude: '127.0566192',
+    address: '서울 동대문구 전농로3길 1-2 1층',
+    openHours: '11:00-21:30',
+    phone: '0507-1342-3547',
+  },
+  {
+    placeName: '라칸티나',
+    category: 'FOOD',
+    latitude: '37.5663126',
+    longitude: '126.9799138',
+    address: '서울 중구 을지로 19 삼성빌딩 지하1층',
+    openHours: '11:30-22:00',
+    phone: '02-777-2580',
+  },
+  {
+    placeName: '콸콸',
+    category: 'FOOD',
+    latitude: '37.5649369297436',
+    longitude: '126.990846170067',
+    address: '서울 중구 을지로12길 29 2층',
+    openHours: '17:00-24:00',
+    phone: '0507-1400-1274',
+  },
+  {
+    placeName: '플랑슈',
+    category: 'FOOD',
+    latitude: '37.5736706',
+    longitude: '126.9733048',
+    address: '서울 종로구 사직로8길 42 107호',
+    openHours: '11:30-01:00',
+    phone: '0507-1423-0314',
   },
 ];
