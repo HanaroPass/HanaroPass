@@ -23,37 +23,19 @@ export async function saveSubscriptionAction(
 ): Promise<ActionResult<void>> {
   try {
     const session = await getSession();
-    const passportNo = session.passportNumber;
+    const userId = session.userId;
 
-    if (!passportNo) {
+    if (!userId) {
       return {
         success: false,
         message: '로그인이 필요합니다.',
         status: 401,
       };
     }
-
-    const user = await prisma.user.findFirst({
-      where: {
-        Passport: {
-          passportNumber: passportNo,
-        },
-      },
-      select: { id: true },
-    });
-
-    if (!user) {
-      return {
-        success: false,
-        message: '유저를 찾을 수 없습니다.',
-        status: 404,
-      };
-    }
-
     const subscription: PushSubscription = JSON.parse(subJson);
 
     await prisma.user.update({
-      where: { id: user.id },
+      where: { id: userId },
       data: {
         pushSubscription: subscription as unknown as any,
       },
@@ -67,7 +49,7 @@ export async function saveSubscriptionAction(
 }
 
 /**
- * 2. 알림 발송 (기존 userId 방식 유지)
+ * 2. 알림 발송
  */
 export async function triggerPushNotification(
   userId: number,
