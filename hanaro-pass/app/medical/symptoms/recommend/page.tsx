@@ -5,8 +5,6 @@ import Header from '@/components/header/Header';
 export default function SymptomRecommendPage() {
   return (
     <div className="app-layout">
-      <Header title="AI 병원 추천" />
-
       <div className="app-main space-y-4 px-4 py-6">
         <h2 className="font-semibold text-lg">HANA 손님의 맞춤형 병원</h2>
 
