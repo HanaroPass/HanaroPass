@@ -4,29 +4,36 @@ import { useEffect } from 'react';
 import { saveSubscriptionAction } from '@/app/medical/actions/push.action';
 
 export default function PushNotificationManager({
-  userId,
+  isLoggedIn,
 }: {
-  userId: number | null;
+  isLoggedIn: boolean;
 }) {
   useEffect(() => {
-    if (!userId || !('serviceWorker' in navigator)) return;
+    const publicVapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+
+    if (!isLoggedIn || !('serviceWorker' in navigator) || !publicVapidKey) {
+      return;
+    }
 
     const initPush = async () => {
-      const reg = await navigator.serviceWorker.register('/sw.js');
-      const permission = await Notification.requestPermission();
+      try {
+        const reg = await navigator.serviceWorker.register('/sw.js');
+        const permission = await Notification.requestPermission();
 
-      if (permission === 'granted') {
-        const sub = await reg.pushManager.subscribe({
-          userVisibleOnly: true,
-          applicationServerKey: urlBase64ToUint8Array(
-            process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
-          ),
-        });
-        await saveSubscriptionAction(JSON.stringify(sub));
+        if (permission === 'granted') {
+          const sub = await reg.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(publicVapidKey), // '!' 제거
+          });
+          await saveSubscriptionAction(JSON.stringify(sub));
+        }
+      } catch (error) {
+        console.error('푸시 구독 설정 실패:', error);
       }
     };
+
     initPush();
-  }, [userId]);
+  }, [isLoggedIn]);
 
   return null;
 }
