@@ -10,6 +10,7 @@ import DescriptionSection from '../../components/languageRegistration/Descriptio
 import HospitalGuide from '../../components/languageRegistration/HospitalGuide';
 import SectionHeader from '../../components/languageRegistration/SectionHeader';
 import { useAdminReview } from '../../hooks/useAdminReview';
+import { useRequireAdmin } from '../../hooks/useRequireAdmin';
 import { LoadingScreen } from '../../registrations/complete/page';
 
 export default function AdminReviewPage() {
@@ -17,6 +18,8 @@ export default function AdminReviewPage() {
   const { id } = useParams();
   const { data, isLoading, isUpdating, error, handleUpdateStatus } =
     useAdminReview(Number(id));
+
+  useRequireAdmin(error);
 
   if (isLoading) return <LoadingScreen />;
   if (error)

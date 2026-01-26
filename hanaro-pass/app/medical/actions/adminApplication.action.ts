@@ -6,6 +6,7 @@ import {
   handleActionResult,
 } from '@/lib/error-handler';
 import { prisma } from '@/lib/prisma';
+import { validateAdmin } from '@/lib/user';
 import { LANGUAGES, mapLanguages } from '../constants/language';
 import type { StatusType } from '../constants/statusConfig';
 import {
@@ -27,6 +28,8 @@ export async function getAdminApplicationsAction(): Promise<
   ActionResult<AdminDashboardResponse>
 > {
   try {
+    await validateAdmin();
+
     const apps = await prisma.hospitalLanguageApplication.findMany({
       orderBy: { createdAt: 'desc' },
       include: {
@@ -70,6 +73,8 @@ export async function getAdminReviewDetailAction(
   id: number,
 ): Promise<ActionResult<AdminReviewDetailResponse>> {
   try {
+    await validateAdmin();
+
     const application = await prisma.hospitalLanguageApplication.findUnique({
       where: { id },
       include: { Hospital: { select: { nameKo: true } } },
@@ -108,6 +113,8 @@ export async function updateApplicationStatusAction(
   status: 'APPROVED' | 'REJECTED',
 ): Promise<ActionResult<null>> {
   try {
+    await validateAdmin();
+
     const { id: vId, status: vStatus } = UpdateStatusSchema.parse({
       id,
       status,

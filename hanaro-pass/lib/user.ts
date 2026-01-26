@@ -1,3 +1,4 @@
+import { HttpError } from './error-handler';
 import { prisma } from './prisma';
 import { getUserIdFromSession } from './session';
 
@@ -12,4 +13,23 @@ export async function getUserName() {
   });
 
   return user?.nickname ?? null;
+}
+
+export async function validateAdmin() {
+  const userId = await getUserIdFromSession();
+
+  if (!userId) {
+    throw new HttpError('로그인이 필요한 서비스입니다.', 401);
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { role: true }, // role 필드 확인
+  });
+
+  if (user?.role !== 'ADMIN') {
+    throw new HttpError('관리자 권한이 없습니다.', 403);
+  }
+
+  return user;
 }
