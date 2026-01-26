@@ -1,0 +1,35 @@
+// hanaro-pass/app/(main)/hooks/useAuth.ts
+'use client';
+
+import { useTransition } from 'react';
+import { forceLoginAction, logoutAction } from '../actions/auth.action';
+
+export function useAuth() {
+  const [isPending, startTransition] = useTransition();
+
+  const login = async (role: 'USER' | 'ADMIN') => {
+    startTransition(async () => {
+      const result = await forceLoginAction(role);
+      if (result && !result.success) alert(`로그인 실패: ${result.message}`);
+    });
+  };
+
+  const logout = async () => {
+    if (!confirm('[테스트] 정말 로그아웃 하시겠습니까?')) return;
+
+    if ('serviceWorker' in navigator) {
+      const registrations = await navigator.serviceWorker.getRegistrations();
+      for (const reg of registrations) await reg.unregister();
+    }
+
+    startTransition(async () => {
+      try {
+        await logoutAction();
+      } catch (error) {
+        console.error('로그아웃 실패:', error);
+      }
+    });
+  };
+
+  return { login, logout, isPending };
+}
