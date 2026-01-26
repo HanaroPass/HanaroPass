@@ -17,6 +17,16 @@ import { saveUserIdToSession } from '@/lib/session'; // 세션 유틸리티
 export async function forceLoginAction(
   role: 'USER' | 'ADMIN',
 ): Promise<ActionResult<{ nickname: string }>> {
+  const isDev = process.env.NODE_ENV === 'development';
+  const isForceEnabled = process.env.FORCE_LOGIN_ENABLED === 'true';
+
+  if (!isDev && !isForceEnabled) {
+    throw new HttpError(
+      'Forbidden: 이 기능은 개발 모드에서만 사용할 수 있습니다.',
+      403,
+    );
+  }
+
   try {
     const user = await prisma.user.findFirst({
       where: { role },

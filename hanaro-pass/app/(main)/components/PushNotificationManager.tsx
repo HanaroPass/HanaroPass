@@ -16,11 +16,8 @@ export default function PushNotificationManager({
     const silentSync = async () => {
       try {
         await navigator.serviceWorker.register('/sw.js');
-
-        if (Notification.permission === 'granted') {
-          await subscribeUser();
-          console.log('[Push] 구독 정보가 성공적으로 동기화되었습니다.');
-        }
+        await subscribeUser();
+        console.log('[Push] 구독 정보 동기화 시도 완료');
       } catch (error) {
         console.error('[Push Manager] 동기화 실패:', error);
       }

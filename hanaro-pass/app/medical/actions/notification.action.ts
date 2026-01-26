@@ -5,17 +5,16 @@ import { revalidatePath } from 'next/cache';
 import { type ActionResult, handleActionResult } from '@/lib/errorHandler';
 import type { Notification } from '@/lib/generated/prisma';
 import { prisma } from '@/lib/prisma';
-import { getSession } from '@/lib/session';
+import { validateUser } from '@/lib/user';
 
 export async function getNotificationsAction(): Promise<
   ActionResult<Notification[]>
 > {
   try {
-    const session = await getSession();
-    if (!session.userId) throw new Error('인증이 필요합니다.');
+    const userId = await validateUser();
 
     const notifications = await prisma.notification.findMany({
-      where: { userId: session.userId },
+      where: { userId: userId },
       orderBy: { createdAt: 'desc' }, // 최신순 정렬
     });
 
@@ -31,9 +30,11 @@ export async function getNotificationsAction(): Promise<
 export async function markAsReadAction(
   id: number,
 ): Promise<ActionResult<null>> {
+  const userId = await validateUser();
+
   try {
     await prisma.notification.update({
-      where: { id },
+      where: { id, userId },
       data: { isRead: true },
     });
 

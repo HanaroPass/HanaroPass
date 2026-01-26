@@ -210,7 +210,7 @@ model HospitalReview {
 model HospitalLanguageApplication {
   id            Int               @id @default(autoincrement()) @db.UnsignedInt
   hospitalId    Int               @db.UnsignedInt
-  userId        Int               @db.UnsignedInt
+  userId        Int               @db.UnsignedInt @default(1)
   status        ApplicationStatus @default(PENDING)
   requestLangs  Json             @db.Json
   
@@ -221,7 +221,7 @@ model HospitalLanguageApplication {
   processedAt   DateTime?         @db.Timestamp(0) // 승인/반려 처리 일시
 
   Hospital      Hospital          @relation(fields: [hospitalId], references: [id], onDelete: Cascade)
-User          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  User          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([hospitalId], map: "fk_LanguageApplication_hospital")
 }

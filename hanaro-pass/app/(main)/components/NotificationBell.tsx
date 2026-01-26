@@ -8,6 +8,15 @@ export default function NotificationBell() {
   const router = useRouter();
 
   const handleBellClick = async () => {
+    const isNotificationSupported =
+      typeof window !== 'undefined' && 'Notification' in window;
+
+    if (!isNotificationSupported) {
+      console.warn('[Push] 이 브라우저는 알림 기능을 지원하지 않습니다.');
+      router.push('/medical/notifications');
+      return;
+    }
+
     const currentPermission = Notification.permission;
 
     if (currentPermission === 'denied') {

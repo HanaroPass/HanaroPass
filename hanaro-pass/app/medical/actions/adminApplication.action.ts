@@ -120,6 +120,12 @@ export async function updateApplicationStatusAction(
       id,
       status,
     });
+    let pushData: {
+      userId: number;
+      title: string;
+      body: string;
+      url: string;
+    } | null = null;
 
     await prisma.$transaction(async (tx) => {
       const app = await tx.hospitalLanguageApplication.findUnique({
@@ -154,18 +160,23 @@ export async function updateApplicationStatusAction(
         });
       }
 
-      const pushTitle = '[하나로패스] 신청 심사 결과 안내';
-      const pushBody =
-        vStatus === 'APPROVED'
-          ? `축하합니다! ${app.Hospital.nameKo}의 신청이 승인되었습니다. `
-          : `안타깝게도 ${app.Hospital.nameKo}의 신청이 반려되었습니다.`;
-
-      const targetUrl = `/medical/registrations/${app.hospitalId}`; // 알림 클릭 시 이동할 페이지
-
-      triggerPushNotification(app.userId, pushTitle, pushBody, targetUrl).catch(
-        (err) => console.error('[알림 오류]:', err),
-      );
+      pushData = {
+        userId: app.userId,
+        title: '[하나로패스] 신청 심사 결과 안내',
+        body:
+          vStatus === 'APPROVED'
+            ? `축하합니다! ${app.Hospital.nameKo}의 신청이 승인되었습니다.`
+            : `안타깝게도 ${app.Hospital.nameKo}의 신청이 반려되었습니다.`,
+        url: `/medical/registrations/${app.hospitalId}`,
+      };
     });
+
+    if (pushData) {
+      const { userId, title, body, url } = pushData;
+      triggerPushNotification(userId, title, body, url).catch((err) =>
+        console.error('[알림 전송 실패]:', err),
+      );
+    }
 
     return { success: true, data: null };
   } catch (err) {
