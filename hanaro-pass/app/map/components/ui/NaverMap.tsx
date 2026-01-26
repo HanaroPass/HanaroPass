@@ -1,10 +1,10 @@
 'use client';
 
 import { forwardRef, useImperativeHandle, useRef } from 'react';
+import type { SavedPlace } from '@/lib/generated/prisma';
 import { type ClickablePlace, useMapMarkers } from '../../hooks/useMapMarkers';
 import { useNaverMapInit } from '../../hooks/useNaverMapInit';
 import type { Embassy } from '../../mock/embassyExchange';
-import type { SavedPlace } from '../../mock/savedPlaces';
 import type { Hospital } from '../../page';
 
 export type NaverSearchResult = {

@@ -1,8 +1,8 @@
 import { useCallback } from 'react';
+import type { SavedPlace } from '@/lib/generated/prisma';
 import type { NaverSearchResult } from '../components/ui/NaverMap';
 import type { Embassy } from '../mock/embassyExchange';
 import type { Hospital } from '../page';
-import type { SavedPlace } from '../mock/savedPlaces';
 import {
   isEmbassy,
   isExchangePlace,
