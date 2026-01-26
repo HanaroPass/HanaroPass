@@ -96,47 +96,49 @@ export default function PinInput({
           ))}
         </div>
 
-        <div className="grid w-full max-w-xs grid-cols-3 gap-y-10 text-center">
-          {keys.map((k) => {
-            if (k === 'reorder') {
+        <div className="mt-auto w-full pb-10">
+          <div className="mx-auto grid w-full max-w-xs grid-cols-3 gap-y-10 text-center">
+            {keys.map((k) => {
+              if (k === 'reorder') {
+                return (
+                  <button
+                    key="reorder"
+                    type="button"
+                    onClick={onReorder}
+                    className="font-bold text-green-ez text-sm active:opacity-30"
+                  >
+                    재배열
+                  </button>
+                );
+              }
+
+              if (k === 'delete') {
+                return (
+                  <button
+                    key="delete"
+                    type="button"
+                    onClick={onDelete}
+                    className="flex items-center justify-center active:opacity-30"
+                    aria-label="한 글자 삭제"
+                  >
+                    <Delete size={24} className="text-green-ez" />
+                  </button>
+                );
+              }
+
               return (
                 <button
-                  key="reorder"
+                  key={`numpad-${k}`}
                   type="button"
-                  onClick={onReorder}
-                  className="font-bold text-green-ez text-sm active:opacity-30"
+                  onClick={() => onPressNum(k)}
+                  className="font-semibold text-2xl text-black-800 active:opacity-30"
+                  aria-label={`${k} 입력`}
                 >
-                  재배열
+                  {k}
                 </button>
               );
-            }
-
-            if (k === 'delete') {
-              return (
-                <button
-                  key="delete"
-                  type="button"
-                  onClick={onDelete}
-                  className="flex items-center justify-center active:opacity-30"
-                  aria-label="한 글자 삭제"
-                >
-                  <Delete size={24} className="text-green-ez" />
-                </button>
-              );
-            }
-
-            return (
-              <button
-                key={`numpad-${k}`}
-                type="button"
-                onClick={() => onPressNum(k)}
-                className="font-semibold text-2xl text-black-800 active:opacity-30"
-                aria-label={`${k} 입력`}
-              >
-                {k}
-              </button>
-            );
-          })}
+            })}
+          </div>
         </div>
       </div>
     </div>

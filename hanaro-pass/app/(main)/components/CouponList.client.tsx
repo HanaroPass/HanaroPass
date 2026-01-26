@@ -8,7 +8,7 @@ export default function CouponListClient({
   coupons: CouponNearbyItem[];
 }) {
   return (
-    <div className="no-scrollbar flex justify-center gap-5 overflow-x-auto">
+    <div className="no-scrollbar flex justify-center gap-2 overflow-x-auto">
       {coupons.map((item) => (
         <CouponItem
           key={item.id}
