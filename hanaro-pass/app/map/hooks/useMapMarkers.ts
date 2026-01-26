@@ -106,8 +106,8 @@ export function useMapMarkers({
 
     if (showEmbassy && embassyData) {
       embassyData.forEach((embassy) => {
-        const lat = Number(embassy.latitude);
-        const lng = Number(embassy.longitude);
+        const lat = parseFloat(embassy.latitude);
+        const lng = parseFloat(embassy.longitude);
 
         if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
 
