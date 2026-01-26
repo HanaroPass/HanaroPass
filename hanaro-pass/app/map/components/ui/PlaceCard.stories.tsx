@@ -9,7 +9,7 @@ const mockData: LocationInfo = {
   explainTime: '09:00 - 18:00',
   distance: '120m',
   address: '서울특별시 중구 을지로 66',
-  phone: '02-123-4567',
+  phone: '02-0123-4567',
   imageUrl: '/images/map/img_map_emergency.png',
 };
 
@@ -25,7 +25,7 @@ const meta = {
 Map 화면 하단에 표시되는 장소 정보 카드 컴포넌트입니다.
 
 선택된 장소의 **이름, 유형, 영업 정보, 거리, 주소**를 표시하며  
-전화 걸기 / 길찾기 액션을 제공합니다.
+전화 걸기 / 네이버 지도 연결 액션을 제공합니다.
 
 ## Usage
 - 지도 마커 선택 시 상세 정보 표시
