@@ -2,7 +2,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { type ActionResult, handleActionResult } from '@/lib/error-handler';
+import { type ActionResult, handleActionResult } from '@/lib/errorHandler';
 import type { Notification } from '@/lib/generated/prisma';
 import { prisma } from '@/lib/prisma';
 import { getSession } from '@/lib/session';

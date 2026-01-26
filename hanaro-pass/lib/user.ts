@@ -1,4 +1,4 @@
-import { HttpError } from './error-handler';
+import { HttpError } from './errorHandler';
 import { prisma } from './prisma';
 import { getSession, getUserIdFromSession } from './session';
 

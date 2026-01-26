@@ -7,7 +7,7 @@ import {
   type ActionResult,
   HttpError,
   handleActionResult,
-} from '@/lib/error-handler';
+} from '@/lib/errorHandler';
 import { prisma } from '@/lib/prisma';
 import { saveUserIdToSession } from '@/lib/session'; // 세션 유틸리티
 

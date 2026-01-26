@@ -5,7 +5,7 @@ import {
   type ActionResult,
   HttpError,
   handleActionResult,
-} from '@/lib/error-handler';
+} from '@/lib/errorHandler';
 import type { Embassy } from '@/lib/generated/prisma';
 import { prisma } from '@/lib/prisma';
 
