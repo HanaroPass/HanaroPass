@@ -64,7 +64,7 @@ export default function Pay({ cardsPromise, couponList }: PayProps) {
 
       <MenuList type="pay" />
 
-      {pendingCardId && (
+      {pendingCardId !== null && (
         <PinInput
           onSuccessAction={() => handlePinSuccess(pendingCardId)}
           onCloseAction={() => setPendingCardId(null)}
