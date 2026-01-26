@@ -10,7 +10,7 @@ self.addEventListener('push', (event) => {
       data: { url: payload.url || '/' },
     };
     event.waitUntil(self.registration.showNotification(payload.title, options));
-  } catch {
+  } catch (err) {
     console.error('[SW] Push data parse error:', err);
   }
 });

@@ -210,9 +210,9 @@ model HospitalReview {
 model HospitalLanguageApplication {
   id            Int               @id @default(autoincrement()) @db.UnsignedInt
   hospitalId    Int               @db.UnsignedInt
-  userId        Int               @db.UnsignedInt @default(1)
+  userId        Int               @db.UnsignedInt
   status        ApplicationStatus @default(PENDING)
-  requestLangs  Json             @db.Json
+  requestLangs  Json              @db.Json
   
   // 처리 히스토리를 위한 시간 기록
   parentId            Int?     // 이전 신청 건의 ID (재신청일 경우)

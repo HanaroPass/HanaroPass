@@ -27,7 +27,10 @@ export async function validateAdmin() {
     select: { role: true }, // role 필드 확인
   });
 
-  if (user?.role !== 'ADMIN') {
+  if (!user) {
+    throw new HttpError('사용자를 찾을 수 없습니다.', 401);
+  }
+  if (user.role !== 'ADMIN') {
     throw new HttpError('관리자 권한이 없습니다.', 403);
   }
 

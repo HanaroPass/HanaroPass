@@ -30,9 +30,8 @@ export async function getNotificationsAction(): Promise<
 export async function markAsReadAction(
   id: number,
 ): Promise<ActionResult<null>> {
-  const userId = await validateUser();
-
   try {
+    const userId = await validateUser();
     await prisma.notification.update({
       where: { id, userId },
       data: { isRead: true },
