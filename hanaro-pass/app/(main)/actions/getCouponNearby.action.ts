@@ -33,24 +33,29 @@ async function queryNearbyCoupons(
   const { lat, lng, radiusKm, limit, category, q } = parsed;
 
   const latDelta = radiusKm / 111.0;
-  const lngDelta = radiusKm / (111.0 * Math.cos((lat * Math.PI) / 180));
+  const cosLat = Math.cos((lat * Math.PI) / 180);
+  const lngDelta =
+    cosLat > 0.0001 ? radiusKm / (111.0 * cosLat) : radiusKm / 111.0;
 
   const minLat = lat - latDelta;
   const maxLat = lat + latDelta;
   const minLng = lng - lngDelta;
   const maxLng = lng + lngDelta;
 
-  const categoryFilterSafe = category
-    ? `AND c.category = ${JSON.stringify(category)}`
-    : '';
+  const filters: Prisma.Sql[] = [];
 
-  const qFilter = q
-    ? `AND (
-        c.brandName LIKE ${JSON.stringify(`%${q}%`)}
-        OR c.tag LIKE ${JSON.stringify(`%${q}%`)}
-        OR c.description LIKE ${JSON.stringify(`%${q}%`)}
-      )`
-    : '';
+  if (category) {
+    filters.push(Prisma.sql`AND c.category = ${category}`);
+  }
+
+  if (q) {
+    const searchPattern = `%${q}%`;
+    filters.push(Prisma.sql`AND (
+    c.brandName LIKE ${searchPattern}
+    OR c.tag LIKE ${searchPattern}
+    OR c.description LIKE ${searchPattern}
+  )`);
+  }
 
   const rows = await prisma.$queryRaw<
     {
@@ -86,10 +91,9 @@ async function queryNearbyCoupons(
     ) AS distanceMeters
   FROM Coupons c
   WHERE
-    c.latitude BETWEEN ${minLat} AND ${maxLat}
-    AND c.longitude BETWEEN ${minLng} AND ${maxLng}
-    ${Prisma.raw(categoryFilterSafe)}
-    ${Prisma.raw(qFilter)}
+      c.latitude BETWEEN ${minLat} AND ${maxLat}
+      AND c.longitude BETWEEN ${minLng} AND ${maxLng}
+      ${filters.length ? Prisma.join(filters, ' ') : Prisma.empty}
   ORDER BY distanceMeters ASC
   LIMIT ${limit};
 `);

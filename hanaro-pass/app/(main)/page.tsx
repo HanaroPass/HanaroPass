@@ -1,5 +1,6 @@
-import { use } from 'react';
-import CouponListServer from './components/CouponList.server';
+import { Loader } from 'lucide-react';
+import { Suspense, use } from 'react';
+import CouponListLoader from './components/CouponList.loader';
 import MainWrapper from './components/MainWrapper';
 import Pay from './components/Pay';
 import Service from './components/Service';
@@ -25,11 +26,16 @@ export default function Page({
 
   const TabComponent = TAB_COMPONENTS[tab];
 
-  const lat = 37.4979;
-  const lng = 127.0276;
-
   const couponList =
-    tab === 'pay' ? <CouponListServer lat={lat} lng={lng} /> : null;
+    tab === 'pay' ? (
+      <Suspense
+        fallback={
+          <Loader className="mx-auto h-8 w-8 animate-spin text-green-ez" />
+        }
+      >
+        <CouponListLoader />
+      </Suspense>
+    ) : null;
 
   return (
     <MainWrapper activeTab={tab}>
@@ -41,7 +47,7 @@ export default function Page({
         </MainWrapper.Title>
 
         <div className="app-main">
-          {tab === 'pay' || tab === 'remittance' ? (
+          {tab === 'pay' ? (
             <TabComponent couponList={couponList} />
           ) : (
             <TabComponent />

@@ -1,5 +1,8 @@
 export function toNumber(v: unknown, fieldName: string) {
-  if (typeof v === 'number') return v;
+  if (typeof v === 'number') {
+    if (!Number.isFinite(v)) throw new Error(`${fieldName} is not finite`);
+    return v;
+  }
   if (typeof v === 'bigint') {
     const n = Number(v);
     if (!Number.isSafeInteger(n)) {

@@ -1,15 +1,12 @@
 'use client';
-import { use } from 'react';
 import type { CouponNearbyItem } from '../actions/getCouponNearby.schema';
 import CouponItem from './CouponItem';
 
 export default function CouponListClient({
-  couponsPromise,
+  coupons,
 }: {
-  couponsPromise: Promise<CouponNearbyItem[]>;
+  coupons: CouponNearbyItem[];
 }) {
-  const coupons = use(couponsPromise);
-
   return (
     <div className="no-scrollbar flex justify-center gap-5 overflow-x-auto">
       {coupons.map((item) => (
