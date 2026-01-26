@@ -1,14 +1,15 @@
 'use client';
 
-import { X } from 'lucide-react';
+import { Loader2, X } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import Header from '@/components/header/Header';
 import { Button } from '@/components/ui/button';
 import EmptyIdentityCard from '../components/EmptyIdentityCard';
 import MobileQr from '../components/MobileQr';
-import type { IdentityType } from '../hooks/useFunnel';
 import { getIdentityData } from '../actions/identity';
 import { useSearchParams } from 'next/navigation';
+import type { IdentityType } from '../IdentityPageClient';
+import { cn } from '@/lib/utils';
 
 const DEFAULT_TAB: 'passport' | 'arc' = 'arc';
 
@@ -28,7 +29,7 @@ export default function ResultStep({
   const searchParams = useSearchParams();
   const typeParam = searchParams.get('type') as IdentityType | null;
 
-  const [activeTab, setActiveTab] = useState<'passport' | 'arc'>(
+  const [activeTab, setActiveTab] = useState<IdentityType>(
     typeParam || DEFAULT_TAB,
   );
   const [passportData, setPassportData] = useState<Record<
@@ -109,11 +110,12 @@ export default function ResultStep({
               key={tab}
               type="button"
               onClick={() => setActiveTab(tab)}
-              className={`relative rounded-full px-4 py-1.5 font-medium text-sm transition-all ${
+              className={cn(
+                'relative rounded-full px-4 py-1.5 font-medium text-sm transition-all',
                 activeTab === tab
                   ? 'bg-black-900 text-white shadow-sm'
-                  : 'text-gray-600 hover:text-gray-800'
-              }`}
+                  : 'text-gray-600 hover:text-gray-800',
+              )}
             >
               {tab === 'passport' ? '여권' : '등록증'}
             </button>
@@ -125,7 +127,10 @@ export default function ResultStep({
         <div className="mx-auto flex h-full w-full max-w-sm flex-col sm:max-w-md lg:max-w-lg xl:max-w-2xl">
           {isLoading ? (
             <div className="flex h-full items-center justify-center">
-              로딩 중...
+              <Loader2 className="h-8 w-8 animate-spin text-green-ez" />
+              <p className="animate-pulse font-medium text-gray-400 text-sm">
+                정보를 불러오고 있습니다
+              </p>
             </div>
           ) : error ? (
             <div className="flex h-full items-center justify-center text-red-500">

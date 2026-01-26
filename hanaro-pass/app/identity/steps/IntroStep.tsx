@@ -1,12 +1,12 @@
 'use client';
 
-import { ChevronDown, ChevronUp, X } from 'lucide-react';
+import { ChevronDown, ChevronUp, Loader2, X } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import Header from '@/components/header/Header';
 import ActionButton from '@/components/ui/ActionButton';
 import { Button } from '@/components/ui/button';
-import type { IdentityType } from '../hooks/useFunnel';
+import type { IdentityType } from '../IdentityPageClient';
 import { getIdentityData } from '../actions/identity';
 
 type IntroStepProps = {
@@ -21,6 +21,7 @@ export default function IntroStep({
   const [isAgreed, setIsAgreed] = useState(false);
   const [isGuideOpen, setIsGuideOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   // 유저가 이미 가지고 있는 신분증 상태 관리
   const [hasPassport, setHasPassport] = useState(false);
   const [hasArc, setHasArc] = useState(false);
@@ -31,6 +32,7 @@ export default function IntroStep({
 
     const checkUserIdentity = async () => {
       try {
+        setError(null);
         const res = await getIdentityData();
         if (!mounted) return;
         // 데이터가 있으면 true, 없으면 false (null 체크)
@@ -38,6 +40,7 @@ export default function IntroStep({
         setHasArc(!!res.arc);
       } catch (error) {
         console.error('데이터 로드 실패:', error);
+        if (mounted) setError('데이터를 불러오는데 실패했습니다.');
       } finally {
         if (mounted) setIsLoading(false);
       }
@@ -111,8 +114,21 @@ export default function IntroStep({
 
             <div className="mb-12 space-y-4">
               {isLoading ? (
-                <div className="py-4 text-center text-gray-400">
-                  보유 현황 확인 중...
+                <div className="py-4 text-center">
+                  <Loader2 className="h-8 w-8 animate-spin text-green-ez" />
+                  <p className="animate-pulse font-medium text-gray-400 text-sm">
+                    보유 현황 확인 중...
+                  </p>
+                </div>
+              ) : error ? (
+                <div className="py-4 text-center text-red-500">
+                  {error}
+                  <button
+                    onClick={() => window.location.reload()}
+                    className="ml-2 underline"
+                  >
+                    다시 시도
+                  </button>
                 </div>
               ) : (
                 <>
@@ -134,7 +150,7 @@ export default function IntroStep({
                     />
                   )}
 
-                  {/* 만약 모든 신분증이 다 있다면 보여줄 안내 (선택사항) */}
+                  {/* 만약 모든 신분증이 다 있다면 보여줄 안내 */}
                   {hasPassport && hasArc && (
                     <p className="py-4 text-center text-gray-500 text-sm">
                       이미 모든 신분증이 등록되어 있습니다.

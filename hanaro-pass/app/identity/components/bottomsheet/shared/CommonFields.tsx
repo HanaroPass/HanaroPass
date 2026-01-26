@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { NATIONALITIES } from '@/lib/constants';
+import { NATIONALITIES } from '@/constants/constants';
 
 type CommonFieldsProps = {
   formData: Record<string, string>;

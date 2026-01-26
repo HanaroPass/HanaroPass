@@ -1,10 +1,9 @@
 'use client';
 
 import { useCallback, useState } from 'react';
+import type { IdentityType } from '../IdentityPageClient';
 
 type FunnelStep = 'intro' | 'ocr' | 'account' | 'result';
-
-export type IdentityType = 'passport' | 'arc';
 
 type FunnelContext = {
   identityType: IdentityType | null;

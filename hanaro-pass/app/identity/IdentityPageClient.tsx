@@ -8,6 +8,8 @@ import ResultStep from './steps/ResultStep';
 import { useFunnel } from './hooks/useFunnel';
 import OCRPageContent from './ocr/OCRPageContent';
 
+export type IdentityType = 'passport' | 'arc';
+
 export default function IdentityPageClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -21,7 +23,7 @@ export default function IdentityPageClient() {
     stepParam === 'result' || stepParam === 'ocr' || stepParam === 'account'
       ? stepParam
       : 'intro';
-  const initialType = searchParams.get('type') as 'passport' | 'arc' | null;
+  const initialType = searchParams.get('type') as IdentityType;
 
   const { currentStep, context, history } = useFunnel({
     step: initialStep,

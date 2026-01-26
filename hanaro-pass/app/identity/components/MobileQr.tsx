@@ -3,8 +3,8 @@
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import QRCode from 'react-qr-code';
-import type { IdentityType } from '../hooks/useFunnel';
-import { COUNTRY_IMAGE_MAP } from '@/lib/constants';
+import { COUNTRY_IMAGE_MAP } from '@/constants/constants';
+import type { IdentityType } from '../IdentityPageClient';
 
 type MobileQrProps = {
   type: IdentityType;
