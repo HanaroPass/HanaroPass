@@ -21,10 +21,15 @@ export function usePushSubscription() {
     }
 
     const result = await subscribeUser();
-    if (result === 'success' || result === 'error') {
+    if (result === 'success' || result === 'error' || result === 'aborted') {
       router.push(targetUrl);
     } else if (result === 'denied') {
-      alert('알림을 허용하셔야 실시간 결과를 받아보실 수 있습니다.');
+      alert('알림을 허용하셔야 실시간 심사 결과를 받아보실 수 있습니다.');
+    } else if (result === 'default') {
+      alert(
+        '알림 권한을 결정하지 않으셨습니다. 승인 알림을 받으시려면 허용이 필요합니다.',
+      );
+      console.info('[Push] 사용자가 권한 요청 프롬프트를 닫았습니다.');
     }
   };
 
