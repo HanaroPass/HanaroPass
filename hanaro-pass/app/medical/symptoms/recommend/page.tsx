@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { HospitalCard } from '@/app/map/components/hospital/HospitalCard';
 import type { Hospital } from '@/lib/generated/prisma';
+import { useMyLocation } from '@/lib/getMyLocation';
 import { cn } from '@/lib/utils';
 import getDistance from '../../../../lib/getDistance';
 import { getFilteredHospitals } from '../../actions/filterHospital';
@@ -28,10 +29,7 @@ export default function SymptomRecommendPage() {
   const [symptom, setSymptom] = useState<string[] | undefined>(undefined);
   const [sortByDistance, setSortByDistance] = useState(false);
   const [isOpened, setOpened] = useState(false);
-  const [userLocation, setUserLocation] = useState<{
-    lat: number;
-    lng: number;
-  } | null>(null);
+  const { location } = useMyLocation();
 
   const [type, setType] = useState<'SYMPTOM' | 'PROCEDURE'>('SYMPTOM');
   const [hospitals, setHospitals] = useState<HospitalWithStatus[]>([]);
@@ -65,16 +63,6 @@ export default function SymptomRecommendPage() {
     parseAndFilter();
   }, []);
 
-  // 위치 가져오기
-  useEffect(() => {
-    navigator.geolocation.getCurrentPosition((position) => {
-      setUserLocation({
-        lat: position.coords.latitude,
-        lng: position.coords.longitude,
-      });
-    });
-  }, []);
-
   // 영업시간 필터링
   const filterHour = useCallback((openHours: string) => {
     const [openTime, closeTime] = openHours.split(' - ');
@@ -101,13 +89,13 @@ export default function SymptomRecommendPage() {
       updated = updated.filter((h) => h.status === '진료 중');
     }
 
-    if (sortByDistance && userLocation) {
+    if (sortByDistance && location) {
       updated = updated
         .map((hospital) => ({
           ...hospital,
           distance: getDistance(
-            userLocation.lat,
-            userLocation.lng,
+            location.lat,
+            location.lng,
             hospital.latitude,
             hospital.longitude,
           ),
@@ -116,7 +104,7 @@ export default function SymptomRecommendPage() {
     }
 
     return updated;
-  }, [hospitals, sortByDistance, isOpened, userLocation]);
+  }, [hospitals, sortByDistance, isOpened, location]);
 
   const toggleBase = 'justify-center rounded-4xl border-2 px-3 py-1';
   const unChecked = 'border-transparent bg-green-ez text-white';
@@ -144,15 +132,15 @@ export default function SymptomRecommendPage() {
         <div>
           <div className="mt-6 flex gap-2 text-center font-medium">
             <button
-              disabled={!userLocation}
+              disabled={!location}
               onClick={() => setSortByDistance((v) => !v)}
               className={cn(
                 toggleBase,
                 sortByDistance ? unChecked : checked,
-                !userLocation && 'cursor-not-allowed opacity-50',
+                !location && 'cursor-not-allowed opacity-50',
               )}
             >
-              {userLocation ? '거리순' : '로딩중'}
+              {location ? '거리순' : '로딩중'}
             </button>
             <button
               onClick={() => setOpened((v) => !v)}
