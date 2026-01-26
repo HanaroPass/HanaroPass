@@ -1,18 +1,30 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
-import {
-  HospitalCard,
-  type HospitalInfo,
-} from '@/app/map/components/hospital/HospitalCard';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { HospitalCard } from '@/app/map/components/hospital/HospitalCard';
+import type { Hospital } from '@/lib/generated/prisma';
 import { cn } from '@/lib/utils';
+import { getFilteredHospitals } from '../../actions/filterHospital';
 import getDistance from '../../actions/getDistance';
 import { parseOutput } from '../../actions/symptoms';
 import Symptom from '../../components/symptom/Symptom';
-import { hospitalLocations } from '../../mock/recommendHospital';
+
+export type HospitalWithStatus = Omit<Hospital, 'latitude' | 'longitude'> & {
+  latitude: number;
+  longitude: number;
+  openTime: string;
+  closeTime: string;
+  status: '진료 중' | '진료 종료';
+  deptName: string;
+  langName: string;
+  aiSummary: string | null;
+};
 
 export default function SymptomRecommendPage() {
-  const [symptom, setSymptom] = useState<string[] | undefined>([]);
+  //TODO: 유저 연동
+  const nickname = 'chan';
+
+  const [symptom, setSymptom] = useState<string[] | undefined>(undefined);
   const [sortByDistance, setSortByDistance] = useState(false);
   const [isOpened, setOpened] = useState(false);
   const [userLocation, setUserLocation] = useState<{
@@ -21,7 +33,11 @@ export default function SymptomRecommendPage() {
   } | null>(null);
 
   const [type, setType] = useState<'SYMPTOM' | 'PROCEDURE'>('SYMPTOM');
+  const [hospitals, setHospitals] = useState<HospitalWithStatus[]>([]);
 
+  const [isParsed, setParsed] = useState(false);
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     const parse = async () => {
       const data = localStorage.getItem('symptom-result');
@@ -35,8 +51,22 @@ export default function SymptomRecommendPage() {
           setType('PROCEDURE');
         }
       }
+      setParsed(true);
+    };
+    const filterHospital = async () => {
+      const hospitals = await getFilteredHospitals(type, symptom);
+      const refinedHospitals = hospitals.map((h) => ({
+        ...h,
+        deptName: h.HospitalDept.map((d) => d.deptName).join(', '),
+        langName: h.HospitalLang.map((l) => l.langName).join(', '),
+        aiSummary: h.HospitalReview?.aiSummary ?? null,
+        ...filterHour(h.openHours),
+      }));
+      setHospitals(refinedHospitals);
+      console.log(hospitals);
     };
     parse();
+    filterHospital();
   }, []);
 
   // 위치 가져오기
@@ -49,21 +79,23 @@ export default function SymptomRecommendPage() {
     });
   }, []);
 
-  // TODO: 테이블의 경우 목데이터와 달리 Open Hour 통으로 가져옴. 필터링하기
-  // const [hospitals, setHospitals] = useState<Hospital[]>([]);
-  // useEffect(() => {
-  //   const filterHospital = async () => {
-  //     const hospitals = await getFilteredHospitals(type, symptom);
-  //     setHospitals(hospitals);
-  //   };
-  //   filterHospital();
-  // }, [type, symptom]);
+  // 영업시간 필터링
+  const filterHour = useCallback((openHours: string) => {
+    const [openTime, closeTime] = openHours.split(' - ');
+    const [openH, openM] = openTime.split(':').map(Number);
+    const [closeH, closeM] = closeTime.split(':').map(Number);
+    const now = new Date();
 
-  // 목데이터
-  const [hospitals, setHospitals] = useState<HospitalInfo[]>([]);
+    const openDate = new Date();
+    openDate.setHours(openH, openM, 0, 0);
 
-  useEffect(() => {
-    setHospitals(hospitalLocations);
+    const closeDate = new Date();
+    closeDate.setHours(closeH, closeM, 0, 0);
+
+    const status: '진료 중' | '진료 종료' =
+      now < openDate || now > closeDate ? '진료 종료' : '진료 중';
+    console.log(openTime, closeTime, status);
+    return { openTime, closeTime, status };
   }, []);
 
   const sortedHospitals = useMemo(() => {
@@ -80,12 +112,13 @@ export default function SymptomRecommendPage() {
           distance: getDistance(
             userLocation.lat,
             userLocation.lng,
-            Number(hospital.latitude),
-            Number(hospital.longitude),
+            hospital.latitude,
+            hospital.longitude,
           ),
         }))
         .sort((a, b) => a.distance - b.distance);
     }
+
     return updated;
   }, [hospitals, sortByDistance, isOpened, userLocation]);
 
@@ -94,20 +127,15 @@ export default function SymptomRecommendPage() {
   const checked = 'border-green-ez text-green-ez';
 
   return (
-<<<<<<< HEAD
     <div className="">
       <div className="space-y-4 px-4 py-6">
-=======
-    <div className="app-layout">
-      <div className="app-main space-y-4 px-4 py-6">
->>>>>>> 247c92ce9df496738cede6cc1a78782afec23f43
-        <h2 className="font-semibold text-lg">HANA 손님의 맞춤형 병원</h2>
+        <h2 className="font-semibold text-lg">{nickname} 손님의 맞춤형 병원</h2>
         <p className="text-gray-500 text-sm">
           외국인 진료가 가능한 병원이에요.
         </p>
         <div className="h-24 rounded-2xl bg-gray-200">
           <div className="ml-6 pt-5 text-black-800 text-sm">
-            HANA 손님의 맞춤형 병원
+            {nickname} 손님의 맞춤형 병원
           </div>
           <div className="mt-2 mb-5 ml-6">
             {symptom?.map((symptom) => (
@@ -132,18 +160,33 @@ export default function SymptomRecommendPage() {
               현재 진료 가능 병원
             </button>
           </div>
-          {sortedHospitals.map((hospital, idx) => (
-            <div
-              key={hospital.name}
-              className={
-                idx === sortedHospitals.length - 1
-                  ? ''
-                  : 'border-gray-300 border-b'
-              }
-            >
-              <HospitalCard hospital={hospital} />
-            </div>
-          ))}
+          {sortedHospitals.map((hospital, idx) => {
+            console.log(hospital);
+            return (
+              <div
+                key={hospital.id}
+                className={
+                  idx === sortedHospitals.length - 1
+                    ? ''
+                    : 'border-gray-300 border-b'
+                }
+              >
+                <HospitalCard
+                  hospital={{
+                    name: hospital.nameKo,
+                    status: hospital.status,
+                    openTime: hospital.openTime,
+                    closeTime: hospital.closeTime,
+                    address: hospital.address,
+                    phone: hospital.phone ?? '',
+                    langName: hospital.langName,
+                    deptName: hospital.deptName,
+                    aiSummary: hospital.aiSummary ?? undefined,
+                  }}
+                />
+              </div>
+            );
+          })}
           {sortedHospitals.length === 0 && (
             <div className="py-10 text-center text-gray-400 text-sm">
               조건에 맞는 병원이 없어요
