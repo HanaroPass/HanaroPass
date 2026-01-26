@@ -106,11 +106,13 @@ export function useMapMarkers({
 
     if (showEmbassy && embassyData) {
       embassyData.forEach((embassy) => {
-        const m = createMarker(
-          Number(embassy.latitude),
-          Number(embassy.longitude),
-          MARKER_ICONS.embassy,
-          () => onMarkerClick(embassy),
+        const lat = Number(embassy.latitude);
+        const lng = Number(embassy.longitude);
+
+        if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+
+        const m = createMarker(lat, lng, MARKER_ICONS.embassy, () =>
+          onMarkerClick(embassy),
         );
 
         if (m) embassyMarkersRef.current.push(m);

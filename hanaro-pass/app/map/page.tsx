@@ -64,7 +64,7 @@ export default function MapPage() {
     const fetchEmbassy = async () => {
       try {
         // TODO: 실제 유저 ID를 넣어야 합니다. (현재 userId = 2)
-        const userId = 1;
+        const userId = 2;
 
         const result = await getMyEmbassy(userId);
 

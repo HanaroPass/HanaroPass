@@ -390,7 +390,6 @@ async function main() {
   await seedUserDocs();
   await seedUserIdentityDocs();
   await seedDummyApplications();
-  await fetchAndSeed();
   await seedEmbassies();
 
   console.log('[ 시딩 작업 완료! ]');
