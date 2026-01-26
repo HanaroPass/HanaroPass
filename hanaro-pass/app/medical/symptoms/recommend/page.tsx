@@ -4,8 +4,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { HospitalCard } from '@/app/map/components/hospital/HospitalCard';
 import type { Hospital } from '@/lib/generated/prisma';
 import { cn } from '@/lib/utils';
+import getDistance from '../../../../lib/getDistance';
 import { getFilteredHospitals } from '../../actions/filterHospital';
-import getDistance from '../../actions/getDistance';
 import { parseOutput } from '../../actions/symptoms';
 import Symptom from '../../components/symptom/Symptom';
 
@@ -18,6 +18,7 @@ export type HospitalWithStatus = Omit<Hospital, 'latitude' | 'longitude'> & {
   deptName: string;
   langName: string;
   aiSummary: string | null;
+  distance?: number;
 };
 
 export default function SymptomRecommendPage() {
@@ -35,11 +36,9 @@ export default function SymptomRecommendPage() {
   const [type, setType] = useState<'SYMPTOM' | 'PROCEDURE'>('SYMPTOM');
   const [hospitals, setHospitals] = useState<HospitalWithStatus[]>([]);
 
-  const [isParsed, setParsed] = useState(false);
-
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    const parse = async () => {
+    const parseAndFilter = async () => {
       const data = localStorage.getItem('symptom-result');
       if (data) {
         const result = await parseOutput(data);
@@ -51,9 +50,7 @@ export default function SymptomRecommendPage() {
           setType('PROCEDURE');
         }
       }
-      setParsed(true);
-    };
-    const filterHospital = async () => {
+
       const hospitals = await getFilteredHospitals(type, symptom);
       const refinedHospitals = hospitals.map((h) => ({
         ...h,
@@ -65,8 +62,7 @@ export default function SymptomRecommendPage() {
       setHospitals(refinedHospitals);
       console.log(hospitals);
     };
-    parse();
-    filterHospital();
+    parseAndFilter();
   }, []);
 
   // 위치 가져오기
@@ -127,7 +123,7 @@ export default function SymptomRecommendPage() {
   const checked = 'border-green-ez text-green-ez';
 
   return (
-    <div className="">
+    <div>
       <div className="space-y-4 px-4 py-6">
         <h2 className="font-semibold text-lg">{nickname} 손님의 맞춤형 병원</h2>
         <p className="text-gray-500 text-sm">
@@ -145,13 +141,18 @@ export default function SymptomRecommendPage() {
             ))}
           </div>
         </div>
-        <div className="">
+        <div>
           <div className="mt-6 flex gap-2 text-center font-medium">
             <button
+              disabled={!userLocation}
               onClick={() => setSortByDistance((v) => !v)}
-              className={cn(toggleBase, sortByDistance ? unChecked : checked)}
+              className={cn(
+                toggleBase,
+                sortByDistance ? unChecked : checked,
+                !userLocation && 'cursor-not-allowed opacity-50',
+              )}
             >
-              거리순
+              {userLocation ? '거리순' : '로딩중'}
             </button>
             <button
               onClick={() => setOpened((v) => !v)}
