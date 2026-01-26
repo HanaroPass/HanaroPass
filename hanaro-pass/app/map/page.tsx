@@ -68,16 +68,21 @@ export default function MapPage() {
       try {
         // TODO: 실제 로그인된 유저 ID를 넣어야 합니다. (현재 userId = 1)
         const userId = 1;
-        const data = await getSavedPlaces(userId);
-        setSavedPlaces(data);
+
+        const result = await getSavedPlaces(userId);
+
+        if (result.success) {
+          setSavedPlaces(result.data);
+        } else {
+          console.error('저장된 장소 불러오기 실패:', result.message);
+        }
       } catch (error) {
-        console.error('저장된 장소 불러오기 실패:', error);
+        console.error('네트워크 오류:', error);
       }
     };
 
     fetchPlaces();
   }, []);
-
   useEffect(() => {
     if (!currentMapRegion) return;
   }, [currentMapRegion]);

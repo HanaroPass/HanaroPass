@@ -1,12 +1,15 @@
 'use server';
 
+import { type ActionResult, handleActionResult } from '@/lib/error-handler';
 import type { SavedPlace } from '@/lib/generated/prisma';
 import { prisma } from '@/lib/prisma';
 
 /**
  * 저장된 장소 리스트 가져오기
  */
-export async function getSavedPlaces(userId: number): Promise<SavedPlace[]> {
+export async function getSavedPlaces(
+  userId: number,
+): Promise<ActionResult<SavedPlace[]>> {
   try {
     const places = await prisma.savedPlace.findMany({
       where: {
@@ -16,9 +19,9 @@ export async function getSavedPlaces(userId: number): Promise<SavedPlace[]> {
         id: 'asc',
       },
     });
-    return places;
+
+    return { success: true, data: places };
   } catch (error) {
-    console.error('Failed to fetch saved places:', error);
-    throw new Error('데이터를 불러오는 중 오류가 발생했습니다.');
+    return handleActionResult(error);
   }
 }
