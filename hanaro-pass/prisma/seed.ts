@@ -1,45 +1,12 @@
 import 'dotenv/config';
-import { EMBASSY_DATA } from '@/app/map/constants/embassy';
-import { SAVED_PLACES_MOCK } from '@/app/map/constants/savedPlaces';
-import type { PlaceCategory } from '@/lib/generated/prisma';
 import { prisma } from '../lib/prisma';
 import { seedDummyApplications } from './seed/seedApplications';
 import { seedCoupons } from './seed/seedCoupons';
 import { seedUserDocs, seedUserIdentityDocs } from './seed/seedDocuments';
+import { seedEmbassies } from './seed/seedEmbassies';
 import { fetchAndSeedHospitals, SERVICE_KEY } from './seed/seedHospitals';
+import { seedSavedPlaces } from './seed/seedSavedPlaces';
 import { seedAdminUser, seedUsers } from './seed/seedUsers';
-
-/**
- * 모든 유저에게 공통된 SavedPlace 더미 데이터 주입
- */
-async function seedSavedPlaces() {
-  console.log('[ SavedPlace 더미 생성 중... ]');
-
-  const users = await prisma.user.findMany();
-
-  for (const user of users) {
-    const dataToInsert = SAVED_PLACES_MOCK.map((place) => ({
-      ...place,
-      userId: user.id,
-      category: place.category as PlaceCategory,
-    }));
-
-    await prisma.savedPlace.createMany({
-      data: dataToInsert,
-    });
-  }
-  console.log(`[ 완료 ] ${users.length}명에게 장소 데이터 주입 완료`);
-}
-
-async function seedEmbassies() {
-  console.log('[ 대사관 데이터 시딩 시작 ]');
-
-  await prisma.embassy.createMany({
-    data: EMBASSY_DATA,
-  });
-
-  console.log(`[ 완료 ] 총 ${EMBASSY_DATA.length}개의 대사관 데이터 생성 완료`);
-}
 
 async function main() {
   if (!SERVICE_KEY) {
