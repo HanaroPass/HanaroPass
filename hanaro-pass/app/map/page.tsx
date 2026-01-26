@@ -46,6 +46,7 @@ export type Hospital = {
   openHours: string;
   languages: string[];
   departments: string[];
+  imageUrl?: string | null;
   aiSummary?: string;
 };
 
