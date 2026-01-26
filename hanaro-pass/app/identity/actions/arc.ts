@@ -9,6 +9,9 @@ import {
 import { getUserIdFromSession, saveUserIdToSession } from '@/lib/session';
 
 const parseLocalDate = (dateStr: string) => {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+    throw new HttpError('날짜 형식이 올바르지 않습니다. (YYYY-MM-DD)', 400);
+  }
   const [y, m, d] = dateStr.split('-').map(Number);
   return new Date(y, m - 1, d);
 };
@@ -56,7 +59,7 @@ export async function saveArcData(
       });
 
       if (existingArc) {
-        // 로그인 상태인데 다른 사람 신분증이면 막기
+        // 이미 존재하는 신분증인 경우 막기
         if (sessionUserId && existingArc.userId !== sessionUserId) {
           throw new HttpError('이미 다른 계정에 등록된 ARC 번호입니다.', 409);
         }
