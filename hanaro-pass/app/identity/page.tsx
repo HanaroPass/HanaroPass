@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import DynamsoftInitTest from './components/DynamsoftInitTest';
 import { useFunnel } from './hooks/useFunnel';
 import OCRPageContent from './ocr/OCRPageContent';
 import AccountStep from './steps/AccountStep';
@@ -30,16 +31,19 @@ export default function IdentityPage() {
   // Intro Step
   if (currentStep === 'intro') {
     return (
-      <IntroStep
-        onSelectIdentityType={(type) => {
-          history.push('ocr', {
-            identityType: type,
-            identityData: null,
-            accountData: null,
-          });
-        }}
-        onClose={handleClose}
-      />
+      <>
+        <DynamsoftInitTest />
+        <IntroStep
+          onSelectIdentityType={(type) => {
+            history.push('ocr', {
+              identityType: type,
+              identityData: null,
+              accountData: null,
+            });
+          }}
+          onClose={handleClose}
+        />
+      </>
     );
   }
 
