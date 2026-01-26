@@ -55,7 +55,7 @@ type Props = {
 };
 
 export default function MapPageClient({ hospitals }: Props) {
-  const [bookmark, setBookmark] = useState<boolean>(false);
+  const [bookmark, setBookmark] = useState(false);
 
   const [savedPlaces, setSavedPlaces] = useState<SavedPlace[]>([]);
   const [myEmbassy, setMyEmbassy] = useState<Embassy | null>(null);
@@ -248,7 +248,7 @@ export default function MapPageClient({ hospitals }: Props) {
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        {openSheet === 'bookmark' && selectedPlace && (
+        {openSheet === 'bookmark' && !!selectedPlace && (
           <div className="px-2">
             <PlaceCard data={mapDbToInfo(selectedPlace)} />
           </div>

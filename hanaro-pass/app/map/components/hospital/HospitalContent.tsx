@@ -3,9 +3,9 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { HospitalCard } from '@/components/ui/HospitalCard';
 import DepartmentFilterPanel from './DepartmentFilterPanel';
 import FilterPanel from './FilterPanel';
-import { HospitalCard } from './HospitalCard';
 import LanguageFilterPanel from './LanguageFilterPanel';
 
 function getHospitalStatus(openHours: string): '진료 중' | '진료 종료' {

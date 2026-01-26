@@ -1,20 +1,14 @@
-import OpenAI from 'openai';
+'use server';
 
-const apiKey = process.env.OPENAI_API_KEY;
-
-if (!apiKey) {
-  throw new Error('OPENAI_API_KEY is not set');
-}
-
-const openai = new OpenAI({
-  apiKey,
-});
+import { postOpenAI } from '@/app/medical/actions/symptoms';
 
 type SummaryInput = {
   reviews: string[];
 };
 
 export async function getHospitalAiSummary(input: SummaryInput) {
+  if (!input.reviews.length) return '';
+
   const prompt = `
 다음은 한 병원에 대한 여러 이용자 후기입니다.
 이 후기들을 종합해서 외국인에게 도움이 될
@@ -34,7 +28,7 @@ export async function getHospitalAiSummary(input: SummaryInput) {
 ${input.reviews.map((r) => `- ${r}`).join('\n')}
 `;
 
-  const res = await openai.chat.completions.create({
+  const body = JSON.stringify({
     model: 'gpt-4o-mini',
     messages: [
       { role: 'system', content: '너는 병원 리뷰를 요약하는 AI야.' },
@@ -44,5 +38,13 @@ ${input.reviews.map((r) => `- ${r}`).join('\n')}
     max_tokens: 60,
   });
 
-  return res.choices[0].message.content?.trim() ?? '';
+  try {
+    const response = await postOpenAI('chat/completions', body);
+    const json = await response.json();
+
+    return json?.choices?.[0]?.message?.content?.trim() ?? '';
+  } catch (e) {
+    console.error('병원 요약 실패:', e);
+    return '';
+  }
 }
