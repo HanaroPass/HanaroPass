@@ -25,6 +25,12 @@ export default function OCRPageContent({
     onSubmit(data);
   };
 
+  const handleImageSelect = (file: File) => {
+    console.log('선택된 이미지:', file);
+    // TODO: 이미지 처리 로직 추가
+    setIsDrawerOpen(true);
+  };
+
   const handleRetake = () => {
     setIsDrawerOpen(false);
   };
@@ -69,7 +75,11 @@ export default function OCRPageContent({
         <p className="font-semibold text-xl">자동으로 촬영됩니다.</p>
       </div>
 
-      <CameraCapture type={type} onClick={() => setIsDrawerOpen(true)} />
+      <CameraCapture
+        type={type}
+        onClick={() => setIsDrawerOpen(true)}
+        onImageSelect={handleImageSelect}
+      />
 
       <div className="bg-black px-8 pb-6 text-left sm:pb-8 md:pb-10 lg:pb-12">
         <div className="flex flex-col gap-4 sm:gap-5 md:gap-6">
