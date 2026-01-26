@@ -6,7 +6,6 @@ import path from 'node:path';
 
 import { revalidatePath } from 'next/cache';
 
-import { getUserId } from '@/lib/user';
 import {
   handleActionResult,
   HttpError,
@@ -19,12 +18,13 @@ import {
   type DocsCardId,
   type UserDocType,
 } from '../constants/docsCardItem';
+import { getUserIdFromSession } from '@/lib/session';
 
 // *
 // 서류 조회
 // *
 export async function getUserDocs(docId: string) {
-  const userId = await getUserId();
+  const userId = await getUserIdFromSession();
   if (!userId) return null;
 
   // docId로 DB ENUM 타입찾기
@@ -46,7 +46,7 @@ export async function addUserDocs(
   formData: FormData,
 ): Promise<ActionResult<{ createdAt: Date }>> {
   try {
-    const userId = await getUserId();
+    const userId = await getUserIdFromSession();
     if (!userId) {
       throw new HttpError('로그인이 필요합니다.', 401);
     }
@@ -138,7 +138,7 @@ export async function deleteUserDocs(
   docId: string,
 ): Promise<ActionResult<{ deleted: true }>> {
   try {
-    const userId = await getUserId();
+    const userId = await getUserIdFromSession();
     if (!userId) {
       throw new HttpError('로그인이 필요합니다.', 401);
     }

@@ -1,17 +1,24 @@
 'use server';
 
 import { prisma } from '@/lib/prisma';
-import { savePassportToSession } from '@/lib/session';
 import {
   handleActionResult,
   HttpError,
   type ActionResult,
 } from '@/lib/error-handler';
-import { parseLocalDate } from './arc';
+import { getUserIdFromSession, saveUserIdToSession } from '@/lib/session';
+
+const parseLocalDate = (dateStr: string) => {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+    throw new HttpError('날짜 형식이 올바르지 않습니다. (YYYY-MM-DD)', 400);
+  }
+  const [y, m, d] = dateStr.split('-').map(Number);
+  return new Date(y, m - 1, d);
+};
 
 export async function savePassportData(
   data: Record<string, string>,
-): Promise<ActionResult<{ id: number }>> {
+): Promise<ActionResult<{ id: number; userId: number }>> {
   try {
     const {
       passportNumber,
@@ -36,6 +43,8 @@ export async function savePassportData(
       throw new HttpError('모든 정보를 정확히 입력해주세요.', 400);
     }
 
+    const sessionUserId = await getUserIdFromSession();
+
     const nickname = `${lastName} ${firstName}`.trim();
 
     const result = await prisma.$transaction(async (tx) => {
@@ -46,37 +55,47 @@ export async function savePassportData(
       });
 
       if (existingPassport) {
-        // 이미 여권이 등록된 유저라면 추가 생성 없이 기존 ID 반환
+        // 이미 존재하는 여권인 경우 막기
+        if (sessionUserId && existingPassport.userId !== sessionUserId) {
+          throw new HttpError('이미 다른 계정에 등록된 여권번호입니다.', 409);
+        }
         return existingPassport;
       }
 
-      // 여권이 없다면, 유저 생성
-      const user = await tx.user.create({
-        data: {
-          nickname,
-          nationality,
-        },
-      });
+      // 여권번호가 신규라면: 로그인 상태면 그 userId로 연결, 아니면 user 생성
+      let userIdToUse = sessionUserId ?? null;
+
+      if (!userIdToUse) {
+        if (!nickname || !nationality) {
+          throw new HttpError('사용자 정보가 누락되었습니다.', 400);
+        }
+
+        const user = await tx.user.create({
+          data: { nickname, nationality },
+          select: { id: true },
+        });
+        userIdToUse = user.id;
+      }
 
       return await tx.passport.create({
         data: {
-          userId: user.id,
+          userId: userIdToUse,
           passportNumber,
           gender: gender as 'MALE' | 'FEMALE' | 'OTHERS',
           issueDate: parseLocalDate(issueDate),
           expiryDate: parseLocalDate(expiryDate),
           userPhotoUrl: userPhotoUrl || '',
         },
-        select: { id: true },
+        select: { id: true, userId: true },
       });
     });
 
     // 세션 저장
-    await savePassportToSession(passportNumber);
+    await saveUserIdToSession(result.userId);
 
     return {
       success: true,
-      data: { id: result.id },
+      data: { id: result.id, userId: result.userId },
     };
   } catch (error: unknown) {
     return handleActionResult(error);
