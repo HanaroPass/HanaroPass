@@ -3,6 +3,7 @@ import { SAVED_PLACES_MOCK } from '@/app/map/constants/savedPlaces';
 import type { PlaceCategory } from '@/lib/generated/prisma';
 import { prisma } from '../lib/prisma';
 import { seedDummyApplications } from './seed/seedApplications';
+import { seedCoupons } from './seed/seedCoupons';
 import { seedUserDocs, seedUserIdentityDocs } from './seed/seedDocuments';
 import { fetchAndSeedHospitals, SERVICE_KEY } from './seed/seedHospitals';
 import { seedAdminUser, seedUsers } from './seed/seedUsers';
@@ -47,6 +48,7 @@ async function main() {
   await prisma.aRC.deleteMany();
   await prisma.passport.deleteMany();
   await prisma.user.deleteMany();
+  await prisma.coupon.deleteMany();
 
   // AUTO_INCREMENT 초기화
   await prisma.$executeRaw`ALTER TABLE Hospital AUTO_INCREMENT = 1`;
@@ -60,6 +62,7 @@ async function main() {
   await prisma.$executeRaw`ALTER TABLE Passport AUTO_INCREMENT = 1`;
   await prisma.$executeRaw`ALTER TABLE ARC AUTO_INCREMENT = 1`;
   await prisma.$executeRaw`ALTER TABLE UserDocument AUTO_INCREMENT = 1`;
+  await prisma.$executeRaw`ALTER TABLE Coupons AUTO_INCREMENT = 1`;
 
   await fetchAndSeedHospitals();
   await seedUsers();
@@ -67,7 +70,9 @@ async function main() {
   await seedUserDocs();
   await seedUserIdentityDocs();
   await seedDummyApplications();
+  await seedCoupons();
   await seedSavedPlaces();
+
   console.log('[ 시딩 작업 완료! ]');
 }
 
