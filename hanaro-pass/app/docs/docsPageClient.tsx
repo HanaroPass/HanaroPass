@@ -10,7 +10,6 @@ import Header from '@/components/header/Header';
 import DocsSelectList from './components/add/BottomSelectList';
 import { useRouter } from 'next/navigation';
 import type { getDocsStatus } from './actions/userDocsList';
-import { setupTestSession } from './actions/test';
 
 type UserProps = {
   userName: string;
@@ -53,24 +52,6 @@ export default function DocsPageClient({ userName, docStatus }: UserProps) {
         {/* 보유 + 추가 버튼 */}
         <div className="mb-3 flex items-center justify-between text-white">
           <h2 className="font-sans font-semibold text-[16px]">보유</h2>
-
-          {/* 🔴 임시 테스트 버튼 */}
-          <button
-            type="button"
-            onClick={async () => {
-              try {
-                await setupTestSession('P-2');
-                alert('테스트 로그인 성공! 페이지를 새로고침합니다.');
-                window.location.reload(); // 세션 반영을 위해 강제 새로고침
-              } catch (e) {
-                alert('로그인 실패: ' + e);
-              }
-            }}
-            className="rounded-3xl bg-red-500 px-3.5 py-1 font-sans font-semibold text-[14px] text-white"
-          >
-            🛠️ 세션 생성
-          </button>
-          {/* 🔴 임시 테스트 버튼 */}
 
           <button
             type="button"

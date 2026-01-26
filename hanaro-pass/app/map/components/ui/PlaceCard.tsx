@@ -3,7 +3,7 @@ import { Navigation, Phone } from 'lucide-react';
 import Image from 'next/image';
 
 export type LocationInfo = {
-  id?: number;
+  id?: string | number;
   name: string;
   type: string;
   status?: string;
