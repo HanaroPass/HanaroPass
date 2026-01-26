@@ -1,11 +1,12 @@
 'use client';
 
+import { savePassportData } from '../../actions/passport';
 import { useDrawerForm } from './hooks/useDrawerForm';
-import { AlienExtraFields, AlienFields } from './shared/AlienFields';
 import { BaseDrawer } from './shared/BaseDrawer';
 import { CommonFields } from './shared/CommonFields';
+import { PassportDateFields, PassportFields } from './shared/PassportFields';
 
-type AlienDrawerProps = {
+type PassportDrawerProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit?: (data: Record<string, string>) => void;
@@ -13,24 +14,38 @@ type AlienDrawerProps = {
   className?: string;
 };
 
-export function AlienDrawer({
+export function PassportDrawer({
   open,
   onOpenChange,
   onSubmit,
   onReset,
   className,
-}: AlienDrawerProps) {
-  const { formData, handleSubmit, resetForm, handleFormDataChange } =
-    useDrawerForm({
-      onSubmit,
-      onOpenChange,
-    });
+}: PassportDrawerProps) {
+  const handleSave = async (data: Record<string, string>) => {
+    const result = await savePassportData(data);
+
+    if (result.success) {
+      alert('여권 정보 등록 및 로그인이 완료되었습니다.');
+      if (onSubmit) onSubmit(data);
+      onOpenChange(false);
+    } else {
+      alert(`[오류 ${result.status}] ${result.message}`);
+    }
+  };
+
+  const { formData, resetForm, handleFormDataChange } = useDrawerForm({
+    onSubmit: undefined,
+    onOpenChange,
+  });
+  const handleSubmit = () => {
+    void handleSave(formData);
+  };
 
   return (
     <BaseDrawer
       open={open}
       onOpenChange={onOpenChange}
-      title="외국인 등록증 정보 확인"
+      title="여권 정보 확인"
       onSubmit={handleSubmit}
       onReset={onReset || resetForm}
       className={className}
@@ -40,11 +55,11 @@ export function AlienDrawer({
         formData={formData}
         onFormDataChange={handleFormDataChange}
       />
-      <AlienFields
+      <PassportFields
         formData={formData}
         onFormDataChange={handleFormDataChange}
       />
-      <AlienExtraFields
+      <PassportDateFields
         formData={formData}
         onFormDataChange={handleFormDataChange}
       />

@@ -1,12 +1,20 @@
+import { Suspense } from 'react';
 import { getDocsStatus, getUserName } from './actions/userDocsList';
 import DocsPageClient from './docsPageClient';
 
-export const dynamic = 'force-dynamic';
+export default function DocsPage() {
+  return (
+    <Suspense fallback={<div className="p-5 text-white/50">로딩 중...</div>}>
+      <DocsPageContent />
+    </Suspense>
+  );
+}
 
-export default async function docsPage() {
+async function DocsPageContent() {
   const [userName, docStatus] = await Promise.all([
     getUserName(),
     getDocsStatus(),
   ]);
+
   return <DocsPageClient userName={userName ?? ''} docStatus={docStatus} />;
 }
