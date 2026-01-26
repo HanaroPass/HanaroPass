@@ -7,6 +7,7 @@ import { memo, useCallback, useMemo, useRef, useState } from 'react';
 import Barcode from 'react-barcode';
 import type { UserCardResponse } from '../actions/getUserCards.schema';
 import { postPaymentAction } from '../actions/postPayment.action';
+import { topUpCardAction } from '../actions/topUpCard.action';
 
 interface CardProps {
   cards: UserCardResponse[];
@@ -129,6 +130,22 @@ export default function Card({
     await pay();
   };
 
+  const onDevTopUpClick = async () => {
+    if (process.env.NODE_ENV !== 'development') return;
+    if (!activeCard) return;
+
+    const res = await topUpCardAction({
+      cardId: activeCard.id,
+      amount: 10_000,
+    });
+
+    if (!res.success) {
+      alert(res.message);
+      return;
+    }
+    router.refresh();
+  };
+
   return (
     <div className="w-full select-none overflow-hidden rounded-4xl border border-gray-100 bg-white px-10 py-8 shadow-sm">
       <div
@@ -188,6 +205,16 @@ export default function Card({
           </div>
         )}
       </button>
+
+      {process.env.NODE_ENV === 'development' && (
+        <button
+          type="button"
+          onClick={onDevTopUpClick}
+          className="fixed right-4 bottom-4 z-9999 rounded-md bg-green-ez px-3 py-1.5 font-semibold text-white text-xs shadow-md active:opacity-80 disabled:opacity-50"
+        >
+          +10,000
+        </button>
+      )}
     </div>
   );
 }

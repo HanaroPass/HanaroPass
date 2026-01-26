@@ -30,3 +30,24 @@ export const PaymentResponseSchema = z.object({
 });
 
 export type PaymentResponse = z.infer<typeof PaymentResponseSchema>;
+
+export const TopUpCardRequestSchema = z
+  .object({
+    cardId: z.number().int().positive(),
+    amount: z.number().int().positive().min(1_000).max(1_000_000),
+  })
+  .strict();
+
+export type TopUpCardRequest = z.infer<typeof TopUpCardRequestSchema>;
+
+export const TopUpCardResponseSchema = z
+  .object({
+    code: z.literal(200),
+    chargedCardId: z.number().int().positive(),
+    amount: z.number().int().positive(),
+    message: z.string(),
+    success: z.literal(true),
+  })
+  .strict();
+
+export type TopUpCardResponse = z.infer<typeof TopUpCardResponseSchema>;
