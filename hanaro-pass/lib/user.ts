@@ -1,6 +1,6 @@
 import { HttpError } from './error-handler';
 import { prisma } from './prisma';
-import { getUserIdFromSession } from './session';
+import { getSession, getUserIdFromSession } from './session';
 
 // 사용자 이름 가져오기
 export async function getUserName() {
@@ -32,4 +32,12 @@ export async function validateAdmin() {
   }
 
   return user;
+}
+
+export async function validateUser() {
+  const session = await getSession();
+  if (!session?.userId) {
+    throw new HttpError('로그인이 필요한 서비스입니다.', 401);
+  }
+  return session.userId; // 인증된 유저의 ID를 반환
 }

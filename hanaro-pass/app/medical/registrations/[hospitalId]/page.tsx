@@ -29,37 +29,45 @@ export default function HospitalRegistrationDetailsPage() {
     useRegistrationDetail(hospitalId);
 
   const historySteps = useMemo(() => {
-    if (!data) return [];
+    if (!data?.history) return [];
 
-    return [
-      {
+    return data.history.flatMap((app) => {
+      const steps = [];
+
+      // 처리 결과 (승인/반려 시점에 대한 포인트)
+      if (app.processedAt) {
+        steps.push({
+          key: `result-${app.id}`,
+          label: app.status === 'REJECTED' ? '반려 완료' : '승인 완료',
+          date: formatDate(app.processedAt),
+          icon: app.status === 'REJECTED' ? AlertCircle : CheckCircle2,
+          iconColor:
+            app.status === 'REJECTED' ? 'text-red-500' : 'text-teal-600',
+          isItalic: false,
+        });
+      } else if (app.status === 'PENDING') {
+        steps.push({
+          key: `pending-${app.id}`,
+          label: '심사 대기 중',
+          date: '-',
+          icon: Clock,
+          iconColor: 'text-gray-300',
+          isItalic: true,
+        });
+      }
+
+      steps.push({
+        key: `submit-${app.id}`,
         label: '신청 완료',
-        date: formatDate(data.createdAt),
+        date: formatDate(app.createdAt),
         icon: CheckCircle2,
-        iconColor: 'text-teal-600',
-        isLast: false,
+        iconColor: app.status === 'PENDING' ? 'text-teal-600' : 'text-gray-300',
         isItalic: false,
-      },
-      {
-        // REJECTED 상태일 때만 '반려 완료'로 표시
-        label: data.status === 'REJECTED' ? '반려 완료' : '승인 완료',
-        date: formatDate(data.processedAt),
-        // 상태 및 처리 여부에 따른 아이콘 분기
-        icon: !data.processedAt
-          ? Clock
-          : data.status === 'REJECTED'
-            ? AlertCircle
-            : CheckCircle2,
-        iconColor: !data.processedAt
-          ? 'text-gray-300'
-          : data.status === 'REJECTED'
-            ? 'text-red-500'
-            : 'text-teal-600',
-        isLast: true,
-        isItalic: !data.processedAt,
-      },
-    ];
-  }, [data, formatDate]);
+      });
+
+      return steps;
+    });
+  }, [data?.history, formatDate]);
 
   if (isLoading)
     return <div className="p-10 text-center">정보를 불러오는 중...</div>;
@@ -118,14 +126,14 @@ export default function HospitalRegistrationDetailsPage() {
             <div className="absolute top-8 bottom-8 left-7.5 w-px bg-gray-300/80" />
 
             <div className="flex flex-col gap-8">
-              {historySteps.map((step) => (
+              {historySteps.map((step, index) => (
                 <HistoryItem
-                  key={step.label}
+                  key={step.key}
                   icon={step.icon}
                   iconColor={step.iconColor}
                   label={step.label}
                   date={step.date}
-                  isLast={step.isLast}
+                  isLast={index === historySteps.length - 1}
                   isItalic={step.isItalic}
                 />
               ))}

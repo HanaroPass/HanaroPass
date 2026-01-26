@@ -8,6 +8,7 @@ import {
 import type { Hospital } from '@/lib/generated/prisma';
 import { prisma } from '@/lib/prisma';
 import { getSession } from '@/lib/session';
+import { validateUser } from '@/lib/user';
 import { type LanguageId, mapLanguages } from '../constants/language';
 import type { StatusType } from '../constants/statusConfig';
 import {
@@ -240,27 +241,36 @@ export async function getRegistrationDetailAction(
 ): Promise<ActionResult<RegistrationDetailResponse>> {
   try {
     const validatedId = IdSchema.parse(hospitalId);
+    const userId = await validateUser();
 
-    const application = await prisma.hospitalLanguageApplication.findFirst({
-      where: { hospitalId: validatedId },
+    const applications = await prisma.hospitalLanguageApplication.findMany({
+      where: { hospitalId: validatedId, userId: userId },
       orderBy: { createdAt: 'desc' },
       include: {
         Hospital: { select: { nameKo: true } },
       },
     });
 
-    if (!application) {
+    if (applications.length === 0) {
       throw new HttpError('신청 내역을 찾을 수 없습니다.', 404);
     }
+
+    const latest = applications[0]; // 가장 최근 건
 
     return {
       success: true,
       data: {
-        hospitalName: application.Hospital.nameKo,
-        status: application.status as StatusType,
-        requestLangs: mapLanguages(application.requestLangs as string[]), // Json 타입을 LanguageId[]로 간주
-        createdAt: application.createdAt,
-        processedAt: application.processedAt,
+        hospitalName: latest.Hospital.nameKo,
+        status: latest.status as StatusType,
+        requestLangs: mapLanguages(latest.requestLangs as string[]),
+        createdAt: latest.createdAt,
+        processedAt: latest.processedAt,
+        history: applications.map((app) => ({
+          id: app.id,
+          status: app.status as StatusType,
+          createdAt: app.createdAt,
+          processedAt: app.processedAt,
+        })),
       },
     };
   } catch (err) {
