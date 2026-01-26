@@ -10,7 +10,7 @@ const mockData: LocationInfo = {
   distance: '120m',
   address: '서울특별시 중구 을지로 66',
   phone: '02-123-4567',
-  imageUrl: 'https://picsum.photos/200',
+  imageUrl: '/images/map/img_map_emergency.png',
 };
 
 const meta = {
