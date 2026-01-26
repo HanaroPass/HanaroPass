@@ -1,6 +1,8 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 import {
   type ActionResult,
   HttpError,
@@ -33,4 +35,12 @@ export async function forceLoginAction(
   } catch (error) {
     return handleActionResult(error);
   }
+}
+
+export async function logoutAction() {
+  const cookieStore = await cookies();
+
+  cookieStore.delete('session_token');
+
+  redirect('/');
 }
