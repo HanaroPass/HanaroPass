@@ -24,6 +24,8 @@ export const formatExchangeData = (
     distance: '',
     status: '',
     explainTime: '',
+    latitude: item.mapy || '',
+    longitude: item.mapx || '',
   }));
 };
 
@@ -41,6 +43,8 @@ export const mapDbToInfo = (
       distance: '',
       status: '',
       explainTime: '',
+      latitude: db.mapy || '',
+      longitude: db.mapx || '',
     };
   }
   const { address, phone } = db;
