@@ -103,7 +103,7 @@ export default function MainWrapper({
           <section className="p-6">
             <div className="flex items-center justify-between">
               <h2 className="whitespace-pre-line font-bold text-2xl text-white leading-tight">
-                {'모바일 여권을\n'}
+                {'모바일 신분증을\n'}
                 <span className="underline underline-offset-4">등록</span>
                 해주세요.
               </h2>
@@ -111,7 +111,7 @@ export default function MainWrapper({
               <Link
                 href="/user/identity"
                 className="flex h-16 w-16 items-center justify-center rounded-full bg-white"
-                aria-label="모바일 여권 등록하기"
+                aria-label="모바일 신분증 등록하기"
               >
                 <ArrowRight size={35} className="text-green-ez" />
               </Link>
