@@ -1,6 +1,7 @@
 import { Loader } from 'lucide-react';
 import { Suspense } from 'react';
 import { getIdentityData } from '../identity/actions/identity';
+import type { IdentityData } from '../identity/actions/identity.schema';
 import { getUserCardsAction } from './actions/getUserCards.action';
 import CouponListLoader from './components/CouponList.loader';
 import MainWrapper from './components/MainWrapper';
@@ -27,8 +28,14 @@ export default async function Page({
       ? (rawTab as keyof typeof TAB_COMPONENTS)
       : 'pay';
 
-  const { passport, arc } = await getIdentityData();
+  let identity: IdentityData | null = null;
+  try {
+    identity = await getIdentityData();
+  } catch {
+    identity = null;
+  }
 
+  const { passport, arc } = identity ?? {};
   const isRegistered = Boolean(passport || arc);
   if (!isRegistered) {
     return (

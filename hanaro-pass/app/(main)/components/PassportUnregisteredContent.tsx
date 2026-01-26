@@ -49,7 +49,7 @@ export default function PassportUnregisteredContent() {
         />
       </section>
 
-      <section className="grid h-[145] grid-cols-2 gap-4">
+      <section className="grid h-36.25 grid-cols-2 gap-4">
         <div className="rounded-3xl bg-[#CFE2FF] p-5">
           <p className="font-bold text-base">비대면 계좌개설</p>
           <Image
