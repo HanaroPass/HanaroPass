@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 function layout({ children }: PropsWithChildren) {
   return (
-    <div className="app-shell">
+    <div className="app-shell overflow-hidden">
       <Header title="K-map" />
       <main className="app-main">{children}</main>
     </div>

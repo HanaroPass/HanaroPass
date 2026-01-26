@@ -1,0 +1,139 @@
+'use client';
+
+import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  DEFAULT_COORDS,
+  MARKER_ICONS,
+  NAVER_MAP_SCRIPT_URL,
+} from '../constants/map';
+
+const LATITUDE_OFFSET = -0.004;
+
+export function useNaverMapInit(
+  containerRef: React.RefObject<HTMLDivElement | null>,
+  onMapMoved?: (address: string) => void,
+) {
+  const mapRef = useRef<naver.maps.Map | null>(null);
+  const [isMapReady, setIsMapReady] = useState(false);
+
+  const updateCenterAddress = useCallback(() => {
+    const map = mapRef.current;
+    if (!map || !window.naver?.maps?.Service) {
+      return;
+    }
+
+    window.naver.maps.Service.reverseGeocode(
+      {
+        coords: map.getCenter(),
+        orders: [
+          window.naver.maps.Service.OrderType.ADDR,
+          window.naver.maps.Service.OrderType.ROAD_ADDR,
+        ].join(','),
+      },
+      (status, response) => {
+        if (status !== window.naver.maps.Service.Status.OK) {
+          return;
+        }
+        const result = response.v2;
+        const region = result.results[0]?.region;
+        const fullRegionName =
+          `${region?.area2?.name || ''} ${region?.area3?.name || ''}`.trim();
+        if (onMapMoved && fullRegionName) {
+          onMapMoved(fullRegionName);
+        }
+      },
+    );
+  }, [onMapMoved]);
+
+  useEffect(() => {
+    const NAVER_MAP_KEY = process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID;
+    const container = containerRef.current;
+    if (!NAVER_MAP_KEY || !container) {
+      return;
+    }
+
+    let idleListener: naver.maps.MapEventListener | null = null;
+    let isMounted = true;
+
+    const initMap = () => {
+      if (!container || mapRef.current || !isMounted) {
+        return;
+      }
+
+      const renderMap = (lat: number, lng: number) => {
+        if (!isMounted) return;
+
+        const map = new window.naver.maps.Map(container, {
+          center: new window.naver.maps.LatLng(lat + LATITUDE_OFFSET, lng),
+          zoom: 15,
+          logoControl: false,
+        });
+
+        mapRef.current = map;
+        setIsMapReady(true);
+
+        new window.naver.maps.Marker({
+          position: new window.naver.maps.LatLng(lat, lng),
+          map,
+          icon: {
+            content: MARKER_ICONS.myLocation,
+            anchor: new window.naver.maps.Point(8, 8),
+          },
+        });
+
+        // 이벤트 리스너를 변수에 저장
+        idleListener = window.naver.maps.Event.addListener(
+          map,
+          'idle',
+          updateCenterAddress,
+        );
+        updateCenterAddress();
+      };
+
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          renderMap(pos.coords.latitude, pos.coords.longitude);
+        },
+        () => {
+          renderMap(DEFAULT_COORDS.lat, DEFAULT_COORDS.lng);
+        },
+        { enableHighAccuracy: true, timeout: 10000 },
+      );
+    };
+
+    const scriptId = 'naver-map-script';
+    const existingScript = document.getElementById(
+      scriptId,
+    ) as HTMLScriptElement | null;
+
+    if (!existingScript) {
+      const script = document.createElement('script');
+      script.id = scriptId;
+      script.src = `${NAVER_MAP_SCRIPT_URL}?ncpKeyId=${NAVER_MAP_KEY}&submodules=geocoder`;
+      script.async = true;
+      script.onload = () => initMap();
+      document.head.appendChild(script);
+    } else {
+      if (window.naver?.maps) {
+        initMap();
+      } else {
+        existingScript.addEventListener('load', initMap);
+      }
+    }
+
+    // Cleanup
+    return () => {
+      isMounted = false; // 더 이상 상태 업데이트 안 함
+
+      if (idleListener) {
+        window.naver.maps.Event.removeListener(idleListener);
+      }
+
+      if (existingScript) {
+        existingScript.removeEventListener('load', initMap);
+      }
+    };
+  }, [updateCenterAddress, containerRef]);
+
+  return { mapRef, isMapReady, LATITUDE_OFFSET };
+}
