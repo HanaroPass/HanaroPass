@@ -160,7 +160,7 @@ export async function updateApplicationStatusAction(
           ? `축하합니다! ${app.Hospital.nameKo}의 신청이 승인되었습니다. `
           : `안타깝게도 ${app.Hospital.nameKo}의 신청이 반려되었습니다.`;
 
-      const targetUrl = '/medical/status'; // 알림 클릭 시 이동할 페이지
+      const targetUrl = `/medical/registrations/${app.hospitalId}`; // 알림 클릭 시 이동할 페이지
 
       triggerPushNotification(app.userId, pushTitle, pushBody, targetUrl).catch(
         (err) => console.error('[알림 오류]:', err),

@@ -2,10 +2,13 @@
 'use server';
 
 import { type ActionResult, handleActionResult } from '@/lib/error-handler';
+import type { Notification } from '@/lib/generated/prisma';
 import { prisma } from '@/lib/prisma';
 import { getSession } from '@/lib/session';
 
-export async function getNotificationsAction(): Promise<ActionResult<any[]>> {
+export async function getNotificationsAction(): Promise<
+  ActionResult<Notification[]>
+> {
   try {
     const session = await getSession();
     if (!session.userId) throw new Error('인증이 필요합니다.');

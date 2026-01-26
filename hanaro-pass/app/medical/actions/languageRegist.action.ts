@@ -7,6 +7,7 @@ import {
 } from '@/lib/error-handler';
 import type { Hospital } from '@/lib/generated/prisma';
 import { prisma } from '@/lib/prisma';
+import { getSession } from '@/lib/session';
 import { type LanguageId, mapLanguages } from '../constants/language';
 import type { StatusType } from '../constants/statusConfig';
 import {
@@ -15,6 +16,7 @@ import {
   type RegistrationDetailResponse,
   SubmitSchema,
 } from '../schemas/languageRegist.schema';
+import { triggerPushNotification } from './push.action';
 
 /**
  * [병원 검색 서버 액션]
@@ -146,6 +148,12 @@ export async function submitLanguageApplicationAction(
       languageIds,
     });
 
+    const session = await getSession();
+    const userId = session?.userId;
+    if (!userId) {
+      throw new HttpError('로그인이 필요한 서비스입니다.', 401);
+    }
+
     await prisma.$transaction(async (tx) => {
       const existingPENDING = await tx.hospitalLanguageApplication.findFirst({
         where: {
@@ -160,12 +168,22 @@ export async function submitLanguageApplicationAction(
 
       await tx.hospitalLanguageApplication.create({
         data: {
+          userId: userId,
           hospitalId: vId,
           requestLangs: vLangs,
           status: 'PENDING',
         },
       });
     });
+
+    const pushTitle = '[하나로패스] 신청 접수 완료';
+    const pushBody =
+      '외국어 진료 서비스 신청이 정상적으로 접수되었습니다. 심사 결과가 나오면 바로 알려드릴게요!';
+    const targetUrl = '/medical/notifications'; // 알림 클릭 시 이동할 곳
+
+    triggerPushNotification(userId, pushTitle, pushBody, targetUrl).catch(
+      (err) => console.error('[제출 알림 전송 실패]:', err),
+    );
     return { success: true, data: null };
   } catch (err) {
     return handleActionResult(err);
