@@ -5,7 +5,7 @@ import {
   handleActionResult,
   HttpError,
   type ActionResult,
-} from '@/lib/error-handler';
+} from '@/lib/errorHandler';
 import { getUserIdFromSession, saveUserIdToSession } from '@/lib/session';
 
 const parseLocalDate = (dateStr: string) => {

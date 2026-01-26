@@ -6,7 +6,7 @@ import Header from '@/components/header/Header';
 import ActionButton from '@/components/ui/ActionButton';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { AccountDrawer } from '../components/bottomsheet/AccountDrawer';
+import { AccountDrawer } from '../components/bottomSheet/AccountDrawer';
 
 type AccountStepProps = {
   onSubmit: (data: Record<string, string>) => void;

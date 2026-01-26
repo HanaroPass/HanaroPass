@@ -10,7 +10,7 @@ import {
   handleActionResult,
   HttpError,
   type ActionResult,
-} from '@/lib/error-handler';
+} from '@/lib/errorHandler';
 import { prisma } from '@/lib/prisma';
 
 import {

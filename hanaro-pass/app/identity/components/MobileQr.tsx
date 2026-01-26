@@ -3,7 +3,8 @@
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import QRCode from 'react-qr-code';
-import type { IdentityType } from '../hooks/useFunnel';
+import { COUNTRY_IMAGE_MAP } from '@/constants/constants';
+import type { IdentityType } from '../IdentityPageClient';
 
 type MobileQrProps = {
   type: IdentityType;
@@ -53,6 +54,19 @@ export default function MobileQr({ type, data }: MobileQrProps) {
     </div>
   );
 
+  const rawCountry = data.nationality || 'UNITED STATES OF AMERICA';
+
+  // 나라별 국기 이미지
+  // 매핑 테이블에서 이름을 찾고, 없으면 공백을 언더바로 바꾼 값을 기본으로 시도
+  const fileName =
+    COUNTRY_IMAGE_MAP[rawCountry] || rawCountry.replace(/\s+/g, '_');
+
+  const [imgSrc, setImgSrc] = useState(`/images/identity/${fileName}.png`);
+
+  useEffect(() => {
+    setImgSrc(`/images/identity/${fileName}.png`);
+  }, [fileName]);
+
   return (
     <div
       className={`flex min-h-full flex-col overflow-y-auto pb-4 ${isPassport ? 'space-y-6' : '-space-y-22'}`}
@@ -101,14 +115,14 @@ export default function MobileQr({ type, data }: MobileQrProps) {
                   </span>
                 </div>
                 <Image
-                  src={`/images/identity/${data.country || 'USA'}.png`}
+                  src={imgSrc}
                   alt="Country Flag"
                   width={80}
                   height={50}
                   className="mb-2 rounded border border-gray-200 shadow-sm"
                 />
                 <span className="font-medium text-gray-900 text-sm">
-                  {data.country || 'USA'}
+                  {rawCountry}
                 </span>
               </div>
             </div>
@@ -126,7 +140,9 @@ export default function MobileQr({ type, data }: MobileQrProps) {
             <div className="flex h-48 flex-1 flex-col justify-center space-y-4 rounded-2xl bg-gray-50 px-4 py-2 text-gray-800">
               <div>
                 <p className="mb-1 font-semibold text-xl">Status</p>
-                <p className="font-regular text-sm">{data.status || 'B-04'}</p>
+                <p className="font-regular text-sm">
+                  {data.residenceStatus || 'B-04'}
+                </p>
               </div>
 
               <div className="h-px w-full bg-gray-200" />
@@ -134,7 +150,7 @@ export default function MobileQr({ type, data }: MobileQrProps) {
               <div>
                 <p className="mb-1 font-semibold text-xl">Permission</p>
                 <p className="font-regular text-sm">
-                  {data.permission || '2024-03-15'}
+                  {data.issueDate || '2024-03-15'}
                 </p>
               </div>
             </div>
