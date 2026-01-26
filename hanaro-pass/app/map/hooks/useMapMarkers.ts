@@ -1,10 +1,10 @@
 'use client';
 
 import { useCallback, useEffect, useRef } from 'react';
-import type { SavedPlace } from '@/lib/generated/prisma';
+import type { Embassy, SavedPlace } from '@/lib/generated/prisma';
+
 import type { NaverSearchResult } from '../components/ui/NaverMap';
 import { MARKER_ICONS } from '../constants/map';
-import type { Embassy } from '../mock/embassyExchange';
 import type { Hospital } from '../page';
 
 export type ClickablePlace =
@@ -18,7 +18,7 @@ type UseMapMarkersProps = {
   isMapReady: boolean;
   hospitals?: Hospital[];
   savedPlaces?: SavedPlace[];
-  embassyData?: Embassy;
+  embassyData?: Embassy[];
   exchangeResults?: NaverSearchResult[];
   showBookmarks?: boolean;
   showEmbassy?: boolean;
@@ -105,13 +105,18 @@ export function useMapMarkers({
     embassyMarkersRef.current = [];
 
     if (showEmbassy && embassyData) {
-      const m = createMarker(
-        embassyData.latitude,
-        embassyData.longitude,
-        MARKER_ICONS.embassy,
-        () => onMarkerClick(embassyData),
-      );
-      if (m) embassyMarkersRef.current = [m];
+      embassyData.forEach((embassy) => {
+        const lat = parseFloat(embassy.latitude);
+        const lng = parseFloat(embassy.longitude);
+
+        if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+
+        const m = createMarker(lat, lng, MARKER_ICONS.embassy, () =>
+          onMarkerClick(embassy),
+        );
+
+        if (m) embassyMarkersRef.current.push(m);
+      });
     }
   }, [isMapReady, map, showEmbassy, embassyData, createMarker, onMarkerClick]);
 

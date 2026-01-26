@@ -1,13 +1,17 @@
 'use client';
 
+import type { ReactNode } from 'react';
 import { useCallback, useState } from 'react';
 import { MOCK_CARDS } from '../mock/mockCard';
 import Card from './Card';
-import CouponList from './CouponList';
 import { MenuList } from './MenuList';
 import PinInput from './PinInput';
 
-export default function Pay() {
+type PayProps = {
+  couponList?: ReactNode;
+};
+
+export default function Pay({ couponList }: PayProps) {
   const [unlockedCardIds, setUnlockedCardIds] = useState<Set<number>>(
     new Set(),
   );
@@ -32,7 +36,8 @@ export default function Pay() {
         onLockClickAction={handleUnlockRequest}
       />
 
-      <CouponList />
+      {couponList}
+
       <MenuList type="pay" />
 
       {pendingCardId && (

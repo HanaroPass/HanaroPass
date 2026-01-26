@@ -1,4 +1,6 @@
-import { use } from 'react';
+import { Loader } from 'lucide-react';
+import { Suspense, use } from 'react';
+import CouponListLoader from './components/CouponList.loader';
 import MainWrapper from './components/MainWrapper';
 import Pay from './components/Pay';
 import Service from './components/Service';
@@ -21,7 +23,19 @@ export default function Page({
     rawTab && rawTab in TAB_COMPONENTS
       ? (rawTab as keyof typeof TAB_COMPONENTS)
       : 'pay';
+
   const TabComponent = TAB_COMPONENTS[tab];
+
+  const couponList =
+    tab === 'pay' ? (
+      <Suspense
+        fallback={
+          <Loader className="mx-auto h-8 w-8 animate-spin text-green-ez" />
+        }
+      >
+        <CouponListLoader />
+      </Suspense>
+    ) : null;
 
   return (
     <MainWrapper activeTab={tab}>
@@ -31,8 +45,13 @@ export default function Page({
           {tab === 'transfer' && '조회/이체'}
           {tab === 'service' && '서비스'}
         </MainWrapper.Title>
+
         <div className="app-main">
-          <TabComponent />
+          {tab === 'pay' ? (
+            <TabComponent couponList={couponList} />
+          ) : (
+            <TabComponent />
+          )}
         </div>
       </div>
     </MainWrapper>

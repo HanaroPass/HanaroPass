@@ -16,7 +16,7 @@ export const Default: Story = {
     id: 1,
     brandName: 'GS25',
     tag: '#편의점',
-    category: 'food',
+    category: 'FOOD',
     discount: 3,
     description: '최대 5천원 할인',
     brandPic:

@@ -4,7 +4,7 @@ import {
   type ActionResult,
   HttpError,
   handleActionResult,
-} from '@/lib/error-handler';
+} from '@/lib/errorHandler';
 import { prisma } from '@/lib/prisma';
 import { LANGUAGES, mapLanguages } from '../constants/language';
 import type { StatusType } from '../constants/statusConfig';
