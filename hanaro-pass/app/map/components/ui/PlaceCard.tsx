@@ -22,12 +22,41 @@ type PlaceCardProps = {
 
 export function PlaceCard({ data }: PlaceCardProps) {
   const handleNavigation = () => {
-    const { name } = data;
+    const { name, latitude, longitude } = data;
+    const encodedName = encodeURIComponent(name);
+    const appName = 'com.hanaropass.app';
 
-    const searchQuery = encodeURIComponent(`${name}`);
-    const naverMapUrl = `https://map.naver.com/v5/search/${searchQuery}`;
+    const lat = parseFloat(String(latitude));
+    const lng = parseFloat(String(longitude));
 
-    window.open(naverMapUrl, '_blank', 'noopener,noreferrer');
+    // 한국 범위
+    const isKorea = lat > 32 && lat < 44 && lng > 123 && lng < 133;
+
+    const webUrl = `https://map.naver.com/v5/search/${encodedName}`;
+
+    if (!isKorea) {
+      window.open(webUrl, '_blank', 'noopener,noreferrer');
+      return;
+    }
+
+    const appUrl = `nmap://route?dlat=${lat}&dlng=${lng}&dname=${encodedName}&appname=${appName}`;
+    const androidIntent = `intent://route?dlat=${lat}&dlng=${lng}&dname=${encodedName}&appname=${appName}#Intent;scheme=nmap;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;package=com.nhn.android.nmap;end`;
+
+    const userAgent = navigator.userAgent.toLowerCase();
+
+    if (/android/.test(userAgent)) {
+      window.location.href = androidIntent;
+    } else if (/iphone|ipad|ipod/.test(userAgent)) {
+      const clickedAt = Date.now();
+      window.location.href = appUrl;
+      setTimeout(() => {
+        if (Date.now() - clickedAt < 2000) {
+          window.open(webUrl, '_blank', 'noopener,noreferrer');
+        }
+      }, 1500);
+    } else {
+      window.open(webUrl, '_blank', 'noopener,noreferrer');
+    }
   };
 
   const handlePhoneCall = () => {
