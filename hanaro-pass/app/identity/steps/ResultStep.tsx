@@ -10,6 +10,7 @@ import { getIdentityData } from '../actions/identity';
 import { useSearchParams } from 'next/navigation';
 import type { IdentityType } from '../IdentityPageClient';
 import { cn } from '@/lib/utils';
+import { useToast } from '@/hooks/useToast';
 
 const DEFAULT_TAB: 'passport' | 'arc' = 'arc';
 
@@ -26,6 +27,7 @@ export default function ResultStep({
   onClose,
   onRegister,
 }: ResultStepProps) {
+  const { registerSuccess, systemError } = useToast();
   const searchParams = useSearchParams();
   const typeParam = searchParams.get('type') as IdentityType | null;
 
@@ -54,6 +56,13 @@ export default function ResultStep({
         setPassportData(res.passport);
         setArcData(res.arc);
 
+        // 새롭게 등록하여 넘어온 경우 성공 토스트 출력
+        if (initialData) {
+          const typeLabel =
+            identityType === 'passport' ? '여권' : '외국인 등록증';
+          registerSuccess(typeLabel);
+        }
+
         if (typeParam) {
           setActiveTab(typeParam);
         } else {
@@ -61,9 +70,8 @@ export default function ResultStep({
           if (res.passport) setActiveTab('passport');
           else if (res.arc) setActiveTab('arc');
         }
-      } catch (error) {
-        console.error('Failed to fetch identity data:', error);
-        if (mounted) setError('데이터를 불러오는데 실패했습니다.');
+      } catch {
+        if (mounted) systemError('신분증 정보');
       } finally {
         if (mounted) setIsLoading(false);
       }
@@ -74,7 +82,7 @@ export default function ResultStep({
     return () => {
       mounted = false;
     };
-  }, [typeParam]);
+  }, [typeParam, systemError, registerSuccess, initialData, identityType]);
 
   const handleRegister = (type: IdentityType) => {
     onRegister?.(type);

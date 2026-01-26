@@ -4,6 +4,7 @@ import { useState } from 'react';
 import ActionButton from '@/components/ui/ActionButton';
 import { deleteUserDocs } from '../actions/userDocs';
 import { useRouter } from 'next/navigation';
+import { useToast } from '@/hooks/useToast';
 
 type Props = {
   docId: string;
@@ -14,6 +15,23 @@ type Props = {
 export default function DocsDetailPageClient({ docId, fileUrl, title }: Props) {
   const router = useRouter();
   const [isDeleting, setIsDeleting] = useState(false);
+  const { success, actionError } = useToast();
+
+  const handleDelete = async () => {
+    const ok = confirm('정말 이 서류를 삭제할까요?');
+    if (!ok) return;
+
+    setIsDeleting(true);
+    const res = await deleteUserDocs(docId);
+
+    if (res.success) {
+      success(`${title} 삭제 완료!`, '서류가 성공적으로 삭제되었습니다.');
+      router.push('/docs');
+    } else {
+      actionError(res);
+      setIsDeleting(false);
+    }
+  };
 
   const handleDownload = () => {
     if (!fileUrl) return;
@@ -32,21 +50,7 @@ export default function DocsDetailPageClient({ docId, fileUrl, title }: Props) {
         <ActionButton
           text={isDeleting ? '삭제 중...' : '삭제'}
           disabled={isDeleting}
-          onClick={async () => {
-            const ok = confirm('정말 이 서류를 삭제할까요?');
-            if (!ok) return;
-            setIsDeleting(true);
-            const res = await deleteUserDocs(docId);
-
-            if (!res.success) {
-              alert(res.message);
-              setIsDeleting(false);
-              return;
-            }
-
-            alert('서류가 삭제되었습니다.');
-            router.push('/docs');
-          }}
+          onClick={handleDelete}
           className="bg-white text-black hover:bg-black/5 active:bg-black/5"
         />
       </div>

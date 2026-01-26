@@ -16,10 +16,10 @@ export default function DocsDonePage({ params }: DocsProps) {
 
   const [uploadedAt, setUploadedAt] = useState<string | null>(null);
 
-  const { success } = useToast();
+  const { registerSuccess } = useToast();
   useEffect(() => {
     if (doc?.title) {
-      success(`${doc.title} 등록 완료!`, '서류 보관함에서 확인 가능합니다.');
+      registerSuccess(doc.title);
     }
     // 브라우저에서 파일 업로드 일자 읽어오기
     const data = sessionStorage.getItem('createdAt');
@@ -28,7 +28,7 @@ export default function DocsDonePage({ params }: DocsProps) {
       setUploadedAt(formattedDate);
       sessionStorage.removeItem('createdAt');
     }
-  }, [doc?.title, success]);
+  }, [doc?.title, registerSuccess]);
 
   return (
     <>
