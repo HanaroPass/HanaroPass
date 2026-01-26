@@ -23,3 +23,20 @@ export async function getNotificationsAction(): Promise<
     return handleActionResult(error);
   }
 }
+
+/**
+ * [알림 읽음 처리]
+ */
+export async function markAsReadAction(
+  id: number,
+): Promise<ActionResult<null>> {
+  try {
+    await prisma.notification.update({
+      where: { id },
+      data: { isRead: true },
+    });
+    return { success: true, data: null };
+  } catch (error) {
+    return handleActionResult(error);
+  }
+}
