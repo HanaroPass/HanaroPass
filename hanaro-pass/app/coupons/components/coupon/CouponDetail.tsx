@@ -2,21 +2,48 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import Barcode from 'react-barcode';
+import { postPaymentAction } from '@/app/(main)/actions/postPayment.action';
 
 interface CouponDetailProps {
-  brandName?: string;
-  brandPic?: string;
-  tag?: string;
-  couponNumber?: string;
+  brandName: string;
+  brandPic: string;
+  tag: string;
+  couponNumber: string;
+  id: number;
 }
 
 export default function CouponDetail({
-  brandPic = 'https://blog.kakaocdn.net/dna/lMgCJ/btqVvPDO1IB/AAAAAAAAAAAAAAAAAAAAAMppshZ7hQfAA8C0R-uK8w62V9O4BJYwNvifeBrHKjK8/img.jpg?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1769871599&allow_ip=&allow_referer=&signature=rXZhIFRLxIpT%2FxAqf7MMHNb%2Bdgc%3D',
-  brandName = '스타벅스',
-  tag = '#커피 전문점',
-  couponNumber = 'HN-2025-001234',
+  brandPic,
+  brandName,
+  tag,
+  couponNumber,
+  id,
 }: CouponDetailProps) {
+  const router = useRouter();
+  const [isPaying, setIsPaying] = useState(false);
+
+  const onBarcodeClick = async () => {
+    if (isPaying) return;
+    setIsPaying(true);
+
+    const res = await postPaymentAction({
+      couponId: id,
+    });
+
+    setIsPaying(false);
+
+    if (!res.success) {
+      alert(res.message);
+      return;
+    }
+
+    alert('결제가 완료되었습니다.');
+    router.push('/');
+  };
+
   return (
     <main className="flex flex-1 flex-col items-center px-6 py-10">
       <div className="mb-4 h-20 w-20 overflow-hidden rounded-full border border-gray-100 shadow-sm">
@@ -48,7 +75,13 @@ export default function CouponDetail({
         매장에서 바코드를 제시해주세요
       </p>
 
-      <div className="flex flex-col items-center gap-3">
+      <button
+        type="button"
+        onClick={onBarcodeClick}
+        disabled={isPaying}
+        className="flex flex-col items-center gap-3 active:opacity-70 disabled:opacity-40"
+        aria-label="쿠폰으로 결제하기"
+      >
         <div className="flex items-center justify-center overflow-hidden py-2">
           <Barcode
             value={couponNumber}
@@ -60,10 +93,11 @@ export default function CouponDetail({
             background="transparent"
           />
         </div>
+
         <p className="font-medium text-gray-400 text-sm">
           쿠폰번호: <span className="uppercase">{couponNumber}</span>
         </p>
-      </div>
+      </button>
 
       <div className="mt-6 w-full px-4 text-center text-gray-800 text-xs">
         <p className="mb-2">

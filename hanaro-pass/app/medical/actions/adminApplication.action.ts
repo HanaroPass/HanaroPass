@@ -6,6 +6,7 @@ import {
   handleActionResult,
 } from '@/lib/errorHandler';
 import { prisma } from '@/lib/prisma';
+import { validateAdmin } from '@/lib/user';
 import { LANGUAGES, mapLanguages } from '../constants/language';
 import type { StatusType } from '../constants/statusConfig';
 import {
@@ -15,6 +16,7 @@ import {
   AdminReviewDetailSchema,
   UpdateStatusSchema,
 } from '../schemas/adminApplication.schema';
+import { triggerPushNotification } from './push.action';
 
 /**
  * [관리자 대시보드 데이터 조회]
@@ -27,6 +29,8 @@ export async function getAdminApplicationsAction(): Promise<
   ActionResult<AdminDashboardResponse>
 > {
   try {
+    await validateAdmin();
+
     const apps = await prisma.hospitalLanguageApplication.findMany({
       orderBy: { createdAt: 'desc' },
       include: {
@@ -70,6 +74,8 @@ export async function getAdminReviewDetailAction(
   id: number,
 ): Promise<ActionResult<AdminReviewDetailResponse>> {
   try {
+    await validateAdmin();
+
     const application = await prisma.hospitalLanguageApplication.findUnique({
       where: { id },
       include: { Hospital: { select: { nameKo: true } } },
@@ -108,14 +114,25 @@ export async function updateApplicationStatusAction(
   status: 'APPROVED' | 'REJECTED',
 ): Promise<ActionResult<null>> {
   try {
+    await validateAdmin();
+
     const { id: vId, status: vStatus } = UpdateStatusSchema.parse({
       id,
       status,
     });
+    let pushData: {
+      userId: number;
+      title: string;
+      body: string;
+      url: string;
+    } | null = null;
 
     await prisma.$transaction(async (tx) => {
       const app = await tx.hospitalLanguageApplication.findUnique({
         where: { id: vId },
+        include: {
+          Hospital: { select: { nameKo: true } },
+        },
       });
       if (!app) throw new HttpError('처리 가능한 신청 내역이 아닙니다.', 400);
 
@@ -142,7 +159,24 @@ export async function updateApplicationStatusAction(
           })),
         });
       }
+
+      pushData = {
+        userId: app.userId,
+        title: '[하나로패스] 신청 심사 결과 안내',
+        body:
+          vStatus === 'APPROVED'
+            ? `축하합니다! ${app.Hospital.nameKo}의 신청이 승인되었습니다.`
+            : `안타깝게도 ${app.Hospital.nameKo}의 신청이 반려되었습니다.`,
+        url: `/medical/registrations/${app.hospitalId}`,
+      };
     });
+
+    if (pushData) {
+      const { userId, title, body, url } = pushData;
+      triggerPushNotification(userId, title, body, url).catch((err) =>
+        console.error('[알림 전송 실패]:', err),
+      );
+    }
 
     return { success: true, data: null };
   } catch (err) {

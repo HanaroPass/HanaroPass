@@ -6,11 +6,26 @@ import { prisma } from '@/lib/prisma';
 export async function seedDummyApplications() {
   console.log('[ 추가 작업 - ID 1, 2, 3번 대상 테스트 데이터 생성 중... ]');
 
+  // 1. 신청할 유저 한 명을 가져옵니다 (예: 첫 번째 유저)
+  const user = await prisma.user.findFirst({
+    select: { id: true },
+  });
+
+  if (!user) {
+    console.error(
+      '[ 에러 ] 유저 데이터가 없어 신청 데이터를 생성할 수 없습니다.',
+    );
+    return;
+  }
+
+  const userId = user.id;
+
   // 1. ID 1번: 신청 완료 (PENDING)
   // 상세 페이지에서 "노란색 상태 배지"와 "대기 중 타임라인" 확인용
   await prisma.hospitalLanguageApplication.create({
     data: {
       hospitalId: 1,
+      userId: userId,
       status: 'PENDING',
       requestLangs: ['en', 'cn'], // 영어, 중국어 신청
       createdAt: new Date('2026-01-19T09:43:00'),
@@ -22,6 +37,7 @@ export async function seedDummyApplications() {
   await prisma.hospitalLanguageApplication.create({
     data: {
       hospitalId: 2,
+      userId: userId,
       status: 'APPROVED',
       requestLangs: ['jp'], // 일본어 신청
       createdAt: new Date('2026-01-10T14:20:00'),
@@ -34,6 +50,7 @@ export async function seedDummyApplications() {
   await prisma.hospitalLanguageApplication.create({
     data: {
       hospitalId: 3,
+      userId: userId,
       status: 'REJECTED',
       requestLangs: ['vi', 'th'], // 베트남어, 태국어 신청
       createdAt: new Date('2026-01-15T11:30:00'),

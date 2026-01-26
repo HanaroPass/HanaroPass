@@ -23,7 +23,9 @@ export function useRegistrationDetail(hospitalId: number) {
           setData(result.data);
         } else {
           setData(null);
-          alert(result.message);
+          if (result.status === 401) {
+            console.error('인증 에러: 로그인이 필요합니다');
+          }
         }
       } finally {
         setIsLoading(false);
@@ -34,6 +36,8 @@ export function useRegistrationDetail(hospitalId: number) {
   }, [hospitalId]);
 
   const formattedLangs = data?.requestLangs || [];
+  const history = data?.history || [];
+
   const formatDate = (date: Date | null) =>
     date
       ? new Date(date)
@@ -53,5 +57,6 @@ export function useRegistrationDetail(hospitalId: number) {
     isLoading,
     formattedLangs,
     formatDate,
+    history,
   };
 }

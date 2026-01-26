@@ -65,7 +65,8 @@ export default function Footer({
         'fixed bottom-0 z-50 border-t bg-white',
         'transition-transform duration-300 ease-out',
         visible ? 'translate-y-0' : 'translate-y-full',
-        '-translate-x-1/2 left-1/2 w-93.75 max-w-full',
+        '-translate-x-1/2 left-1/2 w-full',
+        'md:w-93.75',
       )}
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >

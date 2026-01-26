@@ -6,6 +6,7 @@ import { seedUserDocs, seedUserIdentityDocs } from './seed/seedDocuments';
 import { seedEmbassies } from './seed/seedEmbassies';
 import { fetchAndSeedHospitals, SERVICE_KEY } from './seed/seedHospitals';
 import { seedSavedPlaces } from './seed/seedSavedPlaces';
+import { seedUserCards } from './seed/seedUserCards';
 import { seedAdminUser, seedUsers } from './seed/seedUsers';
 
 async function main() {
@@ -43,6 +44,7 @@ async function main() {
   await prisma.$executeRaw`ALTER TABLE ARC AUTO_INCREMENT = 1`;
   await prisma.$executeRaw`ALTER TABLE UserDocument AUTO_INCREMENT = 1`;
   await prisma.$executeRaw`ALTER TABLE Coupons AUTO_INCREMENT = 1`;
+  await prisma.$executeRaw`ALTER TABLE UserCard AUTO_INCREMENT = 1`;
 
   await fetchAndSeedHospitals();
   await seedUsers();
@@ -50,6 +52,8 @@ async function main() {
   await seedUserDocs();
   await seedUserIdentityDocs();
   await seedDummyApplications();
+
+  await seedUserCards();
   await seedCoupons();
   await seedSavedPlaces();
   await seedEmbassies();
