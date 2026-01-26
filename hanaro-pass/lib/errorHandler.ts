@@ -1,3 +1,5 @@
+import { z } from 'zod';
+
 export type ActionResult<T> =
   | { success: true; data: T }
   | { success: false; message: string; status: number };
@@ -24,6 +26,13 @@ export const isErrorWithMessage = (err: unknown): err is WithMessage =>
  * 직렬화 가능한 객체를 반환해야 하므로 형식을 맞춥니다.
  */
 export const handleActionResult = (err: unknown): ActionResult<never> => {
+  if (err instanceof z.ZodError) {
+    return {
+      success: false,
+      message: err.issues[0]?.message ?? '요청 값이 올바르지 않습니다.',
+      status: 400,
+    };
+  }
   if (err instanceof HttpError) {
     return {
       success: false,

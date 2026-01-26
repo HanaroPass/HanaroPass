@@ -24,6 +24,14 @@ export const RegistrationDetailSchema = z.object({
   requestLangs: z.array(LanguageInfoSchema),
   createdAt: z.date(),
   processedAt: z.date().nullable(),
+  history: z.array(
+    z.object({
+      id: z.number(),
+      status: z.enum(['PENDING', 'APPROVED', 'REJECTED']),
+      createdAt: z.date(),
+      processedAt: z.date().nullable(),
+    }),
+  ),
 });
 
 export type RegistrationDetailResponse = z.infer<
