@@ -18,7 +18,9 @@ export default function SymptomResultContent() {
   const searchParams = useSearchParams();
   const mode = searchParams.get('mode');
   const { isLoading, handleResubmit } = useSymptomResubmit();
+  const [reloadTrigger, setReloadTrigger] = useState(0);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     const parse = async () => {
       setWrittenSymptom(localStorage.getItem('written-symptom') as string);
@@ -33,7 +35,7 @@ export default function SymptomResultContent() {
       }
     };
     parse();
-  }, []);
+  }, [reloadTrigger]);
 
   const playAudio = async () => {
     const base64 = await getTTS(JSON.stringify(result?.번역_내용));
@@ -113,7 +115,13 @@ export default function SymptomResultContent() {
       )}
       <div className="mt-5 h-1.5 border-gray-100 border-t" />
       <div className="mt-4 text-black-800 text-sm">AI 작성 내용</div>
-      <form onSubmit={handleResubmit} className="mt-5">
+      <form
+        onSubmit={async (e) => {
+          await handleResubmit(e);
+          setReloadTrigger((prev) => prev + 1);
+        }}
+        className="mt-5"
+      >
         <input name="type" className="hidden" defaultValue={result?.타입} />
         <textarea
           defaultValue={writtenSymptom}
