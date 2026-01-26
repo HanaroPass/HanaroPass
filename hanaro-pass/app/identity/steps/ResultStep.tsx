@@ -114,7 +114,7 @@ export default function ResultStep({
                   : 'text-gray-600 hover:text-gray-800'
               }`}
             >
-              {tab === 'passport' ? '여권' : '신분증'}
+              {tab === 'passport' ? '여권' : '등록증'}
             </button>
           ))}
         </div>

@@ -2,8 +2,8 @@
 
 import { X } from 'lucide-react';
 import { useState } from 'react';
-import { AlienDrawer } from '../components/bottomsheet/AlienDrawer';
-import { PassportDrawer } from '../components/bottomsheet/PassportDrawer';
+import { AlienDrawer } from '../components/bottomSheet/AlienDrawer';
+import { PassportDrawer } from '../components/bottomSheet/PassportDrawer';
 import CameraCapture from '../components/CameraCapture';
 import type { IdentityType } from '../hooks/useFunnel';
 
