@@ -1,7 +1,11 @@
 'use server';
 
 import webpush, { type PushSubscription } from 'web-push';
-import { type ActionResult, handleActionResult } from '@/lib/error-handler';
+import {
+  type ActionResult,
+  HttpError,
+  handleActionResult,
+} from '@/lib/error-handler';
 import { prisma } from '@/lib/prisma';
 import { getSession } from '@/lib/session';
 
@@ -26,11 +30,7 @@ export async function saveSubscriptionAction(
     const userId = session.userId;
 
     if (!userId) {
-      return {
-        success: false,
-        message: '로그인이 필요합니다.',
-        status: 401,
-      };
+      throw new HttpError('인증되지 않은 유저입니다.', 401);
     }
     const subscription: PushSubscription = JSON.parse(subJson);
 
