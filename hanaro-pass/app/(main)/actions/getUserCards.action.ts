@@ -1,7 +1,7 @@
 'use server';
 
 import { z } from 'zod';
-import { type ActionResult, handleActionResult } from '@/lib/error-handler';
+import { type ActionResult, handleActionResult } from '@/lib/errorHandler';
 import { prisma } from '@/lib/prisma';
 import { getCardImageUrl } from '../lib/cardAssets';
 import { UserCardResponseSchema, UserIdSchema } from './getUserCards.schema';

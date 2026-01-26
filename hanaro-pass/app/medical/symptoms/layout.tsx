@@ -1,9 +1,9 @@
 'use client';
 
+import { usePathname, useSearchParams } from 'next/navigation';
 import type { PropsWithChildren } from 'react';
-import { useSearchParams } from 'next/navigation';
-import Header from '@/components/header/Header';
 import { Suspense } from 'react';
+import Header from '@/components/header/Header';
 
 function SymptomsHeaderSection() {
   const searchParams = useSearchParams();
@@ -13,7 +13,6 @@ function SymptomsHeaderSection() {
 
   return <Header title={title} />;
 }
-
 export default function SymptomsLayout({ children }: PropsWithChildren) {
   return (
     <div className="app-layout">

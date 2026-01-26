@@ -2,7 +2,7 @@
 
 import type { ReactNode } from 'react';
 import { use, useCallback, useMemo, useState } from 'react';
-import type { ActionResult } from '@/lib/error-handler';
+import type { ActionResult } from '@/lib/errorHandler';
 import type { UserCardResponse } from '../actions/getUserCards.schema';
 import Card from './Card';
 import { MenuList } from './MenuList';

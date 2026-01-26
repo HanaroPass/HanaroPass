@@ -4,7 +4,7 @@ import {
   type ActionResult,
   HttpError,
   handleActionResult,
-} from '@/lib/error-handler';
+} from '@/lib/errorHandler';
 import { prisma } from '@/lib/prisma';
 import {
   type PaymentRequest,

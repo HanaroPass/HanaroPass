@@ -24,7 +24,12 @@ export default function DocsCard({
 }: DocsCardProps) {
   const router = useRouter();
   const goDetail = () => {
-    router.push(`/docs/${docId}`);
+    // 신분증 or 여권
+    if (docId === 'passport' || docId === 'arc') {
+      router.push(`/identity?step=result&type=${docId}`);
+    } else {
+      router.push(`/docs/${docId}`);
+    }
   };
   return (
     <div

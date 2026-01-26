@@ -33,7 +33,9 @@ export function PlaceCard({ data }: PlaceCardProps) {
               <span className="text-black-900">{data.status}</span>
             )}
             {data.explainTime && (
-              <span className="text-black-600">{data.explainTime}</span>
+              <span className="whitespace-pre-line text-black-600">
+                {data.explainTime}
+              </span>
             )}
           </div>
 
