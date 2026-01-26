@@ -1,5 +1,5 @@
 import { Loader } from 'lucide-react';
-import { Suspense, use } from 'react';
+import { Suspense } from 'react';
 import { getUserCardsAction } from './actions/getUserCards.action';
 import CouponListLoader from './components/CouponList.loader';
 
@@ -27,7 +27,7 @@ export default async function Page({
       : 'pay';
 
   const TabComponent = TAB_COMPONENTS[tab];
-  const cardsPromise = tab === 'pay' ? getUserCardsAction() : null;
+  const cardsPromise = tab === 'pay' ? getUserCardsAction() : undefined;
 
   const couponList =
     tab === 'pay' ? (

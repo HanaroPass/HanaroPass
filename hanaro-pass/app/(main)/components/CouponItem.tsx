@@ -14,7 +14,7 @@ type CouponItemProps = {
 
 export default function CouponItem({ item }: CouponItemProps) {
   return (
-    <div className="flex w-full flex-col items-center rounded-2xl border border-gray-100 bg-[#F7FAFB] py-3">
+    <div className="flex w-full flex-col items-center gap-2 rounded-2xl border border-gray-100 bg-[#F7FAFB] py-3">
       <div className="rounded-full bg-green-ez px-3 py-1 text-[10px] text-white">
         {item.distanceLabel}
       </div>

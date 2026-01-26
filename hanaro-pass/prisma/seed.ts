@@ -2,15 +2,12 @@ import 'dotenv/config';
 import { SAVED_PLACES_MOCK } from '@/app/map/constants/savedPlaces';
 import type { PlaceCategory } from '@/lib/generated/prisma';
 import { prisma } from '../lib/prisma';
-<<<<<<< HEAD
-import { seedUserCards } from './seed/seedUserCards';
-=======
 import { seedDummyApplications } from './seed/seedApplications';
 import { seedCoupons } from './seed/seedCoupons';
 import { seedUserDocs, seedUserIdentityDocs } from './seed/seedDocuments';
 import { fetchAndSeedHospitals, SERVICE_KEY } from './seed/seedHospitals';
+import { seedUserCards } from './seed/seedUserCards';
 import { seedAdminUser, seedUsers } from './seed/seedUsers';
->>>>>>> develop
 
 /**
  * 모든 유저에게 공통된 SavedPlace 더미 데이터 주입
@@ -74,13 +71,10 @@ async function main() {
   await seedUserDocs();
   await seedUserIdentityDocs();
   await seedDummyApplications();
-<<<<<<< HEAD
 
   await seedUserCards();
-=======
   await seedCoupons();
   await seedSavedPlaces();
->>>>>>> develop
 
   console.log('[ 시딩 작업 완료! ]');
 }

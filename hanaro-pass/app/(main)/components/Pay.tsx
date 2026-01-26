@@ -1,19 +1,28 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { use, useCallback, useState } from 'react';
+import { use, useCallback, useMemo, useState } from 'react';
+import type { ActionResult } from '@/lib/error-handler';
 import type { UserCardResponse } from '../actions/getUserCards.schema';
 import Card from './Card';
 import { MenuList } from './MenuList';
 import PinInput from './PinInput';
 
 interface PayProps {
-  cardsPromise?: Promise<UserCardResponse[]> | null;
+  cardsPromise?: Promise<ActionResult<UserCardResponse[]>>;
   couponList?: ReactNode;
 }
 
 export default function Pay({ cardsPromise, couponList }: PayProps) {
-  const cards = cardsPromise ? use(cardsPromise) : [];
+  const result = cardsPromise ? use(cardsPromise) : null;
+
+  const cards = useMemo(() => {
+    if (!result) return [];
+    if (!result.success) return [];
+    return result.data;
+  }, [result]);
+
+  const errorMessage = !result ? null : result.success ? null : result.message;
 
   const [unlockedCardIds, setUnlockedCardIds] = useState<Set<number>>(
     new Set(),
@@ -39,6 +48,12 @@ export default function Pay({ cardsPromise, couponList }: PayProps) {
 
   return (
     <div className="relative flex flex-col gap-5 pb-16.25">
+      {errorMessage && (
+        <div className="rounded-xl bg-red-50 px-4 py-3 text-red-600 text-sm">
+          {errorMessage}
+        </div>
+      )}
+
       <Card
         cards={cards}
         unlockedCardIds={unlockedCardIds}
