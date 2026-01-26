@@ -7,6 +7,7 @@ import {
 } from '@/lib/error-handler';
 import { prisma } from '@/lib/prisma';
 import {
+  type PaymentRequest,
   PaymentRequestSchema,
   type PaymentResponse,
   PaymentResponseSchema,
@@ -28,7 +29,7 @@ function calcPaidAmountByRate(rate?: number) {
 }
 
 export async function postPaymentAction(
-  raw: unknown,
+  raw: PaymentRequest,
 ): Promise<ActionResult<PaymentResponse>> {
   try {
     const { cardNumber, couponId } = PaymentRequestSchema.parse(raw);

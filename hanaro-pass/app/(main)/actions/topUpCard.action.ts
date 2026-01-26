@@ -7,6 +7,7 @@ import {
 } from '@/lib/error-handler';
 import { prisma } from '@/lib/prisma';
 import {
+  type TopUpCardRequest,
   TopUpCardRequestSchema,
   type TopUpCardResponse,
   TopUpCardResponseSchema,
@@ -26,7 +27,7 @@ function assertDevOnly() {
  * @description 결제 후 다시 금액을 충전할 때 사용하는 함수입니다.
  */
 export async function topUpCardAction(
-  raw: unknown,
+  raw: TopUpCardRequest,
 ): Promise<ActionResult<TopUpCardResponse>> {
   try {
     assertDevOnly();
