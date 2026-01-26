@@ -1,6 +1,7 @@
 // app/medical/actions/notification.action.ts
 'use server';
 
+import { revalidatePath } from 'next/cache';
 import { type ActionResult, handleActionResult } from '@/lib/error-handler';
 import type { Notification } from '@/lib/generated/prisma';
 import { prisma } from '@/lib/prisma';
@@ -35,6 +36,8 @@ export async function markAsReadAction(
       where: { id },
       data: { isRead: true },
     });
+
+    revalidatePath('/medical/notifications');
     return { success: true, data: null };
   } catch (error) {
     return handleActionResult(error);
