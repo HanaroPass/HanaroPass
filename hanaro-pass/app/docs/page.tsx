@@ -1,6 +1,7 @@
 import { Suspense } from 'react';
-import { getDocsStatus, getUserName } from './actions/userDocsList';
+import { getDocsStatus } from './actions/userDocsList';
 import DocsPageClient from './docsPageClient';
+import { getUserName } from '@/lib/user';
 
 export default function DocsPage() {
   return (
