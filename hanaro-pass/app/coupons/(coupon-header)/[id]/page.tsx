@@ -32,6 +32,7 @@ export default async function Page({ params }: PageProps) {
       brandName={coupon.brandName}
       tag={coupon.tag ?? ''}
       couponNumber={coupon.couponCode}
+      id={coupon.id}
     />
   );
 }
