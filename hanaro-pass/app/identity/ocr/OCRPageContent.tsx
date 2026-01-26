@@ -18,7 +18,7 @@ export default function OCRPageContent({
   onSubmit,
   onClose,
 }: OCRPageContentProps) {
-  const [isDrawerOpen, setIsDrawerOpen] = useState(true);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const handleSubmit = (data: Record<string, string>) => {
     console.log('제출된 정보:', data);
@@ -69,7 +69,7 @@ export default function OCRPageContent({
         <p className="font-semibold text-xl">자동으로 촬영됩니다.</p>
       </div>
 
-      <CameraCapture type={type} />
+      <CameraCapture type={type} onClick={() => setIsDrawerOpen(true)} />
 
       <div className="bg-black px-8 pb-6 text-left sm:pb-8 md:pb-10 lg:pb-12">
         <div className="flex flex-col gap-4 sm:gap-5 md:gap-6">

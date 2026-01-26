@@ -4,9 +4,10 @@ import type { IdentityType } from '../IdentityPageClient';
 
 type CameraCaptureProps = {
   type?: IdentityType | null;
+  onClick?: () => void;
 };
 
-const CameraCapture = ({ type: _type }: CameraCaptureProps) => {
+const CameraCapture = ({ type: _type, onClick }: CameraCaptureProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const startCamera = useCallback(async () => {
@@ -46,7 +47,8 @@ const CameraCapture = ({ type: _type }: CameraCaptureProps) => {
       <div className="mb-12 flex flex-col items-center px-6">
         <video
           ref={videoRef}
-          className="h-72 w-full max-w-sm rounded-xl bg-gray-700 object-cover"
+          className="h-72 w-full max-w-sm cursor-pointer rounded-xl bg-gray-700 object-cover"
+          onClick={onClick}
         >
           <track kind="captions" />
         </video>
