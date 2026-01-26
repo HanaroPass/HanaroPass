@@ -220,6 +220,8 @@ model Embassy {
   address     String @db.VarChar(100)
   openHours   String @db.VarChar(100)
   phone       String @db.VarChar(100)
+  latitude    String @db.VarChar(50) 
+  longitude   String @db.VarChar(50)
 }
 
 model SymptomMapping {
