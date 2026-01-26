@@ -13,6 +13,15 @@ export function useAuth() {
         const result = await forceLoginAction(role);
         if (result && !result.success) alert(`로그인 실패: ${result.message}`);
       } catch (error) {
+        const isRedirect =
+          error instanceof Error &&
+          'digest' in error &&
+          typeof error.digest === 'string' &&
+          error.digest.startsWith('NEXT_REDIRECT');
+
+        if (isRedirect) {
+          throw error;
+        }
         console.error('[Login Error]:', error);
         alert('로그인 처리 중 예상치 못한 오류가 발생했습니다.');
       }

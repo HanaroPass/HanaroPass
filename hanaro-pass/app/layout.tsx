@@ -17,7 +17,7 @@ export default function RootLayout({
   return (
     <html lang="ko" suppressHydrationWarning>
       <body className="antialiased">
-        <Suspense fallback={<div className="p-10 text-center">Loading...</div>}>
+        <Suspense fallback={null}>
           <div className="app-shell">{children}</div>
         </Suspense>
 
