@@ -23,8 +23,7 @@ export default function IntroStep({
   const [isLoading, setIsLoading] = useState(true);
   // 유저가 이미 가지고 있는 신분증 상태 관리
   const [hasPassport, setHasPassport] = useState(false);
-  const [hasAlien, setHasAlien] = useState(false);
-
+  const [hasArc, setHasArc] = useState(false);
   const guideRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -33,7 +32,7 @@ export default function IntroStep({
         const res = await getIdentityData();
         // 데이터가 있으면 true, 없으면 false (null 체크)
         setHasPassport(!!res.passport);
-        setHasAlien(!!res.alien);
+        setHasArc(!!res.alien);
       } catch (error) {
         console.error('데이터 로드 실패:', error);
       } finally {
@@ -120,16 +119,16 @@ export default function IntroStep({
                   )}
 
                   {/* 외국인등록증 정보가 없는 경우에만 버튼 노출 */}
-                  {!hasAlien && (
+                  {!hasArc && (
                     <ActionButton
                       text="외국인등록증"
-                      onClick={() => onSelectIdentityType('alien')}
+                      onClick={() => onSelectIdentityType('arc')}
                       className="border border-green-ez bg-white text-green-ez hover:bg-green-ez/10"
                     />
                   )}
 
                   {/* 만약 모든 신분증이 다 있다면 보여줄 안내 (선택사항) */}
-                  {hasPassport && hasAlien && (
+                  {hasPassport && hasArc && (
                     <p className="py-4 text-center text-gray-500 text-sm">
                       이미 모든 신분증이 등록되어 있습니다.
                     </p>

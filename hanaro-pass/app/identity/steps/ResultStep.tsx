@@ -8,8 +8,9 @@ import EmptyIdentityCard from '../components/EmptyIdentityCard';
 import MobileQr from '../components/MobileQr';
 import type { IdentityType } from '../hooks/useFunnel';
 import { getIdentityData } from '../actions/identity';
+import { useSearchParams } from 'next/navigation';
 
-const DEFAULT_TAB: 'passport' | 'alien' = 'alien';
+const DEFAULT_TAB: 'passport' | 'arc' = 'arc';
 
 type ResultStepProps = {
   identityType: IdentityType | null;
@@ -24,8 +25,11 @@ export default function ResultStep({
   onClose,
   onRegister,
 }: ResultStepProps) {
-  const [activeTab, setActiveTab] = useState<'passport' | 'alien'>(
-    identityType || DEFAULT_TAB,
+  const searchParams = useSearchParams();
+  const typeParam = searchParams.get('type') as IdentityType | null;
+
+  const [activeTab, setActiveTab] = useState<'passport' | 'arc'>(
+    typeParam || DEFAULT_TAB,
   );
   const [passportData, setPassportData] = useState<Record<
     string,
@@ -49,9 +53,12 @@ export default function ResultStep({
         setPassportData(res.passport);
         setAlienData(res.alien);
 
-        if (!identityType) {
+        if (typeParam) {
+          setActiveTab(typeParam);
+        } else {
+          // 파라미터가 없으면 데이터가 있는 쪽으로 자동 전환
           if (res.passport) setActiveTab('passport');
-          else if (res.alien) setActiveTab('alien');
+          else if (res.alien) setActiveTab('arc');
         }
       } catch (error) {
         console.error('Failed to fetch identity data:', error);
@@ -65,7 +72,7 @@ export default function ResultStep({
     return () => {
       mounted = false;
     };
-  }, [identityType]);
+  }, [typeParam]);
 
   const handleRegister = (type: IdentityType) => {
     onRegister?.(type);
@@ -96,7 +103,7 @@ export default function ResultStep({
         }
       >
         <div className="flex rounded-full bg-gray-100 p-1">
-          {(['passport', 'alien'] as const).map((tab) => (
+          {(['passport', 'arc'] as const).map((tab) => (
             <button
               key={tab}
               type="button"

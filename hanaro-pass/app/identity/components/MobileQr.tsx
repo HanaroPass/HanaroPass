@@ -4,29 +4,11 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import QRCode from 'react-qr-code';
 import type { IdentityType } from '../hooks/useFunnel';
+import { COUNTRY_IMAGE_MAP } from '@/lib/constants';
 
 type MobileQrProps = {
   type: IdentityType;
   data: Record<string, string>;
-};
-
-const COUNTRY_IMAGE_MAP: Record<string, string> = {
-  'KINGDOM OF CAMBODIA': 'CAMBODIA',
-  "PEOPLE'S REPUBLIC OF BANGLADESH": 'BANGLADESH',
-  "PEOPLE'S REPUBLIC OF CHINA": 'CHINA',
-  'REPUBLIC OF INDONESIA': 'INDONESIA',
-  'REPUBLIC OF JAPAN': 'JAPAN',
-  'REPUBLIC OF KAZAKHSTAN': 'KAZAKHSTAN',
-  'REPUBLIC OF MONGOLIA': 'MONGOLIA',
-  'REPUBLIC OF NEPAL': 'NEPAL',
-  'REPUBLIC OF THE PHILIPPINES': 'PHILIPPINES',
-  'REPUBLIC OF UZBEKISTAN': 'UZBEKISTAN',
-  'RUSSIAN FEDERATION': 'RUSSIA',
-  'SOCIALIST REPUBLIC OF VIET NAM': 'VIETNAM',
-  'DEMOCRATIC SOCIALIST REPUBLIC OF SRI LANKA': 'SRILANKA',
-  'KINGDOM OF THAILAND': 'THAILAND',
-  'REPUBLIC OF THE UNION OF MYANMAR': 'MYANMAR',
-  'UNITED STATES OF AMERICA': 'USA',
 };
 
 export default function MobileQr({ type, data }: MobileQrProps) {

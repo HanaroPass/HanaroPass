@@ -72,9 +72,14 @@ export default function DocsPageClient({ userName, docStatus }: UserProps) {
             <DocsSelectList
               items={addableItems}
               onSelect={(id) => {
-                console.log('selected:', id);
                 setIsSheetOpen(false);
-                router.push(`/docs/add/${id}`);
+                // 여권 혹은 외국인등록증을 선택한 경우 인트로 페이지로 이동
+                if (id === 'passport' || id === 'arc') {
+                  router.push('/identity?step=intro');
+                } else {
+                  // 기타 일반 서류
+                  router.push(`/docs/add/${id}`);
+                }
               }}
             />
           ) : null}

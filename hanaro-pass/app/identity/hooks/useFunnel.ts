@@ -4,7 +4,7 @@ import { useCallback, useState } from 'react';
 
 type FunnelStep = 'intro' | 'ocr' | 'account' | 'result';
 
-export type IdentityType = 'passport' | 'alien';
+export type IdentityType = 'passport' | 'arc';
 
 type FunnelContext = {
   identityType: IdentityType | null;
