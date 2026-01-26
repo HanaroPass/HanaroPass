@@ -8,23 +8,26 @@ import {
   LocateFixed,
   Siren,
 } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { EmbassyContent } from './components/embassy/EmbassyContent';
 import { ExchangeContent } from './components/exchange/ExchangeContent';
 import { HospitalContent } from './components/hospital/HospitalContent';
 import { SirenContent } from './components/siren/SirenContent';
 import { MapBottomSheet } from './components/ui/MapBottomSheet';
-import { NaverMap, type NaverMapHandle } from './components/ui/NaverMap';
-import { type LocationInfo, PlaceCard } from './components/ui/PlaceCard';
+import {
+  NaverMap,
+  type NaverMapHandle,
+  type NaverSearchResult,
+} from './components/ui/NaverMap';
+import { PlaceCard } from './components/ui/PlaceCard';
 import { ToggleButton } from './components/ui/ToggleButton';
 import { useBottomSheet } from './hooks/useBottomSheet';
-import {
-  type Embassy,
-  MAP_EMBASSY_MOCK,
-  MAP_EXCHANGE_MOCK,
-} from './mock/embassyExchange';
+import { useExchangeSearch } from './hooks/useExchangeSearch';
+import { useMarkerClick } from './hooks/useMarkerClick';
+import { type Embassy, MAP_EMBASSY_MOCK } from './mock/embassyExchange';
 import { getHospitals } from './actions/hospitals';
 import { SAVED_PLACES_MOCK, type SavedPlace } from './mock/savedPlaces';
+import { formatExchangeData, mapDbToInfo } from './utils/mapUtils';
 
 /**
  * @page MapPage
@@ -46,22 +49,16 @@ export type Hospital = {
   aiSummary?: string;
 };
 
-// 카테고리 변환 맵
-const CATEGORY_MAP: Record<string, string> = {
-  CAFE: '카페',
-  FOOD: '식당',
-  SHOP: '쇼핑',
-};
-
 export default function MapPage() {
   const [bookmark, setBookmark] = useState<boolean>(false);
   const [selectedPlace, setSelectedPlace] = useState<
-    SavedPlace | Embassy | null
+    SavedPlace | Embassy | NaverSearchResult | null
   >(null);
   const [selectedHospital, setSelectedHospital] = useState<Hospital | null>(
     null,
   );
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
+  const [currentMapRegion, setCurrentMapRegion] = useState('');
 
   useEffect(() => {
     const loadHospitals = async () => {
@@ -73,6 +70,9 @@ export default function MapPage() {
   }, []);
 
   const mapControlRef = useRef<NaverMapHandle>(null);
+
+  const { exchangeResults, searchExchanges } =
+    useExchangeSearch(currentMapRegion);
 
   const {
     openSheet,
@@ -86,76 +86,46 @@ export default function MapPage() {
     getTranslateValue,
   } = useBottomSheet();
 
-  const mapDbToInfo = (db: SavedPlace | Embassy): LocationInfo => {
-    const { address, phone } = db;
+  useEffect(() => {
+    if (!currentMapRegion) return;
+  }, [currentMapRegion]);
 
-    if ('category' in db) {
-      return {
-        id: db.id,
-        name: db.placeName,
-        type: CATEGORY_MAP[db.category] || '기타',
-        address,
-        phone,
-        explainTime: db.openHours,
-        distance: '',
-      };
-    } else {
-      return {
-        id: db.id,
-        name: db.placeName,
-        type: '대사관, 영사관',
-        address,
-        phone,
-        explainTime: db.openHours,
-        distance: '',
-      };
+  const handleExchangeClick = useCallback(async () => {
+    if (openSheet === 'exchange') {
+      toggleSheet('exchange');
+      setSelectedPlace(null);
+      return;
     }
-  };
+    await searchExchanges();
+    toggleSheet('exchange');
+  }, [openSheet, toggleSheet, searchExchanges]);
+
+  const { handleMarkerClick } = useMarkerClick({
+    selectedPlace,
+    selectedHospital,
+    setSelectedPlace,
+    setSelectedHospital,
+    toggleSheet,
+  });
+
   return (
     <main className="relative h-screen w-screen overflow-hidden bg-gray-100">
-      {/* 맵 레이어 */}
       <div className="absolute inset-0 z-0">
         <NaverMap
           ref={mapControlRef}
+          onMapMoved={setCurrentMapRegion}
           activeCategory={openSheet === 'hospital' ? 'hospital' : null}
           hospitals={hospitals}
           savedPlaces={SAVED_PLACES_MOCK}
           showBookmarks={bookmark}
-          onMarkerClick={(place) => {
-            // 병원
-            if ('departments' in place) {
-              setSelectedHospital(place as Hospital);
-              setSelectedPlace(null);
-              toggleSheet('hospital', true);
-              return;
-            }
-
-            // 대사관
-            if ('nationality' in place) return;
-
-            // 즐겨찾기 장소인 경우
-            if ('placeName' in place) {
-              const target = place as SavedPlace;
-              const isTargetAlreadySelected = selectedPlace?.id === target.id;
-
-              if (isTargetAlreadySelected) {
-                // 이미 선택된 걸 또 누르면 닫기
-                setSelectedPlace(null);
-                toggleSheet('bookmark');
-              } else {
-                // 새로운 걸 누르면 데이터 교체 후 열기/갱신
-                setSelectedPlace(target);
-                setSelectedHospital(null);
-                toggleSheet('bookmark', true);
-              }
-            }
-          }}
+          onMarkerClick={handleMarkerClick}
           embassyData={MAP_EMBASSY_MOCK}
           showEmbassy={openSheet === 'embassy'}
+          exchangeResults={exchangeResults}
+          showExchanges={openSheet === 'exchange'}
         />
       </div>
 
-      {/* 상단 필터 그룹 */}
       <div className="absolute top-3 left-3 z-10 flex gap-2.5">
         <ToggleButton
           variant="pill"
@@ -177,7 +147,6 @@ export default function MapPage() {
           onClick={() => {
             const isOpening = openSheet !== 'embassy';
             toggleSheet('embassy');
-
             if (isOpening) {
               mapControlRef.current?.panToLocation(
                 MAP_EMBASSY_MOCK.latitude,
@@ -192,11 +161,10 @@ export default function MapPage() {
           icon={<CircleDollarSign className="h-4 w-4" />}
           active={openSheet === 'exchange'}
           iconColorVariant="yellow"
-          onClick={() => toggleSheet('exchange')}
+          onClick={handleExchangeClick}
         />
       </div>
 
-      {/* 우측 유틸 버튼 그룹 */}
       <div className="absolute top-[15%] right-3 z-10 flex flex-col gap-2.5">
         <ToggleButton
           variant="icon"
@@ -204,9 +172,7 @@ export default function MapPage() {
           active={false}
           iconColorVariant="gray"
           ariaLabel="내 위치 토글"
-          onClick={() => {
-            mapControlRef.current?.centerToMyPosition();
-          }}
+          onClick={() => mapControlRef.current?.centerToMyPosition()}
         />
         <ToggleButton
           variant="icon"
@@ -231,7 +197,6 @@ export default function MapPage() {
         />
       </div>
 
-      {/* 바텀시트 */}
       <MapBottomSheet
         openSheet={openSheet}
         position={sheetPosition}
@@ -247,7 +212,6 @@ export default function MapPage() {
             <PlaceCard data={mapDbToInfo(selectedPlace)} />
           </div>
         )}
-
         {openSheet === 'hospital' && (
           <HospitalContent
             mode={selectedHospital ? 'detail' : 'list'}
@@ -255,10 +219,20 @@ export default function MapPage() {
             hospital={selectedHospital ?? undefined}
           />
         )}
-
         {openSheet === 'siren' && <SirenContent />}
         {openSheet === 'exchange' && (
-          <ExchangeContent results={MAP_EXCHANGE_MOCK} />
+          <ExchangeContent
+            results={formatExchangeData(exchangeResults)}
+            selectedPlace={
+              selectedPlace && 'mapx' in selectedPlace
+                ? mapDbToInfo(selectedPlace)
+                : null
+            }
+            onBackToList={() => {
+              setSelectedPlace(null);
+              toggleSheet('exchange', true);
+            }}
+          />
         )}
         {openSheet === 'embassy' && <EmbassyContent />}
       </MapBottomSheet>

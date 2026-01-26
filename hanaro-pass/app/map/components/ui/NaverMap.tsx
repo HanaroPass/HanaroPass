@@ -1,42 +1,27 @@
 'use client';
 
-import {
-  forwardRef,
-  useCallback,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from 'react';
-import {
-  DEFAULT_COORDS,
-  MARKER_ICONS,
-  NAVER_MAP_SCRIPT_URL,
-} from '../../constants/map';
+import { forwardRef, useImperativeHandle, useRef } from 'react';
+import { type ClickablePlace, useMapMarkers } from '../../hooks/useMapMarkers';
+import { useNaverMapInit } from '../../hooks/useNaverMapInit';
 import type { Embassy } from '../../mock/embassyExchange';
 import type { SavedPlace } from '../../mock/savedPlaces';
 import type { Hospital } from '../../page';
 
-type Place = {
-  id: string;
-  name: string;
-  address: string;
-};
-
 export type NaverSearchResult = {
   title: string;
   roadAddress: string;
-  address: string;
+  address?: string;
   telephone: string;
   mapx: string;
   mapy: string;
   category?: string;
+  name?: string;
+  type?: string;
 };
 
 type NaverMapProps = {
-  onMarkerClick: (
-    place: Place | Hospital | SavedPlace | Embassy | NaverSearchResult,
-  ) => void;
+  onMarkerClick: (place: ClickablePlace) => void;
+  onMapMoved?: (address: string) => void;
   savedPlaces?: SavedPlace[];
   embassyData?: Embassy;
   exchangeResults?: NaverSearchResult[];
@@ -52,199 +37,49 @@ export type NaverMapHandle = {
   panToLocation: (lat: number, lng: number) => void;
 };
 
-//마커를 화면 상단에 위치시키기 위한 위도 오프셋
-const LATITUDE_OFFSET = -0.004;
-
 export const NaverMap = forwardRef<NaverMapHandle, NaverMapProps>(
   (props, ref) => {
-    const {
-      onMarkerClick,
-      savedPlaces,
-      embassyData,
-      showBookmarks,
-      showEmbassy,
-      hospitals,
-      activeCategory,
-    } = props;
+    const containerRef = useRef<HTMLDivElement>(null);
 
-    const mapRef = useRef<naver.maps.Map | null>(null);
-    const containerRef = useRef<HTMLDivElement | null>(null);
-    const markersRef = useRef<naver.maps.Marker[]>([]);
-    const onMarkerClickRef = useRef(onMarkerClick);
-    const [isMapReady, setIsMapReady] = useState(false);
-
-    // 최신 콜백 유지를 위한 Ref 업데이트
-    useEffect(() => {
-      onMarkerClickRef.current = onMarkerClick;
-    }, [onMarkerClick]);
-
-    // 오프셋을 적용하여 지도를 이동시키는 함수
-    const panToWithOffset = useCallback((lat: number, lng: number) => {
-      if (!mapRef.current) return;
-      const { naver } = window;
-      const centerWithOffset = new naver.maps.LatLng(
-        lat + LATITUDE_OFFSET,
-        lng,
-      );
-      mapRef.current.panTo(centerWithOffset);
-    }, []);
-
-    // 마커 생성 공통 헬퍼
-    const createMarker = useCallback(
-      (lat: number, lng: number, iconHtml: string, onClick: () => void) => {
-        if (!mapRef.current) return null;
-        const marker = new naver.maps.Marker({
-          position: new naver.maps.LatLng(lat, lng),
-          map: mapRef.current,
-          icon: { content: iconHtml, anchor: new naver.maps.Point(10, 10) },
-        });
-        naver.maps.Event.addListener(marker, 'click', onClick);
-        return marker;
-      },
-      [],
+    // 지도 초기화 훅
+    const { mapRef, isMapReady, LATITUDE_OFFSET } = useNaverMapInit(
+      containerRef,
+      props.onMapMoved,
     );
 
-    // 마커 렌더링 로직
-    useEffect(() => {
-      if (!isMapReady || !mapRef.current) return;
-
-      // 기존 마커 모두 제거
-      for (const m of markersRef.current) {
-        m.setMap(null);
-      }
-      markersRef.current = [];
-      const newMarkers: naver.maps.Marker[] = [];
-
-      // 북마크 마커
-      if (showBookmarks && savedPlaces) {
-        for (const p of savedPlaces) {
-          const m = createMarker(
-            Number(p.latitude),
-            Number(p.longitude),
-            MARKER_ICONS.bookmark,
-            () => onMarkerClickRef.current(p),
-          );
-          if (m) newMarkers.push(m);
-        }
-      }
-
-      // 대사관 마커
-      if (showEmbassy && embassyData) {
-        const m = createMarker(
-          embassyData.latitude,
-          embassyData.longitude,
-          MARKER_ICONS.embassy,
-          () => onMarkerClickRef.current(embassyData),
-        );
-        if (m) newMarkers.push(m);
-      }
-
-      // 병원 마커
-      if (activeCategory === 'hospital' && hospitals) {
-        for (const h of hospitals) {
-          const m = createMarker(
-            h.latitude,
-            h.longitude,
-            MARKER_ICONS.hospital,
-            () => onMarkerClickRef.current(h),
-          );
-          if (m) newMarkers.push(m);
-        }
-      }
-      markersRef.current = newMarkers;
-    }, [
+    // 마커 관리 훅
+    useMapMarkers({
+      map: mapRef.current,
       isMapReady,
-      showBookmarks,
-      showEmbassy,
-      savedPlaces,
-      embassyData,
-      activeCategory,
-      hospitals,
-      createMarker,
-    ]);
+      ...props,
+    });
 
-    // 지도 초기화 및 스크립트 로드
-    useEffect(() => {
-      const NAVER_MAP_KEY = process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID;
-      if (!NAVER_MAP_KEY || !containerRef.current) return;
-
-      const initMap = () => {
-        const container = containerRef.current;
-        if (!container || mapRef.current) return;
-
-        const { naver } = window;
-        const renderMap = (lat: number, lng: number) => {
-          // 초기 렌더링 시에도 오프셋 적용 좌표를 센터로 설정
-          const center = new naver.maps.LatLng(lat + LATITUDE_OFFSET, lng);
-
-          const map = new naver.maps.Map(container, {
-            center,
-            zoom: 15,
-            logoControl: false,
-          });
-
-          mapRef.current = map;
-          setIsMapReady(true);
-
-          // 내 위치 마커
-          const myMarker = new naver.maps.Marker({
-            position: new naver.maps.LatLng(lat, lng),
-            map,
-            icon: {
-              content: MARKER_ICONS.myLocation,
-              anchor: new naver.maps.Point(8, 8),
-            },
-          });
-
-          naver.maps.Event.addListener(myMarker, 'click', () =>
-            onMarkerClickRef.current({
-              id: 'my-location',
-              name: '내 위치',
-              address: '현재 위치',
-            }),
-          );
-        };
-
-        navigator.geolocation.getCurrentPosition(
-          (pos) => renderMap(pos.coords.latitude, pos.coords.longitude),
-          // fallback: 성수역
-          () => renderMap(DEFAULT_COORDS.lat, DEFAULT_COORDS.lng),
-          { enableHighAccuracy: true, timeout: 10000 },
-        );
-      };
-
-      const scriptId = 'naver-map-script';
-      const existingScript = document.getElementById(
-        scriptId,
-      ) as HTMLScriptElement;
-
-      if (existingScript) {
-        window.naver?.maps
-          ? initMap()
-          : existingScript.addEventListener('load', initMap);
-      } else {
-        const script = document.createElement('script');
-        script.id = scriptId;
-        script.src = `${NAVER_MAP_SCRIPT_URL}?ncpKeyId=${NAVER_MAP_KEY}`;
-        script.async = true;
-        script.onload = initMap;
-        document.head.appendChild(script);
-      }
-    }, []);
-
+    // 외부 노출 메서드
     useImperativeHandle(ref, () => ({
       centerToMyPosition: () => {
         navigator.geolocation.getCurrentPosition(
           (pos) => {
-            panToWithOffset(pos.coords.latitude, pos.coords.longitude);
+            mapRef.current?.panTo(
+              new window.naver.maps.LatLng(
+                pos.coords.latitude + LATITUDE_OFFSET,
+                pos.coords.longitude,
+              ),
+            );
           },
-          () => {
-            panToWithOffset(DEFAULT_COORDS.lat, DEFAULT_COORDS.lng);
+          (error) => {
+            console.error(
+              '위치 정보를 가져오는데 실패했습니다:',
+              error.message,
+            );
+            alert('위치 권한을 허용해주세요.');
           },
-          { enableHighAccuracy: true, timeout: 10000 },
         );
       },
-      panToLocation: (lat, lng) => panToWithOffset(lat, lng),
+      panToLocation: (lat, lng) => {
+        mapRef.current?.panTo(
+          new window.naver.maps.LatLng(lat + LATITUDE_OFFSET, lng),
+        );
+      },
     }));
 
     return <div ref={containerRef} className="h-full w-full" />;
