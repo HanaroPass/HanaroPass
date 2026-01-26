@@ -1,8 +1,8 @@
 import { Loader } from 'lucide-react';
 import { Suspense } from 'react';
+import { getIdentityData } from '../identity/actions/identity';
 import { getUserCardsAction } from './actions/getUserCards.action';
 import CouponListLoader from './components/CouponList.loader';
-
 import MainWrapper from './components/MainWrapper';
 import PassportUnregisteredContent from './components/PassportUnregisteredContent';
 import Pay from './components/Pay';
@@ -27,8 +27,10 @@ export default async function Page({
       ? (rawTab as keyof typeof TAB_COMPONENTS)
       : 'pay';
 
-  const hasPassport = false; // TODO: 액션 연결
-  if (!hasPassport) {
+  const { passport, arc } = await getIdentityData();
+
+  const isRegistered = Boolean(passport || arc);
+  if (!isRegistered) {
     return (
       <MainWrapper activeTab={tab} isRegistered={false}>
         <MainWrapper.Title>환율 정보</MainWrapper.Title>
@@ -52,7 +54,7 @@ export default async function Page({
     ) : null;
 
   return (
-    <MainWrapper activeTab={tab}>
+    <MainWrapper activeTab={tab} isRegistered>
       <div className="app-layout">
         <MainWrapper.Title>
           {tab === 'pay' && 'EZ Pay'}

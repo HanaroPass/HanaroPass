@@ -109,7 +109,7 @@ export default function MainWrapper({
               </h2>
 
               <Link
-                href="/user/identity"
+                href="/identity"
                 className="flex h-16 w-16 items-center justify-center rounded-full bg-white"
                 aria-label="모바일 신분증 등록하기"
               >
