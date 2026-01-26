@@ -6,6 +6,7 @@ import OCRPageContent from './ocr/OCRPageContent';
 import AccountStep from './steps/AccountStep';
 import IntroStep from './steps/IntroStep';
 import ResultStep from './steps/ResultStep';
+import { logout } from './actions/test';
 
 export default function IdentityPage() {
   const router = useRouter();
@@ -30,16 +31,33 @@ export default function IdentityPage() {
   // Intro Step
   if (currentStep === 'intro') {
     return (
-      <IntroStep
-        onSelectIdentityType={(type) => {
-          history.push('ocr', {
-            identityType: type,
-            identityData: null,
-            accountData: null,
-          });
-        }}
-        onClose={handleClose}
-      />
+      <>
+        {/* 테스트를 위한 로그아웃 버튼 */}
+        <button
+          type="button"
+          onClick={async () => {
+            await logout();
+            history.push('intro', {
+              identityType: null,
+              identityData: null,
+              accountData: null,
+            });
+          }}
+        >
+          로그아웃(세션삭제)
+        </button>
+
+        <IntroStep
+          onSelectIdentityType={(type) => {
+            history.push('ocr', {
+              identityType: type,
+              identityData: null,
+              accountData: null,
+            });
+          }}
+          onClose={handleClose}
+        />
+      </>
     );
   }
 
