@@ -108,7 +108,7 @@ export function HospitalCard({ hospital }: { hospital: HospitalInfo }) {
       <div className="mt-5 rounded-xl border bg-gray-50 px-4 py-3">
         <div className="flex items-center gap-2 font-semibold text-gray-800 text-sm">
           <AIResultIcon size="sm" />
-          <span>AI 한줄 요약</span>
+          <span>AI 한 줄 요약</span>
         </div>
 
         <p className="mt-1 text-[13px] text-gray-600 leading-snug">
