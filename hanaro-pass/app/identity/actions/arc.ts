@@ -8,6 +8,11 @@ import {
   type ActionResult,
 } from '@/lib/error-handler';
 
+export const parseLocalDate = (dateStr: string) => {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  return new Date(y, m - 1, d);
+};
+
 export async function saveArcData(
   data: Record<string, string>,
 ): Promise<ActionResult<{ id: number }>> {
@@ -41,19 +46,24 @@ export async function saveArcData(
       throw new HttpError('체류 자격 정보가 누락되었습니다.', 400);
     if (!issuedDate) throw new HttpError('발급 일자가 누락되었습니다.', 400);
 
+    const parseLocalDate = (dateStr: string) => {
+      const [y, m, d] = dateStr.split('-').map(Number);
+      return new Date(y, m - 1, d);
+    };
+
     const result = await prisma.aRC.upsert({
       where: { userId },
       update: {
         arcNumber,
         residenceStatus,
-        issueDate: new Date(issuedDate),
+        issueDate: parseLocalDate(issuedDate),
         userPhotoUrl,
       },
       create: {
         userId,
         arcNumber,
         residenceStatus,
-        issueDate: new Date(issuedDate),
+        issueDate: parseLocalDate(issuedDate),
         userPhotoUrl,
       },
       select: { id: true },

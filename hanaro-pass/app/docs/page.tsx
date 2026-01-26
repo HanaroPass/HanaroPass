@@ -4,11 +4,9 @@ import DocsPageClient from './docsPageClient';
 
 export default function DocsPage() {
   return (
-    <main>
-      <Suspense fallback={<div className="p-5 text-white/50">로딩 중...</div>}>
-        <DocsPageContent />
-      </Suspense>
-    </main>
+    <Suspense fallback={<div className="p-5 text-white/50">로딩 중...</div>}>
+      <DocsPageContent />
+    </Suspense>
   );
 }
 

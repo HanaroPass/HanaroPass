@@ -32,11 +32,13 @@ export function AlienDrawer({
     }
   };
 
-  const { formData, handleSubmit, resetForm, handleFormDataChange } =
-    useDrawerForm({
-      onSubmit: handleSave,
-      onOpenChange,
-    });
+  const { formData, resetForm, handleFormDataChange } = useDrawerForm({
+    onSubmit: undefined,
+    onOpenChange,
+  });
+  const handleSubmit = () => {
+    void handleSave(formData);
+  };
 
   return (
     <BaseDrawer

@@ -7,6 +7,7 @@ import {
   HttpError,
   type ActionResult,
 } from '@/lib/error-handler';
+import { parseLocalDate } from './arc';
 
 export async function savePassportData(
   data: Record<string, string>,
@@ -62,8 +63,8 @@ export async function savePassportData(
           userId: user.id,
           passportNumber,
           gender: gender as 'MALE' | 'FEMALE' | 'OTHERS',
-          issueDate: new Date(issueDate),
-          expiryDate: new Date(expiryDate),
+          issueDate: parseLocalDate(issueDate),
+          expiryDate: parseLocalDate(expiryDate),
           userPhotoUrl: userPhotoUrl || '',
         },
         select: { id: true },
