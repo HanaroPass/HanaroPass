@@ -5,17 +5,22 @@ import { DOCS_CARD_ITEMS } from '@/app/docs/constants/docsCardItem';
 import Header from '@/components/header/Header';
 import RegistrationSummary from '@/components/result/RegistrationSummary';
 import ActionButton from '@/components/ui/ActionButton';
+import { useToast } from '@/hooks/useToast';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 
 export default function DocsDonePage({ params }: DocsProps) {
   const router = useRouter();
-  const { docId } = params;
+  const { docId } = use(params);
   const doc = DOCS_CARD_ITEMS.find((item) => item.id === docId);
 
   const [uploadedAt, setUploadedAt] = useState<string | null>(null);
 
+  const { success } = useToast();
   useEffect(() => {
+    if (doc?.title) {
+      success(`${doc.title} 등록 완료!`, '서류 보관함에서 확인 가능합니다.');
+    }
     // 브라우저에서 파일 업로드 일자 읽어오기
     const data = sessionStorage.getItem('createdAt');
     if (data) {
@@ -23,7 +28,7 @@ export default function DocsDonePage({ params }: DocsProps) {
       setUploadedAt(formattedDate);
       sessionStorage.removeItem('createdAt');
     }
-  }, []);
+  }, [doc?.title, success]);
 
   return (
     <>

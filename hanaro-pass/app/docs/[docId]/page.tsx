@@ -5,7 +5,7 @@ import { getUserDocs } from '../actions/userDocs';
 import DocsDetailPageClient from './docsDetailPageClient';
 
 export type DocsProps = {
-  params: { docId: string };
+  params: Promise<{ docId: string }>;
 };
 
 export default async function DocsDetailPage({ params }: DocsProps) {

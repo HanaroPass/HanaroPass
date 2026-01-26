@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import { Toaster } from 'sonner';
 
 export const metadata: Metadata = {
   title: 'Hanaro Pass',
@@ -16,6 +17,14 @@ export default function RootLayout({
     <html lang="ko" suppressHydrationWarning>
       <body className="antialiased">
         <div className="app-shell">{children}</div>
+        <Toaster
+          position="top-center"
+          richColors
+          expand={false}
+          toastOptions={{
+            className: 'mt-10',
+          }}
+        />
       </body>
     </html>
   );
