@@ -27,13 +27,14 @@ export function EmbassyContent({ data }: EmbassyContentProps) {
           phone: data.phone,
           explainTime: data.openHours,
           distance: '',
+          latitude: data.latitude,
+          longitude: data.longitude,
         }}
       />
       <div className="flex gap-1 px-4 text-[11px] text-gray-400">
         <span className="shrink-0">*</span>
         <div>
-          제공된 정보는 공공 데이터를 기반으로 하며, 실제 운영 상황과 다를 수
-          있습니다.
+          정보는 공공 데이터를 기반으로 하며, 실제 운영 상황과 다를 수 있습니다.
           <br />
           방문 전 대사관에 직접 문의하시기 바랍니다.
         </div>
