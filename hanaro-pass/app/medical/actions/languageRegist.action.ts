@@ -4,7 +4,7 @@ import {
   type ActionResult,
   HttpError,
   handleActionResult,
-} from '@/lib/error-handler';
+} from '@/lib/errorHandler';
 import type { Hospital } from '@/lib/generated/prisma';
 import { prisma } from '@/lib/prisma';
 import { getSession } from '@/lib/session';
