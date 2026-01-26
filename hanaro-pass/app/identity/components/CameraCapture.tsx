@@ -1,6 +1,6 @@
 'use client';
 import { useCallback, useEffect, useRef } from 'react';
-import type { IdentityType } from '../hooks/useFunnel';
+import type { IdentityType } from '../IdentityPageClient';
 
 type CameraCaptureProps = {
   type?: IdentityType | null;

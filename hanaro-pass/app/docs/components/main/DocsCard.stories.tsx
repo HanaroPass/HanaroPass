@@ -13,7 +13,7 @@ type Story = StoryObj<typeof DocsCard>;
 
 export const Interactive: Story = {
   args: {
-    title: '모바일 외국인 신분증',
+    title: '모바일 외국인 등록증',
     color: 'blueSoft',
     isOpen: true,
     userName: 'somi',

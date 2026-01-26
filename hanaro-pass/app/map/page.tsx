@@ -9,7 +9,8 @@ import {
   Siren,
 } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { SavedPlace } from '@/lib/generated/prisma';
+import type { Embassy, SavedPlace } from '@/lib/generated/prisma';
+import { getMyEmbassy } from './actions/embassy';
 import { getHospitals } from './actions/hospitals';
 import { getSavedPlaces } from './actions/savedPlaces';
 import { EmbassyContent } from './components/embassy/EmbassyContent';
@@ -27,7 +28,6 @@ import { ToggleButton } from './components/ui/ToggleButton';
 import { useBottomSheet } from './hooks/useBottomSheet';
 import { useExchangeSearch } from './hooks/useExchangeSearch';
 import { useMarkerClick } from './hooks/useMarkerClick';
-import { type Embassy, MAP_EMBASSY_MOCK } from './mock/embassyExchange';
 import { formatExchangeData, mapDbToInfo } from './utils/mapUtils';
 
 /**
@@ -55,6 +55,7 @@ export default function MapPage() {
   const [bookmark, setBookmark] = useState<boolean>(false);
 
   const [savedPlaces, setSavedPlaces] = useState<SavedPlace[]>([]);
+  const [myEmbassy, setMyEmbassy] = useState<Embassy | null>(null);
 
   const [selectedPlace, setSelectedPlace] = useState<
     SavedPlace | Embassy | NaverSearchResult | null
@@ -95,6 +96,27 @@ export default function MapPage() {
     handleTouchEnd,
     getTranslateValue,
   } = useBottomSheet();
+
+  useEffect(() => {
+    const fetchEmbassy = async () => {
+      try {
+        // TODO: 실제 유저 ID를 넣어야 합니다. (현재 userId = 2)
+        const userId = 2;
+
+        const result = await getMyEmbassy(userId);
+
+        if (result.success) {
+          setMyEmbassy(result.data);
+        } else {
+          console.error('대사관 조회 실패:', result.message);
+        }
+      } catch (error) {
+        console.error('네트워크 오류:', error);
+      }
+    };
+
+    fetchEmbassy();
+  }, []);
 
   useEffect(() => {
     const fetchPlaces = async () => {
@@ -149,7 +171,7 @@ export default function MapPage() {
           savedPlaces={savedPlaces}
           showBookmarks={bookmark}
           onMarkerClick={handleMarkerClick}
-          embassyData={MAP_EMBASSY_MOCK}
+          embassyData={myEmbassy ? [myEmbassy] : []}
           showEmbassy={openSheet === 'embassy'}
           exchangeResults={exchangeResults}
           showExchanges={openSheet === 'exchange'}
@@ -177,10 +199,10 @@ export default function MapPage() {
           onClick={() => {
             const isOpening = openSheet !== 'embassy';
             toggleSheet('embassy');
-            if (isOpening) {
+            if (isOpening && myEmbassy) {
               mapControlRef.current?.panToLocation(
-                MAP_EMBASSY_MOCK.latitude,
-                MAP_EMBASSY_MOCK.longitude,
+                Number(myEmbassy.latitude),
+                Number(myEmbassy.longitude),
               );
             }
           }}
@@ -264,7 +286,7 @@ export default function MapPage() {
             }}
           />
         )}
-        {openSheet === 'embassy' && <EmbassyContent />}
+        {openSheet === 'embassy' && <EmbassyContent data={myEmbassy} />}
       </MapBottomSheet>
     </main>
   );

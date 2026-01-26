@@ -1,12 +1,17 @@
 'use client';
 
-import { X } from 'lucide-react';
-import { useState } from 'react';
+import { Loader2, X } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
 import Header from '@/components/header/Header';
 import { Button } from '@/components/ui/button';
 import EmptyIdentityCard from '../components/EmptyIdentityCard';
 import MobileQr from '../components/MobileQr';
-import type { IdentityType } from '../hooks/useFunnel';
+import { getIdentityData } from '../actions/identity';
+import { useSearchParams } from 'next/navigation';
+import type { IdentityType } from '../IdentityPageClient';
+import { cn } from '@/lib/utils';
+
+const DEFAULT_TAB: 'passport' | 'arc' = 'arc';
 
 type ResultStepProps = {
   identityType: IdentityType | null;
@@ -17,20 +22,72 @@ type ResultStepProps = {
 
 export default function ResultStep({
   identityType,
-  identityData,
+  identityData: initialData,
   onClose,
   onRegister,
 }: ResultStepProps) {
-  const DEFAULT_TAB = 'alien' as const;
-  const [activeTab, setActiveTab] = useState<'passport' | 'alien'>(
-    identityType === 'passport' ? 'passport' : DEFAULT_TAB,
+  const searchParams = useSearchParams();
+  const typeParam = searchParams.get('type') as IdentityType | null;
+
+  const [activeTab, setActiveTab] = useState<IdentityType>(
+    typeParam || DEFAULT_TAB,
   );
+  const [passportData, setPassportData] = useState<Record<
+    string,
+    string
+  > | null>(null);
+  const [arcData, setArcData] = useState<Record<string, string> | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const res = await getIdentityData();
+
+        if (!mounted) return;
+
+        setPassportData(res.passport);
+        setArcData(res.arc);
+
+        if (typeParam) {
+          setActiveTab(typeParam);
+        } else {
+          // 파라미터가 없으면 데이터가 있는 쪽으로 자동 전환
+          if (res.passport) setActiveTab('passport');
+          else if (res.arc) setActiveTab('arc');
+        }
+      } catch (error) {
+        console.error('Failed to fetch identity data:', error);
+        if (mounted) setError('데이터를 불러오는데 실패했습니다.');
+      } finally {
+        if (mounted) setIsLoading(false);
+      }
+    };
+
+    fetchData();
+
+    return () => {
+      mounted = false;
+    };
+  }, [typeParam]);
 
   const handleRegister = (type: IdentityType) => {
-    if (onRegister) {
-      onRegister(type);
-    }
+    onRegister?.(type);
   };
+
+  // 현재 탭에 표시할 데이터
+  const currentDisplayData = useMemo(() => {
+    // 현재 선택된 탭이 방금 등록한 타입과 같다면, 방금 등록한 데이터를 우선 표시
+    if (initialData && activeTab === identityType) {
+      return initialData;
+    }
+    return activeTab === 'passport' ? passportData : arcData;
+  }, [activeTab, identityType, initialData, passportData, arcData]);
 
   return (
     <>
@@ -48,54 +105,47 @@ export default function ResultStep({
         }
       >
         <div className="flex rounded-full bg-gray-100 p-1">
-          <button
-            type="button"
-            onClick={() => setActiveTab('passport')}
-            className={`relative rounded-full px-4 py-1.5 font-medium text-sm transition-all ${
-              activeTab === 'passport'
-                ? 'bg-black-900 text-white shadow-sm'
-                : 'text-gray-600 hover:text-gray-800'
-            }`}
-          >
-            여권
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab('alien')}
-            className={`relative rounded-full px-4 py-1.5 font-medium text-sm transition-all ${
-              activeTab === 'alien'
-                ? 'bg-black-900 text-white shadow-sm'
-                : 'text-gray-600 hover:text-gray-800'
-            }`}
-          >
-            신분증
-          </button>
+          {(['passport', 'arc'] as const).map((tab) => (
+            <button
+              key={tab}
+              type="button"
+              onClick={() => setActiveTab(tab)}
+              className={cn(
+                'relative rounded-full px-4 py-1.5 font-medium text-sm transition-all',
+                activeTab === tab
+                  ? 'bg-black-900 text-white shadow-sm'
+                  : 'text-gray-600 hover:text-gray-800',
+              )}
+            >
+              {tab === 'passport' ? '여권' : '등록증'}
+            </button>
+          ))}
         </div>
       </Header>
 
       <div className="flex h-[calc(100dvh-60px)] flex-col overflow-hidden bg-white p-4 sm:p-6 lg:p-8">
         <div className="mx-auto flex h-full w-full max-w-sm flex-col sm:max-w-md lg:max-w-lg xl:max-w-2xl">
-          {activeTab === 'passport' ? (
+          {isLoading ? (
+            <div className="flex h-full items-center justify-center">
+              <Loader2 className="h-8 w-8 animate-spin text-green-ez" />
+              <p className="animate-pulse font-medium text-gray-400 text-sm">
+                정보를 불러오고 있습니다
+              </p>
+            </div>
+          ) : error ? (
+            <div className="flex h-full items-center justify-center text-red-500">
+              {error}
+            </div>
+          ) : currentDisplayData ? (
             <div className="flex h-full flex-col">
-              {identityType === 'passport' && identityData ? (
-                <MobileQr type="passport" data={identityData} />
-              ) : (
-                <EmptyIdentityCard
-                  type="passport"
-                  onRegister={() => handleRegister('passport')}
-                />
-              )}
+              <MobileQr type={activeTab} data={currentDisplayData} />
             </div>
           ) : (
             <div className="flex h-full flex-col">
-              {identityType === 'alien' && identityData ? (
-                <MobileQr type="alien" data={identityData} />
-              ) : (
-                <EmptyIdentityCard
-                  type="alien"
-                  onRegister={() => handleRegister('alien')}
-                />
-              )}
+              <EmptyIdentityCard
+                type={activeTab}
+                onRegister={() => handleRegister(activeTab)}
+              />
             </div>
           )}
         </div>

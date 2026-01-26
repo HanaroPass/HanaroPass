@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import ActionButton from '@/components/ui/ActionButton';
-import type { IdentityType } from '../hooks/useFunnel';
+import type { IdentityType } from '../IdentityPageClient';
 
 type EmptyIdentityCardProps = {
   type: IdentityType;

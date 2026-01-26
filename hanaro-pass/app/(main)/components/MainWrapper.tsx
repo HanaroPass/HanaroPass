@@ -7,6 +7,7 @@ import Footer from './Footer';
 import RemittanceIcon from './icons/RemittanceIcon';
 import ServiceIcon from './icons/ServiceIcon';
 import TransferIcon from './icons/TransferIcon';
+import NotificationBell from './NotificationBell';
 
 const TABS = [
   { key: 'pay', Icon: WalletMinimal },
@@ -43,12 +44,7 @@ export default function MainWrapper({
             />
             <ChevronDown size={20} stroke="white" />
           </button>
-          <Image
-            width={20}
-            height={20}
-            src="/images/main/bell.svg"
-            alt="알림"
-          />
+          <NotificationBell />
           <Image
             width={20}
             height={20}

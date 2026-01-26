@@ -60,12 +60,15 @@ model User {
   role Role     @default(USER)
   createdAt   DateTime @default(now()) @db.Timestamp(0)
   updatedAt   DateTime @default(now()) @updatedAt @db.Timestamp(0)
+  pushSubscription Json?    @db.Json
 
   Passport     Passport?
   ARC          ARC?
   UserDocument UserDocument[]
   UserCard     UserCard[]
   SavedPlace   SavedPlace[]
+  HospitalLanguageApplication HospitalLanguageApplication[]
+  Notifications              Notification[]
 }
 
 model Passport {
@@ -207,8 +210,9 @@ model HospitalReview {
 model HospitalLanguageApplication {
   id            Int               @id @default(autoincrement()) @db.UnsignedInt
   hospitalId    Int               @db.UnsignedInt
+  userId        Int               @db.UnsignedInt
   status        ApplicationStatus @default(PENDING)
-  requestLangs  Json             @db.Json
+  requestLangs  Json              @db.Json
   
   // 처리 히스토리를 위한 시간 기록
   parentId            Int?     // 이전 신청 건의 ID (재신청일 경우)
@@ -217,8 +221,21 @@ model HospitalLanguageApplication {
   processedAt   DateTime?         @db.Timestamp(0) // 승인/반려 처리 일시
 
   Hospital      Hospital          @relation(fields: [hospitalId], references: [id], onDelete: Cascade)
+  User          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([hospitalId], map: "fk_LanguageApplication_hospital")
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement()) @db.UnsignedInt
+  userId    Int      @db.UnsignedInt
+  title     String   @db.VarChar(255)
+  content   String   @db.Text
+  isRead    Boolean  @default(false)
+  link      String?  @db.VarChar(500) // 클릭 시 이동할 페이지
+  createdAt DateTime @default(now()) @db.Timestamp(0)
+
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Embassy {
@@ -228,6 +245,8 @@ model Embassy {
   address     String @db.VarChar(100)
   openHours   String @db.VarChar(100)
   phone       String @db.VarChar(100)
+  latitude    String @db.VarChar(50) @default("")
+  longitude   String @db.VarChar(50) @default("")
 }
 
 model SymptomMapping {

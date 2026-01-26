@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 
 type CouponItemType = {
   id: string;
@@ -14,7 +15,10 @@ type CouponItemProps = {
 
 export default function CouponItem({ item }: CouponItemProps) {
   return (
-    <div className="flex min-h-19.25 w-17.5 shrink-0 flex-col items-center rounded-2xl border border-gray-100 bg-[#F7FAFB] p-3">
+    <Link
+      href={`/coupons/${item.id}`}
+      className="flex w-full flex-col items-center gap-2 rounded-2xl border border-gray-100 bg-[#F7FAFB] py-3"
+    >
       <div className="rounded-full bg-green-ez px-3 py-1 text-[10px] text-white">
         {item.distanceLabel}
       </div>
@@ -34,6 +38,6 @@ export default function CouponItem({ item }: CouponItemProps) {
       <span className="text-center font-bold text-[10px] text-black-800 leading-tight">
         {item.tag}
       </span>
-    </div>
+    </Link>
   );
 }

@@ -5,25 +5,20 @@ import { ApplicationStatusTabs } from '../components/languageAdmin/ApplicationAd
 import { HospitalApplicationCard } from '../components/languageAdmin/HospitalApplicationCard';
 import type { StatusType } from '../constants/statusConfig';
 import { useAdminApplications } from '../hooks/useAdminApplication';
+import { useRequireAdmin } from '../hooks/useRequireAdmin';
 import { LoadingScreen } from '../registrations/complete/page';
 
 export default function AdminDashboardPage() {
   const [activeTab, setActiveTab] = useState<StatusType>('PENDING');
   const { applications, counts, isLoading, error } = useAdminApplications();
+  useRequireAdmin(error);
 
   const filteredApplications = useMemo(() => {
     return applications.filter((app) => app.status === activeTab);
   }, [applications, activeTab]);
 
   if (isLoading) return <LoadingScreen />;
-
-  if (error) {
-    return (
-      <div className="flex h-full items-center justify-center bg-gray-200 p-6 text-center">
-        <p className="font-sans text-hana-red">{error}</p>
-      </div>
-    );
-  }
+  if (error) return null;
 
   return (
     <div className="flex h-full flex-col bg-(--color-gray-200)">

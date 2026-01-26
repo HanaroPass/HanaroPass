@@ -1,6 +1,6 @@
 'use server';
 
-import { type ActionResult, handleActionResult } from '@/lib/error-handler';
+import { type ActionResult, handleActionResult } from '@/lib/errorHandler';
 import type { SavedPlace } from '@/lib/generated/prisma';
 import { prisma } from '@/lib/prisma';
 

@@ -3,7 +3,7 @@ import type { CardColor } from './cardColor';
 // 서류 카드 정체성
 export const DOCS_CARD_ITEMS = [
   { id: 'passport', title: '모바일 여권', color: 'peach' },
-  { id: 'arc', title: '모바일 외국인 신분증', color: 'blueSoft' },
+  { id: 'arc', title: '모바일 외국인 등록증', color: 'blueSoft' },
   { id: 'student', title: '외국인 학생증', color: 'purple' },
   { id: 'copy', title: '여권 사본', color: 'blueStrong' },
   { id: 'photo', title: '여권 사진', color: 'gray' },

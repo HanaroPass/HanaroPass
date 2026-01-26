@@ -1,10 +1,10 @@
 'use client';
 
 import { forwardRef, useImperativeHandle, useRef } from 'react';
-import type { SavedPlace } from '@/lib/generated/prisma';
+import type { Embassy, SavedPlace } from '@/lib/generated/prisma';
+
 import { type ClickablePlace, useMapMarkers } from '../../hooks/useMapMarkers';
 import { useNaverMapInit } from '../../hooks/useNaverMapInit';
-import type { Embassy } from '../../mock/embassyExchange';
 import type { Hospital } from '../../page';
 
 export type NaverSearchResult = {
@@ -23,7 +23,7 @@ type NaverMapProps = {
   onMarkerClick: (place: ClickablePlace) => void;
   onMapMoved?: (address: string) => void;
   savedPlaces?: SavedPlace[];
-  embassyData?: Embassy;
+  embassyData?: Embassy[];
   exchangeResults?: NaverSearchResult[];
   showBookmarks?: boolean;
   hospitals?: Hospital[];
