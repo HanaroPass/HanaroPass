@@ -4,9 +4,9 @@ import { useCallback, useEffect, useState } from 'react';
 import {
   getAdminReviewDetailAction,
   updateApplicationStatusAction,
-} from '../actions/admin-application.action';
-import type { AdminReviewDetailResponse } from '../schemas/admin-application.schema';
-import { IdSchema } from '../schemas/language-regist.schema';
+} from '../actions/adminApplication.action';
+import type { AdminReviewDetailResponse } from '../schemas/adminApplication.schema';
+import { IdSchema } from '../schemas/languageRegist.schema';
 
 export function useAdminReview(id: number) {
   const [data, setData] = useState<AdminReviewDetailResponse | null>(null);

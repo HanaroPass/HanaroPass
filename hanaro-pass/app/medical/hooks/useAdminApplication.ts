@@ -1,9 +1,9 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { getAdminApplicationsAction } from '../actions/admin-application.action';
+import { getAdminApplicationsAction } from '../actions/adminApplication.action';
 import type { StatusType } from '../constants/statusConfig';
-import type { AdminApplicationItem } from '../schemas/admin-application.schema';
+import type { AdminApplicationItem } from '../schemas/adminApplication.schema';
 
 export function useAdminApplications() {
   const [data, setData] = useState<AdminApplicationItem[]>([]);

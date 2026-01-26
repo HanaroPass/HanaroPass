@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { getRegistrationDetailAction } from '../actions/language-regist.action';
-import type { RegistrationDetailResponse } from '../schemas/language-regist.schema';
+import { getRegistrationDetailAction } from '../actions/languageRegist.action';
+import type { RegistrationDetailResponse } from '../schemas/languageRegist.schema';
 
 export function useRegistrationDetail(hospitalId: number) {
   const [data, setData] = useState<RegistrationDetailResponse | null>(null);
