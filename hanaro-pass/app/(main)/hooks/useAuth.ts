@@ -9,8 +9,13 @@ export function useAuth() {
 
   const login = async (role: 'USER' | 'ADMIN') => {
     startTransition(async () => {
-      const result = await forceLoginAction(role);
-      if (result && !result.success) alert(`로그인 실패: ${result.message}`);
+      try {
+        const result = await forceLoginAction(role);
+        if (result && !result.success) alert(`로그인 실패: ${result.message}`);
+      } catch (error) {
+        console.error('[Login Error]:', error);
+        alert('로그인 처리 중 예상치 못한 오류가 발생했습니다.');
+      }
     });
   };
 

@@ -13,16 +13,18 @@ export default function MockLoginButtons({
         Development Mode
       </div>
       <button
+        type="button"
         onClick={() => loginAction('USER')}
         className="h-10 rounded-lg bg-hana-green px-4 text-white shadow-lg"
       >
-        👤 USER
+        USER
       </button>
       <button
+        type="button"
         onClick={() => loginAction('ADMIN')}
         className="h-10 rounded-lg bg-hana-red px-4 text-white shadow-lg"
       >
-        👑 ADMIN
+        ADMIN
       </button>
     </div>
   );
