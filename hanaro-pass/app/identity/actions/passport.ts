@@ -7,7 +7,6 @@ import {
   HttpError,
   type ActionResult,
 } from '@/lib/error-handler';
-import { parseLocalDate } from './arc';
 
 export async function savePassportData(
   data: Record<string, string>,
@@ -57,6 +56,11 @@ export async function savePassportData(
           nationality,
         },
       });
+
+      const parseLocalDate = (dateStr: string) => {
+        const [y, m, d] = dateStr.split('-').map(Number);
+        return new Date(y, m - 1, d);
+      };
 
       return await tx.passport.create({
         data: {

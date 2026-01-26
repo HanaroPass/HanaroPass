@@ -8,11 +8,6 @@ import {
   type ActionResult,
 } from '@/lib/error-handler';
 
-export const parseLocalDate = (dateStr: string) => {
-  const [y, m, d] = dateStr.split('-').map(Number);
-  return new Date(y, m - 1, d);
-};
-
 export async function saveArcData(
   data: Record<string, string>,
 ): Promise<ActionResult<{ id: number }>> {
