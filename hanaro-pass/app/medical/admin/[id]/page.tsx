@@ -22,10 +22,7 @@ export default function AdminReviewPage() {
   useRequireAdmin(error);
 
   if (isLoading) return <LoadingScreen />;
-  if (error)
-    return (
-      <div className="p-10 text-center font-sans text-hana-red">{error}</div>
-    );
+  if (error) return null;
   if (!data)
     return (
       <div className="p-10 text-center font-sans text-black-600">
