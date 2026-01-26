@@ -2,6 +2,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { checkAuthStatusAction } from '../actions/auth.action';
 import { useAuth } from '../hooks/useAuth'; // 작성하신 훅을 사용합니다.
 import MockLoginButtons from './MockLoginButtons';
 import MockLogoutButton from './MockLogoutButton';
@@ -14,24 +15,33 @@ export default function AuthStatusWrapper() {
   const { login, logout, isPending } = useAuth();
 
   useEffect(() => {
-    if (!isPending) {
-      const hasSession = document.cookie.includes('user_secure_session');
-      setIsLoggedIn(hasSession);
+    const fetchStatus = async () => {
+      const result = await checkAuthStatusAction();
+      setIsLoggedIn(result.success);
       setIsLoading(false);
+    };
+    if (!isPending) {
+      fetchStatus();
     }
   }, [isPending]);
 
   if (isLoading) return null;
 
+  const isDev = process.env.NODE_ENV === 'development';
+
   return (
     <>
-      <PushNotificationManager isLoggedIn={isLoggedIn} />
-      {process.env.NODE_ENV === 'development' &&
-        (isLoggedIn ? (
-          <MockLogoutButton logoutAction={logout} isPending={isPending} />
-        ) : (
-          <MockLoginButtons loginAction={login} />
-        ))}
+      {isLoggedIn && <PushNotificationManager isLoggedIn={isLoggedIn} />}
+
+      {isDev && (
+        <div className="fixed right-4 bottom-20 z-9999">
+          {isLoggedIn ? (
+            <MockLogoutButton logoutAction={logout} isPending={isPending} />
+          ) : (
+            <MockLoginButtons loginAction={login} />
+          )}
+        </div>
+      )}
     </>
   );
 }
