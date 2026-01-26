@@ -37,7 +37,7 @@ export default function CouponListLoader() {
         lat,
         lng,
         radiusKm: 2,
-        limit: 10,
+        limit: 4,
       });
 
       if (!cancelled) setCoupons(data);

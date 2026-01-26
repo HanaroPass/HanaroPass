@@ -1,0 +1,45 @@
+// app/medical/actions/notification.action.ts
+'use server';
+
+import { revalidatePath } from 'next/cache';
+import { type ActionResult, handleActionResult } from '@/lib/errorHandler';
+import type { Notification } from '@/lib/generated/prisma';
+import { prisma } from '@/lib/prisma';
+import { validateUser } from '@/lib/user';
+
+export async function getNotificationsAction(): Promise<
+  ActionResult<Notification[]>
+> {
+  try {
+    const userId = await validateUser();
+
+    const notifications = await prisma.notification.findMany({
+      where: { userId: userId },
+      orderBy: { createdAt: 'desc' }, // 최신순 정렬
+    });
+
+    return { success: true, data: notifications };
+  } catch (error) {
+    return handleActionResult(error);
+  }
+}
+
+/**
+ * [알림 읽음 처리]
+ */
+export async function markAsReadAction(
+  id: number,
+): Promise<ActionResult<null>> {
+  try {
+    const userId = await validateUser();
+    await prisma.notification.update({
+      where: { id, userId },
+      data: { isRead: true },
+    });
+
+    revalidatePath('/medical/notifications');
+    return { success: true, data: null };
+  } catch (error) {
+    return handleActionResult(error);
+  }
+}
