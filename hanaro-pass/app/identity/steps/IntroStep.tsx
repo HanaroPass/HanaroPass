@@ -95,7 +95,7 @@ export default function IntroStep({
             </div>
           </div>
 
-          <div className="mt-auto pt-2 sm:mt-20 sm:pt-8">
+          <div className="mt-4 pt-2">
             <div className="mb-4 w-full rounded-xl border border-gray-200 border-b bg-silver-400 px-3 py-4 sm:px-4 sm:py-6">
               <label className="flex cursor-pointer items-center justify-between">
                 <span className="font-medium text-black-800 text-sm sm:text-base">
