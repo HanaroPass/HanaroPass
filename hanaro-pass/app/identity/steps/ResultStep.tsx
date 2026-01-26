@@ -71,7 +71,9 @@ export default function ResultStep({
           else if (res.arc) setActiveTab('arc');
         }
       } catch {
-        if (mounted) systemError('신분증 정보');
+        if (mounted) {
+          systemError('신분증 정보');
+        }
       } finally {
         if (mounted) setIsLoading(false);
       }

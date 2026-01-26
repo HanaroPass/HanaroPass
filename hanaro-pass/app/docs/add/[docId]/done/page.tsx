@@ -6,12 +6,12 @@ import Header from '@/components/header/Header';
 import RegistrationSummary from '@/components/result/RegistrationSummary';
 import ActionButton from '@/components/ui/ActionButton';
 import { useToast } from '@/hooks/useToast';
-import { useRouter } from 'next/navigation';
-import { use, useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
-export default function DocsDonePage({ params }: DocsProps) {
+export default function DocsDonePage() {
   const router = useRouter();
-  const { docId } = use(params);
+  const { docId } = useParams();
   const doc = DOCS_CARD_ITEMS.find((item) => item.id === docId);
 
   const [uploadedAt, setUploadedAt] = useState<string | null>(null);

@@ -17,17 +17,22 @@ export default function DocsDetailPageClient({ docId, fileUrl, title }: Props) {
   const router = useRouter();
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const { success, actionError } = useToast();
+  const { success, actionError, systemError } = useToast();
 
   const handleDelete = async () => {
+    if (isDeleting) return;
     setIsDeleting(true);
-    const res = await deleteUserDocs(docId);
-
-    if (res.success) {
-      success(`${title} 삭제 완료!`, '서류가 성공적으로 삭제되었습니다.');
-      router.push('/docs');
-    } else {
-      actionError(res);
+    try {
+      const res = await deleteUserDocs(docId);
+      if (res.success) {
+        success(`${title} 삭제 완료!`, '서류가 성공적으로 삭제되었습니다.');
+        router.push('/docs');
+      } else {
+        actionError(res);
+      }
+    } catch {
+      systemError('서류 삭제');
+    } finally {
       setIsDeleting(false);
     }
   };

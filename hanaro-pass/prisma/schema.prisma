@@ -1,13 +1,208 @@
 generator client {
   provider = "prisma-client-js"
-    output   = "../lib/generated/prisma"
+  output   = "../lib/generated/prisma"
 }
 
 datasource db {
   provider = "mysql"
 }
 
-// --- [ Enums ] ---
+model User {
+  id                          Int                           @id @default(autoincrement()) @db.UnsignedInt
+  nickname                    String                        @db.VarChar(100)
+  nationality                 String                        @db.VarChar(100)
+  createdAt                   DateTime                      @default(now()) @db.Timestamp(0)
+  updatedAt                   DateTime                      @default(now()) @updatedAt @db.Timestamp(0)
+  role                        Role                          @default(USER)
+  pushSubscription            Json?
+  ARC                         ARC?
+  HospitalLanguageApplication HospitalLanguageApplication[]
+  Notification                Notification[]
+  Passport                    Passport?
+  SavedPlace                  SavedPlace[]
+  UserCard                    UserCard[]
+  UserDocument                UserDocument[]
+}
+
+model Passport {
+  id             Int      @id @default(autoincrement()) @db.UnsignedInt
+  userId         Int      @unique @db.UnsignedInt
+  passportNumber String   @unique @db.VarChar(512)
+  gender         Gender
+  issueDate      DateTime @db.Date
+  expiryDate     DateTime @db.Date
+  userPhotoUrl   String   @db.Text
+  createdAt      DateTime @default(now()) @db.Timestamp(0)
+  User           User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "passport_ibfk_1")
+
+  @@index([userId], map: "fk_Passport_user")
+}
+
+model ARC {
+  id              Int      @id @default(autoincrement()) @db.UnsignedInt
+  userId          Int      @unique @db.UnsignedInt
+  arcNumber       String   @unique @db.VarChar(512)
+  residenceStatus String   @db.VarChar(50)
+  issueDate       DateTime @db.Date
+  userPhotoUrl    String   @db.Text
+  createdAt       DateTime @default(now()) @db.Timestamp(0)
+  User            User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "arc_ibfk_1")
+
+  @@index([userId], map: "fk_ARC_user")
+}
+
+model UserDocument {
+  id        Int      @id @default(autoincrement()) @db.UnsignedInt
+  userId    Int      @db.UnsignedInt
+  docType   DocType
+  fileUrl   String   @db.Text
+  createdAt DateTime @default(now()) @db.Timestamp(0)
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "userdocument_ibfk_1")
+
+  @@index([userId], map: "fk_UserDocument_user")
+}
+
+model UserCard {
+  id         Int      @id @default(autoincrement()) @db.UnsignedInt
+  userId     Int      @db.UnsignedInt
+  cardType   CardType
+  cardNumber String   @unique(map: "uniq_UserCard_number") @db.VarChar(20)
+  balance    Decimal  @default(0.00) @db.Decimal(15, 2)
+  isDefault  Boolean  @default(false)
+  createdAt  DateTime @default(now()) @db.Timestamp(0)
+  User       User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "usercard_ibfk_1")
+
+  @@index([userId], map: "fk_UserCard_user")
+}
+
+model Coupon {
+  id          Int            @id @default(autoincrement()) @db.UnsignedInt
+  tag         String?        @db.VarChar(15)
+  discount    Int            @db.UnsignedInt
+  category    CouponCategory
+  couponCode  String         @unique(map: "uniq_Coupon_code") @db.VarChar(50)
+  brandName   String         @db.VarChar(100)
+  brandPic    String         @db.VarChar(255)
+  latitude    Decimal        @db.Decimal(10, 8)
+  longitude   Decimal        @db.Decimal(11, 8)
+  description String         @db.VarChar(100)
+
+  @@index([latitude, longitude], map: "idx_coupon_location")
+  @@map("Coupons")
+}
+
+model SavedPlace {
+  id        Int           @id @default(autoincrement()) @db.UnsignedInt
+  userId    Int           @db.UnsignedInt
+  placeName String        @db.VarChar(100)
+  category  PlaceCategory
+  latitude  String        @db.VarChar(100)
+  longitude String        @db.VarChar(100)
+  address   String        @db.VarChar(100)
+  openHours String        @db.VarChar(100)
+  phone     String        @db.VarChar(100)
+  User      User          @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "savedplace_ibfk_1")
+
+  @@index([userId], map: "fk_SavedPlace_user")
+}
+
+model Hospital {
+  id                           Int                           @id @default(autoincrement()) @db.UnsignedInt
+  nameKo                       String                        @db.VarChar(255)
+  address                      String                        @db.VarChar(500)
+  latitude                     Decimal                       @db.Decimal(10, 8)
+  longitude                    Decimal                       @db.Decimal(11, 8)
+  phone                        String?                       @db.VarChar(20)
+  openHours                    String                        @db.VarChar(100)
+  imageUrl                     String?                       @db.Text
+  HospitalDept                 HospitalDept[]
+  HospitalLang                 HospitalLang[]
+  hospitalLanguageApplications HospitalLanguageApplication[]
+  HospitalReview               HospitalReview?
+
+  @@index([latitude, longitude], map: "idx_Hospital_location")
+  @@fulltext([nameKo], map: "ft_Hospital_search")
+}
+
+model HospitalDept {
+  id         Int      @id @default(autoincrement()) @db.UnsignedInt
+  hospitalId Int      @db.UnsignedInt
+  deptName   String   @db.VarChar(50)
+  Hospital   Hospital @relation(fields: [hospitalId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "hospitaldept_ibfk_1")
+
+  @@index([hospitalId], map: "fk_HospitalDept_hospital")
+}
+
+model HospitalLang {
+  id         Int      @id @default(autoincrement()) @db.UnsignedInt
+  hospitalId Int      @db.UnsignedInt
+  langName   String   @db.VarChar(50)
+  Hospital   Hospital @relation(fields: [hospitalId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "hospitallang_ibfk_1")
+
+  @@index([hospitalId], map: "fk_HospitalLang_hospital")
+}
+
+model HospitalReview {
+  id         Int      @id @default(autoincrement()) @db.UnsignedInt
+  hospitalId Int      @unique(map: "uniq_HospitalReview_hospital") @db.UnsignedInt
+  aiSummary  String   @db.VarChar(500)
+  Hospital   Hospital @relation(fields: [hospitalId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "hospitalreview_ibfk_1")
+
+  @@index([hospitalId], map: "fk_HospitalReview_hospital")
+}
+
+model HospitalLanguageApplication {
+  id           Int               @id @default(autoincrement()) @db.UnsignedInt
+  hospitalId   Int               @db.UnsignedInt
+  status       ApplicationStatus @default(PENDING)
+  requestLangs Json
+  createdAt    DateTime          @default(now()) @db.Timestamp(0)
+  updatedAt    DateTime          @default(now()) @updatedAt @db.Timestamp(0)
+  processedAt  DateTime?         @db.Timestamp(0)
+  parentId     Int?
+  userId       Int               @db.UnsignedInt
+  Hospital     Hospital          @relation(fields: [hospitalId], references: [id], onDelete: Cascade)
+  User         User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([hospitalId], map: "fk_LanguageApplication_hospital")
+  @@index([userId], map: "HospitalLanguageApplication_userId_fkey")
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement()) @db.UnsignedInt
+  userId    Int      @db.UnsignedInt
+  title     String   @db.VarChar(255)
+  content   String   @db.Text
+  isRead    Boolean  @default(false)
+  link      String?  @db.VarChar(500)
+  createdAt DateTime @default(now()) @db.Timestamp(0)
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId], map: "Notification_userId_fkey")
+}
+
+model Embassy {
+  id          Int    @id @default(autoincrement()) @db.UnsignedInt
+  nationality String @db.VarChar(100)
+  placeName   String @db.VarChar(100)
+  address     String @db.VarChar(100)
+  openHours   String @db.VarChar(100)
+  phone       String @db.VarChar(100)
+  latitude    String @default("") @db.VarChar(50)
+  longitude   String @default("") @db.VarChar(50)
+}
+
+model SymptomMapping {
+  id       Int    @id @default(autoincrement()) @db.UnsignedInt
+  keyword  String @db.VarChar(100)
+  synonyms String @db.LongText
+  deptName String @db.VarChar(50)
+  bodyPart String @db.VarChar(50)
+
+  @@index([keyword], map: "idx_Symptom_keyword")
+  @@fulltext([keyword, synonyms], map: "ft_Symptom_search")
+  @@map("SymptomMappings")
+}
 
 enum Gender {
   MALE
@@ -47,220 +242,6 @@ enum ApplicationStatus {
 }
 
 enum Role {
-  USER 
+  USER
   ADMIN
-}
-
-// --- [ Models ] ---
-
-model User {
-  id          Int      @id @default(autoincrement()) @db.UnsignedInt
-  nickname    String   @db.VarChar(100)
-  nationality String   @db.VarChar(100)
-  role Role     @default(USER)
-  createdAt   DateTime @default(now()) @db.Timestamp(0)
-  updatedAt   DateTime @default(now()) @updatedAt @db.Timestamp(0)
-  pushSubscription Json?    @db.Json
-
-  Passport     Passport?
-  ARC          ARC?
-  UserDocument UserDocument[]
-  UserCard     UserCard[]
-  SavedPlace   SavedPlace[]
-  HospitalLanguageApplication HospitalLanguageApplication[]
-  Notifications              Notification[]
-}
-
-model Passport {
-  id             Int      @id @default(autoincrement()) @db.UnsignedInt
-  userId         Int      @unique @db.UnsignedInt
-  passportNumber String   @unique @db.VarChar(512)
-  gender         Gender
-  issueDate      DateTime @db.Date
-  expiryDate     DateTime @db.Date
-  userPhotoUrl   String   @db.Text
-  createdAt      DateTime @default(now()) @db.Timestamp(0)
-
-  User User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "passport_ibfk_1")
-
-  @@index([userId], map: "fk_Passport_user")
-}
-
-model ARC {
-  id              Int      @id @default(autoincrement()) @db.UnsignedInt
-  userId          Int      @unique @db.UnsignedInt
-  arcNumber       String   @unique @db.VarChar(512)
-  residenceStatus String   @db.VarChar(50)
-  issueDate       DateTime @db.Date
-  userPhotoUrl    String   @db.Text
-  createdAt       DateTime @default(now()) @db.Timestamp(0)
-
-  User User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "arc_ibfk_1")
-
-  @@index([userId], map: "fk_ARC_user")
-}
-
-model UserDocument {
-  id        Int      @id @default(autoincrement()) @db.UnsignedInt
-  userId    Int      @db.UnsignedInt
-  docType   DocType
-  fileUrl   String   @db.Text
-  createdAt DateTime @default(now()) @db.Timestamp(0)
-
-  User User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "userdocument_ibfk_1")
-
-  @@index([userId], map: "fk_UserDocument_user")
-}
-
-model UserCard {
-  id         Int      @id @default(autoincrement()) @db.UnsignedInt
-  userId     Int      @db.UnsignedInt
-  cardType   CardType
-  cardNumber String   @unique(map: "uniq_UserCard_number") @db.VarChar(20)
-  balance    Decimal  @default(0.00) @db.Decimal(15, 2)
-  isDefault  Boolean  @default(false)
-  createdAt  DateTime @default(now()) @db.Timestamp(0)
-
-  User User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "usercard_ibfk_1")
-
-  @@index([userId], map: "fk_UserCard_user")
-}
-
-model Coupon {
-  id         Int            @id @default(autoincrement()) @db.UnsignedInt
-  tag        String?        @db.VarChar(15)
-  discount   Int            @db.UnsignedInt
-  category   CouponCategory
-  couponCode String         @unique(map: "uniq_Coupon_code") @db.VarChar(50)
-  brandName  String         @db.VarChar(100)
-  brandPic   String         @db.VarChar(255)
-  latitude   Decimal        @db.Decimal(10, 8)
-  longitude  Decimal        @db.Decimal(11, 8)
-  description String        @db.VarChar(100)
-
-  @@index([latitude, longitude], map: "idx_coupon_location")
-  @@map("Coupons")
-}
-
-model SavedPlace {
-  id        Int           @id @default(autoincrement()) @db.UnsignedInt
-  userId    Int           @db.UnsignedInt
-  placeName String        @db.VarChar(100)
-  category  PlaceCategory
-  latitude  String        @db.VarChar(100)
-  longitude String        @db.VarChar(100)
-  address   String        @db.VarChar(100)
-  openHours String        @db.VarChar(100)
-  phone     String        @db.VarChar(100)
-
-  User User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "savedplace_ibfk_1")
-
-  @@index([userId], map: "fk_SavedPlace_user")
-}
-
-model Hospital {
-  id        Int      @id @default(autoincrement()) @db.UnsignedInt
-  nameKo    String   @db.VarChar(255)
-  imageUrl  String?  @db.Text
-  address   String   @db.VarChar(500)
-  latitude  Decimal  @db.Decimal(10, 8)
-  longitude Decimal  @db.Decimal(11, 8)
-  phone     String?  @db.VarChar(20)
-  openHours String   @db.VarChar(100)
-
-  HospitalDept   HospitalDept[]
-  HospitalLang   HospitalLang[]
-  HospitalReview HospitalReview?
-
-  @@index([latitude, longitude], map: "idx_Hospital_location")
-  @@fulltext([nameKo], map: "ft_Hospital_search")
-  hospitalLanguageApplications HospitalLanguageApplication[]
-}
-
-model HospitalDept {
-  id         Int    @id @default(autoincrement()) @db.UnsignedInt
-  hospitalId Int    @db.UnsignedInt
-  deptName   String @db.VarChar(50)
-
-  Hospital Hospital @relation(fields: [hospitalId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "hospitaldept_ibfk_1")
-
-  @@index([hospitalId], map: "fk_HospitalDept_hospital")
-}
-
-model HospitalLang {
-  id         Int    @id @default(autoincrement()) @db.UnsignedInt
-  hospitalId Int    @db.UnsignedInt
-  langName   String @db.VarChar(50)
-
-  Hospital Hospital @relation(fields: [hospitalId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "hospitallang_ibfk_1")
-
-  @@index([hospitalId], map: "fk_HospitalLang_hospital")
-}
-
-model HospitalReview {
-  id         Int    @id @default(autoincrement()) @db.UnsignedInt
-  hospitalId Int    @unique(map: "uniq_HospitalReview_hospital") @db.UnsignedInt
-  aiSummary  String @db.VarChar(500)
-
-  Hospital Hospital @relation(fields: [hospitalId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "hospitalreview_ibfk_1")
-
-  @@index([hospitalId], map: "fk_HospitalReview_hospital")
-}
-
-model HospitalLanguageApplication {
-  id            Int               @id @default(autoincrement()) @db.UnsignedInt
-  hospitalId    Int               @db.UnsignedInt
-  userId        Int               @db.UnsignedInt
-  status        ApplicationStatus @default(PENDING)
-  requestLangs  Json              @db.Json
-  
-  // 처리 히스토리를 위한 시간 기록
-  parentId            Int?     // 이전 신청 건의 ID (재신청일 경우)
-  createdAt     DateTime          @default(now()) @db.Timestamp(0) // 신청 일시
-  updatedAt     DateTime          @default(now()) @updatedAt @db.Timestamp(0)
-  processedAt   DateTime?         @db.Timestamp(0) // 승인/반려 처리 일시
-
-  Hospital      Hospital          @relation(fields: [hospitalId], references: [id], onDelete: Cascade)
-  User          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([hospitalId], map: "fk_LanguageApplication_hospital")
-}
-
-model Notification {
-  id        Int      @id @default(autoincrement()) @db.UnsignedInt
-  userId    Int      @db.UnsignedInt
-  title     String   @db.VarChar(255)
-  content   String   @db.Text
-  isRead    Boolean  @default(false)
-  link      String?  @db.VarChar(500) // 클릭 시 이동할 페이지
-  createdAt DateTime @default(now()) @db.Timestamp(0)
-
-  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model Embassy {
-  id          Int    @id @default(autoincrement()) @db.UnsignedInt
-  nationality String @db.VarChar(100)
-  placeName   String @db.VarChar(100)
-  address     String @db.VarChar(100)
-  openHours   String @db.VarChar(100)
-  phone       String @db.VarChar(100)
-  latitude    String @db.VarChar(50) @default("")
-  longitude   String @db.VarChar(50) @default("")
-}
-
-model SymptomMapping {
-  id        Int      @id @default(autoincrement()) @db.UnsignedInt
-  keyword   String   @db.VarChar(100)
-  synonyms  String   @db.LongText     
-  deptName  String   @db.VarChar(50)  
-  bodyPart  String   @db.VarChar(50)  
-
-  // 일반 인덱스 (정확한 키워드 매칭용)
-  @@index([keyword], map: "idx_Symptom_keyword")
-  
-  // full-Text 인덱스 추가 (키워드와 유의어 전체 검색용)
-  @@fulltext([keyword, synonyms], map: "ft_Symptom_search")
-
-  @@map("SymptomMappings")
 }

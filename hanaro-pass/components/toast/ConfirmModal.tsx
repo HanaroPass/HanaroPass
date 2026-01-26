@@ -19,7 +19,7 @@ export type ConfirmModalProps = {
   description: string;
   confirmText?: string;
   cancelText?: string;
-  onConfirm: () => void;
+  onConfirm: () => void | Promise<void>;
   variant?: 'danger' | 'primary' | 'success';
 };
 
@@ -55,10 +55,14 @@ export function ConfirmModal({
             {cancelText}
           </AlertDialogCancel>
           <AlertDialogAction
-            onClick={(e) => {
+            onClick={async (e) => {
               e.preventDefault();
-              onConfirm();
-              onOpenChange(false);
+              try {
+                await onConfirm();
+                onOpenChange(false);
+              } catch (err) {
+                console.error(err);
+              }
             }}
             className={cn(
               'h-11 flex-1 rounded-xl font-semibold text-[14px] text-white shadow-none',
