@@ -17,6 +17,7 @@ const nextConfig: NextConfig = {
       { protocol: 'https', hostname: 'img.favpng.com' },
       { protocol: 'https', hostname: 'encrypted-tbn0.gstatic.com' },
       { protocol: 'https', hostname: 'logo.clearbit.com' },
+      { protocol: 'https', hostname: 'picsum.photos' },
     ],
   },
 };

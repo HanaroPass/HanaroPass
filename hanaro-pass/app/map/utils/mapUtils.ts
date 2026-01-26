@@ -1,9 +1,9 @@
+import type { SavedPlace } from '@/lib/generated/prisma';
 import type { NaverSearchResult } from '../components/ui/NaverMap';
 import type { LocationInfo } from '../components/ui/PlaceCard';
 import type { ClickablePlace } from '../hooks/useMapMarkers';
 import type { Embassy } from '../mock/embassyExchange';
-import type { HospitalPlace } from '../mock/hospitalMap.mock';
-import type { SavedPlace } from '../mock/savedPlaces';
+import type { Hospital } from '../page';
 
 const CATEGORY_MAP: Record<string, string> = {
   CAFE: '카페',
@@ -59,9 +59,8 @@ export const mapDbToInfo = (
 
 const hasKey = <T extends object>(obj: T, key: string): boolean => key in obj;
 
-export const isHospitalPlace = (
-  place: ClickablePlace,
-): place is HospitalPlace => hasKey(place, 'departments');
+export const isHospitalPlace = (place: ClickablePlace): place is Hospital =>
+  hasKey(place, 'departments');
 
 export const isEmbassy = (place: ClickablePlace): place is Embassy =>
   hasKey(place, 'nationality');

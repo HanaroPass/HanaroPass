@@ -28,3 +28,30 @@ export async function seedUsers() {
   const count = await prisma.user.count();
   console.log(`[ 완료 ] User 생성/확인 완료. 현재 User 총 ${count}명`);
 }
+
+/**
+ * [신규] 관리자(ADMIN) 유저 생성
+ */
+export async function seedAdminUser() {
+  console.log('[ 추가 작업 - 관리자 유저 생성 중... ]');
+
+  const adminData = {
+    nickname: '관리자',
+    nationality: 'KOR',
+    role: 'ADMIN',
+  } as const;
+
+  const exists = await prisma.user.findFirst({
+    where: { nickname: adminData.nickname, role: 'ADMIN' },
+    select: { id: true },
+  });
+
+  if (!exists) {
+    await prisma.user.create({
+      data: adminData,
+    });
+    console.log('[ 완료 ] 관리자 유저가 생성되었습니다.');
+  } else {
+    console.log('[ 완료 ] 이미 관리자 유저가 존재합니다.');
+  }
+}
