@@ -2,11 +2,11 @@
 
 import { ChevronDown, ChevronRight, X } from 'lucide-react';
 import { useState } from 'react';
-import { AccountDrawer } from '@/app/user/identity/components/bottomsheet/AccountDrawer';
 import Header from '@/components/header/Header';
 import ActionButton from '@/components/ui/ActionButton';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { AccountDrawer } from '../components/bottomsheet/AccountDrawer';
 
 type AccountStepProps = {
   onSubmit: (data: Record<string, string>) => void;

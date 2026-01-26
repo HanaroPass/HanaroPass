@@ -1,11 +1,12 @@
 'use client';
 
+import { saveArcData } from '../../actions/arc';
 import { useDrawerForm } from './hooks/useDrawerForm';
+import { AlienExtraFields, AlienFields } from './shared/AlienFields';
 import { BaseDrawer } from './shared/BaseDrawer';
 import { CommonFields } from './shared/CommonFields';
-import { PassportDateFields, PassportFields } from './shared/PassportFields';
 
-type PassportDrawerProps = {
+type AlienDrawerProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit?: (data: Record<string, string>) => void;
@@ -13,24 +14,37 @@ type PassportDrawerProps = {
   className?: string;
 };
 
-export function PassportDrawer({
+export function AlienDrawer({
   open,
   onOpenChange,
   onSubmit,
   onReset,
   className,
-}: PassportDrawerProps) {
-  const { formData, handleSubmit, resetForm, handleFormDataChange } =
-    useDrawerForm({
-      onSubmit,
-      onOpenChange,
-    });
+}: AlienDrawerProps) {
+  const handleSave = async (data: Record<string, string>) => {
+    const result = await saveArcData(data);
+
+    if (result.success) {
+      if (onSubmit) onSubmit(data);
+      onOpenChange(false);
+    } else {
+      alert(`[오류 ${result.status}] ${result.message}`);
+    }
+  };
+
+  const { formData, resetForm, handleFormDataChange } = useDrawerForm({
+    onSubmit: undefined,
+    onOpenChange,
+  });
+  const handleSubmit = () => {
+    void handleSave(formData);
+  };
 
   return (
     <BaseDrawer
       open={open}
       onOpenChange={onOpenChange}
-      title="여권 정보 확인"
+      title="외국인 등록증 정보 확인"
       onSubmit={handleSubmit}
       onReset={onReset || resetForm}
       className={className}
@@ -40,11 +54,11 @@ export function PassportDrawer({
         formData={formData}
         onFormDataChange={handleFormDataChange}
       />
-      <PassportFields
+      <AlienFields
         formData={formData}
         onFormDataChange={handleFormDataChange}
       />
-      <PassportDateFields
+      <AlienExtraFields
         formData={formData}
         onFormDataChange={handleFormDataChange}
       />

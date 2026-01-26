@@ -13,9 +13,8 @@ import {
   IdSchema,
   LanguageTransformSchema,
   type RegistrationDetailResponse,
-  SearchSchema,
   SubmitSchema,
-} from '../schemas/language-regist.schema';
+} from '../schemas/languageRegist.schema';
 
 /**
  * [병원 검색 서버 액션]
@@ -29,19 +28,36 @@ export async function searchHospitalAction(
   query: string,
 ): Promise<ActionResult<Pick<Hospital, 'id' | 'nameKo' | 'address'>[]>> {
   try {
-    const sanitizedQuery = query.replace(/\s+/g, '');
+    const sanitizedQuery = query.trim();
+
     if (!sanitizedQuery || sanitizedQuery.length < 2) {
       return { success: true, data: [] };
     }
-    const validatedQuery = SearchSchema.parse(sanitizedQuery);
 
-    const hospitals = await prisma.$queryRaw<
-      Pick<Hospital, 'id' | 'nameKo' | 'address'>[]
-    >`
-  SELECT id, nameKo, address 
-  FROM Hospital 
-  WHERE REPLACE(nameKo, ' ', '') LIKE ${`%${validatedQuery}%`}
-`;
+    const cleanedQuery = sanitizedQuery.replace(/[+\-><()~*"@]/g, ' ');
+    const searchTerms = cleanedQuery
+      .split(/\s+/)
+      .filter((term) => term.length > 0)
+      .map((term) => `+${term}`)
+      .join(' ');
+
+    if (!searchTerms) {
+      return { success: true, data: [] };
+    }
+
+    const hospitals = await prisma.hospital.findMany({
+      where: {
+        nameKo: {
+          search: searchTerms,
+        },
+      },
+      select: {
+        id: true,
+        nameKo: true,
+        address: true,
+      },
+      take: 20,
+    });
 
     return { success: true as const, data: hospitals };
   } catch (err) {

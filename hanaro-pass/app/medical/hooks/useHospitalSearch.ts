@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import type { Hospital } from '@/lib/generated/prisma';
-import { searchHospitalAction } from '../actions/language-regist.action';
+import { searchHospitalAction } from '../actions/languageRegist.action';
 
 type HospitalSearchResult = Pick<Hospital, 'id' | 'nameKo' | 'address'>;
 

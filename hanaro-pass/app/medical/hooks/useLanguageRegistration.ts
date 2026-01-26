@@ -5,9 +5,9 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   getHospitalDetailAction,
   submitLanguageApplicationAction,
-} from '../actions/language-regist.action';
+} from '../actions/languageRegist.action';
 import type { LanguageId } from '../constants/language';
-import { IdSchema, SubmitSchema } from '../schemas/language-regist.schema';
+import { IdSchema, SubmitSchema } from '../schemas/languageRegist.schema';
 
 export function useLanguageRegistration() {
   const router = useRouter();
