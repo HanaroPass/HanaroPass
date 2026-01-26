@@ -73,7 +73,10 @@ export default function ResultStep({
 
   // 현재 탭에 표시할 데이터
   const currentDisplayData = useMemo(() => {
-    if (activeTab === identityType) return initialData;
+    // 현재 선택된 탭이 방금 등록한 타입과 같다면, 방금 등록한 데이터를 우선 표시
+    if (initialData && activeTab === identityType) {
+      return initialData;
+    }
     return activeTab === 'passport' ? passportData : alienData;
   }, [activeTab, identityType, initialData, passportData, alienData]);
 

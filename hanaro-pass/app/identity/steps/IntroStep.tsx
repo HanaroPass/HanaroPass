@@ -2,11 +2,12 @@
 
 import { ChevronDown, ChevronUp, X } from 'lucide-react';
 import Image from 'next/image';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Header from '@/components/header/Header';
 import ActionButton from '@/components/ui/ActionButton';
 import { Button } from '@/components/ui/button';
 import type { IdentityType } from '../hooks/useFunnel';
+import { getIdentityData } from '../actions/identity';
 
 type IntroStepProps = {
   onSelectIdentityType: (type: IdentityType) => void;
@@ -19,7 +20,29 @@ export default function IntroStep({
 }: IntroStepProps) {
   const [isAgreed, setIsAgreed] = useState(false);
   const [isGuideOpen, setIsGuideOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  // 유저가 이미 가지고 있는 신분증 상태 관리
+  const [hasPassport, setHasPassport] = useState(false);
+  const [hasAlien, setHasAlien] = useState(false);
+
   const guideRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const checkUserIdentity = async () => {
+      try {
+        const res = await getIdentityData();
+        // 데이터가 있으면 true, 없으면 false (null 체크)
+        setHasPassport(!!res.passport);
+        setHasAlien(!!res.alien);
+      } catch (error) {
+        console.error('데이터 로드 실패:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkUserIdentity();
+  }, []);
 
   const handleGuideToggle = () => {
     setIsGuideOpen((prev) => {
@@ -80,18 +103,39 @@ export default function IntroStep({
               </div>
             </div>
 
-            <div className="mb-12 space-y-4 sm:mb-6 sm:space-y-3">
-              <ActionButton
-                text="여권"
-                onClick={() => onSelectIdentityType('passport')}
-                className="border border-green-ez bg-white text-green-ez hover:bg-green-ez/10"
-              />
+            <div className="mb-12 space-y-4">
+              {isLoading ? (
+                <div className="py-4 text-center text-gray-400">
+                  보유 현황 확인 중...
+                </div>
+              ) : (
+                <>
+                  {/* 여권 정보가 없는 경우에만 버튼 노출 */}
+                  {!hasPassport && (
+                    <ActionButton
+                      text="여권"
+                      onClick={() => onSelectIdentityType('passport')}
+                      className="border border-green-ez bg-white text-green-ez hover:bg-green-ez/10"
+                    />
+                  )}
 
-              <ActionButton
-                text="외국인등록증"
-                onClick={() => onSelectIdentityType('alien')}
-                className="border border-green-ez bg-white text-green-ez hover:bg-green-ez/10"
-              />
+                  {/* 외국인등록증 정보가 없는 경우에만 버튼 노출 */}
+                  {!hasAlien && (
+                    <ActionButton
+                      text="외국인등록증"
+                      onClick={() => onSelectIdentityType('alien')}
+                      className="border border-green-ez bg-white text-green-ez hover:bg-green-ez/10"
+                    />
+                  )}
+
+                  {/* 만약 모든 신분증이 다 있다면 보여줄 안내 (선택사항) */}
+                  {hasPassport && hasAlien && (
+                    <p className="py-4 text-center text-gray-500 text-sm">
+                      이미 모든 신분증이 등록되어 있습니다.
+                    </p>
+                  )}
+                </>
+              )}
             </div>
           </div>
 

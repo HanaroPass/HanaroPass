@@ -8,6 +8,7 @@ export type IdentityPayload =
   | { type: 'alien'; data: Record<string, string> }
   | { type: null; data: null };
 
+// 신분증 or 여권 보유
 export async function getIdentityData(): Promise<{
   passport: Record<string, string> | null;
   alien: Record<string, string> | null;
