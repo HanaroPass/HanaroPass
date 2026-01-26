@@ -28,19 +28,18 @@ export async function forceLoginAction(
     }
 
     await saveUserIdToSession(user.id);
-
-    revalidatePath('/');
-
-    return { success: true, data: { nickname: user.nickname } };
+    revalidatePath('/', 'layout');
   } catch (error) {
     return handleActionResult(error);
   }
+
+  redirect('/');
 }
 
 export async function logoutAction() {
   const cookieStore = await cookies();
 
-  cookieStore.delete('session_token');
+  cookieStore.delete('user_secure_session');
 
   redirect('/');
 }

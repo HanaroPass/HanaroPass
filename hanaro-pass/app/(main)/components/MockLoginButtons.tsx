@@ -1,16 +1,17 @@
 'use client';
 
+import { startTransition } from 'react';
 import { forceLoginAction } from '../actions/auth.action';
 
 export default function MockLoginButtons() {
   const handleLogin = async (role: 'USER' | 'ADMIN') => {
-    const result = await forceLoginAction(role);
+    startTransition(async () => {
+      const result = await forceLoginAction(role);
 
-    if (result.success) {
-      alert(`[${role}] ${result.data.nickname}님으로 로그인되었습니다. ✨`);
-    } else {
-      alert(`로그인 실패: ${result.message}`);
-    }
+      if (result && !result.success) {
+        alert(`로그인 실패: ${result.message}`);
+      }
+    });
   };
 
   return (
