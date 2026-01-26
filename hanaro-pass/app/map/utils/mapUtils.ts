@@ -58,6 +58,8 @@ export const mapDbToInfo = (
     phone,
     explainTime: db.openHours,
     distance: '',
+    latitude: db.latitude,
+    longitude: db.longitude,
   };
 };
 
