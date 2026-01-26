@@ -21,21 +21,26 @@ export default function OCRPageContent({
 }: OCRPageContentProps) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [ocrData, setOcrData] = useState<Record<string, string>>({});
-  const [ocrFilledFields, setOcrFilledFields] = useState<Set<string>>(new Set());
+  const [ocrFilledFields, setOcrFilledFields] = useState<Set<string>>(
+    new Set(),
+  );
   const [isProcessing, setIsProcessing] = useState(false);
 
   // 여권 정보 파싱 함수
   const parsePassportData = (text: string): Record<string, string> => {
-    const lines = text.split('\n').map(line => line.trim()).filter(Boolean);
+    const lines = text
+      .split('\n')
+      .map((line) => line.trim())
+      .filter(Boolean);
     const data: Record<string, string> = {};
-    
+
     for (const line of lines) {
       // 여권번호 (예: M12345678)
       const passportMatch = line.match(/[A-Z]\d{8}/);
       if (passportMatch && !data.passportNumber) {
         data.passportNumber = passportMatch[0];
       }
-      
+
       // 생년월일 (예: 880315, 19880315)
       const birthDateMatch = line.match(/(\d{2})?(\d{6})/);
       if (birthDateMatch && !data.birthDate) {
@@ -49,19 +54,23 @@ export default function OCRPageContent({
           data.birthDate = `${fullYear}-${month}-${day}`;
         }
       }
-      
+
       // 성별 (M/F)
       const genderMatch = line.match(/\b([MF])\b/);
       if (genderMatch && !data.gender) {
         data.gender = genderMatch[1] === 'M' ? 'MALE' : 'FEMALE';
       }
-      
+
       // 국적 (예: KOR, USA)
       const nationalityMatch = line.match(/\b([A-Z]{3})\b/);
-      if (nationalityMatch && nationalityMatch[1] !== 'KOR' && !data.nationality) {
+      if (
+        nationalityMatch &&
+        nationalityMatch[1] !== 'KOR' &&
+        !data.nationality
+      ) {
         data.nationality = nationalityMatch[1];
       }
-      
+
       // 이름 (대문자 영문)
       const nameMatch = line.match(/([A-Z][A-Z\s]+[A-Z])/);
       if (nameMatch && !data.firstName && !data.lastName) {
@@ -73,17 +82,20 @@ export default function OCRPageContent({
         }
       }
     }
-    
+
     return data;
   };
 
   // 외국인등록증 정보 파싱 함수
   const parseArcData = (text: string): Record<string, string> => {
-    const lines = text.split('\n').map(line => line.trim()).filter(Boolean);
+    const lines = text
+      .split('\n')
+      .map((line) => line.trim())
+      .filter(Boolean);
     const data: Record<string, string> = {};
-    
+
     console.log('파싱할 텍스트 라인들:', lines);
-    
+
     for (const line of lines) {
       // 외국인등록번호 (예: 123456-1234567)
       const arcNumberMatch = line.match(/(\d{6})-(\d{7})/);
@@ -92,20 +104,20 @@ export default function OCRPageContent({
         data.registrationNumberSuffix = arcNumberMatch[2];
         data.arcNumber = `${arcNumberMatch[1]}-${arcNumberMatch[2]}`;
       }
-      
+
       // 이름 파싱 (HONG SAMPLE 형태)
       const nameMatch = line.match(/([A-Z]+)\s+([A-Z]+)/);
       if (nameMatch && !data.lastName && !data.firstName) {
         data.lastName = nameMatch[1];
         data.firstName = nameMatch[2];
       }
-      
+
       // 국적 (REPUBLIC OF UTOPIA 등)
       const nationalityMatch = line.match(/REPUBLIC OF ([A-Z]+)/);
       if (nationalityMatch && !data.nationality) {
         data.nationality = `REPUBLIC OF ${nationalityMatch[1]}`;
       }
-      
+
       // 발급일자 (20230401 형태)
       const issueDateMatch = line.match(/(\d{8})/);
       if (issueDateMatch && !data.issuedDate) {
@@ -117,39 +129,39 @@ export default function OCRPageContent({
           data.issuedDate = `${year}-${month}-${day}`;
         }
       }
-      
+
       // 체류자격 (D-8, F-2 등)
       const visaStatusMatch = line.match(/([A-Z]-\d+)/);
       if (visaStatusMatch && !data.visaStatus) {
         data.visaStatus = visaStatusMatch[1];
       }
     }
-    
+
     return data;
   };
 
   const handleImageSelect = async (file: File) => {
     console.log('선택된 이미지:', file);
     setIsProcessing(true);
-    
+
     try {
       // Tesseract OCR 실행
       const { data } = await Tesseract.recognize(file, 'kor+eng', {
         logger: (m) => console.log(m),
       });
-      
+
       console.log('OCR 결과:', data.text);
-      
+
       // 문서 타입에 따라 데이터 파싱
-      const parsedData = type === 'passport' 
-        ? parsePassportData(data.text)
-        : parseArcData(data.text);
-      
+      const parsedData =
+        type === 'passport'
+          ? parsePassportData(data.text)
+          : parseArcData(data.text);
+
       console.log('파싱된 데이터:', parsedData);
       setOcrData(parsedData);
       setOcrFilledFields(new Set(Object.keys(parsedData)));
       setIsDrawerOpen(true);
-      
     } catch (error) {
       console.error('OCR 처리 중 오류:', error);
       alert('이미지 인식에 실패했습니다. 다시 시도해주세요.');
@@ -207,7 +219,9 @@ export default function OCRPageContent({
           {type === 'passport' ? '여권' : '신분증'} 앞면을 시각 영역에 맞추면
         </p>
         <p className="font-semibold text-xl">
-          {isProcessing ? '이미지를 인식하고 있습니다...' : '자동으로 촬영됩니다.'}
+          {isProcessing
+            ? '이미지를 인식하고 있습니다...'
+            : '자동으로 촬영됩니다.'}
         </p>
       </div>
 

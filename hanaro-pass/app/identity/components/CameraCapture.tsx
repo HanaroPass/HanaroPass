@@ -40,12 +40,15 @@ const CameraCapture = ({
       onClick();
     }
   }, [onClick, onImageSelect]);
-  const handleKeyDown = useCallback((event: React.KeyboardEvent) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      handleVideoClick();
-    }
-  }, [handleVideoClick]);
+  const handleKeyDown = useCallback(
+    (event: React.KeyboardEvent) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        handleVideoClick();
+      }
+    },
+    [handleVideoClick],
+  );
   const startCamera = useCallback(async () => {
     // 이미 선택된 이미지가 있으면 카메라를 시작하지 않음
     if (selectedImage) return;
@@ -114,10 +117,7 @@ const CameraCapture = ({
             onKeyDown={handleKeyDown}
             aria-label="Start camera or select image"
           >
-            <video
-              ref={videoRef}
-              className="h-full w-full object-cover"
-            >
+            <video ref={videoRef} className="h-full w-full object-cover">
               <track kind="captions" />
             </video>
           </button>
