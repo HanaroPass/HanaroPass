@@ -1,7 +1,7 @@
-import { MapPin, Phone, Clock, Sparkles } from 'lucide-react';
+import { Clock, MapPin, Phone } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
-import AIResultIcon from '../../../../components/ui/AIResultIcon';
+import AIResultIcon from '@/components/ui/AIResultIcon';
 
 export type HospitalInfo = {
   name: string;

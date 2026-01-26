@@ -9,7 +9,9 @@ import {
   Siren,
 } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { SavedPlace } from '@/lib/generated/prisma';
+import type { Embassy, SavedPlace } from '@/lib/generated/prisma';
+import { getMyEmbassy } from './actions/embassy';
+import { getSavedPlaces } from './actions/savedPlaces';
 import { EmbassyContent } from './components/embassy/EmbassyContent';
 import { ExchangeContent } from './components/exchange/ExchangeContent';
 import { HospitalContent } from './components/hospital/HospitalContent';
@@ -25,7 +27,6 @@ import { ToggleButton } from './components/ui/ToggleButton';
 import { useBottomSheet } from './hooks/useBottomSheet';
 import { useExchangeSearch } from './hooks/useExchangeSearch';
 import { useMarkerClick } from './hooks/useMarkerClick';
-import { type Embassy, MAP_EMBASSY_MOCK } from './mock/embassyExchange';
 import { formatExchangeData, mapDbToInfo } from './utils/mapUtils';
 
 /**
@@ -51,11 +52,13 @@ export type Hospital = {
 
 type Props = {
   hospitals: Hospital[];
-  savedPlaces: SavedPlace[];
 };
 
-export default function MapPageClient({ hospitals, savedPlaces }: Props) {
+export default function MapPageClient({ hospitals }: Props) {
   const [bookmark, setBookmark] = useState<boolean>(false);
+
+  const [savedPlaces, setSavedPlaces] = useState<SavedPlace[]>([]);
+  const [myEmbassy, setMyEmbassy] = useState<Embassy | null>(null);
 
   const [selectedPlace, setSelectedPlace] = useState<
     SavedPlace | Embassy | NaverSearchResult | null
@@ -82,6 +85,47 @@ export default function MapPageClient({ hospitals, savedPlaces }: Props) {
     getTranslateValue,
   } = useBottomSheet();
 
+  useEffect(() => {
+    const fetchEmbassy = async () => {
+      try {
+        // TODO: 실제 유저 ID를 넣어야 합니다. (현재 userId = 2)
+        const userId = 2;
+
+        const result = await getMyEmbassy(userId);
+
+        if (result.success) {
+          setMyEmbassy(result.data);
+        } else {
+          console.error('대사관 조회 실패:', result.message);
+        }
+      } catch (error) {
+        console.error('네트워크 오류:', error);
+      }
+    };
+
+    fetchEmbassy();
+  }, []);
+
+  useEffect(() => {
+    const fetchPlaces = async () => {
+      try {
+        // TODO: 실제 로그인된 유저 ID를 넣어야 합니다. (현재 userId = 1)
+        const userId = 1;
+
+        const result = await getSavedPlaces(userId);
+
+        if (result.success) {
+          setSavedPlaces(result.data);
+        } else {
+          console.error('저장된 장소 불러오기 실패:', result.message);
+        }
+      } catch (error) {
+        console.error('네트워크 오류:', error);
+      }
+    };
+
+    fetchPlaces();
+  }, []);
   useEffect(() => {
     if (!currentMapRegion) return;
   }, [currentMapRegion]);
@@ -115,7 +159,7 @@ export default function MapPageClient({ hospitals, savedPlaces }: Props) {
           savedPlaces={savedPlaces}
           showBookmarks={bookmark}
           onMarkerClick={handleMarkerClick}
-          embassyData={MAP_EMBASSY_MOCK}
+          embassyData={myEmbassy ? [myEmbassy] : []}
           showEmbassy={openSheet === 'embassy'}
           exchangeResults={exchangeResults}
           showExchanges={openSheet === 'exchange'}
@@ -143,14 +187,15 @@ export default function MapPageClient({ hospitals, savedPlaces }: Props) {
           onClick={() => {
             const isOpening = openSheet !== 'embassy';
             toggleSheet('embassy');
-            if (isOpening) {
+            if (isOpening && myEmbassy) {
               mapControlRef.current?.panToLocation(
-                MAP_EMBASSY_MOCK.latitude,
-                MAP_EMBASSY_MOCK.longitude,
+                Number(myEmbassy.latitude),
+                Number(myEmbassy.longitude),
               );
             }
           }}
         />
+
         <ToggleButton
           variant="pill"
           label="환전소"
@@ -230,7 +275,7 @@ export default function MapPageClient({ hospitals, savedPlaces }: Props) {
             }}
           />
         )}
-        {openSheet === 'embassy' && <EmbassyContent />}
+        {openSheet === 'embassy' && <EmbassyContent data={myEmbassy} />}
       </MapBottomSheet>
     </main>
   );

@@ -3,7 +3,7 @@ import type { Embassy, SavedPlace } from '@/lib/generated/prisma';
 import type { NaverSearchResult } from '../components/ui/NaverMap';
 import type { LocationInfo } from '../components/ui/PlaceCard';
 import type { ClickablePlace } from '../hooks/useMapMarkers';
-import type { Hospital } from '../page';
+import type { Hospital } from '../mapPageClient';
 
 const CATEGORY_MAP: Record<string, string> = {
   CAFE: '카페',

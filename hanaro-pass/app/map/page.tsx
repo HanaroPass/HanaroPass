@@ -1,7 +1,6 @@
 import { getHospitals } from './actions/hospitals';
-import { getSavedPlaces } from './actions/savedPlaces';
-import { getHospitalAiSummary } from './services/hospitalAiSummary';
 import MapPageClient from './mapPageClient';
+import { getHospitalAiSummary } from './services/hospitalAiSummary';
 
 const MOCK_REVIEWS_BY_TYPE = {
   fast: ['대기 시간이 거의 없었어요', '접수가 빨라서 바로 진료를 받았어요'],
@@ -35,14 +34,5 @@ export default async function Page() {
     })),
   );
 
-  // TODO: 실제 로그인 유저 ID
-  const userId = 1;
-  const savedPlacesResult = await getSavedPlaces(userId);
-
-  return (
-    <MapPageClient
-      hospitals={hospitalsWithSummary}
-      savedPlaces={savedPlacesResult.success ? savedPlacesResult.data : []}
-    />
-  );
+  return <MapPageClient hospitals={hospitalsWithSummary} />;
 }
