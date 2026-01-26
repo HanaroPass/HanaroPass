@@ -40,17 +40,12 @@ const CameraCapture = ({
       onClick();
     }
   }, [onClick, onImageSelect]);
-
-  const handleKeyDown = useCallback(
-    (event: React.KeyboardEvent) => {
-      if (event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault();
-        handleVideoClick();
-      }
-    },
-    [handleVideoClick],
-  );
-
+  const handleKeyDown = useCallback((event: React.KeyboardEvent) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      handleVideoClick();
+    }
+  }, [handleVideoClick]);
   const startCamera = useCallback(async () => {
     // 이미 선택된 이미지가 있으면 카메라를 시작하지 않음
     if (selectedImage) return;
@@ -96,7 +91,7 @@ const CameraCapture = ({
         {selectedImage ? (
           <button
             type="button"
-            className="h-72 w-full max-w-sm cursor-pointer overflow-hidden rounded-xl bg-gray-700"
+            className="h-72 w-full max-w-sm cursor-pointer overflow-hidden rounded-xl bg-gray-700 p-0"
             onClick={handleVideoClick}
             onKeyDown={handleKeyDown}
             aria-label="Change selected document image"

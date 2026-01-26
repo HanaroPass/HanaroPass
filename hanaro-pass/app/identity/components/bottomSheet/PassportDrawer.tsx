@@ -12,6 +12,8 @@ type PassportDrawerProps = {
   onSubmit?: (data: Record<string, string>) => void;
   onReset?: () => void;
   className?: string;
+  initialData?: Record<string, string>;
+  ocrFilledFields?: Set<string>;
 };
 
 export function PassportDrawer({
@@ -20,6 +22,8 @@ export function PassportDrawer({
   onSubmit,
   onReset,
   className,
+  initialData = {},
+  ocrFilledFields: _ocrFilledFields = new Set(),
 }: PassportDrawerProps) {
   const handleSave = async (data: Record<string, string>) => {
     const result = await savePassportData(data);
@@ -36,6 +40,7 @@ export function PassportDrawer({
   const { formData, resetForm, handleFormDataChange } = useDrawerForm({
     onSubmit: undefined,
     onOpenChange,
+    initialData,
   });
   const handleSubmit = () => {
     void handleSave(formData);

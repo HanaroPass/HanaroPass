@@ -12,6 +12,8 @@ type AlienDrawerProps = {
   onSubmit?: (data: Record<string, string>) => void;
   onReset?: () => void;
   className?: string;
+  initialData?: Record<string, string>;
+  ocrFilledFields?: Set<string>;
 };
 
 export function AlienDrawer({
@@ -20,6 +22,8 @@ export function AlienDrawer({
   onSubmit,
   onReset,
   className,
+  initialData = {},
+  ocrFilledFields: _ocrFilledFields = new Set(),
 }: AlienDrawerProps) {
   const handleSave = async (data: Record<string, string>) => {
     const result = await saveArcData(data);
@@ -35,6 +39,7 @@ export function AlienDrawer({
   const { formData, resetForm, handleFormDataChange } = useDrawerForm({
     onSubmit: undefined,
     onOpenChange,
+    initialData,
   });
   const handleSubmit = () => {
     void handleSave(formData);
