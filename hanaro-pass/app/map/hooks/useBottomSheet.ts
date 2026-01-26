@@ -51,7 +51,8 @@ export function useBottomSheet() {
     setTimeout(() => {
       const contentHeight = contentRef.current?.scrollHeight || 0;
       const sheetHeight = sheetRef.current?.clientHeight || 0;
-      setSheetPosition(contentHeight > sheetHeight * 0.35 ? 'half' : 'full');
+
+      setSheetPosition(contentHeight > sheetHeight * 0.7 ? 'half' : 'full');
     }, 10);
   };
 

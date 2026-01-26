@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
+import type { Embassy } from '@/lib/generated/prisma';
 import type { NaverSearchResult } from '../components/ui/NaverMap';
-import type { Embassy } from '../mock/embassyExchange';
 import type { HospitalPlace } from '../mock/hospitalMap.mock';
 import type { SavedPlace } from '../mock/savedPlaces';
 import {

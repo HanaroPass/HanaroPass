@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import { EMBASSY_DATA } from '@/app/map/constants/embassy';
 import { prisma } from '../lib/prisma';
 
 /**
@@ -343,6 +344,17 @@ async function seedUserIdentityDocs() {
   console.log(`[ 완료 ] ${users.length}명 Passport/ARC 생성(또는 유지) 완료`);
 }
 
+async function seedEmbassies() {
+  console.log('[ 대사관 데이터 시딩 시작 ]');
+
+  // 데이터가 많지 않으므로 createMany로 한 번에 밀어 넣습니다.
+  await prisma.embassy.createMany({
+    data: EMBASSY_DATA,
+  });
+
+  console.log(`[ 완료 ] 총 ${EMBASSY_DATA.length}개의 대사관 데이터 생성 완료`);
+}
+
 async function main() {
   if (!SERVICE_KEY) {
     console.error('SERVICE_KEY 누락');
@@ -355,6 +367,7 @@ async function main() {
   await prisma.hospitalDept.deleteMany();
   await prisma.hospitalLang.deleteMany();
   await prisma.hospital.deleteMany();
+  await prisma.embassy.deleteMany();
 
   await prisma.userDocument.deleteMany();
   await prisma.aRC.deleteMany();
@@ -371,12 +384,16 @@ async function main() {
   await prisma.$executeRaw`ALTER TABLE Passport AUTO_INCREMENT = 1`;
   await prisma.$executeRaw`ALTER TABLE ARC AUTO_INCREMENT = 1`;
   await prisma.$executeRaw`ALTER TABLE UserDocument AUTO_INCREMENT = 1`;
+  await prisma.$executeRaw`ALTER TABLE Embassy AUTO_INCREMENT = 1`;
 
   await fetchAndSeed();
   await seedUsers();
   await seedUserDocs();
   await seedUserIdentityDocs();
   await seedDummyApplications();
+  await fetchAndSeed();
+  await seedEmbassies();
+
   console.log('[ 시딩 작업 완료! ]');
 }
 

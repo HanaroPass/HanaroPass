@@ -1,9 +1,9 @@
 'use client';
 
 import { useCallback, useEffect, useRef } from 'react';
+import type { Embassy } from '@/lib/generated/prisma';
 import type { NaverSearchResult } from '../components/ui/NaverMap';
 import { MARKER_ICONS } from '../constants/map';
-import type { Embassy } from '../mock/embassyExchange';
 import type { HospitalPlace } from '../mock/hospitalMap.mock';
 import type { SavedPlace } from '../mock/savedPlaces';
 
@@ -18,7 +18,7 @@ type UseMapMarkersProps = {
   isMapReady: boolean;
   hospitals?: HospitalPlace[];
   savedPlaces?: SavedPlace[];
-  embassyData?: Embassy;
+  embassyData?: Embassy[];
   exchangeResults?: NaverSearchResult[];
   showBookmarks?: boolean;
   showEmbassy?: boolean;
@@ -99,19 +99,26 @@ export function useMapMarkers({
   useEffect(() => {
     if (!isMapReady || !map) return;
 
+    // 1. 기존 마커 싹 지우기
     embassyMarkersRef.current.forEach((m) => {
       m.setMap(null);
     });
     embassyMarkersRef.current = [];
 
+    // 2. 새 마커 생성
     if (showEmbassy && embassyData) {
-      const m = createMarker(
-        embassyData.latitude,
-        embassyData.longitude,
-        MARKER_ICONS.embassy,
-        () => onMarkerClick(embassyData),
-      );
-      if (m) embassyMarkersRef.current = [m];
+      // 🌟 배열이므로 forEach로 반복해야 합니다.
+      embassyData.forEach((embassy) => {
+        const m = createMarker(
+          Number(embassy.latitude),
+          Number(embassy.longitude),
+          MARKER_ICONS.embassy,
+          () => onMarkerClick(embassy),
+        );
+
+        // 생성된 마커 저장
+        if (m) embassyMarkersRef.current.push(m);
+      });
     }
   }, [isMapReady, map, showEmbassy, embassyData, createMarker, onMarkerClick]);
 
