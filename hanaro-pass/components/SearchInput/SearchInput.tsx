@@ -3,11 +3,14 @@
 import { Search, XCircle } from 'lucide-react';
 import { useRef, useState } from 'react';
 
-type SearchInputProps = React.InputHTMLAttributes<HTMLInputElement>;
+type SearchInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
+  onClear?: () => void;
+};
 
 function SearchInput({
   placeholder = '내용을 입력하세요',
   onChange,
+  onClear,
   value: controlledValue,
   defaultValue,
   ...props
@@ -28,17 +31,12 @@ function SearchInput({
   };
 
   const handleClear = () => {
-    const el = inputRef.current;
-    if (!el) return;
-
-    el.value = '';
-
     if (!isControlled) {
       setUncontrolledValue('');
     }
 
-    el.focus();
-    el.dispatchEvent(new Event('input', { bubbles: true }));
+    onClear?.();
+    inputRef.current?.focus();
   };
 
   return (

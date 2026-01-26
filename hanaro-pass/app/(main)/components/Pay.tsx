@@ -1,17 +1,18 @@
 'use client';
 
+import type { ReactNode } from 'react';
 import { use, useCallback, useState } from 'react';
 import type { UserCardResponse } from '../actions/getUserCards.schema';
 import Card from './Card';
-import CouponList from './CouponList';
 import { MenuList } from './MenuList';
 import PinInput from './PinInput';
 
 interface PayProps {
-  cardsPromise: Promise<UserCardResponse[]> | null;
+  cardsPromise?: Promise<UserCardResponse[]> | null;
+  couponList?: ReactNode;
 }
 
-export default function Pay({ cardsPromise }: PayProps) {
+export default function Pay({ cardsPromise, couponList }: PayProps) {
   const cards = cardsPromise ? use(cardsPromise) : [];
 
   const [unlockedCardIds, setUnlockedCardIds] = useState<Set<number>>(
@@ -44,7 +45,8 @@ export default function Pay({ cardsPromise }: PayProps) {
         onLockClickAction={handleUnlockRequest}
       />
 
-      <CouponList />
+      {couponList}
+
       <MenuList type="pay" />
 
       {pendingCardId && (
