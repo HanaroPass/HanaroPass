@@ -27,7 +27,9 @@ export async function seedUsers() {
 
   const count = await prisma.user.count();
   console.log(`[ 완료 ] User 생성/확인 완료. 현재 User 총 ${count}명`);
-} /**
+}
+
+/**
  * [신규] 관리자(ADMIN) 유저 생성
  */
 export async function seedAdminUser() {

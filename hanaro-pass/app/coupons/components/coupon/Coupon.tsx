@@ -6,7 +6,7 @@ type CouponProps = {
   id: number;
   brandPic: string;
   brandName: string;
-  tag: string;
+  tag: string | null;
   category: string;
   discount: number;
   description: string;
@@ -34,7 +34,7 @@ function Coupon({
       <div className="flex min-w-0 flex-1 flex-col gap-1">
         <div className="flex content-center gap-2">
           <p className="font-semibold text-base text-black-800">{brandName}</p>
-          <p className="text-gray-500 text-sm">{tag}</p>
+          {tag && <p className="text-gray-500 text-sm">{tag}</p>}
         </div>
         <p className="font-bold text-green-ez text-xl">{discount}% 할인</p>
         <p className="text-black-800 text-sm">{description}</p>
