@@ -7,15 +7,24 @@ import type { Notification } from '@/lib/generated/prisma';
 import { prisma } from '@/lib/prisma';
 import { validateUser } from '@/lib/user';
 
-export async function getNotificationsAction(): Promise<
-  ActionResult<Notification[]>
-> {
+/**
+ * 알림 목록 조회
+ * @param page 현재 페이지 번호 (0부터 시작)
+ * @param limit 한 번에 불러올 알림 개수
+ * @returns
+ */
+export async function getNotificationsAction(
+  page: number = 0,
+  limit: number = 10,
+): Promise<ActionResult<Notification[]>> {
   try {
     const userId = await validateUser();
 
     const notifications = await prisma.notification.findMany({
       where: { userId: userId },
       orderBy: { createdAt: 'desc' }, // 최신순 정렬
+      skip: page * limit, // 건너뛸 개수
+      take: limit, // 가져올 개수
     });
 
     return { success: true, data: notifications };

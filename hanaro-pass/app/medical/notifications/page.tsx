@@ -22,7 +22,7 @@ export default async function NotificationsPage() {
         </div>
 
         {notifications.length > 0 ? (
-          <NotificationList notifications={notifications} />
+          <NotificationList initialNotifications={notifications} />
         ) : (
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <p className="text-gray-400">도착한 알림이 없습니다.</p>
