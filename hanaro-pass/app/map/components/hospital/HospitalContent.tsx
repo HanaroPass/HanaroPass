@@ -177,39 +177,45 @@ export function HospitalContent({
       )}
 
       {/* 병원 리스트 */}
-      <div className="flex-1 overflow-y-auto px-6 pt-0">
-        {filteredHospitals.map((h, idx) => {
-          const [openTime, closeTime] = h.openHours.split('-');
+      <div className="flex-1 overflow-y-auto px-6 pt-0 pb-24">
+        {filteredHospitals.length === 0 ? (
+          <div className="flex min-h-60 items-center justify-center text-gray-500 text-sm">
+            조건에 만족하는 병원이 없습니다.
+          </div>
+        ) : (
+          filteredHospitals.map((h, idx) => {
+            const [openTime, closeTime] = h.openHours.split('-');
 
-          return (
-            <div
-              key={h.id}
-              className={
-                idx === filteredHospitals.length - 1
-                  ? ''
-                  : 'border-gray-300 border-b'
-              }
-            >
-              <HospitalCard
-                hospital={{
-                  name: h.nameKo,
-                  status: getHospitalStatus(h.openHours),
-                  openTime,
-                  closeTime,
-                  address: h.address,
-                  phone: h.phone ?? '-',
-                  languages: h.languages,
-                  departments: h.departments,
-                  imageUrl: h.imageUrl,
-                  aiSummary: h.aiSummary,
-                }}
-              />
-            </div>
-          );
-        })}
+            return (
+              <div
+                key={h.id}
+                className={
+                  idx === filteredHospitals.length - 1
+                    ? ''
+                    : 'border-gray-300 border-b'
+                }
+              >
+                <HospitalCard
+                  hospital={{
+                    name: h.nameKo,
+                    status: getHospitalStatus(h.openHours),
+                    openTime,
+                    closeTime,
+                    address: h.address,
+                    phone: h.phone ?? '-',
+                    languages: h.languages,
+                    departments: h.departments,
+                    imageUrl: h.imageUrl,
+                    aiSummary: h.aiSummary,
+                  }}
+                />
+              </div>
+            );
+          })
+        )}
       </div>
 
-      <div className="sticky bottom-0 border-[#F0F3F4] border-t bg-white px-6 py-4">
+      <div className="fixed inset-x-0 bottom-0 border-[#F0F3F4] border-t bg-white px-6 py-4">
         <Button
           className="h-14 w-full rounded-xl bg-green-ez text-white"
           onClick={() =>
