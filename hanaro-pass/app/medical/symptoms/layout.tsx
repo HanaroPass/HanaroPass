@@ -1,6 +1,6 @@
 'use client';
 
-import { usePathname, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import type { PropsWithChildren } from 'react';
 import { Suspense } from 'react';
 import Header from '@/components/header/Header';

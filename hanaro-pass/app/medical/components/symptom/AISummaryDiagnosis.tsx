@@ -1,4 +1,4 @@
-import { outputType } from '../../actions/symptoms.action';
+import type { outputType } from '../../actions/symptoms.action';
 import EmergencyBadge from './EmergencyBadge';
 import Symptom from './Symptom';
 

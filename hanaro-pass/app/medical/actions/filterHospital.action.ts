@@ -16,7 +16,7 @@ export async function getFilteredHospitals(
     hospitals = await prisma.hospital.findMany({
       where: {
         HospitalDept: {
-          every: {
+          some: {
             deptName: '성형외과',
           },
         },
