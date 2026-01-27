@@ -126,7 +126,7 @@ export function HospitalContent({
   return (
     <div className="relative flex h-full flex-col">
       {/* 필터 토글 */}
-      <div className="bg-white px-4 pt-1">
+      <div className="-top-px sticky z-20 bg-white px-4 py-1">
         <div className="flex gap-2">
           <button
             className={`${basePill} ${
@@ -177,7 +177,7 @@ export function HospitalContent({
       )}
 
       {/* 병원 리스트 */}
-      <div className="flex-1 overflow-y-auto px-6 pt-3">
+      <div className="flex-1 overflow-y-auto px-6 pt-0">
         {filteredHospitals.map((h, idx) => {
           const [openTime, closeTime] = h.openHours.split('-');
 
