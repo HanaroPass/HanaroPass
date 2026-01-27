@@ -7,6 +7,7 @@ import type { Notification } from '@/lib/generated/prisma';
 import { cn } from '@/lib/utils';
 import { getNotificationsAction } from '../../actions/notification.action';
 import NotificationCard from './NotificationCard';
+import NotificationSkeleton from './NotificationSkeleton';
 
 export default function NotificationList({
   initialNotifications,
@@ -91,11 +92,12 @@ export default function NotificationList({
               )}
         </AnimatePresence>
 
-        <div ref={ref} className="flex h-20 w-full items-center justify-center">
+        <div ref={ref} className="w-full pb-10">
           {isFetching && (
-            <p className="animate-pulse text-gray-400 text-sm">
-              알림을 불러오는 중...
-            </p>
+            <div className="flex flex-col gap-4">
+              <NotificationSkeleton />
+              <NotificationSkeleton />
+            </div>
           )}
         </div>
       </div>
