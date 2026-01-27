@@ -10,6 +10,8 @@ import getDistance from '../../../../lib/getDistance';
 import { getFilteredHospitals } from '../../actions/filterHospital.action';
 import { parseOutput } from '../../actions/symptoms.action';
 import Symptom from '../../components/symptom/Symptom';
+import { getUserIdFromSession } from '@/lib/session';
+import { getUserName } from '@/lib/user';
 
 export type HospitalWithStatus = Omit<Hospital, 'latitude' | 'longitude'> & {
   latitude: number;
@@ -24,8 +26,7 @@ export type HospitalWithStatus = Omit<Hospital, 'latitude' | 'longitude'> & {
 };
 
 export default function SymptomRecommendPage() {
-  //TODO: 유저 연동
-  const nickname = 'chan';
+  const nickname = getUserName() ?? 'HANA';
 
   const [symptom, setSymptom] = useState<string[] | undefined>(undefined);
   const [sortByDistance, setSortByDistance] = useState(false);
