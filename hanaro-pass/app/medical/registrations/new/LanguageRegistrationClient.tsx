@@ -1,6 +1,9 @@
 'use client';
 
 import { Globe } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { ConfirmModal } from '@/components/toast/ConfirmModal';
 import ActionButton from '@/components/ui/ActionButton';
 import DescriptionSection from '../../components/languageRegistration/DescriptionSection';
 import HospitalGuide from '../../components/languageRegistration/HospitalGuide';
@@ -10,7 +13,9 @@ import { LANGUAGES } from '../../constants/language';
 import { useLanguageRegistration } from '../../hooks/useLanguageRegistration';
 
 export default function LanguageRegistrationClient() {
+  const router = useRouter();
   const {
+    hospitalId,
     hospitalName,
     selectedIds,
     toggleLanguage,
@@ -19,8 +24,11 @@ export default function LanguageRegistrationClient() {
     initialIds,
     isChanged,
     isValid,
+    showPendingModal,
+    setShowPendingModal,
   } = useLanguageRegistration();
 
+  const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
   const actionText = isSubmitting
     ? '신청 중...'
     : initialIds.length > 0
@@ -72,10 +80,29 @@ export default function LanguageRegistrationClient() {
         <ActionButton
           disabled={!isValid || isSubmitting}
           text={actionText}
-          onClick={submitApplication}
+          onClick={() => setShowSubmitConfirm(true)}
           className="py-7 text-lg"
         />
       </div>
+      <ConfirmModal
+        open={showPendingModal}
+        onOpenChange={setShowPendingModal}
+        title="심사 진행 중"
+        description={`이미 '${hospitalName}'에 대해 심사 중인 내역이 있습니다.\n결과가 나올 때까지 추가 신청이 불가능합니다.`}
+        confirmText="내역 확인하기"
+        cancelText="돌아가기"
+        onConfirm={() => router.replace(`/medical/registrations/${hospitalId}`)}
+        onCancel={() => router.back()}
+      />
+
+      <ConfirmModal
+        open={showSubmitConfirm}
+        onOpenChange={setShowSubmitConfirm}
+        title="등록 신청 확인"
+        description="선택하신 언어 정보로 등록을 요청하시겠습니까?"
+        variant="success"
+        onConfirm={submitApplication}
+      />
     </div>
   );
 }

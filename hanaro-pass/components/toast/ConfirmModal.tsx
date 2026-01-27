@@ -20,6 +20,7 @@ export type ConfirmModalProps = {
   confirmText?: string;
   cancelText?: string;
   onConfirm: () => void | Promise<void>;
+  onCancel?: () => void;
   variant?: 'danger' | 'primary' | 'success';
 };
 
@@ -31,6 +32,7 @@ export function ConfirmModal({
   confirmText = '확인',
   cancelText = '취소',
   onConfirm,
+  onCancel,
   variant = 'primary',
 }: ConfirmModalProps) {
   const variantClassMap = {
@@ -51,7 +53,10 @@ export function ConfirmModal({
         </AlertDialogHeader>
 
         <AlertDialogFooter className="mt-8 flex flex-row gap-2 sm:flex-row">
-          <AlertDialogCancel className="mt-0 h-11 flex-1 rounded-xl border-none bg-gray-100 font-medium text-[14px] text-gray-600 hover:bg-gray-200">
+          <AlertDialogCancel
+            onClick={onCancel}
+            className="mt-0 h-11 flex-1 rounded-xl border-none bg-gray-100 font-medium text-[14px] text-gray-600 hover:bg-gray-200"
+          >
             {cancelText}
           </AlertDialogCancel>
           <AlertDialogAction
