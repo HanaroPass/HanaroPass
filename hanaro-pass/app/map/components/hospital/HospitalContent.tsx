@@ -1,5 +1,6 @@
 'use client';
 
+import { X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -43,9 +44,15 @@ type Props = {
   mode: Mode;
   hospitals: Hospital[];
   hospital?: Hospital;
+  onBackToList?: () => void;
 };
 
-export function HospitalContent({ mode, hospitals, hospital }: Props) {
+export function HospitalContent({
+  mode,
+  hospitals,
+  hospital,
+  onBackToList,
+}: Props) {
   const router = useRouter();
   const [active, setActive] = useState<FilterType>(null);
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
@@ -58,7 +65,14 @@ export function HospitalContent({ mode, hospitals, hospital }: Props) {
     if (!hospital) return null;
 
     return (
-      <div className="flex h-full flex-col px-6 pt-2">
+      <div className="relative flex h-full flex-col px-6 pt-2">
+        <button
+          onClick={onBackToList}
+          aria-label="목록으로 나가기"
+          className="-top-1 absolute right-4 z-10 text-gray-400 transition-colors hover:text-gray-600"
+        >
+          <X width={20} height={20} />
+        </button>
         <HospitalCard
           hospital={{
             name: hospital.nameKo,
@@ -112,7 +126,7 @@ export function HospitalContent({ mode, hospitals, hospital }: Props) {
   return (
     <div className="relative flex h-full flex-col">
       {/* 필터 토글 */}
-      <div className="bg-white px-4 pt-1">
+      <div className="-top-px sticky z-20 bg-white px-4 py-1">
         <div className="flex gap-2">
           <button
             className={`${basePill} ${
@@ -140,7 +154,7 @@ export function HospitalContent({ mode, hospitals, hospital }: Props) {
 
       {/* 언어 필터 */}
       {active === 'language' && (
-        <div className="absolute inset-x-0 top-14 z-30 px-6">
+        <div className="sticky top-11 z-30 bg-white px-6">
           <FilterPanel title="소통 가능 언어">
             <LanguageFilterPanel
               value={selectedLanguages}
@@ -152,7 +166,7 @@ export function HospitalContent({ mode, hospitals, hospital }: Props) {
 
       {/* 진료과 필터 */}
       {active === 'department' && (
-        <div className="absolute inset-x-0 top-14 z-30 px-6">
+        <div className="sticky top-11 z-30 bg-white px-6">
           <FilterPanel title="진료 과목">
             <DepartmentFilterPanel
               value={selectedDepartments}
@@ -163,39 +177,45 @@ export function HospitalContent({ mode, hospitals, hospital }: Props) {
       )}
 
       {/* 병원 리스트 */}
-      <div className="flex-1 overflow-y-auto px-6 pt-3">
-        {filteredHospitals.map((h, idx) => {
-          const [openTime, closeTime] = h.openHours.split('-');
+      <div className="flex-1 overflow-y-auto px-6 pt-0">
+        {filteredHospitals.length === 0 ? (
+          <div className="flex min-h-60 items-center justify-center text-gray-500 text-sm">
+            조건에 만족하는 병원이 없습니다.
+          </div>
+        ) : (
+          filteredHospitals.map((h, idx) => {
+            const [openTime, closeTime] = h.openHours.split('-');
 
-          return (
-            <div
-              key={h.id}
-              className={
-                idx === filteredHospitals.length - 1
-                  ? ''
-                  : 'border-gray-300 border-b'
-              }
-            >
-              <HospitalCard
-                hospital={{
-                  name: h.nameKo,
-                  status: getHospitalStatus(h.openHours),
-                  openTime,
-                  closeTime,
-                  address: h.address,
-                  phone: h.phone ?? '-',
-                  languages: h.languages,
-                  departments: h.departments,
-                  imageUrl: h.imageUrl,
-                  aiSummary: h.aiSummary,
-                }}
-              />
-            </div>
-          );
-        })}
+            return (
+              <div
+                key={h.id}
+                className={
+                  idx === filteredHospitals.length - 1
+                    ? ''
+                    : 'border-gray-300 border-b'
+                }
+              >
+                <HospitalCard
+                  hospital={{
+                    name: h.nameKo,
+                    status: getHospitalStatus(h.openHours),
+                    openTime,
+                    closeTime,
+                    address: h.address,
+                    phone: h.phone ?? '-',
+                    languages: h.languages,
+                    departments: h.departments,
+                    imageUrl: h.imageUrl,
+                    aiSummary: h.aiSummary,
+                  }}
+                />
+              </div>
+            );
+          })
+        )}
       </div>
 
-      <div className="border-[#F0F3F4] border-t bg-white px-6 py-4">
+      <div className="sticky bottom-0 border-[#F0F3F4] border-t bg-white px-6 py-4">
         <Button
           className="h-14 w-full rounded-xl bg-green-ez text-white"
           onClick={() =>

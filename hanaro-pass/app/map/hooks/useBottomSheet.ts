@@ -150,5 +150,6 @@ export function useBottomSheet() {
     handleTouchMove,
     handleTouchEnd,
     getTranslateValue,
+    setSheetPosition,
   };
 }
