@@ -106,10 +106,10 @@ export default function SymptomRecommendPage() {
     return updated;
   }, [hospitals, sortByDistance, isOpened, location]);
 
-  const toggleBase = 'justify-center rounded-4xl border-2 px-3 py-1';
-  const unChecked = 'border-transparent bg-green-ez text-white';
-  const checked = 'border-green-ez text-green-ez';
-
+  const toggleBase =
+    'rounded-full px-5 py-2 text-sm font-medium border transition';
+  const checked = 'bg-white border-gray-300 text-gray-700';
+  const unChecked = 'bg-green-ez border-green-ez text-white';
   return (
     <div>
       <div className="space-y-4 px-4 py-6">
