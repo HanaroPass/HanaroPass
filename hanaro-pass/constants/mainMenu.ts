@@ -16,7 +16,7 @@ export type PrimaryMenuItem = {
 export const MAIN_MENUS: Record<MainPageKey, MenuItem[]> = {
   pay: [
     {
-      label: '하나 EZ 카드 등록하기',
+      label: '하나더이지 카드 등록하기',
       icon: '/images/main/card.svg',
       link: '',
     },
