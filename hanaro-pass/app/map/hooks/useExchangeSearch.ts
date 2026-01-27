@@ -28,8 +28,6 @@ export function useExchangeSearch(currentMapRegion: string) {
 
   const searchExchanges = useCallback(
     async (force = false) => {
-      const requestId = ++latestRequestIdRef.current;
-
       if (
         !force &&
         (!currentMapRegion ||
@@ -38,6 +36,7 @@ export function useExchangeSearch(currentMapRegion: string) {
         return;
       }
 
+      const requestId = ++latestRequestIdRef.current;
       setIsLoading(true);
 
       try {
