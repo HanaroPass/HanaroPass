@@ -5,9 +5,10 @@ import { PlaceCard } from '../ui/PlaceCard';
 
 type EmbassyContentProps = {
   data?: Embassy | null;
+  userCoords?: { lat: number; lng: number };
 };
 
-export function EmbassyContent({ data }: EmbassyContentProps) {
+export function EmbassyContent({ data, userCoords }: EmbassyContentProps) {
   if (!data) {
     return (
       <div className="flex h-40 items-center justify-center py-10 font-medium text-gray-400 text-sm">
@@ -30,6 +31,7 @@ export function EmbassyContent({ data }: EmbassyContentProps) {
           latitude: data.latitude,
           longitude: data.longitude,
         }}
+        userCoords={userCoords}
       />
       <div className="flex gap-1 px-4 text-[11px] text-gray-400">
         <span className="shrink-0">*</span>

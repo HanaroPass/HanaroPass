@@ -1,6 +1,8 @@
 'use client';
 import { Globe, Phone } from 'lucide-react';
 import Image from 'next/image';
+import { useMemo } from 'react';
+import getDistance from '@/lib/getDistance';
 
 export type LocationInfo = {
   id?: string | number;
@@ -18,9 +20,25 @@ export type LocationInfo = {
 
 type PlaceCardProps = {
   data: LocationInfo;
+  userCoords?: { lat: number; lng: number };
 };
 
-export function PlaceCard({ data }: PlaceCardProps) {
+export function PlaceCard({ data, userCoords }: PlaceCardProps) {
+  const calculatedDistance = useMemo(() => {
+    if (!userCoords || !data.latitude || !data.longitude) return data.distance;
+
+    const lat = Number(data.latitude);
+    const lng = Number(data.longitude);
+    const isWGS84 = lat > 30 && lat < 45 && lng > 120 && lng < 150;
+
+    if (!isWGS84) return data.distance;
+
+    const dist = getDistance(userCoords.lat, userCoords.lng, lat, lng);
+    if (typeof dist !== 'number' || Number.isNaN(dist)) return data.distance;
+
+    return dist < 1 ? `${Math.round(dist * 1000)}m` : `${dist.toFixed(1)}km`;
+  }, [userCoords, data.latitude, data.longitude, data.distance]);
+
   const handleNavigation = () => {
     const { name, latitude, longitude } = data;
     const encodedName = encodeURIComponent(name);
@@ -89,8 +107,8 @@ export function PlaceCard({ data }: PlaceCardProps) {
           </div>
 
           <div className="mt-1 flex flex-row gap-2">
-            {data.distance?.trim() && (
-              <span className="text-black-900">{data.distance}</span>
+            {calculatedDistance && (
+              <span className="text-black-900">{calculatedDistance}</span>
             )}
             <span className="text-black-800">{data.address}</span>
           </div>

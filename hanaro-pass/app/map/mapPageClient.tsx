@@ -57,10 +57,8 @@ type Props = {
 
 export default function MapPageClient({ hospitals, userId }: Props) {
   const [bookmark, setBookmark] = useState(false);
-
   const [savedPlaces, setSavedPlaces] = useState<SavedPlace[]>([]);
   const [myEmbassy, setMyEmbassy] = useState<Embassy | null>(null);
-
   const [selectedPlace, setSelectedPlace] = useState<
     SavedPlace | Embassy | NaverSearchResult | null
   >(null);
@@ -68,11 +66,10 @@ export default function MapPageClient({ hospitals, userId }: Props) {
     null,
   );
   const [currentMapRegion, setCurrentMapRegion] = useState('');
-
   const mapControlRef = useRef<NaverMapHandle>(null);
-
   const { exchangeResults, searchExchanges } =
     useExchangeSearch(currentMapRegion);
+  const [userCoords, setUserCoords] = useState<{ lat: number; lng: number }>();
 
   const {
     openSheet,
@@ -85,6 +82,20 @@ export default function MapPageClient({ hospitals, userId }: Props) {
     handleTouchEnd,
     getTranslateValue,
   } = useBottomSheet();
+
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          setUserCoords({
+            lat: pos.coords.latitude,
+            lng: pos.coords.longitude,
+          });
+        },
+        (err) => console.error('위치 정보를 가져올 수 없습니다.', err),
+      );
+    }
+  }, []);
 
   useEffect(() => {
     if (!userId) return;
@@ -250,7 +261,10 @@ export default function MapPageClient({ hospitals, userId }: Props) {
       >
         {openSheet === 'bookmark' && !!selectedPlace && (
           <div className="px-2">
-            <PlaceCard data={mapDbToInfo(selectedPlace)} />
+            <PlaceCard
+              data={mapDbToInfo(selectedPlace)}
+              userCoords={userCoords}
+            />
           </div>
         )}
         {openSheet === 'hospital' && (
@@ -275,7 +289,9 @@ export default function MapPageClient({ hospitals, userId }: Props) {
             }}
           />
         )}
-        {openSheet === 'embassy' && <EmbassyContent data={myEmbassy} />}
+        {openSheet === 'embassy' && (
+          <EmbassyContent data={myEmbassy} userCoords={userCoords} />
+        )}
       </MapBottomSheet>
     </main>
   );
