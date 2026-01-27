@@ -4,14 +4,13 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { IdentityType } from '../IdentityPageClient';
 
 type CameraCaptureProps = {
-  // 부모(OCRPageContent)에서 넘겨주므로 타입을 정의해야 에러가 나지 않습니다.
   type?: IdentityType | null;
   onClick?: () => void;
   onImageSelect?: (file: File) => void;
 };
 
 const CameraCapture = ({
-  type: _type, // 사용하지 않음을 표시하기 위해 언더바(_) 사용
+  type: _type,
   onClick,
   onImageSelect,
 }: CameraCaptureProps) => {
@@ -69,7 +68,6 @@ const CameraCapture = ({
     }
   }, []);
 
-  // 카메라 제어 전용 Effect
   useEffect(() => {
     if (!selectedImage) {
       startCamera();
@@ -78,7 +76,7 @@ const CameraCapture = ({
     return () => {
       if (videoRef.current?.srcObject) {
         const tracks = (videoRef.current.srcObject as MediaStream).getTracks();
-        // 린트 준수: forEach 대신 for...of 사용
+
         for (const track of tracks) {
           track.stop();
         }
@@ -86,7 +84,6 @@ const CameraCapture = ({
     };
   }, [startCamera, selectedImage]);
 
-  // 이미지 URL 메모리 해제 전용 Effect
   useEffect(() => {
     return () => {
       if (selectedImage) {

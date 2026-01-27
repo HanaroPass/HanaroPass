@@ -54,9 +54,8 @@ export default function MobileQr({ type, data }: MobileQrProps) {
     </div>
   );
 
-  const rawCountry = data.nationality || 'UNITED STATES OF AMERICA';
+  const rawCountry = data.nationality || '-';
 
-  // 나라별 국기 이미지 (nation 폴더에서 매핑)
   const fileName =
     COUNTRY_IMAGE_MAP[rawCountry] || rawCountry.replace(/\s+/g, '_');
 

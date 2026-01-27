@@ -31,7 +31,7 @@ export const parsePassportData = (text: string): ParsedData => {
     '12월': '12',
   };
 
-  // 1. 여권번호 추출
+  // 여권번호 추출
   const passportMatch =
     fullText.match(/PM\s+KOR\s+([A-Z][0-9A-Z]{8})/i) ||
     fullText.match(/\b([A-Z][0-9]{3}[A-Z][0-9]{4})\b/i) ||
@@ -41,7 +41,7 @@ export const parsePassportData = (text: string): ParsedData => {
     data.passportNumber = passportMatch[1].toUpperCase();
   }
 
-  // 2. 이름/성 추출
+  // 이름/성 추출
   const mrzNameMatch = fullText.match(/([A-Z]+)<<([A-Z]+)</i);
 
   if (mrzNameMatch) {
@@ -59,7 +59,7 @@ export const parsePassportData = (text: string): ParsedData => {
     if (givenNameMatch) data.firstName = givenNameMatch[1].toUpperCase();
   }
 
-  // 3. 날짜 추출 (Dirty OCR 데이터 대응 버전)
+  // 날짜 추출 (Dirty OCR 데이터 대응 버전)
   const flexibleDatePattern =
     /(\d{1,2})\s+.*?(JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC|[1-9]월|1[0-2]월).*?(\d{4})/gi;
   interface DateInfo {
@@ -95,7 +95,7 @@ export const parsePassportData = (text: string): ParsedData => {
     }
   }
 
-  // 4. 성별
+  // 성별
   const genderMatch =
     fullText.match(/\b([MF])\b/i) ||
     fullText.match(/(?:Sex|성별)\s*[:\s]*([MF])/i);
@@ -103,7 +103,7 @@ export const parsePassportData = (text: string): ParsedData => {
     data.gender = genderMatch[1].toUpperCase() === 'M' ? 'MALE' : 'FEMALE';
   }
 
-  // 5. 국적
+  // 국적
   if (fullText.match(/\b(KOREA|KOREAN|KOR)\b/i)) {
     data.nationality = 'REPUBLIC OF KOREA';
   }

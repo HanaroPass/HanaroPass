@@ -2,7 +2,7 @@
 
 import { Loader2, X } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useMemo, useRef, useState } from 'react'; // 1. useRef 추가
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Header from '@/components/header/Header';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/useToast';
@@ -42,7 +42,6 @@ export default function ResultStep({
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // 2. 토스트 중복 방지를 위한 Ref 변수
   const hasShownToast = useRef(false);
 
   useEffect(() => {
@@ -65,7 +64,6 @@ export default function ResultStep({
         setPassportData(res.passport);
         setArcData(res.arc);
 
-        // 3. initialData가 있을 때(방금 등록 완료) 딱 한 번만 토스트 노출
         if (initialData && !hasShownToast.current) {
           const typeLabel =
             identityType === 'passport' ? '여권' : '외국인 등록증';
@@ -96,7 +94,6 @@ export default function ResultStep({
     return () => {
       mounted = false;
     };
-    // 4. 의존성 배열 정리 (registerSuccess, systemError 포함)
   }, [typeParam, systemError, registerSuccess, initialData, identityType]);
 
   const handleRegister = (type: IdentityType) => {
