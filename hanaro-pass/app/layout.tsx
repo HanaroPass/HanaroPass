@@ -4,6 +4,7 @@ import MockLoginButtons from './(main)/components/MockLoginButtons';
 import MockLogoutButton from './(main)/components/MockLogoutButton';
 import PushNotificationManager from './(main)/components/PushNotificationManager';
 import './globals.css';
+import { Toaster } from 'sonner';
 
 export const metadata: Metadata = {
   title: 'Hanaro Pass',
@@ -23,6 +24,14 @@ export default async function RootLayout({
     <html lang="ko" suppressHydrationWarning>
       <body className="antialiased">
         <div className="app-shell">{children}</div>
+        <Toaster
+          position="top-center"
+          richColors
+          expand={false}
+          toastOptions={{
+            className: 'mt-10',
+          }}
+        />
 
         <PushNotificationManager isLoggedIn={isLoggedIn} />
         {process.env.NODE_ENV === 'development' && (
