@@ -104,6 +104,7 @@ export function MapBottomSheet({
         <VisuallyHidden>
           <h2>{SHEET_TITLE[openSheet]}</h2>
         </VisuallyHidden>
+
         <div ref={contentRef}>{children}</div>
       </div>
     </div>

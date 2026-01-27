@@ -258,6 +258,10 @@ export default function MapPageClient({ hospitals, userId }: Props) {
             mode={selectedHospital ? 'detail' : 'list'}
             hospitals={hospitals}
             hospital={selectedHospital ?? undefined}
+            onBackToList={() => {
+              setSelectedHospital(null);
+              toggleSheet('hospital', true);
+            }}
           />
         )}
         {openSheet === 'siren' && <SirenContent />}
