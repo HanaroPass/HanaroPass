@@ -3,7 +3,7 @@ import type { PlaceCategory } from '@/lib/generated/prisma';
 import { prisma } from '@/lib/prisma';
 
 /**
- * 모든 유저에게 공통된 SavedPlace 더미 데이터 주입
+ * 모든 유저에게 SavedPlace 더미 데이터를 랜덤으로 25개씩 주입
  */
 export async function seedSavedPlaces() {
   console.log('[ SavedPlace 더미 생성 중... ]');
@@ -11,7 +11,11 @@ export async function seedSavedPlaces() {
   const users = await prisma.user.findMany();
 
   for (const user of users) {
-    const dataToInsert = SAVED_PLACES_MOCK.map((place) => ({
+    const shuffled = [...SAVED_PLACES_MOCK].sort(() => Math.random() - 0.5);
+
+    const selectedPlaces = shuffled.slice(0, 25);
+
+    const dataToInsert = selectedPlaces.map((place) => ({
       ...place,
       userId: user.id,
       category: place.category as PlaceCategory,
@@ -21,5 +25,6 @@ export async function seedSavedPlaces() {
       data: dataToInsert,
     });
   }
-  console.log(`[ 완료 ] ${users.length}명에게 장소 데이터 주입 완료`);
+
+  console.log(`[ 완료 ] ${users.length}명에게 랜덤 장소 25개씩 주입 완료`);
 }
