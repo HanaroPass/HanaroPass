@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import type { Embassy, SavedPlace } from '@/lib/generated/prisma';
 
 import type { NaverSearchResult } from '../components/ui/NaverMap';
-import type { Hospital } from '../page';
+import type { Hospital } from '../mapPageClient';
 import {
   isEmbassy,
   isExchangePlace,
