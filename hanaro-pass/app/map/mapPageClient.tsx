@@ -67,7 +67,7 @@ export default function MapPageClient({ hospitals, userId }: Props) {
   );
   const [currentMapRegion, setCurrentMapRegion] = useState('');
   const mapControlRef = useRef<NaverMapHandle>(null);
-  const { exchangeResults, searchExchanges } =
+  const { exchangeResults, searchExchanges, clearResults } =
     useExchangeSearch(currentMapRegion);
   const [userCoords, setUserCoords] = useState<{ lat: number; lng: number }>();
 
@@ -96,6 +96,16 @@ export default function MapPageClient({ hospitals, userId }: Props) {
       );
     }
   }, []);
+
+  useEffect(() => {
+    if (openSheet !== 'exchange' || !currentMapRegion) return;
+
+    const timer = setTimeout(() => {
+      searchExchanges();
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, [currentMapRegion, openSheet, searchExchanges]);
 
   useEffect(() => {
     if (!userId) return;
@@ -143,13 +153,16 @@ export default function MapPageClient({ hospitals, userId }: Props) {
 
   const handleExchangeClick = useCallback(async () => {
     if (openSheet === 'exchange') {
+      clearResults();
       toggleSheet('exchange');
       setSelectedPlace(null);
       return;
     }
-    await searchExchanges();
+
+    clearResults();
+    await searchExchanges(true);
     toggleSheet('exchange');
-  }, [openSheet, toggleSheet, searchExchanges]);
+  }, [openSheet, toggleSheet, searchExchanges, clearResults]);
 
   const { handleMarkerClick } = useMarkerClick({
     selectedPlace,

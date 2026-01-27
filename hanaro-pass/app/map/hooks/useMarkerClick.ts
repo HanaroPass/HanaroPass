@@ -3,6 +3,7 @@ import type { Embassy, SavedPlace } from '@/lib/generated/prisma';
 
 import type { NaverSearchResult } from '../components/ui/NaverMap';
 import type { Hospital } from '../mapPageClient';
+import type { SheetType } from '../types/map';
 import {
   isEmbassy,
   isExchangePlace,
@@ -10,8 +11,6 @@ import {
   isSavedPlace,
 } from '../utils/mapUtils';
 import type { ClickablePlace } from './useMapMarkers';
-
-type SheetType = 'hospital' | 'embassy' | 'exchange' | 'bookmark' | 'siren';
 
 type UseMarkerClickProps = {
   selectedPlace: SavedPlace | Embassy | NaverSearchResult | null;
@@ -68,7 +67,7 @@ export function useMarkerClick({
         return;
       }
 
-      // 4. 즐겨찾기(북마크)
+      // 북마크
       if (isSavedPlace(place)) {
         const isSame =
           selectedPlace &&
