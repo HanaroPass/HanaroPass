@@ -62,6 +62,27 @@ importers:
       dotenv:
         specifier: ^17.2.3
         version: 17.2.3
+      dynamsoft-barcode-reader:
+        specifier: ^10.4.31
+        version: 10.4.31
+      dynamsoft-capture-vision-bundle:
+        specifier: ^3.2.5000
+        version: 3.2.5000
+      dynamsoft-capture-vision-router:
+        specifier: ^2.4.33
+        version: 2.4.33
+      dynamsoft-core:
+        specifier: ^3.4.31
+        version: 3.4.31
+      dynamsoft-document-normalizer:
+        specifier: ^2.6.11
+        version: 2.6.11
+      dynamsoft-label-recognizer:
+        specifier: ^3.4.32
+        version: 3.4.32
+      dynamsoft-license:
+        specifier: ^3.4.31
+        version: 3.4.31
       iron-session:
         specifier: ^8.0.4
         version: 8.0.4
@@ -1987,6 +2008,27 @@ packages:
   dotenv@17.2.3:
     resolution: {integrity: sha512-JVUnt+DUIzu87TABbhPmNfVdBDt18BLOWjMUFJMSi/Qqg7NTYtabbvSNJGOJ7afbRuv9D/lngizHtP7QyLQ+9w==}
     engines: {node: '>=12'}
+
+  dynamsoft-barcode-reader@10.4.31:
+    resolution: {integrity: sha512-iRgFA/dINctVFunetQ8ifPGCUYrOI4ZrJNGyId+VWTk45SzCcpIwLbb6wLMkc0m7JfSo4ewhesjRmjVqwRJYjA==}
+
+  dynamsoft-capture-vision-bundle@3.2.5000:
+    resolution: {integrity: sha512-pQv7GCk0yXUf6pG12NoB5MR0JALyTeGdATXroP0jR69a4wPfRxqet+5mCEWzhq5/HnA0S39oWE9T4mlAxe6GbA==}
+
+  dynamsoft-capture-vision-router@2.4.33:
+    resolution: {integrity: sha512-ymnGu9u1OY7QNp+225MtoLf7HCVYEQF2BVnfGr5H1OCTIFyNHbiQA1hUIifN5THIhzSSWSDue7HpCGBPiZKmuA==}
+
+  dynamsoft-core@3.4.31:
+    resolution: {integrity: sha512-bgu1cDnYSCMVCc59wM8OpsNUdQg2tMezqAeRxHz+SCvSDs1RkMCZA2XlTU3pdtB0zo1xdLiza6l9uaKGrDf3UQ==}
+
+  dynamsoft-document-normalizer@2.6.11:
+    resolution: {integrity: sha512-lFoP1aL6TI0/cSTFRiIcr2AsBse9fYkaHRpd2342HVlwFKpKlzl1MzjlhH6te/VFMoxb6x2rn7SCEvreS0OvaA==}
+
+  dynamsoft-label-recognizer@3.4.32:
+    resolution: {integrity: sha512-c+zZcbrSQRMc7VoBNk9wqkTZnnOf0IaBq3vQPr+rA4srwJx4vEzSKrVwVGpsnZHF7yGzwkHJH0FdeP6CknpaHw==}
+
+  dynamsoft-license@3.4.31:
+    resolution: {integrity: sha512-qsli2c9ELXBxITudehiyUTdO9TY9TjGMkoEMf3iShpSb/NwNlOf0EPYIErTuvTG0/RshwVnNbFVstckNvS5l6g==}
 
   eastasianwidth@0.2.0:
     resolution: {integrity: sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA==}
@@ -4808,6 +4850,30 @@ snapshots:
   dotenv@16.6.1: {}
 
   dotenv@17.2.3: {}
+
+  dynamsoft-barcode-reader@10.4.31:
+    dependencies:
+      dynamsoft-core: 3.4.31
+
+  dynamsoft-capture-vision-bundle@3.2.5000: {}
+
+  dynamsoft-capture-vision-router@2.4.33:
+    dependencies:
+      dynamsoft-core: 3.4.31
+
+  dynamsoft-core@3.4.31: {}
+
+  dynamsoft-document-normalizer@2.6.11:
+    dependencies:
+      dynamsoft-core: 3.4.31
+
+  dynamsoft-label-recognizer@3.4.32:
+    dependencies:
+      dynamsoft-core: 3.4.31
+
+  dynamsoft-license@3.4.31:
+    dependencies:
+      dynamsoft-core: 3.4.31
 
   eastasianwidth@0.2.0: {}
 
