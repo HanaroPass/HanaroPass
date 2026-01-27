@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
+import { useToast } from '@/hooks/useToast';
 import { saveArcData } from '../../actions/arc';
 import { useDrawerForm } from './hooks/useDrawerForm';
 import { AlienExtraFields, AlienFields } from './shared/AlienFields';
@@ -26,7 +27,8 @@ export function AlienDrawer({
   initialData = {},
   ocrFilledFields: _ocrFilledFields = new Set(),
 }: AlienDrawerProps) {
-  // issueDate → issuedDate로 매핑 (useMemo로 무한루프 방지)
+  const { actionError } = useToast();
+
   const normalizedInitialData = useMemo(
     () => ({
       ...initialData,
@@ -34,6 +36,7 @@ export function AlienDrawer({
     }),
     [initialData],
   );
+
   const handleSave = async (data: Record<string, string>) => {
     const result = await saveArcData(data);
 
@@ -41,7 +44,7 @@ export function AlienDrawer({
       if (onSubmit) onSubmit(data);
       onOpenChange(false);
     } else {
-      alert(`[오류 ${result.status}] ${result.message}`);
+      actionError(result);
     }
   };
 
@@ -50,6 +53,7 @@ export function AlienDrawer({
     onOpenChange,
     initialData: normalizedInitialData,
   });
+
   const handleSubmit = () => {
     void handleSave(formData);
   };

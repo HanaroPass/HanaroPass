@@ -1,5 +1,6 @@
 'use client';
 
+import { useToast } from '@/hooks/useToast';
 import { savePassportData } from '../../actions/passport';
 import { useDrawerForm } from './hooks/useDrawerForm';
 import { BaseDrawer } from './shared/BaseDrawer';
@@ -25,15 +26,17 @@ export function PassportDrawer({
   initialData = {},
   ocrFilledFields: _ocrFilledFields = new Set(),
 }: PassportDrawerProps) {
+  const { registerSuccess, actionError } = useToast();
   const handleSave = async (data: Record<string, string>) => {
     const result = await savePassportData(data);
 
     if (result.success) {
-      alert('여권 정보 등록 및 로그인이 완료되었습니다.');
+      registerSuccess('여권');
+
       if (onSubmit) onSubmit(data);
       onOpenChange(false);
     } else {
-      alert(`[오류 ${result.status}] ${result.message}`);
+      actionError(result);
     }
   };
 

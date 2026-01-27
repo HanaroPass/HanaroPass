@@ -5,10 +5,7 @@ import { postSymptomForm } from '../actions/symptoms';
 
 export default function useSymptomResubmit() {
   const [isLoading, setLoading] = useState(false);
-  const router = useRouter();
 
-  const searchParams = useSearchParams();
-  const mode = searchParams.get('mode') ?? 'translate';
   const handleResubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     if (isLoading) return;
     e.preventDefault();
@@ -38,7 +35,6 @@ export default function useSymptomResubmit() {
         formData.get('description') as string,
       );
       console.log(response);
-      router.push(`/medical/symptoms/result?mode=${mode}`);
     } catch (err) {
       console.error('재제출 실패', err);
       alert('증상 분석 중 오류가 발생했습니다. 다시 시도해주세요.');

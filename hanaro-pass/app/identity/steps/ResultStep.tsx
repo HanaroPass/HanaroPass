@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import Header from '@/components/header/Header';
 import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/useToast';
 import { cn } from '@/lib/utils';
 import { getIdentityData } from '../actions/identity';
 import EmptyIdentityCard from '../components/EmptyIdentityCard';
@@ -26,6 +27,7 @@ export default function ResultStep({
   onClose,
   onRegister,
 }: ResultStepProps) {
+  const { registerSuccess, systemError } = useToast();
   const searchParams = useSearchParams();
   const typeParam = searchParams.get('type') as IdentityType | null;
 
@@ -40,14 +42,12 @@ export default function ResultStep({
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // 1. 등록 직후 identityType이 변경되면 해당 탭으로 즉시 전환
   useEffect(() => {
     if (identityType) {
       setActiveTab(identityType);
     }
   }, [identityType]);
 
-  // 2. 데이터 페칭 및 초기 탭 설정
   useEffect(() => {
     let mounted = true;
 
@@ -62,7 +62,12 @@ export default function ResultStep({
         setPassportData(res.passport);
         setArcData(res.arc);
 
-        // 우선순위: 1. 방금 등록한 타입 -> 2. URL 파라미터 -> 3. 데이터가 있는 타입
+        if (initialData) {
+          const typeLabel =
+            identityType === 'passport' ? '여권' : '외국인 등록증';
+          registerSuccess(typeLabel);
+        }
+
         if (identityType) {
           setActiveTab(identityType);
         } else if (typeParam) {
@@ -71,9 +76,11 @@ export default function ResultStep({
           if (res.passport) setActiveTab('passport');
           else if (res.arc) setActiveTab('arc');
         }
-      } catch (error) {
-        console.error('Failed to fetch identity data:', error);
-        if (mounted) setError('데이터를 불러오는데 실패했습니다.');
+      } catch (_err) {
+        if (mounted) {
+          systemError('신분증 정보');
+          setError('데이터를 불러오는 중 오류가 발생했습니다.');
+        }
       } finally {
         if (mounted) setIsLoading(false);
       }
@@ -84,19 +91,16 @@ export default function ResultStep({
     return () => {
       mounted = false;
     };
-  }, [typeParam, identityType]); // identityType을 의존성 배열에 추가
+  }, [typeParam, systemError, registerSuccess, initialData, identityType]);
 
   const handleRegister = (type: IdentityType) => {
     onRegister?.(type);
   };
 
-  // 현재 탭에 표시할 데이터 결정 로직
   const currentDisplayData = useMemo(() => {
-    // 1. 방금 등록한 데이터가 있고, 현재 탭이 그 타입과 일치하면 최신 데이터 반환
     if (initialData && activeTab === identityType) {
       return initialData;
     }
-    // 2. 그 외에는 서버에서 불러온 데이터 반환
     return activeTab === 'passport' ? passportData : arcData;
   }, [activeTab, identityType, initialData, passportData, arcData]);
 
@@ -149,7 +153,6 @@ export default function ResultStep({
             </div>
           ) : currentDisplayData ? (
             <div className="flex h-full flex-col">
-              {/* type과 data를 현재 활성화된 탭에 맞춰 전달 */}
               <MobileQr type={activeTab} data={currentDisplayData} />
             </div>
           ) : (

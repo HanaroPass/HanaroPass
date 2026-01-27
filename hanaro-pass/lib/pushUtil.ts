@@ -37,8 +37,12 @@ export async function subscribeUser() {
     // 3. 서버 DB에 저장
     const result = await saveSubscriptionAction(JSON.stringify(subscription));
     return result.success ? 'success' : 'error';
-  } catch (error) {
-    console.error('[Push Error]:', error);
+  } catch (error: any) {
+    if (error.name === 'AbortError') {
+      console.warn('[Push] 페이지 이동으로 인해 구독 요청이 중단되었습니다.');
+      return 'aborted';
+    }
+    console.error('[Push] 구독 에러:', error);
     return 'error';
   }
 }

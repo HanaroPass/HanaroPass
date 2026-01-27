@@ -177,7 +177,7 @@ export async function submitLanguageApplicationAction(
       });
     });
 
-    const pushTitle = '[하나로패스] 신청 접수 완료';
+    const pushTitle = '신청 접수 완료';
     const pushBody =
       '외국어 진료 서비스 신청이 정상적으로 접수되었습니다. 심사 결과가 나오면 바로 알려드릴게요!';
     const targetUrl = '/medical/notifications'; // 알림 클릭 시 이동할 곳

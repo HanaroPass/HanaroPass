@@ -9,7 +9,10 @@ import CouponDetail from '../../components/coupon/CouponDetail';
 export const revalidate = 3600;
 
 export async function generateStaticParams() {
-  const coupons = await prisma.coupon.findMany({ select: { id: true } });
+  const coupons = await prisma.coupon.findMany({
+    take: 20,
+    select: { id: true },
+  });
   return coupons.map((coupon) => ({ id: coupon.id.toString() }));
 }
 
