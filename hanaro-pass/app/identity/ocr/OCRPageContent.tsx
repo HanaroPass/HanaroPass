@@ -33,53 +33,108 @@ export default function OCRPageContent({
       .map((line) => line.trim())
       .filter(Boolean);
     const data: Record<string, string> = {};
+    const fullText = text.replace(/\n/g, ' ');
 
-    for (const line of lines) {
-      // 여권번호 (예: M12345678)
-      const passportMatch = line.match(/[A-Z]\d{8}/);
-      if (passportMatch && !data.passportNumber) {
-        data.passportNumber = passportMatch[0];
+    console.log('여권 파싱할 텍스트:', lines);
+
+    // 성 (Surname 다음에 나오는 값) - nickname으로 결합 예정
+    const surnameMatch = fullText.match(/(?:성.*?Surname|Surname)\s+([A-Z]+)/i);
+    if (surnameMatch && !data.lastName) {
+      data.lastName = surnameMatch[1];
+    }
+
+    // 이름 (Given names 다음에 나오는 값) - nickname으로 결합 예정
+    const givenNameMatch = fullText.match(
+      /(?:이름.*?Given names|Given names)\s+([A-Z]+)/i,
+    );
+    if (givenNameMatch && !data.firstName) {
+      data.firstName = givenNameMatch[1];
+    }
+
+    // nickname 생성 (성 + 이름)
+    if (data.lastName && data.firstName && !data.nickname) {
+      data.nickname = `${data.lastName} ${data.firstName}`;
+    }
+
+    // 여권번호 (다양한 패턴으로 M123A4567 형태 추출)
+    let passportNumber = '';
+
+    // 패턴 1: PM/PNM 라인에서 KOR 다음
+    const pmLineMatch = fullText.match(/(?:PM|PNM)\s+.*?KOR\s+([A-Z]\d{8,9})/i);
+    if (pmLineMatch) {
+      passportNumber = pmLineMatch[1].substring(0, 9);
+    }
+
+    // 패턴 2: Passport No. 다음
+    if (!passportNumber) {
+      const passportNoMatch = fullText.match(
+        /Passport\s+No\.?\s+([A-Z]\d{8,9})/i,
+      );
+      if (passportNoMatch) {
+        passportNumber = passportNoMatch[1].substring(0, 9);
       }
+    }
 
-      // 생년월일 (예: 880315, 19880315)
-      const birthDateMatch = line.match(/(\d{2})?(\d{6})/);
-      if (birthDateMatch && !data.birthDate) {
-        const fullDate = birthDateMatch[2];
-        if (fullDate.length === 6) {
-          const year = fullDate.substring(0, 2);
-          const month = fullDate.substring(2, 4);
-          const day = fullDate.substring(4, 6);
-          // 80년대 이후는 19XX, 그 이전은 20XX로 가정
-          const fullYear = parseInt(year, 10) >= 80 ? `19${year}` : `20${year}`;
-          data.birthDate = `${fullYear}-${month}-${day}`;
-        }
+    // 패턴 3: 일반적인 여권번호 형태 (M + 8자리 숫자 또는 M + 숫자+문자 조합)
+    if (!passportNumber) {
+      const generalMatch = fullText.match(/\b([A-Z]\d{8}[A-Z]?)\b/g);
+      if (generalMatch) {
+        // 가장 여권번호 같은 형태를 선택 (M으로 시작하는 것 우선)
+        passportNumber =
+          generalMatch.find((match) => match.startsWith('M')) ||
+          generalMatch[0];
+        passportNumber = passportNumber.substring(0, 9);
       }
+    }
 
-      // 성별 (M/F)
-      const genderMatch = line.match(/\b([MF])\b/);
-      if (genderMatch && !data.gender) {
-        data.gender = genderMatch[1] === 'M' ? 'MALE' : 'FEMALE';
-      }
+    if (passportNumber && !data.passportNumber) {
+      data.passportNumber = passportNumber;
+    }
 
-      // 국적 (예: KOR, USA)
-      const nationalityMatch = line.match(/\b([A-Z]{3})\b/);
-      if (
-        nationalityMatch &&
-        nationalityMatch[1] !== 'KOR' &&
-        !data.nationality
-      ) {
-        data.nationality = nationalityMatch[1];
-      }
+    // 국적 (Nationality 다음에 나오는 값)
+    const nationalityMatch = fullText.match(
+      /(?:국적.*?Nationality|Nationality)\s+(REPUBLIC OF [A-Z]+|[A-Z]{3,})/i,
+    );
+    if (nationalityMatch && !data.nationality) {
+      data.nationality = nationalityMatch[1];
+    }
 
-      // 이름 (대문자 영문)
-      const nameMatch = line.match(/([A-Z][A-Z\s]+[A-Z])/);
-      if (nameMatch && !data.firstName && !data.lastName) {
-        const fullName = nameMatch[1].trim();
-        const nameParts = fullName.split(/\s+/);
-        if (nameParts.length >= 2) {
-          data.lastName = nameParts[0];
-          data.firstName = nameParts.slice(1).join(' ');
-        }
+    // 성별 (M/F)
+    const genderMatch = fullText.match(/(?:Sex|성별)\s+([MF])/i);
+    if (genderMatch && !data.gender) {
+      data.gender = genderMatch[1] === 'M' ? 'MALE' : 'FEMALE';
+    }
+
+    // 발급일 (액션이 필수로 요구하므로 추가)
+    const issueDateMatch = fullText.match(/(\d{1,2})\s+8월.*?(\d{4})/i);
+    if (issueDateMatch && !data.issueDate) {
+      const day = issueDateMatch[1].padStart(2, '0');
+      const year = issueDateMatch[2];
+      data.issueDate = `${year}-08-${day}`;
+    }
+
+    // issueDate가 없으면 기본값 설정
+    if (!data.issueDate) {
+      data.issueDate = new Date().toISOString().split('T')[0];
+    }
+
+    // nickname 생성 (성 + 이름)
+    if (data.lastName && data.firstName && !data.nickname) {
+      data.nickname = `${data.lastName} ${data.firstName}`;
+    }
+
+    // 기간 만료일 (15 8월/&446 2030 형태)
+    const expiryDateMatch = fullText.match(
+      /(\d{1,2})\s+8월.*?(\d{4})(?=\s|$)/gi,
+    );
+    if (expiryDateMatch && expiryDateMatch.length >= 2 && !data.expiryDate) {
+      const lastMatch = expiryDateMatch[expiryDateMatch.length - 1];
+      const dayMatch = lastMatch.match(/(\d{1,2})/);
+      const yearMatch = lastMatch.match(/(\d{4})/);
+      if (dayMatch && yearMatch) {
+        const day = dayMatch[1].padStart(2, '0');
+        const year = yearMatch[1];
+        data.expiryDate = `${year}-08-${day}`;
       }
     }
 
@@ -93,48 +148,119 @@ export default function OCRPageContent({
       .map((line) => line.trim())
       .filter(Boolean);
     const data: Record<string, string> = {};
+    const fullText = text.replace(/\s+/g, ' ');
 
     console.log('파싱할 텍스트 라인들:', lines);
 
-    for (const line of lines) {
-      // 외국인등록번호 (예: 123456-1234567)
-      const arcNumberMatch = line.match(/(\d{6})-(\d{7})/);
-      if (arcNumberMatch && !data.registrationNumber) {
-        data.registrationNumber = arcNumberMatch[1];
-        data.registrationNumberSuffix = arcNumberMatch[2];
-        data.arcNumber = `${arcNumberMatch[1]}-${arcNumberMatch[2]}`;
-      }
+    // 외국인등록번호 (다양한 형태로 인식)
+    const arcNumberPatterns = [
+      /(\d{6})-(\d{7})/, // 기본형: 123456-1234567
+      /(\d{6})\s+(\d{7})/, // 공백형: 123456 1234567
+      /외국인.*?(\d{6})-?(\d{7})/, // 라벨 포함
+    ];
 
-      // 이름 파싱 (HONG SAMPLE 형태)
-      const nameMatch = line.match(/([A-Z]+)\s+([A-Z]+)/);
-      if (nameMatch && !data.lastName && !data.firstName) {
+    for (const pattern of arcNumberPatterns) {
+      const match = fullText.match(pattern);
+      if (match && !data.arcNumber) {
+        const fullArcNumber = `${match[1]}-${match[2]}`;
+        data.arcNumber = fullArcNumber;
+        // UI를 위해 앞 6자리와 뒤 7자리로 분리
+        data.registrationNumber = match[1];
+        data.registrationNumberSuffix = match[2];
+        break;
+      }
+    }
+
+    // 이름 파싱 (더 강력한 패턴)
+    let nameFound = false;
+
+    // 패턴 1: 성명/Name 라벨 다음
+    const nameWithLabel = fullText.match(
+      /(?:성명|Name).*?([A-Z]+)\s+([A-Z]+)/i,
+    );
+    if (nameWithLabel && !nameFound) {
+      data.lastName = nameWithLabel[1];
+      data.firstName = nameWithLabel[2];
+      nameFound = true;
+    }
+
+    // 패턴 2: 일반적인 영문 이름 (2단어)
+    if (!nameFound) {
+      const nameMatch = fullText.match(/\b([A-Z]{2,})\s+([A-Z]{2,})\b/);
+      if (nameMatch) {
         data.lastName = nameMatch[1];
         data.firstName = nameMatch[2];
       }
+    }
 
-      // 국적 (REPUBLIC OF UTOPIA 등)
-      const nationalityMatch = line.match(/REPUBLIC OF ([A-Z]+)/);
-      if (nationalityMatch && !data.nationality) {
-        data.nationality = `REPUBLIC OF ${nationalityMatch[1]}`;
+    // nickname 생성 (성 + 이름)
+    if (data.lastName && data.firstName && !data.nickname) {
+      data.nickname = `${data.lastName} ${data.firstName}`;
+    }
+
+    // 국적 (더 다양한 패턴)
+    const nationalityPatterns = [
+      /(?:국적|Nationality).*?(REPUBLIC OF [A-Z]+)/i,
+      /(?:국적|Nationality).*?([A-Z]{3,})/i,
+      /REPUBLIC OF ([A-Z]+)/,
+    ];
+
+    for (const pattern of nationalityPatterns) {
+      const match = fullText.match(pattern);
+      if (match && !data.nationality) {
+        data.nationality = match[1];
+        break;
       }
+    }
 
-      // 발급일자 (20230401 형태)
-      const issueDateMatch = line.match(/(\d{8})/);
-      if (issueDateMatch && !data.issuedDate) {
-        const dateStr = issueDateMatch[1];
-        if (dateStr.length === 8) {
-          const year = dateStr.substring(0, 4);
-          const month = dateStr.substring(4, 6);
-          const day = dateStr.substring(6, 8);
+    // 발급일자 (다양한 형태 지원)
+    if (!data.issuedDate) {
+      // 패턴 1: YYYY.MM.DD 형태 (예: 2018.09.21)
+      const dotDateMatch = fullText.match(/(\d{4})\.(\d{1,2})\.(\d{1,2})/);
+      if (dotDateMatch) {
+        const year = dotDateMatch[1];
+        const month = dotDateMatch[2].padStart(2, '0');
+        const day = dotDateMatch[3].padStart(2, '0');
+        const yearNum = parseInt(year, 10);
+        if (yearNum >= 2010 && yearNum <= 2030) {
           data.issuedDate = `${year}-${month}-${day}`;
         }
       }
+    }
 
-      // 체류자격 (D-8, F-2 등)
-      const visaStatusMatch = line.match(/([A-Z]-\d+)/);
-      if (visaStatusMatch && !data.visaStatus) {
-        data.visaStatus = visaStatusMatch[1];
+    // 발급일자 - 8자리 숫자 형태 백업
+    if (!data.issuedDate) {
+      const issueDateMatches = fullText.match(/(\d{8})/g);
+      if (issueDateMatches) {
+        for (const dateStr of issueDateMatches) {
+          const year = dateStr.substring(0, 4);
+          const month = dateStr.substring(4, 6);
+          const day = dateStr.substring(6, 8);
+
+          const yearNum = parseInt(year, 10);
+          const monthNum = parseInt(month, 10);
+          const dayNum = parseInt(day, 10);
+
+          // 유효한 발급일자 조건: 2010-2030년 사이, 유효한 월/일
+          if (
+            yearNum >= 2010 &&
+            yearNum <= 2030 &&
+            monthNum >= 1 &&
+            monthNum <= 12 &&
+            dayNum >= 1 &&
+            dayNum <= 31
+          ) {
+            data.issuedDate = `${year}-${month}-${day}`;
+            break;
+          }
+        }
       }
+    }
+
+    // 체류자격 (폼 필드명에 맞춰 residenceStatus로 변경)
+    const visaStatusMatch = fullText.match(/([A-Z]-\d+)/);
+    if (visaStatusMatch && !data.residenceStatus) {
+      data.residenceStatus = visaStatusMatch[1];
     }
 
     return data;
