@@ -7,7 +7,8 @@ import { AlienDrawer } from '../components/bottomSheet/AlienDrawer';
 import { PassportDrawer } from '../components/bottomSheet/PassportDrawer';
 import CameraCapture from '../components/CameraCapture';
 import type { IdentityType } from '../IdentityPageClient';
-import { parseArcData, parsePassportData } from './ocrParser';
+import { parseArcData } from './arcParser';
+import { parsePassportData } from './passportParser';
 
 type OCRPageContentProps = {
   type: IdentityType | null;
