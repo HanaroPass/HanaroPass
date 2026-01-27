@@ -154,7 +154,7 @@ export function HospitalContent({
 
       {/* 언어 필터 */}
       {active === 'language' && (
-        <div className="sticky top-11 z-30 bg-white px-6 pt-0">
+        <div className="sticky top-11 z-30 bg-white px-6">
           <FilterPanel title="소통 가능 언어">
             <LanguageFilterPanel
               value={selectedLanguages}
@@ -166,7 +166,7 @@ export function HospitalContent({
 
       {/* 진료과 필터 */}
       {active === 'department' && (
-        <div className="sticky top-11 z-30 bg-white px-6 pt-0">
+        <div className="sticky top-11 z-30 bg-white px-6">
           <FilterPanel title="진료 과목">
             <DepartmentFilterPanel
               value={selectedDepartments}
@@ -177,7 +177,7 @@ export function HospitalContent({
       )}
 
       {/* 병원 리스트 */}
-      <div className="flex-1 overflow-y-auto px-6 pt-0 pb-24">
+      <div className="flex-1 overflow-y-auto px-6 pt-0">
         {filteredHospitals.length === 0 ? (
           <div className="flex min-h-60 items-center justify-center text-gray-500 text-sm">
             조건에 만족하는 병원이 없습니다.
@@ -215,7 +215,7 @@ export function HospitalContent({
         )}
       </div>
 
-      <div className="fixed inset-x-0 bottom-0 border-[#F0F3F4] border-t bg-white px-6 py-4">
+      <div className="sticky bottom-0 border-[#F0F3F4] border-t bg-white px-6 py-4">
         <Button
           className="h-14 w-full rounded-xl bg-green-ez text-white"
           onClick={() =>
