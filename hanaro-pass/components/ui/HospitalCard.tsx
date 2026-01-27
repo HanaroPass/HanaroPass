@@ -1,5 +1,4 @@
 import { Clock, MapPin, Phone } from 'lucide-react';
-import Image from 'next/image';
 import { useState } from 'react';
 import AIResultIcon from '@/components/ui/AIResultIcon';
 
@@ -56,7 +55,9 @@ export function HospitalCard({ hospital }: { hospital: HospitalInfo }) {
           {/* 언어 */}
           <div className="text-sm">
             <span className="font-semibold text-gray-700">소통 언어</span>
-            <span className="text-gray-800">: {hospital.languages}</span>
+            <span className="text-gray-800">
+              : {hospital.languages.join(', ')}
+            </span>
           </div>
 
           {/* 진료과목 */}
@@ -89,12 +90,10 @@ export function HospitalCard({ hospital }: { hospital: HospitalInfo }) {
         {/* 오른쪽 사진 (고정 높이) */}
         <div className="relative h-36 w-24 self-start overflow-hidden rounded-xl bg-gray-100">
           {hospital.imageUrl ? (
-            <Image
+            <img
               src={hospital.imageUrl}
               alt={`${hospital.name} 병원 이미지`}
-              fill
-              className="object-cover"
-              sizes="96px"
+              className="h-full w-full object-cover object-center"
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center text-gray-400 text-xs">

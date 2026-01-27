@@ -36,6 +36,32 @@ const DEPT_CODE_MAP: Record<string, string> = {
   '50': '치과',
   '80': '한의원',
 };
+
+// 병원 이미지 경로
+const HOSPITAL_IMAGE_MAP: Record<string, string> = {
+  건국대학교병원: '/images/hospitals/konkuk.jpg',
+  혜민병원: '/images/hospitals/hemin.jpg',
+  바른본병원: '/images/hospitals/bareun.jpg',
+  서울프라임병원: '/images/hospitals/prime.jpg',
+  연세무척나은병원: '/images/hospitals/mucheok.jpg',
+  제니스병원: '/images/hospitals/zenith.jpg',
+  동부참사랑요양병원: '/images/hospitals/dongbu.jpg',
+  편안한요양병원: '/images/hospitals/pyeonanhan.jpg',
+  국립정신건강센터: '/images/hospitals/national_mental_health.jpg',
+  '(사)인구보건복지협회 서울지회 가족보건의원':
+    '/images/hospitals/family_health.jpg',
+  한양대학교병원: '/images/hospitals/hanyang.jpg',
+  재단법인베스티안재단베스티안서울병원: '/images/hospitals/bestian.jpg',
+  '9988병원': '/images/hospitals/9988.jpg',
+  연세바로척병원: '/images/hospitals/yonsei_chuk.jpg',
+  연세슬기병원: '/images/hospitals/yonsei_seulgi.jpg',
+  '학교법인대진교육재단 제인병원': '/images/hospitals/jain.jpg',
+  굿모닝요양병원: '/images/hospitals/goodmorning.jpg',
+  서울효사랑요양병원: '/images/hospitals/hoesarang.jpg',
+  시온요양병원: '/images/hospitals/sion.jpg',
+  '1삼성탑의원': '/images/hospitals/samsungtop.jpg',
+};
+
 /**
  * 확률 기반 언어 랜덤 배정 함수
  */
@@ -68,10 +94,9 @@ export const getRandomLangs = () => {
 
   return [...result, ...extraLangs];
 };
-// picsum 사진에서 랜덤 이미지 가져오기
-export const getRandomHospitalImage = () => {
-  const randomId = Math.floor(Math.random() * 50) + 1;
-  return `https://picsum.photos/seed/med-${randomId}/800/600`;
+// imageUrl이 비어 있을 때만 쓰는 fallback
+export const getDefaultHospitalImage = () => {
+  return '/images/hospitals/default.jpg';
 };
 export const normalizeItems = (items: any) => {
   if (!items) return [];
@@ -154,7 +179,8 @@ export async function fetchAndSeedHospitals() {
         await prisma.hospital.create({
           data: {
             nameKo: item.yadmNm,
-            imageUrl: getRandomHospitalImage(),
+            imageUrl:
+              HOSPITAL_IMAGE_MAP[item.yadmNm] ?? getDefaultHospitalImage(),
             address: item.addr,
             latitude,
             longitude,
