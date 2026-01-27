@@ -1,5 +1,7 @@
 'use server';
 
+import { chatWithAI } from '../symptoms/openai/chatWithAI';
+
 export type outputType = {
   타입: 'SYMPTOM' | 'PROCEDURE';
   주요_증상?: string[];
@@ -9,6 +11,9 @@ export type outputType = {
   응급_여부: '낮음' | '중간' | '높음' | '매우 높음';
   번역_내용: string;
 };
+
+const aiModel = 'gpt-5-nano';
+
 export async function postOpenAI(url: string, body: string) {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) throw new Error('OPEN AI API 키가 없습니다.');
@@ -140,7 +145,12 @@ export async function postSymptomForm(formData: FormData) {
     throw new Error('필요한 값이 없습니다');
 
   const images = formData.getAll('images') as File[];
-  let imagesToBase64 = [];
+  let imagesToBase64: {
+    type: 'input_image';
+    image_url: string;
+    detail: 'auto';
+  }[] = [];
+
   imagesToBase64 = await Promise.all(
     images
       .filter((image) => image && image.size > 0)
@@ -150,11 +160,19 @@ export async function postSymptomForm(formData: FormData) {
         return {
           type: 'input_image',
           image_url: `data:${image.type};base64,${base64}`,
+          detail: 'auto',
         };
       }),
   );
+  let aiOutput: string | null = null;
+  aiOutput = await chatWithAI(aiModel, prompt, description, imagesToBase64);
+  let fromCached = false;
+  if (aiOutput) {
+    fromCached = true;
+    return { fromCached, response: aiOutput };
+  }
   const body = JSON.stringify({
-    model: 'gpt-5-nano',
+    model: aiModel,
     input: [
       { role: 'system', content: [{ type: 'input_text', text: prompt }] },
       {
@@ -177,7 +195,7 @@ export async function postSymptomForm(formData: FormData) {
     throw new Error('AI 분석 처리 중 오류가 발생했습니다.');
   console.log(output);
 
-  return output;
+  return { fromCached, response: output };
 }
 
 export async function getTTS(description: string) {

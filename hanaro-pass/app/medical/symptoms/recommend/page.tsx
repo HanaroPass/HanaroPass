@@ -7,8 +7,8 @@ import type { Hospital } from '@/lib/generated/prisma';
 import { useMyLocation } from '@/lib/getMyLocation';
 import { cn } from '@/lib/utils';
 import getDistance from '../../../../lib/getDistance';
-import { getFilteredHospitals } from '../../actions/filterHospital';
-import { parseOutput } from '../../actions/symptoms';
+import { getFilteredHospitals } from '../../actions/filterHospital.action';
+import { parseOutput } from '../../actions/symptoms.action';
 import Symptom from '../../components/symptom/Symptom';
 
 export type HospitalWithStatus = Omit<Hospital, 'latitude' | 'longitude'> & {

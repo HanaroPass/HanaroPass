@@ -1,7 +1,6 @@
 'use client';
-import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
-import { postSymptomForm } from '../actions/symptoms';
+import { postSymptomForm } from '../actions/symptoms.action';
 
 export default function useSymptomResubmit() {
   const [isLoading, setLoading] = useState(false);
@@ -28,7 +27,7 @@ export default function useSymptomResubmit() {
         }
       }
 
-      const response = await postSymptomForm(formData);
+      const { response } = await postSymptomForm(formData);
       localStorage.setItem('symptom-result', response);
       localStorage.setItem(
         'written-symptom',
