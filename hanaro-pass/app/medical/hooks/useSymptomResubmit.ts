@@ -79,10 +79,14 @@ export default function useSymptomResubmit(reloadTrigger: number) {
     audio.play();
   };
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(result?.번역_내용 || '');
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(result?.번역_내용 || '');
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch (e) {
+      console.error('클립보드 복사 실패', e);
+    }
   };
 
   return {

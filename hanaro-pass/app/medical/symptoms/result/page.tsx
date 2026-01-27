@@ -1,56 +1,27 @@
 'use client';
 import { Check, Copy, Loader } from 'lucide-react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import ActionButton from '@/components/ui/ActionButton';
 import AIResultIcon from '../../../../components/ui/AIResultIcon';
-import {
-  getTTS,
-  type outputType,
-  parseOutput,
-} from '../../actions/symptoms.action';
 import HospitalGuide from '../../components/languageRegistration/HospitalGuide';
 import AISummaryDiagnosis from '../../components/symptom/AISummaryDiagnosis';
 import useSymptomResubmit from '../../hooks/useSymptomResubmit';
 
 export default function SymptomResultContent() {
-  const [writtenSymptom, setWrittenSymptom] = useState('');
-  const [result, setResult] = useState<outputType>();
-  const [copied, setCopied] = useState(false);
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const mode = searchParams.get('mode');
-  const { isLoading, handleResubmit } = useSymptomResubmit();
   const [reloadTrigger, setReloadTrigger] = useState(0);
+  const {
+    isLoading,
+    handleResubmit,
+    playAudio,
+    handleCopy,
+    copied,
+    result,
+    writtenSymptom,
+    mode,
+  } = useSymptomResubmit(reloadTrigger);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-  useEffect(() => {
-    const parse = async () => {
-      setWrittenSymptom(localStorage.getItem('written-symptom') as string);
-      const data = localStorage.getItem('symptom-result');
-      if (!data) return;
-
-      try {
-        const result = await parseOutput(data);
-        setResult(result);
-      } catch (e) {
-        console.error('증상 결과 파싱 실패', e);
-      }
-    };
-    parse();
-  }, [reloadTrigger]);
-
-  const playAudio = async () => {
-    const base64 = await getTTS(JSON.stringify(result?.번역_내용));
-    const audio = new Audio(`data:audio/mp3;base64,${base64}`);
-    audio.play();
-  };
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(result?.번역_내용 || '');
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
-  };
   return (
     <div className="px-6">
       <div className="mt-4 flex justify-center">
@@ -73,6 +44,7 @@ export default function SymptomResultContent() {
         <AISummaryDiagnosis result={result} />
       )}
       <div className="mt-5 h-1.5 border-gray-100 border-t" />
+
       <div className="mt-4 text-black-800 text-sm">AI 작성 내용</div>
       <form
         onSubmit={async (e) => {
@@ -87,17 +59,14 @@ export default function SymptomResultContent() {
           className="black-800 mt-3 mb-3 h-33 w-full resize-none rounded-2xl bg-gray-200 p-6 text-sm"
           name="description"
         />
-        {isLoading ? (
-          <ActionButton
-            onClick={() => {}}
-            text="번역 및 분석 중..."
-            disabled
-            invert={true}
-          />
-        ) : (
-          <ActionButton onClick={() => {}} text="다시 번역하기" invert={true} />
-        )}
+        <ActionButton
+          onClick={() => {}}
+          text={isLoading ? '번역 및 분석 중...' : '다시 번역하기'}
+          disabled={isLoading}
+          invert={true}
+        />
       </form>
+
       <div className="mt-7 text-black-800 text-sm">AI 번역 내용</div>
       <div className="relative mt-3 mb-6 w-full rounded-2xl bg-gray-200 p-6 text-black-800 text-sm">
         <button
