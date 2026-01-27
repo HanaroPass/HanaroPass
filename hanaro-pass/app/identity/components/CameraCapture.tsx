@@ -21,6 +21,10 @@ const CameraCapture = ({
   const handleFileSelect = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files?.[0];
+      if (selectedImage) {
+        URL.revokeObjectURL(selectedImage);
+      }
+
       if (file && onImageSelect) {
         // 이미지 미리보기를 위한 URL 생성
         const imageUrl = URL.createObjectURL(file);
@@ -28,7 +32,7 @@ const CameraCapture = ({
         onImageSelect(file);
       }
     },
-    [onImageSelect],
+    [onImageSelect, selectedImage],
   );
 
   const handleVideoClick = useCallback(() => {
