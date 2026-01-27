@@ -10,7 +10,7 @@ export type HospitalInfo = {
   closeTime: string;
   address: string;
   phone: string | null;
-  languages: string;
+  languages: string[];
   departments: string[];
   imageUrl?: string | null;
   aiSummary?: string;
