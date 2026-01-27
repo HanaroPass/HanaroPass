@@ -17,13 +17,15 @@ type PassportDrawerProps = {
   ocrFilledFields?: Set<string>;
 };
 
+const DEFAULT_INITIAL_DATA: Record<string, string> = {};
+
 export function PassportDrawer({
   open,
   onOpenChange,
   onSubmit,
   onReset,
   className,
-  initialData = {},
+  initialData = DEFAULT_INITIAL_DATA,
   ocrFilledFields: _ocrFilledFields = new Set(),
 }: PassportDrawerProps) {
   const { registerSuccess, actionError } = useToast();
