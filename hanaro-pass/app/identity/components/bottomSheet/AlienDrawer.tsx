@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo } from 'react';
 import { saveArcData } from '../../actions/arc';
 import { useDrawerForm } from './hooks/useDrawerForm';
 import { AlienExtraFields, AlienFields } from './shared/AlienFields';
@@ -25,6 +26,14 @@ export function AlienDrawer({
   initialData = {},
   ocrFilledFields: _ocrFilledFields = new Set(),
 }: AlienDrawerProps) {
+  // issueDate → issuedDate로 매핑 (useMemo로 무한루프 방지)
+  const normalizedInitialData = useMemo(
+    () => ({
+      ...initialData,
+      issuedDate: initialData.issuedDate || initialData.issueDate || '',
+    }),
+    [initialData],
+  );
   const handleSave = async (data: Record<string, string>) => {
     const result = await saveArcData(data);
 
@@ -39,7 +48,7 @@ export function AlienDrawer({
   const { formData, resetForm, handleFormDataChange } = useDrawerForm({
     onSubmit: undefined,
     onOpenChange,
-    initialData,
+    initialData: normalizedInitialData,
   });
   const handleSubmit = () => {
     void handleSave(formData);
