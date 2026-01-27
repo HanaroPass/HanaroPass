@@ -162,11 +162,11 @@ export async function updateApplicationStatusAction(
 
       pushData = {
         userId: app.userId,
-        title: '[하나로패스] 신청 심사 결과 안내',
+        title: `[${app.Hospital.nameKo}] 신청 심사 결과 안내`,
         body:
           vStatus === 'APPROVED'
-            ? `축하합니다! ${app.Hospital.nameKo}의 신청이 승인되었습니다.`
-            : `안타깝게도 ${app.Hospital.nameKo}의 신청이 반려되었습니다.`,
+            ? `축하합니다! 신청이 승인되었습니다.`
+            : `안타깝게도 신청이 반려되었습니다.`,
         url: `/medical/registrations/${app.hospitalId}`,
       };
     });

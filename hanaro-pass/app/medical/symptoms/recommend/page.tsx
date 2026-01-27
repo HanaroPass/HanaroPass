@@ -1,7 +1,8 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { HospitalCard } from '@/app/map/components/hospital/HospitalCard';
+
+import { HospitalCard } from '@/components/ui/HospitalCard';
 import type { Hospital } from '@/lib/generated/prisma';
 import { useMyLocation } from '@/lib/getMyLocation';
 import { cn } from '@/lib/utils';
@@ -16,8 +17,8 @@ export type HospitalWithStatus = Omit<Hospital, 'latitude' | 'longitude'> & {
   openTime: string;
   closeTime: string;
   status: '진료 중' | '진료 종료';
-  deptName: string;
-  langName: string;
+  departments: string[];
+  languages: string[];
   aiSummary: string | null;
   distance?: number;
 };
@@ -52,8 +53,8 @@ export default function SymptomRecommendPage() {
       const hospitals = await getFilteredHospitals(type, symptom);
       const refinedHospitals = hospitals.map((h) => ({
         ...h,
-        deptName: h.HospitalDept.map((d) => d.deptName).join(', '),
-        langName: h.HospitalLang.map((l) => l.langName).join(', '),
+        departments: h.HospitalDept.map((d) => d.deptName),
+        languages: h.HospitalLang.map((l) => l.langName),
         aiSummary: h.HospitalReview?.aiSummary ?? null,
         ...filterHour(h.openHours),
       }));
@@ -168,8 +169,8 @@ export default function SymptomRecommendPage() {
                     closeTime: hospital.closeTime,
                     address: hospital.address,
                     phone: hospital.phone ?? '',
-                    langName: hospital.langName,
-                    deptName: hospital.deptName,
+                    languages: hospital.languages,
+                    departments: hospital.departments,
                     aiSummary: hospital.aiSummary ?? undefined,
                   }}
                 />
