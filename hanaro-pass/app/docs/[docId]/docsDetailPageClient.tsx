@@ -37,15 +37,24 @@ export default function DocsDetailPageClient({ docId, fileUrl, title }: Props) {
     }
   };
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     if (!fileUrl) return;
 
-    const link = document.createElement('a');
-    link.href = fileUrl;
-    link.download = title;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    try {
+      const res = await fetch(fileUrl);
+      if (!res.ok) throw new Error(`다운로드 실패 (${res.status})`);
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = title || 'document.pdf';
+      a.click();
+
+      setTimeout(() => URL.revokeObjectURL(url), 0);
+    } catch {
+      systemError('서류 다운로드');
+    }
   };
 
   return (
