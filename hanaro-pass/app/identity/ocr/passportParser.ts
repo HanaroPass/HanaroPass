@@ -42,7 +42,8 @@ export const parsePassportData = (text: string): ParsedData => {
   }
 
   // 2. 이름/성 추출
-  const mrzNameMatch = fullText.match(/([A-Z]+)<<([A-Z]+)</);
+  const mrzNameMatch = fullText.match(/([A-Z]+)<<([A-Z]+)</i);
+
   if (mrzNameMatch) {
     data.lastName = mrzNameMatch[1].toUpperCase();
     data.firstName = mrzNameMatch[2].toUpperCase();
