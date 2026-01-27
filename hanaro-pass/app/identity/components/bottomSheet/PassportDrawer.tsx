@@ -14,7 +14,6 @@ type PassportDrawerProps = {
   onReset?: () => void;
   className?: string;
   initialData?: Record<string, string>;
-  ocrFilledFields?: Set<string>;
 };
 
 const DEFAULT_INITIAL_DATA: Record<string, string> = {};
@@ -26,7 +25,6 @@ export function PassportDrawer({
   onReset,
   className,
   initialData = DEFAULT_INITIAL_DATA,
-  ocrFilledFields: _ocrFilledFields = new Set(),
 }: PassportDrawerProps) {
   const { registerSuccess, actionError } = useToast();
   const handleSave = async (data: Record<string, string>) => {

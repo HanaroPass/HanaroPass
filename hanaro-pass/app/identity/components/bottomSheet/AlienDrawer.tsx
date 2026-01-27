@@ -15,8 +15,9 @@ type AlienDrawerProps = {
   onReset?: () => void;
   className?: string;
   initialData?: Record<string, string>;
-  ocrFilledFields?: Set<string>;
 };
+
+const DEFAULT_INITIAL_DATA: Record<string, string> = {};
 
 export function AlienDrawer({
   open,
@@ -24,8 +25,7 @@ export function AlienDrawer({
   onSubmit,
   onReset,
   className,
-  initialData = {},
-  ocrFilledFields: _ocrFilledFields = new Set(),
+  initialData = DEFAULT_INITIAL_DATA,
 }: AlienDrawerProps) {
   const { actionError } = useToast();
 

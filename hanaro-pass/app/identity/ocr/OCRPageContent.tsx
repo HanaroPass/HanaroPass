@@ -23,9 +23,6 @@ export default function OCRPageContent({
 }: OCRPageContentProps) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [ocrData, setOcrData] = useState<Record<string, string>>({});
-  const [ocrFilledFields, setOcrFilledFields] = useState<Set<string>>(
-    new Set(),
-  );
   const [isProcessing, setIsProcessing] = useState(false);
 
   const isMountedRef = useRef(true);
@@ -53,7 +50,7 @@ export default function OCRPageContent({
           : parseArcData(data.text);
 
       setOcrData(parsedData);
-      setOcrFilledFields(new Set(Object.keys(parsedData)));
+
       setIsDrawerOpen(true);
     } catch (error) {
       if (!isMountedRef.current) return;
@@ -73,7 +70,6 @@ export default function OCRPageContent({
   const handleRetake = () => {
     setIsDrawerOpen(false);
     setOcrData({});
-    setOcrFilledFields(new Set());
   };
 
   if (!type) return null;
@@ -144,7 +140,6 @@ export default function OCRPageContent({
           onSubmit={handleSubmit}
           onReset={handleRetake}
           initialData={ocrData}
-          ocrFilledFields={ocrFilledFields}
         />
       ) : (
         <AlienDrawer
@@ -153,7 +148,6 @@ export default function OCRPageContent({
           onSubmit={handleSubmit}
           onReset={handleRetake}
           initialData={ocrData}
-          ocrFilledFields={ocrFilledFields}
         />
       )}
     </div>
