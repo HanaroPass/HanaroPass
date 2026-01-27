@@ -81,12 +81,12 @@ export function useExchangeSearch(currentMapRegion: string) {
               });
             }
           });
-
-          prev.forEach((item) => {
-            const key = `${item.mapx}-${item.mapy}`;
-            if (!itemMap.has(key)) itemMap.set(key, item);
-          });
-
+          if (lastSearchedRegionRef.current === currentMapRegion) {
+            prev.forEach((item) => {
+              const key = `${item.mapx}-${item.mapy}`;
+              if (!itemMap.has(key)) itemMap.set(key, item);
+            });
+          }
           return Array.from(itemMap.values()).slice(0, 30);
         });
 
@@ -110,6 +110,7 @@ export function useExchangeSearch(currentMapRegion: string) {
     setExchangeResults([]);
     lastSearchedRegionRef.current = '';
     latestRequestIdRef.current = 0;
+    setIsLoading(false);
   }, []);
 
   return { exchangeResults, searchExchanges, clearResults, isLoading };

@@ -158,9 +158,11 @@ export function useMapMarkers({
 
     const currentMarkersMap = exchangeMarkersRef.current;
     const activeKeys = new Set<string>();
-
+    const seenKeys = new Set<string>();
     const pendingResults = exchangeResults.filter((result) => {
       const markerKey = `${result.mapx}-${result.mapy}`;
+      if (seenKeys.has(markerKey)) return false;
+      seenKeys.add(markerKey);
       activeKeys.add(markerKey);
       return !currentMarkersMap.has(markerKey);
     });
