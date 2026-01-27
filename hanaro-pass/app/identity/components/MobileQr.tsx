@@ -56,15 +56,14 @@ export default function MobileQr({ type, data }: MobileQrProps) {
 
   const rawCountry = data.nationality || 'UNITED STATES OF AMERICA';
 
-  // 나라별 국기 이미지
-  // 매핑 테이블에서 이름을 찾고, 없으면 공백을 언더바로 바꾼 값을 기본으로 시도
+  // 나라별 국기 이미지 (nation 폴더에서 매핑)
   const fileName =
     COUNTRY_IMAGE_MAP[rawCountry] || rawCountry.replace(/\s+/g, '_');
 
-  const [imgSrc, setImgSrc] = useState(`/images/identity/${fileName}.png`);
+  const [imgSrc, setImgSrc] = useState(`/images/nation/${fileName}.png`);
 
   useEffect(() => {
-    setImgSrc(`/images/identity/${fileName}.png`);
+    setImgSrc(`/images/nation/${fileName}.png`);
   }, [fileName]);
 
   return (
