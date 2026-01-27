@@ -84,6 +84,7 @@ export default function MapPageClient({ hospitals, userId }: Props) {
     handleTouchMove,
     handleTouchEnd,
     getTranslateValue,
+    setSheetPosition,
   } = useBottomSheet();
 
   useEffect(() => {
@@ -247,6 +248,11 @@ export default function MapPageClient({ hospitals, userId }: Props) {
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
+        onCloseToList={() => {
+          setSelectedHospital(null);
+          setSheetPosition('half');
+        }}
+        showCloseButton={!!selectedHospital}
       >
         {openSheet === 'bookmark' && !!selectedPlace && (
           <div className="px-2">

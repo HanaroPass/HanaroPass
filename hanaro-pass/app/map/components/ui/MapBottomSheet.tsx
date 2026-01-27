@@ -1,6 +1,7 @@
 'use client';
 
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
+import { X } from 'lucide-react';
 import { type ReactNode, type RefObject, useEffect } from 'react';
 import {
   SHEET_TITLE,
@@ -21,6 +22,9 @@ type MapBottomSheetProps = {
   onTouchMove: (e: React.TouchEvent) => void;
   onTouchEnd: () => void;
   getTranslateValue: (pos: SheetPosition) => number;
+  onCloseToList: () => void;
+  fixedContent?: ReactNode;
+  showCloseButton?: boolean;
   children: ReactNode;
 };
 
@@ -37,6 +41,8 @@ export function MapBottomSheet({
   onTouchMove,
   onTouchEnd,
   getTranslateValue,
+  showCloseButton = false,
+  onCloseToList,
   children,
 }: MapBottomSheetProps) {
   /**
@@ -93,6 +99,20 @@ export function MapBottomSheet({
         <div className="h-2 w-24 rounded-full bg-gray-200" />
       </div>
 
+      <div className="flex items-center justify-between px-5 py-4">
+        <div className="font-bold text-base">{SHEET_TITLE[openSheet]}</div>
+
+        {showCloseButton && (
+          <button
+            onClick={onCloseToList}
+            aria-label="닫기"
+            className="grid h-9 w-9 place-items-center rounded-full transition hover:bg-black/5 active:scale-95"
+          >
+            <X size={20} />
+          </button>
+        )}
+      </div>
+
       <div
         className="flex-1 overflow-y-auto"
         style={{
@@ -104,6 +124,7 @@ export function MapBottomSheet({
         <VisuallyHidden>
           <h2>{SHEET_TITLE[openSheet]}</h2>
         </VisuallyHidden>
+
         <div ref={contentRef}>{children}</div>
       </div>
     </div>
