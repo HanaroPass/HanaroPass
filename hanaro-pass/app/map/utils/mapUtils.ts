@@ -13,7 +13,6 @@ const CATEGORY_MAP: Record<string, string> = {
 
 // 병원 운영 상태 계산 함수
 export function getHospitalStatus(openHours: string): '진료 중' | '진료 종료' {
-  // 1. 방어 코드: 데이터가 없거나 형식이 잘못된 경우 처리
   if (!openHours || !openHours.includes('-')) return '진료 종료';
 
   try {
@@ -29,12 +28,10 @@ export function getHospitalStatus(openHours: string): '진료 중' | '진료 종
     const closeTime = new Date(now);
     closeTime.setHours(closeH, closeM, 0, 0);
 
-    // 2. 야간 진료 대응: 종료 시간이 시작 시간보다 숫자가 작다면 (예: 02:00) 내일로 간주
     if (closeTime <= openTime) {
       closeTime.setDate(closeTime.getDate() + 1);
     }
 
-    // 3. 현재 시간이 시작~종료 사이에 있는지 확인
     const isOpen = now >= openTime && now < closeTime;
 
     return isOpen ? '진료 중' : '진료 종료';
@@ -45,14 +42,12 @@ export function getHospitalStatus(openHours: string): '진료 중' | '진료 종
 
 // 운영 시간 파싱
 export const parseOpenHours = (openHours: string) => {
-  // 1. 데이터가 없거나 '-' 형식이 아닐 경우 안전하게 기본값 반환
   if (!openHours || !openHours.includes('-')) {
     return { openTime: '정보 없음', closeTime: '' };
   }
 
   try {
     const [openTime, closeTime] = openHours.split('-');
-    // 2. 혹시나 split은 됐는데 값이 비어있을 경우를 대비해 한 번 더 체크
     return {
       openTime: openTime || '정보 없음',
       closeTime: closeTime || '',
