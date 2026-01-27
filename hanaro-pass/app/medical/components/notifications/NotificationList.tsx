@@ -1,6 +1,7 @@
 'use client';
 
 import { AnimatePresence, motion } from 'framer-motion';
+import { RefreshCcw } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useInView } from 'react-intersection-observer';
 import type { Notification } from '@/lib/generated/prisma';
@@ -16,9 +17,10 @@ export default function NotificationList({
 }) {
   const [notifications, setNotifications] =
     useState<Notification[]>(initialNotifications);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(2);
   const [hasMore, setHasMore] = useState(initialNotifications.length >= 10);
   const [isFetching, setIsFetching] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const { ref, inView } = useInView({ threshold: 0.1 });
   const [filter, setFilter] = useState<'ALL' | 'UNREAD'>('ALL');
@@ -39,8 +41,19 @@ export default function NotificationList({
     setIsFetching(false);
   }, [page, isFetching, hasMore]);
 
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    const result = await getNotificationsAction(1); // 1페이지부터 다시
+    if (result.success) {
+      setNotifications(result.data);
+      setPage(2);
+      setHasMore(result.data.length >= 10);
+    }
+    setIsRefreshing(false);
+  };
+
   useEffect(() => {
-    if (inView && hasMore && isFetching) {
+    if (inView && hasMore && !isFetching) {
       fetchNextPage();
     }
   }, [inView, hasMore, isFetching, fetchNextPage]);
@@ -54,6 +67,18 @@ export default function NotificationList({
 
   return (
     <div className="flex flex-col gap-4">
+      <AnimatePresence>
+        {isRefreshing && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 40, opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="flex items-center justify-center overflow-hidden"
+          >
+            <RefreshCcw className="h-5 w-5 animate-spin text-green-ez" />
+          </motion.div>
+        )}
+      </AnimatePresence>
       <div className="mb-2 flex gap-2">
         {(['ALL', 'UNREAD'] as const).map((type) => (
           <button
@@ -70,7 +95,19 @@ export default function NotificationList({
           </button>
         ))}
       </div>
-      <div className="flex flex-col gap-4">
+
+      <motion.div
+        drag="y" // 세로 드래그 허용
+        dragConstraints={{ top: 0, bottom: 0 }} // 제자리로 돌아오게 설정
+        dragElastic={0.5} // 당길 때 저항감 부여 (0.5가 적당히 쫀득함)
+        onDragEnd={(_, info) => {
+          // 사용자가 아래로 50px 이상 당겼을 때 새로고침 실행
+          if (info.offset.y > 50) {
+            handleRefresh();
+          }
+        }}
+        className="flex touch-pan-y flex-col gap-4" // touch-none은 브라우저 기본 당겨서 새로고침 방지
+      >
         <AnimatePresence mode="popLayout">
           {filteredNotifications.length > 0
             ? filteredNotifications.map((noti) => (
@@ -100,7 +137,7 @@ export default function NotificationList({
             </div>
           )}
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

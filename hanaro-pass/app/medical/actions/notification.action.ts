@@ -14,16 +14,16 @@ import { validateUser } from '@/lib/user';
  * @returns
  */
 export async function getNotificationsAction(
-  page: number = 0,
-  limit: number = 10,
+  page: number = 1,
 ): Promise<ActionResult<Notification[]>> {
+  const limit = 10;
   try {
     const userId = await validateUser();
 
     const notifications = await prisma.notification.findMany({
       where: { userId: userId },
       orderBy: { createdAt: 'desc' }, // 최신순 정렬
-      skip: page * limit, // 건너뛸 개수
+      skip: (page - 1) * limit, // 건너뛸 개수
       take: limit, // 가져올 개수
     });
 
