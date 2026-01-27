@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { useToast } from '@/hooks/useToast';
 import {
   getAdminReviewDetailAction,
   updateApplicationStatusAction,
@@ -45,20 +46,25 @@ export function useAdminReview(id: number) {
     fetchDetail();
   }, [fetchDetail]);
 
+  const { success, actionError, systemError } = useToast();
+
   const handleUpdateStatus = async (status: 'APPROVED' | 'REJECTED') => {
-    if (
-      !confirm(`${status === 'APPROVED' ? '승인' : '반려'} 처리하시겠습니까?`)
-    )
-      return false;
     try {
       setIsUpdating(true);
       const result = await updateApplicationStatusAction(id, status);
       if (result.success) {
-        alert('처리가 완료되었습니다.');
+        success(
+          '처리가 완료되었습니다.',
+          `${status === 'APPROVED' ? '승인' : '반려'} 상태로 변경되었습니다.`,
+        );
         await fetchDetail();
         return true;
+      } else {
+        actionError(result);
+        return false;
       }
-      alert(result.message);
+    } catch {
+      systemError(`${status === 'APPROVED' ? '승인' : '반려'} 처리`);
       return false;
     } finally {
       setIsUpdating(false);
