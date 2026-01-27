@@ -16,8 +16,8 @@ export default function useSymptomResubmit(reloadTrigger: number) {
   const searchParams = useSearchParams();
   const mode = searchParams.get('mode');
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
+    console.log('reloadTrigger:', reloadTrigger);
     const parse = async () => {
       setWrittenSymptom(localStorage.getItem('written-symptom') as string);
       const data = localStorage.getItem('symptom-result');
