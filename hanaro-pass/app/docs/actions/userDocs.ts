@@ -1,24 +1,44 @@
 'use server';
 
 import crypto from 'node:crypto';
-import fs from 'node:fs/promises';
-import path from 'node:path';
-
 import { revalidatePath } from 'next/cache';
-
 import {
   handleActionResult,
   HttpError,
   type ActionResult,
 } from '@/lib/errorHandler';
 import { prisma } from '@/lib/prisma';
-
 import {
   DOC_ID_TO_REQUIREMENT,
   type DocsCardId,
   type UserDocType,
 } from '../constants/docsCardItem';
 import { getUserIdFromSession } from '@/lib/session';
+import { supabaseServer } from '@/lib/superbase';
+
+const ALLOWED_MIME_TYPES = new Set([
+  'application/pdf',
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+]);
+
+const MIME_TO_EXT: Record<string, string> = {
+  'application/pdf': 'pdf',
+  'image/jpeg': 'jpg',
+  'image/png': 'png',
+  'image/webp': 'webp',
+};
+
+const DOCS_BUCKET = 'hanaropass-images';
+
+// DB에 public URL을 저장할 것이므로, 삭제 시 URL에서 storage path를 다시 뽑아야 함
+function extractStoragePathFromPublicUrl(publicUrl: string, bucket: string) {
+  const marker = `/storage/v1/object/public/${bucket}/`;
+  const idx = publicUrl.indexOf(marker);
+  if (idx === -1) return null;
+  return publicUrl.slice(idx + marker.length);
+}
 
 // *
 // 서류 조회
@@ -32,10 +52,7 @@ export async function getUserDocs(docId: string) {
   if (!req || req.kind !== 'USER_DOC') return null;
 
   return await prisma.userDocument.findFirst({
-    where: {
-      userId,
-      docType: req.docType,
-    },
+    where: { userId, docType: req.docType },
   });
 }
 
@@ -71,65 +88,58 @@ export async function addUserDocs(
       throw new HttpError('지원하지 않는 파일 형식입니다.', 400);
     }
 
-    // 파일 확장자 추출 및 경로 설정
+    // storage path 생성 (Supabase bucket 내부 경로)
     const uuid = crypto.randomUUID();
     const ext = MIME_TO_EXT[file.type];
-    const relativePath = `uploads/${userId}/${docType}/${uuid}.${ext}`;
+    const storagePath = `uploads/${userId}/${docType}/${uuid}.${ext}`;
 
-    const uploadDir = path.join(
-      process.cwd(),
-      'public',
-      'uploads',
-      String(userId),
-      docType,
-    );
-    const fullPath = path.join(process.cwd(), 'public', relativePath);
-
-    // 파일 저장
-    await fs.mkdir(uploadDir, { recursive: true });
+    // Supabase 업로드
     const buffer = Buffer.from(await file.arrayBuffer());
-    await fs.writeFile(fullPath, buffer);
+    const upload = await supabaseServer.storage
+      .from(DOCS_BUCKET)
+      .upload(storagePath, buffer, {
+        contentType: file.type,
+        upsert: false,
+      });
 
-    // DB 저장에 파일 경로 저장
+    if (upload.error) {
+      throw new HttpError(`업로드 실패: ${upload.error.message}`, 500);
+    }
+
+    const MAX_SIZE = 5 * 1024 * 1024;
+    if (file && file.size > MAX_SIZE) {
+      throw new HttpError('파일 크기는 5MB를 초과할 수 없습니다.', 400);
+    }
+
+    // public url 생성
+    const { data: pub } = supabaseServer.storage
+      .from(DOCS_BUCKET)
+      .getPublicUrl(storagePath);
+
+    const publicUrl = pub.publicUrl;
+
     let created: { createdAt: Date };
     try {
       created = await prisma.userDocument.create({
         data: {
           userId,
           docType,
-          fileUrl: `/${relativePath}`,
+          fileUrl: publicUrl,
         },
-        select: {
-          createdAt: true,
-        },
+        select: { createdAt: true },
       });
     } catch (dbError) {
-      // DB 실패 시 파일 정리
-      await fs.unlink(fullPath).catch(() => {});
+      // DB 실패 시 업로드한 파일 롤백 삭제
+      await supabaseServer.storage.from(DOCS_BUCKET).remove([storagePath]);
       throw dbError;
     }
 
     revalidatePath('/docs');
-
     return { success: true, data: { createdAt: created.createdAt } };
   } catch (error) {
     return handleActionResult(error);
   }
 }
-
-const ALLOWED_MIME_TYPES = new Set([
-  'application/pdf',
-  'image/jpeg',
-  'image/png',
-  'image/webp',
-]);
-
-const MIME_TO_EXT: Record<string, string> = {
-  'application/pdf': 'pdf',
-  'image/jpeg': 'jpg',
-  'image/png': 'png',
-  'image/webp': 'webp',
-};
 
 // *
 // 서류 삭제
@@ -148,41 +158,32 @@ export async function deleteUserDocs(
       throw new HttpError('유효하지 않은 서류입니다.', 400);
     }
 
-    // DB에서 기존 서류 조회
     const userDoc = await prisma.userDocument.findFirst({
-      where: {
-        userId,
-        docType: req.docType,
-      },
+      where: { userId, docType: req.docType },
     });
+    if (!userDoc) throw new HttpError('삭제할 서류가 없습니다.', 404);
 
-    if (!userDoc) {
-      throw new HttpError('삭제할 서류가 없습니다.', 404);
-    }
-
-    // 실제 파일 경로
-    const filePath = path.join(
-      process.cwd(),
-      'public',
-      userDoc.fileUrl.replace(/^\//, ''),
+    // URL -> storagePath 추출
+    const storagePath = extractStoragePathFromPublicUrl(
+      userDoc.fileUrl,
+      DOCS_BUCKET,
     );
 
-    // 파일 삭제 (없어도 에러 안 나게)
-    try {
-      await fs.unlink(filePath);
-    } catch {
-      console.warn('파일 삭제 실패 (무시됨):', filePath);
-    }
+    if (storagePath) {
+      const rm = await supabaseServer.storage
+        .from(DOCS_BUCKET)
+        .remove([storagePath]);
 
+      if (rm.error) {
+        console.warn('Supabase 파일 삭제 실패(계속 진행):', rm.error.message);
+      }
+    } else {
+      console.warn('storagePath 추출 실패. fileUrl:', userDoc.fileUrl);
+    }
     // DB 삭제
-    await prisma.userDocument.delete({
-      where: {
-        id: userDoc.id,
-      },
-    });
+    await prisma.userDocument.delete({ where: { id: userDoc.id } });
 
     revalidatePath('/docs');
-
     return { success: true, data: { deleted: true } };
   } catch (error) {
     return handleActionResult(error);
