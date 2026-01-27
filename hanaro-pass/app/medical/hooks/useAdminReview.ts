@@ -64,7 +64,7 @@ export function useAdminReview(id: number) {
         return false;
       }
     } catch {
-      systemError(`${status === 'APPROVED' ? '승인' : '반려'} 처리`);
+      systemError(status === 'APPROVED' ? '승인' : '반려');
       return false;
     } finally {
       setIsUpdating(false);

@@ -47,7 +47,7 @@ export default function LanguageRegistrationClient() {
   const handleReset = () => {
     setSelectedIds(initialIds);
     setShowResetModal(false);
-    info('선택하신 언어가 모두 해제되었습니다.');
+    info('선택이 초기 상태로 되돌려졌습니다.');
   };
 
   return (

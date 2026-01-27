@@ -56,6 +56,7 @@ export function useLanguageRegistration() {
           router.back();
         }
       } catch {
+        hasFetched.current = false;
         systemError('병원 정보 불러오기');
       }
     };
