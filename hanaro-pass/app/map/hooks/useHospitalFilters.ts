@@ -4,6 +4,8 @@ export type Hospital = {
   id: number;
   nameKo: string;
   address: string;
+  latitude: number;
+  longitude: number;
   phone: string | null;
   openHours: string;
   imageUrl?: string | null;

@@ -26,6 +26,7 @@ import { PlaceCard } from './components/ui/PlaceCard';
 import { ToggleButton } from './components/ui/ToggleButton';
 import { useBottomSheet } from './hooks/useBottomSheet';
 import { useExchangeSearch } from './hooks/useExchangeSearch';
+import type { Hospital } from './hooks/useHospitalFilters';
 import { useMarkerClick } from './hooks/useMarkerClick';
 import { formatExchangeData, mapDbToInfo } from './utils/mapUtils';
 
@@ -35,20 +36,6 @@ import { formatExchangeData, mapDbToInfo } from './utils/mapUtils';
  * Naver Map을 배경으로 깔고, 상단 카테고리 탭과 우측 퀵 버튼, 하단 바텀시트를 조합합니다.
  * useBottomSheet 커스텀 훅을 사용하여 시트 관련 모든 로직을 주입받아 사용합니다.
  */
-
-export type Hospital = {
-  id: number;
-  nameKo: string;
-  address: string;
-  latitude: number;
-  longitude: number;
-  phone: string | null;
-  openHours: string;
-  languages: string[];
-  departments: string[];
-  imageUrl?: string | null;
-  aiSummary?: string;
-};
 
 type Props = {
   hospitals: Hospital[];

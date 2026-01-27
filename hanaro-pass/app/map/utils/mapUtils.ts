@@ -2,14 +2,30 @@ import type { Embassy, SavedPlace } from '@/lib/generated/prisma';
 
 import type { NaverSearchResult } from '../components/ui/NaverMap';
 import type { LocationInfo } from '../components/ui/PlaceCard';
+import type { Hospital } from '../hooks/useHospitalFilters';
 import type { ClickablePlace } from '../hooks/useMapMarkers';
-import type { Hospital } from '../mapPageClient';
 
 const CATEGORY_MAP: Record<string, string> = {
   CAFE: '카페',
   FOOD: '식당',
   SHOP: '쇼핑',
 };
+
+// 병원 운영 상태 계산 함수
+export function getHospitalStatus(openHours: string): '진료 중' | '진료 종료' {
+  const [open, close] = openHours.split('-');
+  const now = new Date();
+  const [openH, openM] = open.split(':').map(Number);
+  const [closeH, closeM] = close.split(':').map(Number);
+
+  const openTime = new Date(now);
+  openTime.setHours(openH, openM, 0, 0);
+
+  const closeTime = new Date(now);
+  closeTime.setHours(closeH, closeM, 0, 0);
+
+  return now >= openTime && now < closeTime ? '진료 중' : '진료 종료';
+}
 
 // HTML 태그 제거 및 데이터 포맷팅
 export const formatExchangeData = (

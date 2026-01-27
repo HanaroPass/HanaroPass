@@ -9,24 +9,10 @@ import {
   type Hospital,
   useHospitalFilters,
 } from '../../hooks/useHospitalFilters';
+import { getHospitalStatus } from '../../utils/mapUtils';
 import DepartmentFilterPanel from './DepartmentFilterPanel';
 import FilterPanel from './FilterPanel';
 import LanguageFilterPanel from './LanguageFilterPanel';
-
-function getHospitalStatus(openHours: string): '진료 중' | '진료 종료' {
-  const [open, close] = openHours.split('-');
-  const now = new Date();
-  const [openH, openM] = open.split(':').map(Number);
-  const [closeH, closeM] = close.split(':').map(Number);
-
-  const openTime = new Date(now);
-  openTime.setHours(openH, openM, 0, 0);
-
-  const closeTime = new Date(now);
-  closeTime.setHours(closeH, closeM, 0, 0);
-
-  return now >= openTime && now < closeTime ? '진료 중' : '진료 종료';
-}
 
 type Mode = 'list' | 'detail';
 
