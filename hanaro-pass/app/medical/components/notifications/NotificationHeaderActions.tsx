@@ -1,10 +1,10 @@
-// app/medical/notifications/components/NotificationHeaderActions.tsx
 'use client';
 
 import { CheckCheck, Trash2 } from 'lucide-react'; // Trash2 추가
 import { useState } from 'react';
 import { ConfirmModal } from '@/components/toast/ConfirmModal';
 import { useToast } from '@/hooks/useToast';
+import { HttpError } from '@/lib/errorHandler';
 import {
   deleteAllNotificationsAction,
   markAllAsReadAction,
@@ -26,12 +26,17 @@ export default function NotificationHeaderActions({
   const handleAllRead = async () => {
     try {
       const result = await markAllAsReadAction();
-      if (result.success) {
-        onAllReadAction();
-        success('알림 처리 완료', '모든 알림을 읽음 처리했습니다.');
+      if (!result.success) {
+        throw new HttpError(result.message || '읽음 처리 실패', 500);
       }
-    } catch {
-      systemError('전체 읽음 처리');
+      onAllReadAction();
+      success('알림 처리 완료', '모든 알림을 읽음 처리했습니다.');
+    } catch (error) {
+      if (error instanceof HttpError) {
+        systemError(error.message);
+      } else {
+        systemError('전체 읽음 처리 중 문제가 발생했습니다.');
+      }
     } finally {
       setShowReadModal(false);
     }
@@ -40,12 +45,17 @@ export default function NotificationHeaderActions({
   const handleAllDelete = async () => {
     try {
       const result = await deleteAllNotificationsAction();
-      if (result.success) {
-        onAllDeleteAction();
-        info('알림 삭제 완료', '모든 알림 내역이 삭제되었습니다.');
+      if (!result.success) {
+        throw new HttpError(result.message || '전체 삭제 실패', 500);
       }
-    } catch {
-      systemError('전체 삭제 처리');
+      onAllDeleteAction();
+      info('알림 삭제 완료', '모든 알림 내역이 삭제되었습니다.');
+    } catch (error) {
+      if (error instanceof HttpError) {
+        systemError(error.message);
+      } else {
+        systemError('전체 읽음 처리 중 문제가 발생했습니다.');
+      }
     } finally {
       setShowDeleteModal(false);
     }

@@ -19,11 +19,12 @@ export async function getNotificationsAction(
   const limit = 10;
   try {
     const userId = await validateUser();
+    const safePage = Math.max(1, page);
 
     const notifications = await prisma.notification.findMany({
       where: { userId: userId },
       orderBy: { createdAt: 'desc' }, // 최신순 정렬
-      skip: (page - 1) * limit, // 건너뛸 개수
+      skip: (safePage - 1) * limit, // 건너뛸 개수
       take: limit, // 가져올 개수
     });
 
