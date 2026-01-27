@@ -1,3 +1,4 @@
+import { getUserIdFromSession } from '@/lib/session';
 import { getHospitals } from './actions/hospitals';
 import MapPageClient from './mapPageClient';
 import { getHospitalAiSummary } from './services/hospitalAiSummary';
@@ -23,6 +24,7 @@ function pickRandomReviews() {
 }
 
 export default async function Page() {
+  const userId = await getUserIdFromSession();
   const hospitals = await getHospitals();
 
   const hospitalsWithSummary = await Promise.all(
@@ -34,5 +36,5 @@ export default async function Page() {
     })),
   );
 
-  return <MapPageClient hospitals={hospitalsWithSummary} />;
+  return <MapPageClient hospitals={hospitalsWithSummary} userId={userId} />;
 }

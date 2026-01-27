@@ -10,7 +10,6 @@ import {
 } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Embassy, SavedPlace } from '@/lib/generated/prisma';
-import { getUserIdFromSession } from '@/lib/session';
 import { getMyEmbassy } from './actions/embassy';
 import { getSavedPlaces } from './actions/savedPlaces';
 import { EmbassyContent } from './components/embassy/EmbassyContent';
@@ -53,9 +52,10 @@ export type Hospital = {
 
 type Props = {
   hospitals: Hospital[];
+  userId: number | null;
 };
 
-export default function MapPageClient({ hospitals }: Props) {
+export default function MapPageClient({ hospitals, userId }: Props) {
   const [bookmark, setBookmark] = useState(false);
 
   const [savedPlaces, setSavedPlaces] = useState<SavedPlace[]>([]);
@@ -87,36 +87,30 @@ export default function MapPageClient({ hospitals }: Props) {
   } = useBottomSheet();
 
   useEffect(() => {
+    if (!userId) return;
+
     const fetchEmbassy = async () => {
       try {
-        const res = await fetch('/api/session/userId');
-        const { userId } = await res.json();
-        if (!userId) return;
+        const result = await getMyEmbassy(userId);
 
-        const embassyRes = await fetch(`/api/embassy?userId=${userId}`);
-        const result = await embassyRes.json();
-
-        if (!embassyRes.ok) {
+        if (result.success) {
+          setMyEmbassy(result.data);
+        } else {
           console.error('대사관 조회 실패:', result.message);
-          return;
         }
-
-        setMyEmbassy(result.data);
       } catch (e) {
         console.error('네트워크 오류:', e);
       }
     };
 
     fetchEmbassy();
-  }, []);
+  }, [userId]);
 
   useEffect(() => {
+    if (!userId) return;
+
     const fetchPlaces = async () => {
       try {
-        const res = await fetch('/api/session/userId');
-        const { userId } = await res.json();
-        if (!userId) return;
-
         const result = await getSavedPlaces(userId);
 
         if (result.success) {
@@ -130,7 +124,7 @@ export default function MapPageClient({ hospitals }: Props) {
     };
 
     fetchPlaces();
-  }, []);
+  }, [userId]);
 
   useEffect(() => {
     if (!currentMapRegion) return;
