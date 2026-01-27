@@ -63,7 +63,7 @@ function getExchangeType(name: string): '은행' | '환전소' | '기타' {
     '환전기',
   ];
 
-  if (exchangeKeywords.some((k) => name.includes(k))) {
+  if (exchangeKeywords.some((k) => lower.includes(k.toLowerCase()))) {
     return '환전소';
   }
 
