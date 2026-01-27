@@ -2,7 +2,7 @@
 
 import { Loader2, X } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Header from '@/components/header/Header';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/useToast';
@@ -42,8 +42,6 @@ export default function ResultStep({
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const hasShownToast = useRef(false);
-
   useEffect(() => {
     if (identityType) {
       setActiveTab(identityType);
@@ -64,11 +62,10 @@ export default function ResultStep({
         setPassportData(res.passport);
         setArcData(res.arc);
 
-        if (initialData && !hasShownToast.current) {
+        if (initialData) {
           const typeLabel =
             identityType === 'passport' ? '여권' : '외국인 등록증';
           registerSuccess(typeLabel);
-          hasShownToast.current = true;
         }
 
         if (identityType) {
