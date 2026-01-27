@@ -2,17 +2,13 @@
 
 import { prisma } from '@/lib/prisma';
 import { getUserIdFromSession } from '@/lib/session';
+import { type IdentityData, IdentityDataSchema } from './identity.schema';
 
-export type IdentityPayload =
-  | { type: 'passport'; data: Record<string, string> }
-  | { type: 'arc'; data: Record<string, string> }
-  | { type: null; data: null };
+function toISODate(d: Date): string {
+  return d.toISOString().slice(0, 10);
+}
 
-// 신분증 or 여권 보유
-export async function getIdentityData(): Promise<{
-  passport: Record<string, string> | null;
-  arc: Record<string, string> | null;
-}> {
+export async function getIdentityData(): Promise<IdentityData> {
   const userId = await getUserIdFromSession();
   if (!userId) return { passport: null, arc: null };
 
@@ -38,15 +34,13 @@ export async function getIdentityData(): Promise<{
     }),
   ]);
 
-  const toDateString = (d: Date) => d.toISOString().slice(0, 10);
-
-  return {
+  const res = {
     passport: passport
       ? {
           passportNumber: passport.passportNumber,
           gender: passport.gender,
-          issueDate: toDateString(passport.issueDate),
-          expiryDate: toDateString(passport.expiryDate),
+          issueDate: toISODate(passport.issueDate),
+          expiryDate: toISODate(passport.expiryDate),
           userPhotoUrl: passport.userPhotoUrl ?? '',
         }
       : null,
@@ -55,9 +49,11 @@ export async function getIdentityData(): Promise<{
       ? {
           arcNumber: arc.arcNumber,
           residenceStatus: arc.residenceStatus,
-          issueDate: toDateString(arc.issueDate),
+          issueDate: toISODate(arc.issueDate),
           userPhotoUrl: arc.userPhotoUrl ?? '',
         }
       : null,
   };
+
+  return IdentityDataSchema.parse(res);
 }
