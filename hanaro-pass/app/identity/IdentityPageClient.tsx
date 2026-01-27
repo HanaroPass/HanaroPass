@@ -1,7 +1,6 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-// import { logout } from './actions/test';
 import { useFunnel } from './hooks/useFunnel';
 import OCRPageContent from './ocr/OCRPageContent';
 import AccountStep from './steps/AccountStep';
