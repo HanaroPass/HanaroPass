@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import Barcode from 'react-barcode';
 import { postPaymentAction } from '@/app/(main)/actions/postPayment.action';
+import { useAlert } from '@/providers/alertProvider';
 
 interface CouponDetailProps {
   brandName: string;
@@ -22,6 +23,7 @@ export default function CouponDetail({
   couponNumber,
   id,
 }: CouponDetailProps) {
+  const { alert } = useAlert();
   const router = useRouter();
   const [isPaying, setIsPaying] = useState(false);
 
@@ -40,8 +42,15 @@ export default function CouponDetail({
       return;
     }
 
-    alert('결제가 완료되었습니다.');
-    router.push('/');
+    alert({
+      render: (
+        <p className="font-medium text-sm text-teal-600">
+          쿠폰 사용으로 280원을 절약했어요!
+        </p>
+      ),
+      actionLabel: '확인',
+      hideCancel: true,
+    });
   };
 
   return (
