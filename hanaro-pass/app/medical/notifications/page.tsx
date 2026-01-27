@@ -1,6 +1,6 @@
 import { Bell } from 'lucide-react';
 import { getNotificationsAction } from '../actions/notification.action';
-import NotificationCard from '../components/notifications/NotificationCard';
+import NotificationList from '../components/notifications/NotificationList';
 
 export default async function NotificationsPage() {
   const result = await getNotificationsAction();
@@ -15,17 +15,7 @@ export default async function NotificationsPage() {
           <h2 className="font-semibold text-base">최근 도착한 소식</h2>
         </div>
 
-        <div className="flex flex-col gap-4">
-          {notifications && notifications.length > 0 ? (
-            notifications.map((noti) => (
-              <NotificationCard key={noti.id} notification={noti} />
-            ))
-          ) : (
-            <div className="flex flex-col items-center justify-center py-20 text-center">
-              <p className="text-gray-400">도착한 알림이 없습니다.</p>
-            </div>
-          )}
-        </div>
+        <NotificationList initialNotifications={notifications} />
       </main>
     </div>
   );
