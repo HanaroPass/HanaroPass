@@ -202,20 +202,20 @@ export function AlertDialogProvider({ children }: { children: ReactNode }) {
     return (
       <AlertDialogFooter>
         {!options.hideCancel && (
-          <AlertDialogCancel disabled={cancelDisabled} {...options.cancelProps}>
+          <AlertDialogCancel {...options.cancelProps} disabled={cancelDisabled}>
             {options.cancelLabel}
           </AlertDialogCancel>
         )}
 
         <AlertDialogAction
           onClick={handleAction}
-          disabled={actionDisabled}
           className={
             options.variant === 'destructive'
               ? 'bg-red-600 hover:bg-red-700'
               : undefined
           }
           {...options.actionProps}
+          disabled={actionDisabled}
         >
           {options.actionLabel}
         </AlertDialogAction>
@@ -260,7 +260,7 @@ export function AlertDialogProvider({ children }: { children: ReactNode }) {
       <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
         <AlertDialogContent className={options.contentClassName}>
           <VisuallyHidden.Root>
-            <AlertDialogTitle>{a11yTitle}</AlertDialogTitle>
+            {!options.title && <AlertDialogTitle>{a11yTitle}</AlertDialogTitle>}
             {!options.disableAriaDescription ? (
               <AlertDialogDescription>{a11yDescription}</AlertDialogDescription>
             ) : null}
