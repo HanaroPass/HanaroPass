@@ -1,5 +1,6 @@
 'use client';
 
+import { X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -43,9 +44,15 @@ type Props = {
   mode: Mode;
   hospitals: Hospital[];
   hospital?: Hospital;
+  onBackToList?: () => void;
 };
 
-export function HospitalContent({ mode, hospitals, hospital }: Props) {
+export function HospitalContent({
+  mode,
+  hospitals,
+  hospital,
+  onBackToList,
+}: Props) {
   const router = useRouter();
   const [active, setActive] = useState<FilterType>(null);
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
@@ -58,7 +65,14 @@ export function HospitalContent({ mode, hospitals, hospital }: Props) {
     if (!hospital) return null;
 
     return (
-      <div className="flex h-full flex-col px-6 pt-2">
+      <div className="relative flex h-full flex-col px-6 pt-2">
+        <button
+          onClick={onBackToList}
+          aria-label="닫기"
+          className="-top-1 absolute right-4 z-10 text-gray-400 transition-colors hover:text-gray-600"
+        >
+          <X width={20} height={20} />
+        </button>
         <HospitalCard
           hospital={{
             name: hospital.nameKo,

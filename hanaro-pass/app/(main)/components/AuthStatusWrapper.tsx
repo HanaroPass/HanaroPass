@@ -39,7 +39,7 @@ export default function AuthStatusWrapper() {
     <>
       {isLoggedIn && <PushNotificationManager isLoggedIn={isLoggedIn} />}
 
-      {isDev && (
+      {/* {isDev && (
         <div className="fixed right-4 bottom-20 z-9999">
           {isLoggedIn ? (
             <MockLogoutButton logoutAction={logout} isPending={isPending} />
@@ -47,7 +47,7 @@ export default function AuthStatusWrapper() {
             <MockLoginButtons loginAction={login} />
           )}
         </div>
-      )}
+      )} */}
     </>
   );
 }
