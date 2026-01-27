@@ -3,9 +3,9 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { HospitalCard } from '@/components/ui/HospitalCard';
 import DepartmentFilterPanel from './DepartmentFilterPanel';
 import FilterPanel from './FilterPanel';
-import { HospitalCard } from './HospitalCard';
 import LanguageFilterPanel from './LanguageFilterPanel';
 
 function getHospitalStatus(openHours: string): '진료 중' | '진료 종료' {
@@ -67,8 +67,8 @@ export function HospitalContent({ mode, hospitals, hospital }: Props) {
             closeTime: hospital.openHours.split('-')[1],
             address: hospital.address,
             phone: hospital.phone ?? '-',
-            langName: hospital.languages.join(', '),
-            deptName: hospital.departments.join(', '),
+            languages: hospital.languages,
+            departments: hospital.departments,
             imageUrl: hospital.imageUrl,
             aiSummary: hospital.aiSummary,
           }}
@@ -106,7 +106,6 @@ export function HospitalContent({ mode, hospitals, hospital }: Props) {
     const departmentMatch =
       selectedDepartments.length === 0 ||
       selectedDepartments.some((dep) => h.departments.includes(dep));
-
     return languageMatch && departmentMatch;
   });
 
@@ -185,8 +184,8 @@ export function HospitalContent({ mode, hospitals, hospital }: Props) {
                   closeTime,
                   address: h.address,
                   phone: h.phone ?? '-',
-                  langName: h.languages.join(', '),
-                  deptName: h.departments.join(', '),
+                  languages: h.languages,
+                  departments: h.departments,
                   imageUrl: h.imageUrl,
                   aiSummary: h.aiSummary,
                 }}

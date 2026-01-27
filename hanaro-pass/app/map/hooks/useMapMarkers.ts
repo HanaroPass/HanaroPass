@@ -5,7 +5,7 @@ import type { Embassy, SavedPlace } from '@/lib/generated/prisma';
 
 import type { NaverSearchResult } from '../components/ui/NaverMap';
 import { MARKER_ICONS } from '../constants/map';
-import type { Hospital } from '../page';
+import type { Hospital } from '../mapPageClient';
 
 export type ClickablePlace =
   | SavedPlace
