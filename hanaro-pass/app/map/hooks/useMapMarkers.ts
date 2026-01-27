@@ -6,6 +6,7 @@ import type { Embassy, SavedPlace } from '@/lib/generated/prisma';
 import type { NaverSearchResult } from '../components/ui/NaverMap';
 import { MARKER_ICONS } from '../constants/map';
 import type { Hospital } from '../mapPageClient';
+import { getExchangeType } from '../utils/mapUtils';
 
 export type ClickablePlace =
   | SavedPlace
@@ -208,7 +209,7 @@ export function useMapMarkers({
             } = {
               ...result,
               name: result.title.replace(/<[^>]*>?/g, ''),
-              type: '환전소',
+              type: getExchangeType(result.title),
             };
             onMarkerClick(clickData);
           });

@@ -50,6 +50,10 @@ export function useExchangeSearch(currentMapRegion: string) {
           allQueries.map((q) => fetchExchanges(q)),
         );
 
+        const isAnySuccess = results.some(
+          (r) => r.status === 'fulfilled' && r.value && r.value.length > 0,
+        );
+
         setExchangeResults((prev) => {
           // 새로운 데이터를 먼저
           const itemMap = new Map<string, NaverSearchResult>();
@@ -74,18 +78,15 @@ export function useExchangeSearch(currentMapRegion: string) {
 
           prev.forEach((item) => {
             const key = `${item.mapx}-${item.mapy}`;
-            if (!itemMap.has(key)) {
-              itemMap.set(key, item);
-            }
+            if (!itemMap.has(key)) itemMap.set(key, item);
           });
 
-          const updatedList = Array.from(itemMap.values());
-
-          // 30개 제한
-          return updatedList.slice(0, 30);
+          return Array.from(itemMap.values()).slice(0, 30);
         });
 
-        lastSearchedRegionRef.current = currentMapRegion;
+        if (isAnySuccess) {
+          lastSearchedRegionRef.current = currentMapRegion;
+        }
       } catch (error) {
         console.error('Exchange search failed:', error);
       } finally {

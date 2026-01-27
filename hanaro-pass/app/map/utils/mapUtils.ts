@@ -42,7 +42,7 @@ const BANK_KEYWORDS = [
   'bank',
 ];
 
-function getExchangeType(name: string): '은행' | '환전소' | '기타' {
+export function getExchangeType(name: string): '은행' | '환전소' | '기타' {
   if (!name) return '기타';
 
   const lower = name.toLowerCase();
