@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
+import { Toaster } from 'sonner';
 import AuthStatusWrapper from './(main)/components/AuthStatusWrapper';
 import './globals.css';
 
@@ -20,7 +21,14 @@ export default function RootLayout({
         <Suspense fallback={null}>
           <div className="app-shell">{children}</div>
         </Suspense>
-
+        <Toaster
+          position="top-center"
+          richColors
+          expand={false}
+          toastOptions={{
+            className: 'mt-10',
+          }}
+        />
         <Suspense fallback={null}>
           <AuthStatusWrapper />
         </Suspense>

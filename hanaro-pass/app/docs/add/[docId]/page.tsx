@@ -3,7 +3,7 @@
 import { Info, Plus } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useRef, useState } from 'react';
+import { use, useRef, useState } from 'react';
 
 import Header from '@/components/header/Header';
 import { DOCS_CARD_ITEMS } from '../../constants/docsCardItem';
@@ -17,7 +17,7 @@ import {
 import { addUserDocs } from '../../actions/userDocs';
 
 export default function DocsAddPage({ params }: DocsProps) {
-  const { docId } = params;
+  const { docId } = use(params);
   const doc = DOCS_CARD_ITEMS.find((item) => item.id === docId);
 
   const router = useRouter();

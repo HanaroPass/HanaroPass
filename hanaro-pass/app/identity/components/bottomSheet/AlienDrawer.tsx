@@ -1,5 +1,6 @@
 'use client';
 
+import { useToast } from '@/hooks/useToast';
 import { saveArcData } from '../../actions/arc';
 import { useDrawerForm } from './hooks/useDrawerForm';
 import { AlienExtraFields, AlienFields } from './shared/AlienFields';
@@ -21,6 +22,7 @@ export function AlienDrawer({
   onReset,
   className,
 }: AlienDrawerProps) {
+  const { actionError } = useToast();
   const handleSave = async (data: Record<string, string>) => {
     const result = await saveArcData(data);
 
@@ -28,7 +30,7 @@ export function AlienDrawer({
       if (onSubmit) onSubmit(data);
       onOpenChange(false);
     } else {
-      alert(`[오류 ${result.status}] ${result.message}`);
+      actionError(result);
     }
   };
 
