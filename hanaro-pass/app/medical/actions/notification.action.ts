@@ -43,3 +43,40 @@ export async function markAsReadAction(
     return handleActionResult(error);
   }
 }
+
+/**
+ * [모든 알림 읽음 처리]
+ */
+export async function markAllAsReadAction(): Promise<ActionResult<null>> {
+  try {
+    const userId = await validateUser();
+    await prisma.notification.updateMany({
+      where: { userId, isRead: false },
+      data: { isRead: true },
+    });
+
+    revalidatePath('/medical/notifications');
+    return { success: true, data: null };
+  } catch (error) {
+    return handleActionResult(error);
+  }
+}
+
+/**
+ * [알림 삭제]
+ */
+export async function deleteNotificationAction(
+  id: number,
+): Promise<ActionResult<null>> {
+  try {
+    const userId = await validateUser();
+    await prisma.notification.delete({
+      where: { id, userId },
+    });
+
+    revalidatePath('/medical/notifications');
+    return { success: true, data: null };
+  } catch (error) {
+    return handleActionResult(error);
+  }
+}
