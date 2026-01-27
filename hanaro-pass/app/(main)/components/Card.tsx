@@ -5,6 +5,8 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { memo, useCallback, useMemo, useRef, useState } from 'react';
 import Barcode from 'react-barcode';
+import PaymentResultModal from '@/components/payResult/PayResult';
+import { useAlert } from '@/providers/alertProvider';
 import type { UserCardResponse } from '../actions/getUserCards.schema';
 import { postPaymentAction } from '../actions/postPayment.action';
 import { topUpCardAction } from '../actions/topUpCard.action';
@@ -64,6 +66,7 @@ export default function Card({
 
   const [isPaying, setIsPaying] = useState(false);
   const router = useRouter();
+  const { alert } = useAlert();
 
   const activeCard = useMemo(
     () => cards[activeIndex] ?? null,
@@ -113,9 +116,31 @@ export default function Card({
     setIsPaying(false);
 
     if (!res.success) {
-      alert(res.message);
+      alert({
+        render: () => (
+          <PaymentResultModal
+            variant="fail"
+            title="결제가 완료되지 않았어요"
+            description={res.message ?? '카드 정보를 다시 확인해주세요'}
+          />
+        ),
+        actionLabel: '확인',
+        hideCancel: true,
+      });
       return;
     }
+
+    const data = res.data;
+    alert({
+      render: () => (
+        <PaymentResultModal
+          variant="success"
+          title="결제가 완료됐어요"
+          amountLabel={`원화 ${data.paidAmount.toLocaleString()}원`}
+          savedAmount={data.savedAmount}
+        />
+      ),
+    });
     router.refresh();
   };
 
@@ -140,7 +165,7 @@ export default function Card({
     });
 
     if (!res.success) {
-      alert(res.message);
+      alert({ title: '충전을 실패했어요', description: res.message });
       return;
     }
     router.refresh();

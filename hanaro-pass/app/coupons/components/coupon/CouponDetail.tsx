@@ -2,10 +2,10 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import Barcode from 'react-barcode';
 import { postPaymentAction } from '@/app/(main)/actions/postPayment.action';
+import PaymentResultModal from '@/components/payResult/PayResult';
 import { useAlert } from '@/providers/alertProvider';
 
 interface CouponDetailProps {
@@ -24,7 +24,6 @@ export default function CouponDetail({
   id,
 }: CouponDetailProps) {
   const { alert } = useAlert();
-  const router = useRouter();
   const [isPaying, setIsPaying] = useState(false);
 
   const onBarcodeClick = async () => {
@@ -38,18 +37,30 @@ export default function CouponDetail({
     setIsPaying(false);
 
     if (!res.success) {
-      alert(res.message);
+      alert({
+        render: () => (
+          <PaymentResultModal
+            variant="fail"
+            title="결제가 완료되지 않았어요"
+            description={res.message ?? '카드 정보를 다시 확인해주세요'}
+          />
+        ),
+        actionLabel: '확인',
+        hideCancel: true,
+      });
       return;
     }
 
+    const data = res.data;
     alert({
-      render: (
-        <p className="font-medium text-sm text-teal-600">
-          쿠폰 사용으로 280원을 절약했어요!
-        </p>
+      render: () => (
+        <PaymentResultModal
+          variant="success"
+          title="결제가 완료됐어요"
+          amountLabel={`원화 ${data.paidAmount.toLocaleString()}원`}
+          savedAmount={data.savedAmount}
+        />
       ),
-      actionLabel: '확인',
-      hideCancel: true,
     });
   };
 
