@@ -20,6 +20,7 @@ export type ConfirmModalProps = {
   confirmText?: string;
   cancelText?: string;
   onConfirm: () => void | Promise<void>;
+  onCancel?: () => void;
   variant?: 'danger' | 'primary' | 'success';
 };
 
@@ -31,6 +32,7 @@ export function ConfirmModal({
   confirmText = '확인',
   cancelText = '취소',
   onConfirm,
+  onCancel,
   variant = 'primary',
 }: ConfirmModalProps) {
   const variantClassMap = {
@@ -40,7 +42,7 @@ export function ConfirmModal({
   } as const;
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent className="fixed top-[50%] left-[50%] z-50 w-[300px] max-w-none translate-x-[-50%] translate-y-[-50%] rounded-[24px] border-none bg-white p-6 shadow-2xl">
+      <AlertDialogContent className="fixed top-[50%] left-[50%] z-50 w-[375px] max-w-none translate-x-[-50%] translate-y-[-50%] rounded-[24px] border-none bg-white p-6 shadow-2xl">
         <AlertDialogHeader className="flex flex-col gap-4">
           <AlertDialogTitle className="text-center font-bold text-[17px] text-black-900">
             {title}
@@ -51,7 +53,10 @@ export function ConfirmModal({
         </AlertDialogHeader>
 
         <AlertDialogFooter className="mt-8 flex flex-row gap-2 sm:flex-row">
-          <AlertDialogCancel className="mt-0 h-11 flex-1 rounded-xl border-none bg-gray-100 font-medium text-[14px] text-gray-600 hover:bg-gray-200">
+          <AlertDialogCancel
+            onClick={onCancel}
+            className="mt-0 h-11 flex-1 rounded-xl border-none bg-gray-100 font-medium text-[14px] text-gray-600 hover:bg-gray-200"
+          >
             {cancelText}
           </AlertDialogCancel>
           <AlertDialogAction

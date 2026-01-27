@@ -1,9 +1,11 @@
 import { Loader } from 'lucide-react';
 import { Suspense } from 'react';
+import { getIdentityData } from '../identity/actions/identity';
+import type { IdentityData } from '../identity/actions/identity.schema';
 import { getUserCardsAction } from './actions/getUserCards.action';
 import CouponListLoader from './components/CouponList.loader';
-
 import MainWrapper from './components/MainWrapper';
+import PassportUnregisteredContent from './components/PassportUnregisteredContent';
 import Pay from './components/Pay';
 import Service from './components/Service';
 import Transfer from './components/Transfer';
@@ -26,6 +28,24 @@ export default async function Page({
       ? (rawTab as keyof typeof TAB_COMPONENTS)
       : 'pay';
 
+  let identity: IdentityData | null = null;
+  try {
+    identity = await getIdentityData();
+  } catch {
+    identity = null;
+  }
+
+  const { passport, arc } = identity ?? {};
+  const isRegistered = Boolean(passport || arc);
+  if (!isRegistered) {
+    return (
+      <MainWrapper activeTab={tab} isRegistered={false}>
+        <MainWrapper.Title>환율 정보</MainWrapper.Title>
+        <PassportUnregisteredContent />
+      </MainWrapper>
+    );
+  }
+
   const TabComponent = TAB_COMPONENTS[tab];
   const cardsPromise = tab === 'pay' ? getUserCardsAction() : undefined;
 
@@ -41,7 +61,7 @@ export default async function Page({
     ) : null;
 
   return (
-    <MainWrapper activeTab={tab}>
+    <MainWrapper activeTab={tab} isRegistered>
       <div className="app-layout">
         <MainWrapper.Title>
           {tab === 'pay' && 'EZ Pay'}
