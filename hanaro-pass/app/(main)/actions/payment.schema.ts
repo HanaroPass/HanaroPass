@@ -27,9 +27,9 @@ export const PaymentResponseSchema = z.object({
   paidAmount: z.number().int().nonnegative(),
   message: z.string(),
   success: z.literal(true),
-  listPrice: z.number(),
-  discountRate: z.number(),
-  savedAmount: z.number(),
+  listPrice: z.number().int().positive(),
+  discountRate: z.number().int().nonnegative(),
+  savedAmount: z.number().int().nonnegative(),
 });
 
 export type PaymentResponse = z.infer<typeof PaymentResponseSchema>;

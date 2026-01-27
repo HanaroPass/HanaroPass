@@ -6,7 +6,9 @@ import {
   type ReactNode,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 
@@ -23,6 +25,7 @@ import {
 
 type AlertRenderApi = {
   close: () => void;
+  isActing: boolean;
 };
 
 /**
@@ -67,12 +70,12 @@ interface AlertOptions {
 
   actionProps?: Omit<
     React.ComponentProps<typeof AlertDialogAction>,
-    'onClick' | 'children'
-  >;
+    'onClick' | 'children' | 'disabled'
+  > & { disabled?: boolean };
   cancelProps?: Omit<
     React.ComponentProps<typeof AlertDialogCancel>,
-    'children'
-  >;
+    'children' | 'disabled'
+  > & { disabled?: boolean };
 
   srTitle?: string;
   srDescription?: string;
@@ -121,11 +124,29 @@ export function AlertDialogProvider({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
   const [options, setOptions] = useState<AlertOptions>(defaultOptions);
 
+  // UI 반영용
+  const [isActing, setIsActing] = useState(false);
+  // 재진입 방지용 (렌더와 무관하게 즉시 잠금)
+  const actingRef = useRef(false);
+
   const close = useCallback(() => setIsOpen(false), []);
 
-  const api = useMemo<AlertRenderApi>(() => ({ close }), [close]);
+  useEffect(() => {
+    if (!isOpen) {
+      actingRef.current = false;
+      setIsActing(false);
+    }
+  }, [isOpen]);
+
+  const api = useMemo<AlertRenderApi>(
+    () => ({ close, isActing }),
+    [close, isActing],
+  );
 
   const alert = useCallback((newOptions: AlertOptions) => {
+    actingRef.current = false;
+    setIsActing(false);
+
     setOptions({
       ...defaultOptions,
       ...newOptions,
@@ -146,14 +167,22 @@ export function AlertDialogProvider({ children }: { children: ReactNode }) {
     setIsOpen(true);
   }, []);
 
-  const handleAction = async () => {
+  const handleAction = useCallback(async () => {
+    if (actingRef.current) return;
+
+    actingRef.current = true;
+    setIsActing(true);
+
     try {
       await options.onAction?.();
       if (options.closeOnAction !== false) close();
-    } catch {
-      // noop
+    } finally {
+      if (options.closeOnAction === false) {
+        actingRef.current = false;
+        setIsActing(false);
+      }
     }
-  };
+  }, [close, options.closeOnAction, options.onAction]);
 
   const a11yTitle = options.srTitle || options.title || '알림';
   const a11yDescription = options.disableAriaDescription
@@ -167,16 +196,20 @@ export function AlertDialogProvider({ children }: { children: ReactNode }) {
         : options.footer;
     }
 
+    const actionDisabled = isActing || options.actionProps?.disabled === true;
+    const cancelDisabled = isActing || options.cancelProps?.disabled === true;
+
     return (
       <AlertDialogFooter>
         {!options.hideCancel && (
-          <AlertDialogCancel {...options.cancelProps}>
+          <AlertDialogCancel disabled={cancelDisabled} {...options.cancelProps}>
             {options.cancelLabel}
           </AlertDialogCancel>
         )}
 
         <AlertDialogAction
           onClick={handleAction}
+          disabled={actionDisabled}
           className={
             options.variant === 'destructive'
               ? 'bg-red-600 hover:bg-red-700'
@@ -242,8 +275,7 @@ export function AlertDialogProvider({ children }: { children: ReactNode }) {
 
 export function useAlert() {
   const context = useContext(AlertDialogContext);
-  if (!context) {
+  if (!context)
     throw new Error('useAlert must be used within an AlertDialogProvider');
-  }
   return context;
 }

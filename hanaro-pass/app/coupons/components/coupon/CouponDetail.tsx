@@ -45,8 +45,8 @@ export default function CouponDetail({
             description={res.message ?? '카드 정보를 다시 확인해주세요'}
           />
         ),
-        actionLabel: '확인',
-        hideCancel: true,
+        srTitle: '결제가 완료되지 않았어요',
+        srDescription: res.message ?? '카드 정보를 다시 확인해주세요',
       });
       return;
     }
@@ -61,6 +61,8 @@ export default function CouponDetail({
           savedAmount={data.savedAmount}
         />
       ),
+      srTitle: '결제가 완료됐어요',
+      srDescription: `원화 ${data.paidAmount.toLocaleString()}원 결제`,
     });
   };
 
