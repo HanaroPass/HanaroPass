@@ -9,7 +9,7 @@ import {
   type Hospital,
   useHospitalFilters,
 } from '../../hooks/useHospitalFilters';
-import { getHospitalStatus } from '../../utils/mapUtils';
+import { getHospitalStatus, parseOpenHours } from '../../utils/mapUtils';
 import DepartmentFilterPanel from './DepartmentFilterPanel';
 import FilterPanel from './FilterPanel';
 import LanguageFilterPanel from './LanguageFilterPanel';
@@ -49,6 +49,8 @@ export function HospitalContent({
   if (mode === 'detail') {
     if (!hospital) return null;
 
+    const { openTime, closeTime } = parseOpenHours(hospital.openHours);
+
     return (
       <div className="relative flex h-full flex-col px-6 pt-2">
         <button
@@ -62,8 +64,8 @@ export function HospitalContent({
           hospital={{
             name: hospital.nameKo,
             status: getHospitalStatus(hospital.openHours),
-            openTime: hospital.openHours.split('-')[0],
-            closeTime: hospital.openHours.split('-')[1],
+            openTime,
+            closeTime,
             address: hospital.address,
             phone: hospital.phone ?? '-',
             languages: hospital.languages,
@@ -151,7 +153,7 @@ export function HospitalContent({
           </div>
         ) : (
           filteredHospitals.map((h, idx) => {
-            const [openTime, closeTime] = h.openHours.split('-');
+            const { openTime, closeTime } = parseOpenHours(h.openHours);
 
             return (
               <div

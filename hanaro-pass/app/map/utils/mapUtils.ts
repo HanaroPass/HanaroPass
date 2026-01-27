@@ -27,6 +27,12 @@ export function getHospitalStatus(openHours: string): '진료 중' | '진료 종
   return now >= openTime && now < closeTime ? '진료 중' : '진료 종료';
 }
 
+// 전화번호 파싱
+export const parseOpenHours = (openHours: string) => {
+  const [openTime, closeTime] = openHours.split('-');
+  return { openTime, closeTime };
+};
+
 // HTML 태그 제거 및 데이터 포맷팅
 export const formatExchangeData = (
   results: NaverSearchResult[],

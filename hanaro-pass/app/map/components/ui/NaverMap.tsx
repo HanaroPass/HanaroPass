@@ -2,10 +2,9 @@
 
 import { forwardRef, useImperativeHandle, useRef } from 'react';
 import type { Embassy, SavedPlace } from '@/lib/generated/prisma';
-
+import type { Hospital } from '../../hooks/useHospitalFilters';
 import { type ClickablePlace, useMapMarkers } from '../../hooks/useMapMarkers';
 import { useNaverMapInit } from '../../hooks/useNaverMapInit';
-import type { Hospital } from '../../mapPageClient';
 
 export type NaverSearchResult = {
   title: string;

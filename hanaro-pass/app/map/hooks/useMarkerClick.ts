@@ -2,13 +2,13 @@ import { useCallback } from 'react';
 import type { Embassy, SavedPlace } from '@/lib/generated/prisma';
 
 import type { NaverSearchResult } from '../components/ui/NaverMap';
-import type { Hospital } from '../mapPageClient';
 import {
   isEmbassy,
   isExchangePlace,
   isHospitalPlace,
   isSavedPlace,
 } from '../utils/mapUtils';
+import type { Hospital } from './useHospitalFilters';
 import type { ClickablePlace } from './useMapMarkers';
 
 type SheetType = 'hospital' | 'embassy' | 'exchange' | 'bookmark' | 'siren';
