@@ -9,11 +9,7 @@ type CameraCaptureProps = {
   onImageSelect?: (file: File) => void;
 };
 
-const CameraCapture = ({
-  type: _type,
-  onClick,
-  onImageSelect,
-}: CameraCaptureProps) => {
+const CameraCapture = ({ onClick, onImageSelect }: CameraCaptureProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);

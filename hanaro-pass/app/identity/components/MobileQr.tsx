@@ -59,11 +59,7 @@ export default function MobileQr({ type, data }: MobileQrProps) {
   const fileName =
     COUNTRY_IMAGE_MAP[rawCountry] || rawCountry.replace(/\s+/g, '_');
 
-  const [imgSrc, setImgSrc] = useState(`/images/nation/${fileName}.png`);
-
-  useEffect(() => {
-    setImgSrc(`/images/nation/${fileName}.png`);
-  }, [fileName]);
+  const imgSrc = `/images/nation/${fileName}.png`;
 
   return (
     <div
