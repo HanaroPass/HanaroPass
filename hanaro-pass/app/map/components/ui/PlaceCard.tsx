@@ -2,6 +2,7 @@
 import { Globe, Phone } from 'lucide-react';
 import Image from 'next/image';
 import { useMemo } from 'react';
+import { useToast } from '@/hooks/useToast';
 import getDistance from '@/lib/getDistance';
 
 export type LocationInfo = {
@@ -77,9 +78,11 @@ export function PlaceCard({ data, userCoords }: PlaceCardProps) {
     }
   };
 
+  const { info } = useToast();
+
   const handlePhoneCall = () => {
-    if (!data.phone) {
-      alert('등록된 전화번호가 없습니다.');
+    if (!data.phone || data.phone.trim() === '') {
+      info('등록된 전화번호가 없습니다.');
       return;
     }
 
