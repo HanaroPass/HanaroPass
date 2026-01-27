@@ -21,10 +21,15 @@ export function useExchangeSearch(currentMapRegion: string) {
     [],
   );
   const lastSearchedRegionRef = useRef('');
+
+  const latestRequestIdRef = useRef(0);
+
   const [isLoading, setIsLoading] = useState(false);
 
   const searchExchanges = useCallback(
     async (force = false) => {
+      const requestId = ++latestRequestIdRef.current;
+
       if (
         !force &&
         (!currentMapRegion ||
@@ -50,12 +55,13 @@ export function useExchangeSearch(currentMapRegion: string) {
           allQueries.map((q) => fetchExchanges(q)),
         );
 
+        if (requestId !== latestRequestIdRef.current) return;
+
         const isAnySuccess = results.some(
           (r) => r.status === 'fulfilled' && r.value && r.value.length > 0,
         );
 
         setExchangeResults((prev) => {
-          // 새로운 데이터를 먼저
           const itemMap = new Map<string, NaverSearchResult>();
 
           results.forEach((result) => {
@@ -84,13 +90,17 @@ export function useExchangeSearch(currentMapRegion: string) {
           return Array.from(itemMap.values()).slice(0, 30);
         });
 
-        if (isAnySuccess) {
+        if (isAnySuccess && requestId === latestRequestIdRef.current) {
           lastSearchedRegionRef.current = currentMapRegion;
         }
       } catch (error) {
-        console.error('Exchange search failed:', error);
+        if (requestId === latestRequestIdRef.current) {
+          console.error('Exchange search failed:', error);
+        }
       } finally {
-        setIsLoading(false);
+        if (requestId === latestRequestIdRef.current) {
+          setIsLoading(false);
+        }
       }
     },
     [currentMapRegion],
@@ -99,6 +109,7 @@ export function useExchangeSearch(currentMapRegion: string) {
   const clearResults = useCallback(() => {
     setExchangeResults([]);
     lastSearchedRegionRef.current = '';
+    latestRequestIdRef.current = 0;
   }, []);
 
   return { exchangeResults, searchExchanges, clearResults, isLoading };

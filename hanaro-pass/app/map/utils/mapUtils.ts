@@ -12,34 +12,31 @@ const CATEGORY_MAP: Record<string, string> = {
 };
 
 const BANK_KEYWORDS = [
-  '국민',
-  '신한',
-  '우리',
-  '하나',
-  '농협',
-  '기업',
-  '씨티',
-  'SC제일',
-
-  '부산',
-  '대구',
-  '광주',
-  '전북',
-  '경남',
-  '제주',
-
+  '국민은행',
+  '신한은행',
+  '우리은행',
+  '하나은행',
+  '농협은행',
+  'NH농협',
+  '기업은행',
+  '씨티은행',
+  'SC제일은행',
+  '산업은행',
+  'KDB',
+  '부산은행',
+  '광주은행',
+  '전북은행',
+  '경남은행',
+  '제주은행',
   '새마을금고',
   '신협',
   '수협',
   '우체국',
-
-  'KDB',
-  '산업은행',
   '케이뱅크',
   '카카오뱅크',
   '토스뱅크',
-
   'bank',
+  '뱅크',
 ];
 
 export function getExchangeType(name: string): '은행' | '환전소' | '기타' {
@@ -48,7 +45,7 @@ export function getExchangeType(name: string): '은행' | '환전소' | '기타'
   const lower = name.toLowerCase();
 
   if (
-    name.includes('은행') ||
+    lower.includes('은행') ||
     BANK_KEYWORDS.some((k) => lower.includes(k.toLowerCase()))
   ) {
     return '은행';
@@ -62,7 +59,6 @@ export function getExchangeType(name: string): '은행' | '환전소' | '기타'
     'exchange',
     '환전기',
   ];
-
   if (exchangeKeywords.some((k) => lower.includes(k.toLowerCase()))) {
     return '환전소';
   }

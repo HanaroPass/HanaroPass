@@ -144,6 +144,8 @@ export function useMapMarkers({
 
   // 환전소 마커 관리
   useEffect(() => {
+    let cancelled = false;
+
     if (!isMapReady || !map) return;
 
     if (!showExchanges || !exchangeResults || exchangeResults.length === 0) {
@@ -195,12 +197,14 @@ export function useMapMarkers({
       });
 
       Promise.all(geocodePromises).then((validResults) => {
-        if (!showExchanges || !map) return;
+        if (cancelled || !showExchanges || !map) return;
 
         validResults.forEach((item) => {
           if (!item) return;
           const { lat, lng, result } = item;
           const markerKey = `${result.mapx}-${result.mapy}`;
+
+          if (!activeKeys.has(markerKey)) return;
 
           const marker = createMarker(lat, lng, MARKER_ICONS.exchange, () => {
             const clickData: NaverSearchResult & {
@@ -226,6 +230,10 @@ export function useMapMarkers({
         currentMarkersMap.delete(key);
       }
     });
+
+    return () => {
+      cancelled = true;
+    };
   }, [
     isMapReady,
     map,
