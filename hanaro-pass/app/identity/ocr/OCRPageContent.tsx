@@ -1,7 +1,6 @@
 'use client';
 
 import { X } from 'lucide-react';
-// 1. useRef와 useEffect를 추가로 가져옵니다.
 import { useEffect, useRef, useState } from 'react';
 import Tesseract from 'tesseract.js';
 import { AlienDrawer } from '../components/bottomSheet/AlienDrawer';
@@ -29,50 +28,38 @@ export default function OCRPageContent({
   );
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // 2. 컴포넌트 마운트 상태를 추적할 Ref 생성
   const isMountedRef = useRef(true);
 
   useEffect(() => {
-    // 마운트 시 true 유지
     isMountedRef.current = true;
     return () => {
-      // 언마운트(페이지 이탈 등) 시 false로 변경
       isMountedRef.current = false;
     };
   }, []);
 
   const handleImageSelect = async (file: File) => {
-    console.log('선택된 이미지:', file);
     setIsProcessing(true);
 
     try {
-      // Tesseract OCR 실행
       const { data } = await Tesseract.recognize(file, 'kor+eng', {
         logger: (m) => console.log(m),
       });
 
-      // 3. 비동기 작업 완료 후 컴포넌트가 여전히 살아있는지 확인
       if (!isMountedRef.current) return;
 
-      console.log('OCR 결과:', data.text);
-
-      // 문서 타입에 따라 데이터 파싱
       const parsedData =
         type === 'passport'
           ? parsePassportData(data.text)
           : parseArcData(data.text);
 
-      console.log('파싱된 데이터:', parsedData);
       setOcrData(parsedData);
       setOcrFilledFields(new Set(Object.keys(parsedData)));
       setIsDrawerOpen(true);
     } catch (error) {
-      // 4. 에러 발생 시에도 마운트 상태 확인
       if (!isMountedRef.current) return;
       console.error('OCR 처리 중 오류:', error);
       alert('이미지 인식에 실패했습니다. 다시 시도해주세요.');
     } finally {
-      // 5. 마지막 상태 업데이트 전에도 확인
       if (isMountedRef.current) {
         setIsProcessing(false);
       }
@@ -80,7 +67,6 @@ export default function OCRPageContent({
   };
 
   const handleSubmit = (data: Record<string, string>) => {
-    console.log('제출된 정보:', data);
     onSubmit(data);
   };
 
@@ -94,7 +80,6 @@ export default function OCRPageContent({
 
   return (
     <div className="min-h-screen bg-black">
-      {/* ... 나머지 JSX 코드는 동일합니다 ... */}
       <header className="sticky top-0 z-50 w-full bg-black text-white">
         <div className="h-[env(safe-area-inset-top)]" />
         <div className="relative flex h-14 items-center justify-between px-4">

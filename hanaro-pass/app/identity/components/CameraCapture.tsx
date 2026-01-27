@@ -4,13 +4,14 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { IdentityType } from '../IdentityPageClient';
 
 type CameraCaptureProps = {
+  // 부모(OCRPageContent)에서 넘겨주므로 타입을 정의해야 에러가 나지 않습니다.
   type?: IdentityType | null;
   onClick?: () => void;
   onImageSelect?: (file: File) => void;
 };
 
 const CameraCapture = ({
-  type: _type,
+  type: _type, // 사용하지 않음을 표시하기 위해 언더바(_) 사용
   onClick,
   onImageSelect,
 }: CameraCaptureProps) => {
@@ -21,12 +22,12 @@ const CameraCapture = ({
   const handleFileSelect = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files?.[0];
-      if (selectedImage) {
-        URL.revokeObjectURL(selectedImage);
-      }
 
       if (file && onImageSelect) {
-        // 이미지 미리보기를 위한 URL 생성
+        if (selectedImage) {
+          URL.revokeObjectURL(selectedImage);
+        }
+
         const imageUrl = URL.createObjectURL(file);
         setSelectedImage(imageUrl);
         onImageSelect(file);
@@ -37,13 +38,12 @@ const CameraCapture = ({
 
   const handleVideoClick = useCallback(() => {
     if (onImageSelect && fileInputRef.current) {
-      // 이미지 첨부 모드
       fileInputRef.current.click();
     } else if (onClick) {
-      // 기존 onClick 동작 (바텀시트)
       onClick();
     }
   }, [onClick, onImageSelect]);
+
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent) => {
       if (event.key === 'Enter' || event.key === ' ') {
@@ -53,44 +53,47 @@ const CameraCapture = ({
     },
     [handleVideoClick],
   );
-  const startCamera = useCallback(async () => {
-    // 이미 선택된 이미지가 있으면 카메라를 시작하지 않음
-    if (selectedImage) return;
 
+  const startCamera = useCallback(async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment' }, // 후면 카메라 우선
+        video: { facingMode: 'environment' },
       });
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         videoRef.current.muted = true;
-        await videoRef.current.play().catch(() => {
-          // Autoplay 실패 시 사용자 상호작용 필요
-        });
+        await videoRef.current.play().catch(() => {});
       }
     } catch (error) {
       console.error('카메라 접근 실패:', error);
-      // TODO: 사용자에게 카메라 권한 요청 실패 알림 표시
     }
-  }, [selectedImage]);
+  }, []);
 
+  // 카메라 제어 전용 Effect
   useEffect(() => {
-    startCamera();
+    if (!selectedImage) {
+      startCamera();
+    }
 
     return () => {
       if (videoRef.current?.srcObject) {
-        (videoRef.current.srcObject as MediaStream)
-          .getTracks()
-          .forEach((track) => {
-            track.stop();
-          });
+        const tracks = (videoRef.current.srcObject as MediaStream).getTracks();
+        // 린트 준수: forEach 대신 for...of 사용
+        for (const track of tracks) {
+          track.stop();
+        }
       }
-      // 컴포넌트 언마운트 시 이미지 URL 해제
+    };
+  }, [startCamera, selectedImage]);
+
+  // 이미지 URL 메모리 해제 전용 Effect
+  useEffect(() => {
+    return () => {
       if (selectedImage) {
         URL.revokeObjectURL(selectedImage);
       }
     };
-  }, [startCamera, selectedImage]);
+  }, [selectedImage]);
 
   return (
     <div className="flex flex-col bg-black text-white">
@@ -127,7 +130,6 @@ const CameraCapture = ({
           </button>
         )}
 
-        {/* Hidden file input for image selection */}
         <input
           ref={fileInputRef}
           type="file"
