@@ -1,4 +1,4 @@
-import { MapPin, Phone, Clock, Sparkles } from 'lucide-react';
+import { Clock, MapPin, Phone, Sparkles } from 'lucide-react';
 import Image from 'next/image';
 
 export type HospitalInfo = {

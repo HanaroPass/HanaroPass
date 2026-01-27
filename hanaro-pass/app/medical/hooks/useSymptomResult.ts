@@ -61,10 +61,10 @@ export default function useSymptomResult() {
           }),
       );
       localStorage.setItem('symptom-images', JSON.stringify(imageDataArray));
-
       const response = await postSymptomForm(formData);
       console.log(response);
       localStorage.setItem('symptom-result', response);
+      router.push(`/medical/symptoms/result?mode=${mode}`);
     } catch (err) {
       console.error('증상 분석 요청 실패', err);
       alert('증상 분석 중 오류가 발생했습니다. 다시 시도해주세요.');
