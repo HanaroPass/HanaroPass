@@ -10,7 +10,15 @@ import {
   markAllAsReadAction,
 } from '../../actions/notification.action';
 
-export default function NotificationHeaderActions() {
+type NotificationHeaderActionsProps = {
+  onAllReadAction: () => void;
+  onAllDeleteAction: () => void;
+};
+
+export default function NotificationHeaderActions({
+  onAllReadAction,
+  onAllDeleteAction,
+}: NotificationHeaderActionsProps) {
   const { success, info, systemError } = useToast();
   const [showReadModal, setShowReadModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false); // 삭제 모달 상태
@@ -18,8 +26,10 @@ export default function NotificationHeaderActions() {
   const handleAllRead = async () => {
     try {
       const result = await markAllAsReadAction();
-      if (result.success)
+      if (result.success) {
+        onAllReadAction();
         success('알림 처리 완료', '모든 알림을 읽음 처리했습니다.');
+      }
     } catch {
       systemError('전체 읽음 처리');
     } finally {
@@ -30,8 +40,10 @@ export default function NotificationHeaderActions() {
   const handleAllDelete = async () => {
     try {
       const result = await deleteAllNotificationsAction();
-      if (result.success)
+      if (result.success) {
+        onAllDeleteAction();
         info('알림 삭제 완료', '모든 알림 내역이 삭제되었습니다.');
+      }
     } catch {
       systemError('전체 삭제 처리');
     } finally {
@@ -49,6 +61,7 @@ export default function NotificationHeaderActions() {
         <CheckCheck className="h-3.5 w-3.5" />
         전체 읽음
       </button>
+      <span className="h-3 w-px bg-gray-200" />
       <button
         onClick={() => setShowDeleteModal(true)}
         className="flex items-center gap-1 text-gray-400 text-xs transition-colors hover:text-red-500"

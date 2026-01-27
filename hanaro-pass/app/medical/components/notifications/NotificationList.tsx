@@ -8,6 +8,7 @@ import type { Notification } from '@/lib/generated/prisma';
 import { cn } from '@/lib/utils';
 import { getNotificationsAction } from '../../actions/notification.action';
 import NotificationCard from './NotificationCard';
+import NotificationHeaderActions from './NotificationHeaderActions';
 import NotificationSkeleton from './NotificationSkeleton';
 
 export default function NotificationList({
@@ -21,9 +22,27 @@ export default function NotificationList({
   const [hasMore, setHasMore] = useState(initialNotifications.length >= 10);
   const [isFetching, setIsFetching] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
-
   const { ref, inView } = useInView({ threshold: 0.1 });
   const [filter, setFilter] = useState<'ALL' | 'UNREAD'>('ALL');
+
+  const handleAllReadUpdate = () => {
+    setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+  };
+
+  const handleAllDeleteUpdate = () => {
+    setNotifications([]);
+    setHasMore(false);
+  };
+
+  const handleReadUpdate = (id: number) => {
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, isRead: true } : n)),
+    );
+  };
+
+  const handleDeleteUpdate = (id: number) => {
+    setNotifications((prev) => prev.filter((n) => n.id !== id));
+  };
 
   const fetchNextPage = useCallback(async () => {
     if (isFetching || !hasMore) return;
@@ -60,10 +79,9 @@ export default function NotificationList({
   }, [inView, hasMore, isFetching, fetchNextPage]);
 
   const filteredNotifications = useMemo(() => {
-    if (filter === 'UNREAD') {
-      return notifications.filter((n) => !n.isRead);
-    }
-    return notifications;
+    return filter === 'UNREAD'
+      ? notifications.filter((n) => !n.isRead)
+      : notifications;
   }, [notifications, filter]);
 
   return (
@@ -80,21 +98,27 @@ export default function NotificationList({
           </motion.div>
         )}
       </AnimatePresence>
-      <div className="mb-2 flex gap-2">
-        {(['ALL', 'UNREAD'] as const).map((type) => (
-          <button
-            key={type}
-            onClick={() => setFilter(type)}
-            className={cn(
-              'rounded-full px-4 py-1.5 font-medium text-sm transition-all',
-              filter === type
-                ? 'bg-green-ez text-white shadow-green-100 shadow-md'
-                : 'bg-gray-100 text-gray-400 hover:bg-gray-200',
-            )}
-          >
-            {type === 'ALL' ? '전체' : '읽지 않음'}
-          </button>
-        ))}
+      <div className="mb-2 flex items-center justify-between border-gray-50 border-b pb-4">
+        <div className="flex gap-2">
+          {(['ALL', 'UNREAD'] as const).map((type) => (
+            <button
+              key={type}
+              onClick={() => setFilter(type)}
+              className={cn(
+                'rounded-full px-4 py-1.5 font-medium text-sm transition-all',
+                filter === type
+                  ? 'bg-green-ez text-white shadow-md'
+                  : 'bg-gray-100 text-gray-400',
+              )}
+            >
+              {type === 'ALL' ? '전체' : '읽지 않음'}
+            </button>
+          ))}
+        </div>
+        <NotificationHeaderActions
+          onAllReadAction={handleAllReadUpdate}
+          onAllDeleteAction={handleAllDeleteUpdate}
+        />
       </div>
 
       <motion.div
@@ -112,16 +136,16 @@ export default function NotificationList({
         <AnimatePresence mode="popLayout">
           {filteredNotifications.length > 0
             ? filteredNotifications.map((noti) => (
-                <NotificationCard key={noti.id} notification={noti} />
+                <NotificationCard
+                  key={noti.id}
+                  notification={noti}
+                  onReadAction={handleReadUpdate}
+                  onDeleteAction={handleDeleteUpdate}
+                />
               ))
             : !isFetching && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="flex flex-col items-center justify-center py-20 text-center"
-                >
-                  <p className="text-gray-400 text-sm">
+                <motion.div className="flex flex-col items-center justify-center py-20 text-center text-gray-400 text-sm">
+                  <p>
                     {filter === 'UNREAD'
                       ? '읽지 않은 알림이 없습니다.'
                       : '도착한 알림이 없습니다.'}
@@ -129,7 +153,6 @@ export default function NotificationList({
                 </motion.div>
               )}
         </AnimatePresence>
-
         <div ref={ref} className="w-full pb-10">
           {isFetching && (
             <div className="flex flex-col gap-4">

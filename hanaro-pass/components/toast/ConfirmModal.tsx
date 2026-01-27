@@ -40,7 +40,7 @@ export function ConfirmModal({
   } as const;
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent className="fixed top-[50%] left-[50%] z-50 w-[300px] max-w-none translate-x-[-50%] translate-y-[-50%] rounded-[24px] border-none bg-white p-6 shadow-2xl">
+      <AlertDialogContent className="fixed top-[50%] left-[50%] z-50 w-75 max-w-none translate-x-[-50%] translate-y-[-50%] rounded-[24px] border-none bg-white p-6 shadow-2xl">
         <AlertDialogHeader className="flex flex-col gap-4">
           <AlertDialogTitle className="text-center font-bold text-[17px] text-black-900">
             {title}

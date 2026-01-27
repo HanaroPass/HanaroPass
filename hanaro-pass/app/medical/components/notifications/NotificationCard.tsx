@@ -17,17 +17,20 @@ import {
 
 type NotificationCardProps = {
   notification: Notification;
+  onReadAction: (id: number) => void;
+  onDeleteAction: (id: number) => void;
 };
 
 export default function NotificationCard({
   notification,
+  onReadAction,
+  onDeleteAction,
 }: NotificationCardProps) {
   const router = useRouter();
   const { info, actionError, systemError } = useToast();
   const controls = useAnimation();
 
   const [mounted, setMounted] = useState(false);
-  const [isRead, setIsRead] = useState(notification.isRead);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -35,23 +38,20 @@ export default function NotificationCard({
     setMounted(true);
   }, []);
 
+  const closeCard = () => {
+    controls.start({ x: 0 });
+    setIsOpen(false);
+  };
   const openCard = () => {
     controls.start({ x: -80 });
     setIsOpen(true);
   };
 
-  const closeCard = () => {
-    controls.start({ x: 0 });
-    setIsOpen(false);
-  };
-
-  // 승인/반려 여부에 따른 아이콘 설정
-  const isApproved = notification.content.includes('승인');
-
   const handleDelete = async () => {
     try {
       const result = await deleteNotificationAction(notification.id);
       if (result.success) {
+        onDeleteAction(notification.id);
         info('알림이 삭제되었습니다.');
       } else {
         actionError(result);
@@ -69,23 +69,22 @@ export default function NotificationCard({
       closeCard();
       return;
     }
-    if (!isRead) {
-      setIsRead(true);
+    if (!notification.isRead) {
       const result = await markAsReadAction(notification.id);
-      if (!result.success) {
-        setIsRead(false);
-        return;
+      if (result.success) {
+        onReadAction(notification.id);
       }
     }
     if (notification.link) router.push(notification.link);
   };
 
+  // 승인/반려 여부에 따른 아이콘 설정
+  const isApproved = notification.content.includes('승인');
+
   return (
     <motion.div
       layout
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, x: -100, transition: { duration: 0.2 } }}
+      exit={{ opacity: 0, x: -100 }}
       className="relative overflow-hidden rounded-xl"
     >
       <div className="relative overflow-hidden rounded-xl bg-gray-50">
@@ -120,7 +119,7 @@ export default function NotificationCard({
             onClick={handleCardClick}
             className={cn(
               'h-auto w-full justify-between overflow-hidden rounded-xl border-2 p-4 transition-all',
-              isRead
+              notification.isRead
                 ? 'border-gray-100 bg-white'
                 : 'border-green-ez/30 bg-[#F0FDF4] shadow-sm',
               !notification.link && 'cursor-default',
@@ -154,7 +153,7 @@ export default function NotificationCard({
               </div>
             </div>
 
-            {!isRead && (
+            {!notification.isRead && (
               <div className="ml-2 h-2.5 w-2.5 shrink-0 rounded-full bg-green-ez shadow-[0_0_8px_rgba(50,200,100,0.5)]" />
             )}
           </Button>
