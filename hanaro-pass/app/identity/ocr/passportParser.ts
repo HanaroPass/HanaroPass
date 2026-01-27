@@ -1,5 +1,5 @@
+import { NATIONALITIES } from '@/constants/constants';
 import type { ParsedData } from './ocrTypes';
-
 export const parsePassportData = (text: string): ParsedData => {
   const data: ParsedData = {};
   const fullText = text.replace(/\s+/g, ' ');
@@ -104,9 +104,14 @@ export const parsePassportData = (text: string): ParsedData => {
   }
 
   // 국적
-  if (fullText.match(/\b(KOREA|KOREAN|KOR)\b/i)) {
-    data.nationality = 'REPUBLIC OF KOREA';
-  }
+  const foundNationality = NATIONALITIES.find((nat) => {
+    if (fullText.toUpperCase().includes(nat.value.toUpperCase())) return true;
 
+    const coreName = nat.value.split(' OF ').pop() || nat.value;
+    const coreRegex = new RegExp(`\\b${coreName}\\b`, 'i');
+    return coreRegex.test(fullText);
+  });
+
+  data.nationality = foundNationality ? foundNationality.value : '-';
   return data;
 };
