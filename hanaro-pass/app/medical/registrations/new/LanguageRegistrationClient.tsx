@@ -65,7 +65,7 @@ export default function LanguageRegistrationClient() {
 
         <div className="flex items-center justify-between pr-6">
           <SectionHeader icon={Globe} title="진료 가능 언어" />
-          {selectedIds.length > 0 && (
+          {isChanged && (
             <button
               onClick={() => setShowResetModal(true)}
               className="mt-6 flex items-center gap-1 text-black-400 text-xs transition-colors hover:text-black-600"
