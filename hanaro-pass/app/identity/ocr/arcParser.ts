@@ -73,7 +73,7 @@ export const parseArcData = (text: string): ParsedData => {
   }
 
   // 발급일자 (다양한 형태 지원)
-  if (!data.issuedDate) {
+  if (!data.issueDate) {
     // 패턴 1: YYYY.MM.DD 형태 (예: 2018.09.21)
     const dotDateMatch = fullText.match(/(\d{4})\.(\d{1,2})\.(\d{1,2})/);
     if (dotDateMatch) {
