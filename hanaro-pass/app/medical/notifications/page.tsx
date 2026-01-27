@@ -1,6 +1,5 @@
 import { Bell } from 'lucide-react';
 import { getNotificationsAction } from '../actions/notification.action';
-import NotificationHeaderActions from '../components/notifications/NotificationHeaderActions';
 import NotificationList from '../components/notifications/NotificationList';
 
 export default async function NotificationsPage() {
@@ -11,23 +10,12 @@ export default async function NotificationsPage() {
     <div className="flex h-full flex-col bg-white">
       {/* 2. 알림 리스트 영역 */}
       <main className="no-scrollbar flex-1 overflow-y-auto p-6">
-        <div className="mb-6 flex items-center justify-between">
-          <div className="mb-6 flex items-center gap-2">
-            <Bell className="h-5 w-5 text-green-ez" />
-            <h2 className="font-semibold text-base">최근 도착한 소식</h2>
-          </div>
-          {notifications && notifications.length > 0 && (
-            <NotificationHeaderActions />
-          )}
+        <div className="mb-6 flex items-center gap-2">
+          <Bell className="h-5 w-5 text-green-ez" />
+          <h2 className="font-semibold text-base">최근 도착한 소식</h2>
         </div>
 
-        {notifications.length > 0 ? (
-          <NotificationList initialNotifications={notifications} />
-        ) : (
-          <div className="flex flex-col items-center justify-center py-20 text-center">
-            <p className="text-gray-400">도착한 알림이 없습니다.</p>
-          </div>
-        )}
+        <NotificationList initialNotifications={notifications} />
       </main>
     </div>
   );
