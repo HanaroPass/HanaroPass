@@ -1,4 +1,3 @@
-// hanaro-pass/app/(main)/hooks/useAuth.ts
 'use client';
 
 import { useTransition } from 'react';

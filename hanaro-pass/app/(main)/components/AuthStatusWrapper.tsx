@@ -1,4 +1,3 @@
-// hanaro-pass/app/(main)/components/AuthStatusWrapper.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
