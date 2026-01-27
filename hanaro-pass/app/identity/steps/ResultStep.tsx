@@ -1,15 +1,15 @@
 'use client';
 
 import { Loader2, X } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import Header from '@/components/header/Header';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { getIdentityData } from '../actions/identity';
 import EmptyIdentityCard from '../components/EmptyIdentityCard';
 import MobileQr from '../components/MobileQr';
-import { getIdentityData } from '../actions/identity';
-import { useSearchParams } from 'next/navigation';
 import type { IdentityType } from '../IdentityPageClient';
-import { cn } from '@/lib/utils';
 
 const DEFAULT_TAB: 'passport' | 'arc' = 'arc';
 
@@ -30,7 +30,7 @@ export default function ResultStep({
   const typeParam = searchParams.get('type') as IdentityType | null;
 
   const [activeTab, setActiveTab] = useState<IdentityType>(
-    typeParam || DEFAULT_TAB,
+    identityType || typeParam || DEFAULT_TAB,
   );
   const [passportData, setPassportData] = useState<Record<
     string,
@@ -40,6 +40,14 @@ export default function ResultStep({
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // 1. 등록 직후 identityType이 변경되면 해당 탭으로 즉시 전환
+  useEffect(() => {
+    if (identityType) {
+      setActiveTab(identityType);
+    }
+  }, [identityType]);
+
+  // 2. 데이터 페칭 및 초기 탭 설정
   useEffect(() => {
     let mounted = true;
 
@@ -54,10 +62,12 @@ export default function ResultStep({
         setPassportData(res.passport);
         setArcData(res.arc);
 
-        if (typeParam) {
+        // 우선순위: 1. 방금 등록한 타입 -> 2. URL 파라미터 -> 3. 데이터가 있는 타입
+        if (identityType) {
+          setActiveTab(identityType);
+        } else if (typeParam) {
           setActiveTab(typeParam);
         } else {
-          // 파라미터가 없으면 데이터가 있는 쪽으로 자동 전환
           if (res.passport) setActiveTab('passport');
           else if (res.arc) setActiveTab('arc');
         }
@@ -74,18 +84,19 @@ export default function ResultStep({
     return () => {
       mounted = false;
     };
-  }, [typeParam]);
+  }, [typeParam, identityType]); // identityType을 의존성 배열에 추가
 
   const handleRegister = (type: IdentityType) => {
     onRegister?.(type);
   };
 
-  // 현재 탭에 표시할 데이터
+  // 현재 탭에 표시할 데이터 결정 로직
   const currentDisplayData = useMemo(() => {
-    // 현재 선택된 탭이 방금 등록한 타입과 같다면, 방금 등록한 데이터를 우선 표시
+    // 1. 방금 등록한 데이터가 있고, 현재 탭이 그 타입과 일치하면 최신 데이터 반환
     if (initialData && activeTab === identityType) {
       return initialData;
     }
+    // 2. 그 외에는 서버에서 불러온 데이터 반환
     return activeTab === 'passport' ? passportData : arcData;
   }, [activeTab, identityType, initialData, passportData, arcData]);
 
@@ -126,7 +137,7 @@ export default function ResultStep({
       <div className="flex h-[calc(100dvh-60px)] flex-col overflow-hidden bg-white p-4 sm:p-6 lg:p-8">
         <div className="mx-auto flex h-full w-full max-w-sm flex-col sm:max-w-md lg:max-w-lg xl:max-w-2xl">
           {isLoading ? (
-            <div className="flex h-full items-center justify-center">
+            <div className="flex h-full flex-col items-center justify-center gap-2">
               <Loader2 className="h-8 w-8 animate-spin text-green-ez" />
               <p className="animate-pulse font-medium text-gray-400 text-sm">
                 정보를 불러오고 있습니다
@@ -138,6 +149,7 @@ export default function ResultStep({
             </div>
           ) : currentDisplayData ? (
             <div className="flex h-full flex-col">
+              {/* type과 data를 현재 활성화된 탭에 맞춰 전달 */}
               <MobileQr type={activeTab} data={currentDisplayData} />
             </div>
           ) : (
