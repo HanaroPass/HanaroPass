@@ -80,3 +80,24 @@ export async function deleteNotificationAction(
     return handleActionResult(error);
   }
 }
+
+/**
+ * [모든 알림 삭제]
+ */
+export async function deleteAllNotificationsAction(): Promise<
+  ActionResult<null>
+> {
+  try {
+    const userId = await validateUser();
+
+    await prisma.notification.deleteMany({
+      where: { userId: userId },
+    });
+
+    revalidatePath('/medical/notifications');
+
+    return { success: true, data: null };
+  } catch (error) {
+    return handleActionResult(error);
+  }
+}
