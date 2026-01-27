@@ -209,7 +209,7 @@ export function HospitalContent({
         })}
       </div>
 
-      <div className="border-[#F0F3F4] border-t bg-white px-6 py-4">
+      <div className="sticky bottom-0 border-[#F0F3F4] border-t bg-white px-6 py-4">
         <Button
           className="h-14 w-full rounded-xl bg-green-ez text-white"
           onClick={() =>
