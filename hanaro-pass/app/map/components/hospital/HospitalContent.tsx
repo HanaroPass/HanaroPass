@@ -154,7 +154,7 @@ export function HospitalContent({
 
       {/* 언어 필터 */}
       {active === 'language' && (
-        <div className="absolute inset-x-0 top-14 z-30 px-6">
+        <div className="sticky top-11 z-30 bg-white px-6 pt-0">
           <FilterPanel title="소통 가능 언어">
             <LanguageFilterPanel
               value={selectedLanguages}
@@ -166,7 +166,7 @@ export function HospitalContent({
 
       {/* 진료과 필터 */}
       {active === 'department' && (
-        <div className="absolute inset-x-0 top-14 z-30 px-6">
+        <div className="sticky top-11 z-30 bg-white px-6 pt-0">
           <FilterPanel title="진료 과목">
             <DepartmentFilterPanel
               value={selectedDepartments}
