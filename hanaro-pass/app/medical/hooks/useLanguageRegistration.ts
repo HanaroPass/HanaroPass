@@ -64,9 +64,16 @@ export function useLanguageRegistration() {
   }, [hospitalId, router, error, actionError, systemError]);
 
   const toggleLanguage = (id: LanguageId) => {
-    setSelectedIds((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
-    );
+    setSelectedIds((prev) => {
+      const isSelecting = !prev.includes(id);
+
+      if (isSelecting && prev.length >= 5) {
+        warning('선택 제한', '언어는 최대 5개까지만 등록 가능합니다.');
+        return prev;
+      }
+
+      return isSelecting ? [...prev, id] : prev.filter((item) => item !== id);
+    });
   };
 
   const isChanged = useMemo(() => {
@@ -125,6 +132,7 @@ export function useLanguageRegistration() {
     hospitalName,
     selectedIds,
     initialIds,
+    setSelectedIds,
     toggleLanguage,
     submitApplication,
     isSubmitting,

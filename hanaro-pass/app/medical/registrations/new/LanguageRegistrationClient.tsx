@@ -1,10 +1,11 @@
 'use client';
 
-import { Globe } from 'lucide-react';
+import { Globe, RotateCcw } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { ConfirmModal } from '@/components/toast/ConfirmModal';
 import ActionButton from '@/components/ui/ActionButton';
+import { useToast } from '@/hooks/useToast';
 import DescriptionSection from '../../components/languageRegistration/DescriptionSection';
 import HospitalGuide from '../../components/languageRegistration/HospitalGuide';
 import LanguageCard from '../../components/languageRegistration/LanguageCard';
@@ -14,10 +15,12 @@ import { useLanguageRegistration } from '../../hooks/useLanguageRegistration';
 
 export default function LanguageRegistrationClient() {
   const router = useRouter();
+  const { info } = useToast();
   const {
     hospitalId,
     hospitalName,
     selectedIds,
+    setSelectedIds,
     toggleLanguage,
     submitApplication,
     isSubmitting,
@@ -29,6 +32,8 @@ export default function LanguageRegistrationClient() {
   } = useLanguageRegistration();
 
   const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
+  const [showResetModal, setShowResetModal] = useState(false);
+
   const actionText = isSubmitting
     ? '신청 중...'
     : initialIds.length > 0
@@ -38,6 +43,12 @@ export default function LanguageRegistrationClient() {
       : `병원 언어 등록 신청하기${selectedIds.length > 0 ? ` (${selectedIds.length})` : ''}`;
 
   const hospitalLabel = hospitalName ?? '';
+
+  const handleReset = () => {
+    setSelectedIds(initialIds);
+    setShowResetModal(false);
+    info('선택하신 언어가 모두 해제되었습니다.');
+  };
 
   return (
     <div className="flex h-full flex-col">
@@ -51,7 +62,20 @@ export default function LanguageRegistrationClient() {
             '아래에서 선택해주세요',
           ]}
         />
-        <SectionHeader icon={Globe} title="진료 가능 언어" />
+
+        <div className="flex items-center justify-between pr-6">
+          <SectionHeader icon={Globe} title="진료 가능 언어" />
+          {selectedIds.length > 0 && (
+            <button
+              onClick={() => setShowResetModal(true)}
+              className="mt-6 flex items-center gap-1 text-black-400 text-xs transition-colors hover:text-black-600"
+            >
+              <RotateCcw className="size-3" />
+              초기화
+            </button>
+          )}
+        </div>
+
         <div className="px-6">
           <p className="mt-2 font-sans text-black-400 text-xs">
             (복수 선택 가능)
@@ -102,6 +126,16 @@ export default function LanguageRegistrationClient() {
         description="선택하신 언어 정보로 등록을 요청하시겠습니까?"
         variant="success"
         onConfirm={submitApplication}
+      />
+
+      <ConfirmModal
+        open={showResetModal}
+        onOpenChange={setShowResetModal}
+        title="선택 초기화"
+        description="선택하신 모든 언어 설정을 지우고 처음 상태로 되돌리시겠습니까?"
+        confirmText="초기화"
+        variant="danger"
+        onConfirm={handleReset}
       />
     </div>
   );
