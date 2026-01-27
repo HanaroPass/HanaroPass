@@ -43,6 +43,7 @@ export default function NotificationList({
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
+    await new Promise((resolve) => setTimeout(resolve, 200));
     const result = await getNotificationsAction(1); // 1페이지부터 다시
     if (result.success) {
       setNotifications(result.data);
@@ -71,7 +72,7 @@ export default function NotificationList({
         {isRefreshing && (
           <motion.div
             initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 40, opacity: 1 }}
+            animate={{ height: 50, opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             className="flex items-center justify-center overflow-hidden"
           >
@@ -102,7 +103,7 @@ export default function NotificationList({
         dragElastic={0.5} // 당길 때 저항감 부여 (0.5가 적당히 쫀득함)
         onDragEnd={(_, info) => {
           // 사용자가 아래로 50px 이상 당겼을 때 새로고침 실행
-          if (info.offset.y > 50) {
+          if (info.offset.y > 30) {
             handleRefresh();
           }
         }}
