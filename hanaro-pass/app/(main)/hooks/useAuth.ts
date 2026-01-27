@@ -39,6 +39,12 @@ export function useAuth() {
       try {
         await logoutAction();
       } catch (error) {
+        const isRedirect =
+          error instanceof Error &&
+          'digest' in error &&
+          typeof error.digest === 'string' &&
+          error.digest.startsWith('NEXT_REDIRECT');
+        if (isRedirect) throw error;
         console.error('로그아웃 실패:', error);
       }
     });
