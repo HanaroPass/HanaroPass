@@ -14,7 +14,9 @@ import {
   type UserDocType,
 } from '../constants/docsCardItem';
 import { getUserIdFromSession } from '@/lib/session';
-import { supabaseServer } from '@/lib/superbase';
+import { supabaseServer } from '@/lib/supabase';
+
+const DOCS_BUCKET = 'hanaropass-images';
 
 const ALLOWED_MIME_TYPES = new Set([
   'application/pdf',
@@ -30,16 +32,6 @@ const MIME_TO_EXT: Record<string, string> = {
   'image/webp': 'webp',
 };
 
-const DOCS_BUCKET = 'hanaropass-images';
-
-// DB에 public URL을 저장할 것이므로, 삭제 시 URL에서 storage path를 다시 뽑아야 함
-function extractStoragePathFromPublicUrl(publicUrl: string, bucket: string) {
-  const marker = `/storage/v1/object/public/${bucket}/`;
-  const idx = publicUrl.indexOf(marker);
-  if (idx === -1) return null;
-  return publicUrl.slice(idx + marker.length);
-}
-
 // *
 // 서류 조회
 // *
@@ -47,13 +39,23 @@ export async function getUserDocs(docId: string) {
   const userId = await getUserIdFromSession();
   if (!userId) return null;
 
-  // docId로 DB ENUM 타입찾기
   const req = DOC_ID_TO_REQUIREMENT[docId as DocsCardId];
   if (!req || req.kind !== 'USER_DOC') return null;
 
-  return await prisma.userDocument.findFirst({
+  const row = await prisma.userDocument.findFirst({
     where: { userId, docType: req.docType },
   });
+
+  if (!row) return null;
+
+  const { data } = supabaseServer.storage
+    .from(DOCS_BUCKET)
+    .getPublicUrl(row.fileUrl);
+
+  return {
+    ...row,
+    fileUrl: data.publicUrl, // 클라이언트에는 public URL만 노출
+  };
 }
 
 // *
@@ -64,9 +66,7 @@ export async function addUserDocs(
 ): Promise<ActionResult<{ createdAt: Date }>> {
   try {
     const userId = await getUserIdFromSession();
-    if (!userId) {
-      throw new HttpError('로그인이 필요합니다.', 401);
-    }
+    if (!userId) throw new HttpError('로그인이 필요합니다.', 401);
 
     const docType = formData.get('docType') as UserDocType | null;
     const file = formData.get('file') as File | null;
@@ -88,7 +88,12 @@ export async function addUserDocs(
       throw new HttpError('지원하지 않는 파일 형식입니다.', 400);
     }
 
-    // storage path 생성 (Supabase bucket 내부 경로)
+    const MAX_SIZE = 5 * 1024 * 1024;
+    if (file.size > MAX_SIZE) {
+      throw new HttpError('파일 크기는 5MB를 초과할 수 없습니다.', 400);
+    }
+
+    // storage path 생성
     const uuid = crypto.randomUUID();
     const ext = MIME_TO_EXT[file.type];
     const storagePath = `uploads/${userId}/${docType}/${uuid}.${ext}`;
@@ -106,30 +111,18 @@ export async function addUserDocs(
       throw new HttpError(`업로드 실패: ${upload.error.message}`, 500);
     }
 
-    const MAX_SIZE = 5 * 1024 * 1024;
-    if (file && file.size > MAX_SIZE) {
-      throw new HttpError('파일 크기는 5MB를 초과할 수 없습니다.', 400);
-    }
-
-    // public url 생성
-    const { data: pub } = supabaseServer.storage
-      .from(DOCS_BUCKET)
-      .getPublicUrl(storagePath);
-
-    const publicUrl = pub.publicUrl;
-
     let created: { createdAt: Date };
     try {
       created = await prisma.userDocument.create({
         data: {
           userId,
           docType,
-          fileUrl: publicUrl,
+          fileUrl: storagePath,
         },
         select: { createdAt: true },
       });
     } catch (dbError) {
-      // DB 실패 시 업로드한 파일 롤백 삭제
+      // DB 실패 시 업로드 파일 롤백
       await supabaseServer.storage.from(DOCS_BUCKET).remove([storagePath]);
       throw dbError;
     }
@@ -149,9 +142,7 @@ export async function deleteUserDocs(
 ): Promise<ActionResult<{ deleted: true }>> {
   try {
     const userId = await getUserIdFromSession();
-    if (!userId) {
-      throw new HttpError('로그인이 필요합니다.', 401);
-    }
+    if (!userId) throw new HttpError('로그인이 필요합니다.', 401);
 
     const req = DOC_ID_TO_REQUIREMENT[docId as DocsCardId];
     if (!req || req.kind !== 'USER_DOC') {
@@ -163,23 +154,15 @@ export async function deleteUserDocs(
     });
     if (!userDoc) throw new HttpError('삭제할 서류가 없습니다.', 404);
 
-    // URL -> storagePath 추출
-    const storagePath = extractStoragePathFromPublicUrl(
-      userDoc.fileUrl,
-      DOCS_BUCKET,
-    );
+    // Supabase 파일 삭제
+    const rm = await supabaseServer.storage
+      .from(DOCS_BUCKET)
+      .remove([userDoc.fileUrl]);
 
-    if (storagePath) {
-      const rm = await supabaseServer.storage
-        .from(DOCS_BUCKET)
-        .remove([storagePath]);
-
-      if (rm.error) {
-        console.warn('Supabase 파일 삭제 실패(계속 진행):', rm.error.message);
-      }
-    } else {
-      console.warn('storagePath 추출 실패. fileUrl:', userDoc.fileUrl);
+    if (rm.error) {
+      console.warn('Supabase 파일 삭제 실패(계속 진행):', rm.error.message);
     }
+
     // DB 삭제
     await prisma.userDocument.delete({ where: { id: userDoc.id } });
 
