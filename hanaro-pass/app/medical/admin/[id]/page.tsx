@@ -2,7 +2,8 @@
 
 import { Calendar, Globe, Hospital } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
-import React from 'react';
+import React, { useState } from 'react';
+import { ConfirmModal } from '@/components/toast/ConfirmModal';
 import ActionButton from '@/components/ui/ActionButton';
 import { ApplicationStatusAlert } from '../../components/ApplicationStatusAlert';
 import { InfoDetailPlate } from '../../components/InfoDetailPlate';
@@ -18,6 +19,9 @@ export default function AdminReviewPage() {
   const { id } = useParams();
   const { data, isLoading, isUpdating, error, handleUpdateStatus } =
     useAdminReview(Number(id));
+
+  const [showApproveModal, setShowApproveModal] = useState(false);
+  const [showRejectModal, setShowRejectModal] = useState(false);
 
   useRequireAdmin(error);
 
@@ -88,22 +92,42 @@ export default function AdminReviewPage() {
         <ActionButton
           text={isUpdating ? '처리 중...' : '승인하기'}
           disabled={isUpdating || data.status !== 'PENDING'}
-          onClick={async () => {
-            if (await handleUpdateStatus('APPROVED'))
-              router.push('/medical/admin');
-          }}
+          onClick={() => setShowApproveModal(true)}
         />
 
         <ActionButton
           text="반려하기"
           disabled={isUpdating || data.status !== 'PENDING'}
           className="border-none bg-red-500 text-white shadow-lg shadow-red-100 hover:bg-red-600"
-          onClick={async () => {
-            if (await handleUpdateStatus('REJECTED'))
-              router.push('/medical/admin');
-          }}
+          onClick={() => setShowRejectModal(true)}
         />
       </div>
+
+      <ConfirmModal
+        open={showApproveModal}
+        onOpenChange={setShowApproveModal}
+        title="신청 승인"
+        description={`'${data.hospitalName}'의 정보를 승인하시겠습니까?\n승인 즉시 서비스에 반영됩니다.`}
+        variant="success"
+        confirmText="승인하기"
+        onConfirm={async () => {
+          if (await handleUpdateStatus('APPROVED'))
+            router.push('/medical/admin');
+        }}
+      />
+
+      <ConfirmModal
+        open={showRejectModal}
+        onOpenChange={setShowRejectModal}
+        title="신청 반려"
+        description={`'${data.hospitalName}'의 신청을 반려하시겠습니까?\n반려 시 해당 병원에 알림이 전송됩니다.`}
+        variant="danger"
+        confirmText="반려하기"
+        onConfirm={async () => {
+          if (await handleUpdateStatus('REJECTED'))
+            router.push('/medical/admin');
+        }}
+      />
     </>
   );
 }

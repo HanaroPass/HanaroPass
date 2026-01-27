@@ -18,7 +18,6 @@ export default function AdminDashboardPage() {
   }, [applications, activeTab]);
 
   if (isLoading) return <LoadingScreen />;
-  if (error) return null;
 
   return (
     <div className="flex h-full flex-col bg-(--color-gray-200)">
@@ -61,4 +60,11 @@ export default function AdminDashboardPage() {
       </section>
     </div>
   );
+}
+function actionError(arg0: {
+  success: boolean;
+  message: string;
+  status: number;
+}) {
+  throw new Error('Function not implemented.');
 }
