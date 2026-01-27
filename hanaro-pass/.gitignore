@@ -48,3 +48,5 @@ storybook-static
 /.vscode
 
 /mysql/
+
+public/uploads/

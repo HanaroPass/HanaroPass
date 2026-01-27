@@ -1,5 +1,6 @@
 'use client';
 
+import { CircleCheckBig, Clock } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -24,7 +25,6 @@ export default function NotificationCard({
 
   // 승인/반려 여부에 따른 아이콘 설정
   const isApproved = notification.content.includes('승인');
-  const statusIcon = isApproved ? '✨' : '📝';
 
   const handleCardClick = async () => {
     if (!isRead) {
@@ -56,14 +56,25 @@ export default function NotificationCard({
       )}
     >
       <div className="flex w-full min-w-0 items-center gap-3">
-        <span className="text-2xl" aria-hidden="true">
-          {statusIcon}
-        </span>
+        <div
+          className={cn(
+            'flex h-8 w-8 shrink-0 items-center justify-center rounded-full',
+            isApproved
+              ? 'bg-green-100 text-green-600'
+              : 'bg-amber-100 text-amber-600',
+          )}
+        >
+          {isApproved ? (
+            <CircleCheckBig className="h-8 w-8" />
+          ) : (
+            <Clock className="h-6 w-6" />
+          )}
+        </div>
         <div className="min-w-0 flex-1 text-left">
           <p className="truncate font-sans font-semibold text-base text-primary">
             {notification.title}
           </p>
-          <p className="line-clamp-2 whitespace-pre-wrap break-words font-sans text-muted-foreground text-sm">
+          <p className="wrap-break-word line-clamp-2 whitespace-pre-wrap font-sans text-muted-foreground text-sm">
             {notification.content}
           </p>
           <p className="mt-1 font-sans text-[10px] text-gray-400">

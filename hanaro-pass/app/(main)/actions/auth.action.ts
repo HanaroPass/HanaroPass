@@ -10,6 +10,7 @@ import {
 } from '@/lib/errorHandler';
 import { prisma } from '@/lib/prisma';
 import { saveUserIdToSession } from '@/lib/session'; // 세션 유틸리티
+import { validateUser } from '@/lib/user';
 
 /**
  * 특정 역할을 가진 유저로 강제 세션 주입
@@ -52,4 +53,13 @@ export async function logoutAction() {
   cookieStore.delete('user_secure_session');
 
   redirect('/');
+}
+
+export async function checkAuthStatusAction(): Promise<ActionResult<boolean>> {
+  try {
+    await validateUser();
+    return { success: true, data: true };
+  } catch (error) {
+    return handleActionResult(error);
+  }
 }
