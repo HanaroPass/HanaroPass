@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Embassy, SavedPlace } from '@/lib/generated/prisma';
+import { getUserIdFromSession } from '@/lib/session';
 import { getMyEmbassy } from './actions/embassy';
 import { getSavedPlaces } from './actions/savedPlaces';
 import { EmbassyContent } from './components/embassy/EmbassyContent';
@@ -88,18 +89,21 @@ export default function MapPageClient({ hospitals }: Props) {
   useEffect(() => {
     const fetchEmbassy = async () => {
       try {
-        // TODO: 실제 유저 ID를 넣어야 합니다. (현재 userId = 2)
-        const userId = 2;
+        const res = await fetch('/api/session/userId');
+        const { userId } = await res.json();
+        if (!userId) return;
 
-        const result = await getMyEmbassy(userId);
+        const embassyRes = await fetch(`/api/embassy?userId=${userId}`);
+        const result = await embassyRes.json();
 
-        if (result.success) {
-          setMyEmbassy(result.data);
-        } else {
+        if (!embassyRes.ok) {
           console.error('대사관 조회 실패:', result.message);
+          return;
         }
-      } catch (error) {
-        console.error('네트워크 오류:', error);
+
+        setMyEmbassy(result.data);
+      } catch (e) {
+        console.error('네트워크 오류:', e);
       }
     };
 
@@ -109,8 +113,9 @@ export default function MapPageClient({ hospitals }: Props) {
   useEffect(() => {
     const fetchPlaces = async () => {
       try {
-        // TODO: 실제 로그인된 유저 ID를 넣어야 합니다. (현재 userId = 1)
-        const userId = 1;
+        const res = await fetch('/api/session/userId');
+        const { userId } = await res.json();
+        if (!userId) return;
 
         const result = await getSavedPlaces(userId);
 
@@ -119,13 +124,14 @@ export default function MapPageClient({ hospitals }: Props) {
         } else {
           console.error('저장된 장소 불러오기 실패:', result.message);
         }
-      } catch (error) {
-        console.error('네트워크 오류:', error);
+      } catch (e) {
+        console.error('네트워크 오류:', e);
       }
     };
 
     fetchPlaces();
   }, []);
+
   useEffect(() => {
     if (!currentMapRegion) return;
   }, [currentMapRegion]);
