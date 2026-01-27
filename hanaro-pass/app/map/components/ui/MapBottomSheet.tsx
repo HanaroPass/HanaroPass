@@ -21,9 +21,6 @@ type MapBottomSheetProps = {
   onTouchMove: (e: React.TouchEvent) => void;
   onTouchEnd: () => void;
   getTranslateValue: (pos: SheetPosition) => number;
-  onCloseToList: () => void;
-  fixedContent?: ReactNode;
-  showCloseButton?: boolean;
   children: ReactNode;
 };
 
