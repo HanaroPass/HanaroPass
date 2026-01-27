@@ -17,7 +17,7 @@ model User {
   pushSubscription            Json?
   ARC                         ARC?
   HospitalLanguageApplication HospitalLanguageApplication[]
-  Notification                Notification[]
+  Notifications               Notification[]
   Passport                    Passport?
   SavedPlace                  SavedPlace[]
   UserCard                    UserCard[]
