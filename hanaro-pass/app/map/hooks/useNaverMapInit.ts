@@ -18,9 +18,17 @@ export function useNaverMapInit(
     const map = mapRef.current;
     if (!map || !window.naver?.maps?.Service) return;
 
+    const proj = map.getProjection();
+    const centerPoint = proj.fromCoordToOffset(map.getCenter());
+    const topCenterPoint = new window.naver.maps.Point(
+      centerPoint.x,
+      centerPoint.y - 150,
+    );
+    const topCenterCoord = proj.fromOffsetToCoord(topCenterPoint);
+
     window.naver.maps.Service.reverseGeocode(
       {
-        coords: map.getCenter(),
+        coords: topCenterCoord,
         orders: [
           window.naver.maps.Service.OrderType.ADDR,
           window.naver.maps.Service.OrderType.ROAD_ADDR,
