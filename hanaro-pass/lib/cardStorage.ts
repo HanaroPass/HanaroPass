@@ -1,34 +1,100 @@
-const STORAGE_KEY = 'cardLock';
+/**
+ * 카드 잠금 상태를 세션 스토리지로 관리
+ * SSR 환경에서 안전하게 동작하도록 설계
+ */
 
-type Stored = {
-  unlockedCardIds: number[];
+const STORAGE_KEY = 'unlocked_card_ids';
+
+const isBrowser = (): boolean => {
+  return (
+    typeof window !== 'undefined' &&
+    typeof window.sessionStorage !== 'undefined'
+  );
 };
 
-function read(): Stored {
-  try {
-    const raw = sessionStorage.getItem(STORAGE_KEY);
-    if (!raw) return { unlockedCardIds: [] };
-    const parsed = JSON.parse(raw) as Partial<Stored>;
-    return {
-      unlockedCardIds: Array.isArray(parsed.unlockedCardIds)
-        ? parsed.unlockedCardIds.filter((x) => Number.isFinite(x))
-        : [],
-    };
-  } catch {
-    return { unlockedCardIds: [] };
-  }
-}
-
-function write(next: Stored) {
-  sessionStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-}
-
 export const cardLockStorage = {
-  loadUnlockedSet(): Set<number> {
-    return new Set(read().unlockedCardIds);
+  getUnlockedCardIds(): Set<number> {
+    if (!isBrowser()) {
+      return new Set();
+    }
+
+    try {
+      const stored = window.sessionStorage.getItem(STORAGE_KEY);
+      if (!stored) {
+        return new Set();
+      }
+
+      const parsed = JSON.parse(stored);
+      return new Set(Array.isArray(parsed) ? parsed : []);
+    } catch (error) {
+      console.error(
+        '[cardLockStorage] Failed to read unlocked card IDs:',
+        error,
+      );
+      return new Set();
+    }
   },
 
-  saveUnlockedSet(set: Set<number>) {
-    write({ unlockedCardIds: Array.from(set) });
+  addUnlockedCardId(cardId: number): void {
+    if (!isBrowser()) {
+      return;
+    }
+
+    try {
+      const current = this.getUnlockedCardIds();
+      current.add(cardId);
+      window.sessionStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(Array.from(current)),
+      );
+    } catch (error) {
+      console.error(
+        '[cardLockStorage] Failed to save unlocked card ID:',
+        error,
+      );
+    }
+  },
+
+  removeUnlockedCardId(cardId: number): void {
+    if (!isBrowser()) {
+      return;
+    }
+
+    try {
+      const current = this.getUnlockedCardIds();
+      current.delete(cardId);
+      window.sessionStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(Array.from(current)),
+      );
+    } catch (error) {
+      console.error(
+        '[cardLockStorage] Failed to remove unlocked card ID:',
+        error,
+      );
+    }
+  },
+
+  clearUnlockedCardIds(): void {
+    if (!isBrowser()) {
+      return;
+    }
+
+    try {
+      window.sessionStorage.removeItem(STORAGE_KEY);
+    } catch (error) {
+      console.error(
+        '[cardLockStorage] Failed to clear unlocked card IDs:',
+        error,
+      );
+    }
+  },
+
+  isCardUnlocked(cardId: number): boolean {
+    if (!isBrowser()) {
+      return false;
+    }
+
+    return this.getUnlockedCardIds().has(cardId);
   },
 };

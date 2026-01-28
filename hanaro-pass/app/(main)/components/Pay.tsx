@@ -1,10 +1,10 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { use, useCallback, useMemo } from 'react';
+import { use, useCallback, useMemo, useState } from 'react';
 import type { ActionResult } from '@/lib/errorHandler';
 import type { UserCardResponse } from '../actions/getUserCards.schema';
-import { useCardLockGate } from '../hooks/useCardLock';
+import { useCardLock } from '../hooks/useCardLock';
 import Card from './Card';
 import { MenuList } from './MenuList';
 import PinInput from './PinInput';
@@ -18,26 +18,25 @@ export default function Pay({ cardsPromise, couponList }: PayProps) {
   const result = cardsPromise ? use(cardsPromise) : null;
 
   const cards = useMemo(() => {
-    if (!result || !result.success) return [];
+    if (!result) return [];
+    if (!result.success) return [];
     return result.data;
   }, [result]);
 
   const errorMessage = !result ? null : result.success ? null : result.message;
 
-  const {
-    requestUnlock,
-    pendingCardId,
-    confirmUnlock,
-    closeGate,
-    unlockedCardIds,
-  } = useCardLockGate();
+  const { unlockedCardIds, unlockCard } = useCardLock();
+  const [pendingCardId, setPendingCardId] = useState<number | null>(null);
 
-  const handleUnlockRequest = useCallback(
-    (id: number) => {
-      requestUnlock(id);
-    },
-    [requestUnlock],
-  );
+  const handleUnlockRequest = useCallback((id: number) => {
+    setPendingCardId(id);
+  }, []);
+
+  const handlePinSuccess = useCallback(() => {
+    if (pendingCardId === null) return;
+    unlockCard(pendingCardId);
+    setPendingCardId(null);
+  }, [pendingCardId, unlockCard]);
 
   return (
     <div className="relative flex flex-col gap-5 pb-16.25">
@@ -58,7 +57,10 @@ export default function Pay({ cardsPromise, couponList }: PayProps) {
       <MenuList type="pay" />
 
       {pendingCardId !== null && (
-        <PinInput onSuccessAction={confirmUnlock} onCloseAction={closeGate} />
+        <PinInput
+          onSuccessAction={handlePinSuccess}
+          onCloseAction={() => setPendingCardId(null)}
+        />
       )}
     </div>
   );

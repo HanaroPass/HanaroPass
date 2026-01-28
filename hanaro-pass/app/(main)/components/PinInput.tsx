@@ -3,6 +3,7 @@
 import { ChevronLeft, Delete } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import Header from '@/components/header/Header';
+import { useToast } from '@/hooks/useToast';
 
 interface PinInputProps {
   onSuccessAction: () => void;
@@ -22,6 +23,7 @@ export default function PinInput({
   onSuccessAction,
   onCloseAction,
 }: PinInputProps) {
+  const { error } = useToast();
   const [pin, setPin] = useState('');
   const [digits, setDigits] = useState<string[]>(() =>
     shuffle(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']),
@@ -35,10 +37,10 @@ export default function PinInput({
     if (isValidPin) {
       onSuccessAction();
     } else {
-      alert('잘못된 PIN 번호입니다.');
+      error('잘못된 PIN 번호입니다.');
       setPin('');
     }
-  }, [pin, onSuccessAction]);
+  }, [pin, onSuccessAction, error]);
 
   const onPressNum = (num: string) => {
     setPin((p) => (p.length >= 6 ? p : p + num));

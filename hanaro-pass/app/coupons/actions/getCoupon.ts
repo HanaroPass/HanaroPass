@@ -77,7 +77,10 @@ export async function getCouponDetailForUser(
   const { couponId, userId } = CouponDetailForUserRequest.parse(input);
 
   const [coupon, defaultCard] = await Promise.all([
-    getCouponById({ id: couponId }).catch(() => null),
+    getCouponById({ id: couponId }).catch((err) => {
+      console.error('Failed to fetch coupon:', err);
+      return null;
+    }),
     prisma.userCard.findFirst({
       where: { userId, isDefault: true },
       select: { id: true },
