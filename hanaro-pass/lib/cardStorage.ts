@@ -1,8 +1,3 @@
-/**
- * 카드 잠금 상태를 세션 스토리지로 관리
- * SSR 환경에서 안전하게 동작하도록 설계
- */
-
 const STORAGE_KEY = 'unlocked_card_ids';
 
 const isBrowser = (): boolean => {
@@ -25,7 +20,10 @@ export const cardLockStorage = {
       }
 
       const parsed = JSON.parse(stored);
-      return new Set(Array.isArray(parsed) ? parsed : []);
+      const ids = Array.isArray(parsed)
+        ? parsed.map((v) => Number(v)).filter(Number.isFinite)
+        : [];
+      return new Set(ids);
     } catch (error) {
       console.error(
         '[cardLockStorage] Failed to read unlocked card IDs:',

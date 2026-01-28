@@ -74,7 +74,7 @@ export default function CouponDetail({
   const onBarcodeClick = async () => {
     if (isPaying || isLoading) return;
 
-    if (defaultCardId && !isCardUnlocked) {
+    if (defaultCardId !== null && !isCardUnlocked) {
       setShowPinInput(true);
       return;
     }
