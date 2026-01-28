@@ -94,14 +94,14 @@ export default function LuckyPouchPage() {
     <div className="flex h-screen flex-col overflow-hidden bg-white font-sans">
       <main className="relative flex flex-1 flex-col items-center overflow-hidden">
         {isPlaying && (
-          <div className="fixed inset-0 z-100 bg-white">
+          <div className="fixed inset-0 z-100 bg-gradient-to-b from-[#72ACD1] to-[#BDDBEC]">
             <video
               src={POUCH_VIDEO}
               autoPlay
               muted
               playsInline
               onEnded={showShareModal}
-              className="h-full w-full object-contain"
+              className="pointer-events-none h-full w-full object-contain"
             />
           </div>
         )}
