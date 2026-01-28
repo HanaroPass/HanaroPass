@@ -2,6 +2,7 @@
 
 import type { ReactNode } from 'react';
 import { use, useCallback, useMemo, useState } from 'react';
+import { useCardLock } from '@/hooks/card/useCardLock';
 import type { ActionResult } from '@/lib/errorHandler';
 import type { UserCardResponse } from '../actions/getUserCards.schema';
 import Card from './Card';
@@ -24,27 +25,18 @@ export default function Pay({ cardsPromise, couponList }: PayProps) {
 
   const errorMessage = !result ? null : result.success ? null : result.message;
 
-  const [unlockedCardIds, setUnlockedCardIds] = useState<Set<number>>(
-    new Set(),
-  );
+  const { unlockedCardIds, unlockCard } = useCardLock();
   const [pendingCardId, setPendingCardId] = useState<number | null>(null);
 
   const handleUnlockRequest = useCallback((id: number) => {
     setPendingCardId(id);
   }, []);
 
-  const handlePinSuccess = useCallback((cardId: number | null) => {
-    if (cardId == null) return;
-
-    setUnlockedCardIds((prev) => {
-      if (prev.has(cardId)) return prev;
-      const next = new Set(prev);
-      next.add(cardId);
-      return next;
-    });
-
+  const handlePinSuccess = useCallback(() => {
+    if (pendingCardId === null) return;
+    unlockCard(pendingCardId);
     setPendingCardId(null);
-  }, []);
+  }, [pendingCardId, unlockCard]);
 
   return (
     <div className="relative flex flex-col gap-5 pb-16.25">
@@ -66,7 +58,7 @@ export default function Pay({ cardsPromise, couponList }: PayProps) {
 
       {pendingCardId !== null && (
         <PinInput
-          onSuccessAction={() => handlePinSuccess(pendingCardId)}
+          onSuccessAction={handlePinSuccess}
           onCloseAction={() => setPendingCardId(null)}
         />
       )}

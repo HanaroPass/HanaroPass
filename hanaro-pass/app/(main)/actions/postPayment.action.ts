@@ -82,7 +82,10 @@ export async function postPaymentAction(
       });
 
       if (updated.count !== 1) {
-        throw new HttpError('카드 정보를 다시 확인해주세요.', 400);
+        throw new HttpError(
+          '잔액이 부족합니다. 카드 정보를 다시 확인해주세요.',
+          400,
+        );
       }
 
       const res: PaymentResponse = {
