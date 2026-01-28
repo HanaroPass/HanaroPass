@@ -27,11 +27,12 @@ export function useExchangeSearch(currentMapRegion: string) {
   const [isLoading, setIsLoading] = useState(false);
 
   const searchExchanges = useCallback(
-    async (force = false) => {
+    async (force = false, manualRegion?: string) => {
+      const targetRegion = manualRegion || currentMapRegion;
+
       if (
         !force &&
-        (!currentMapRegion ||
-          lastSearchedRegionRef.current === currentMapRegion)
+        (!targetRegion || lastSearchedRegionRef.current === targetRegion)
       ) {
         return;
       }
