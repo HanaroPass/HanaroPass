@@ -4,12 +4,12 @@ import { motion, useAnimation } from 'framer-motion';
 import { CircleCheckBig, Clock, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { ConfirmModal } from '@/components/toast/ConfirmModal';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/useToast';
 import { getRelativeTime } from '@/lib/date';
 import type { Notification } from '@/lib/generated/prisma';
 import { cn } from '@/lib/utils';
+import { useAlert } from '@/providers/alertProvider';
 import {
   deleteNotificationAction,
   markAsReadAction,
@@ -28,10 +28,10 @@ export default function NotificationCard({
 }: NotificationCardProps) {
   const router = useRouter();
   const { info, actionError, systemError } = useToast();
+  const { alert } = useAlert();
   const controls = useAnimation();
 
   const [mounted, setMounted] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
@@ -47,21 +47,31 @@ export default function NotificationCard({
     setIsOpen(true);
   };
 
-  const handleDelete = async () => {
-    try {
-      const result = await deleteNotificationAction(notification.id);
-      if (result.success) {
-        onDeleteAction(notification.id);
-        info('알림이 삭제되었습니다.');
-      } else {
-        actionError(result);
-      }
-    } catch {
-      systemError('알림 삭제');
-    } finally {
-      setShowDeleteModal(false);
-      closeCard();
-    }
+  const onDeleteClick = () => {
+    alert({
+      title: '알림 삭제',
+      description: '이 알림을 삭제하시겠습니까?',
+      variant: 'destructive',
+      actionLabel: '삭제',
+      onAction: async () => {
+        try {
+          const result = await deleteNotificationAction(notification.id);
+          if (result.success) {
+            onDeleteAction(notification.id);
+            info('알림이 삭제되었습니다.');
+          } else {
+            actionError(result);
+          }
+        } catch {
+          systemError('알림 삭제');
+        } finally {
+          closeCard();
+        }
+      },
+      cancelProps: {
+        onClick: closeCard,
+      },
+    });
   };
 
   const handleCardClick = async () => {
@@ -90,7 +100,7 @@ export default function NotificationCard({
       <div className="relative overflow-hidden rounded-xl bg-gray-50">
         <button
           type="button"
-          onClick={() => setShowDeleteModal(true)}
+          onClick={onDeleteClick}
           className="absolute inset-y-0 right-0 flex w-20 items-center justify-center bg-red-500 text-white outline-none"
           aria-label="알림 삭제"
         >
@@ -158,19 +168,6 @@ export default function NotificationCard({
             )}
           </Button>
         </motion.div>
-
-        <ConfirmModal
-          open={showDeleteModal}
-          onOpenChange={(open) => {
-            setShowDeleteModal(open);
-            if (!open) closeCard();
-          }}
-          title="알림 삭제"
-          description="이 알림을 삭제하시겠습니까?"
-          variant="danger"
-          confirmText="삭제"
-          onConfirm={handleDelete}
-        />
       </div>
     </motion.div>
   );

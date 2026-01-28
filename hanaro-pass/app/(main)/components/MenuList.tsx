@@ -24,11 +24,11 @@ export function MenuList({ type }: MenuListProps) {
   );
 }
 
-type Props = {
+type PrimaryMenuListProps = {
   type: MainPageKey;
 };
 
-export function PrimaryMenuList({ type }: Props) {
+export function PrimaryMenuList({ type }: PrimaryMenuListProps) {
   const menus = PRIMARY_MENUS[type];
   if (!menus || menus.length === 0) return null;
 

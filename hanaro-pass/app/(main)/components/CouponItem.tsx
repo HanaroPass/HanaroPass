@@ -17,7 +17,7 @@ export default function CouponItem({ item }: CouponItemProps) {
   return (
     <Link
       href={`/coupons/${item.id}`}
-      className="flex w-full flex-col items-center gap-2 rounded-2xl border border-gray-100 bg-[#F7FAFB] py-3"
+      className="flex w-full flex-col items-center gap-2 rounded-2xl border border-gray-100 bg-[#F7FAFB] px-1 py-3"
     >
       <div className="rounded-full bg-green-ez px-3 py-1 text-[10px] text-white">
         {item.distanceLabel}
