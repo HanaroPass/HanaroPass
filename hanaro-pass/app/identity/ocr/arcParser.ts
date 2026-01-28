@@ -1,3 +1,4 @@
+import { NATIONALITIES } from '@/constants/constants';
 import type { ParsedData } from './ocrTypes';
 
 export const parseArcData = (text: string): ParsedData => {
@@ -46,20 +47,31 @@ export const parseArcData = (text: string): ParsedData => {
     data.nickname = `${data.lastName} ${data.firstName}`;
   }
 
-  // 국적
+  // 국적 - OCR에서 파싱하되, 유효한 국적이 없으면 빈 값으로 설정 (사용자가 직접 선택)
   const nationalityPatterns = [
     /(?:국적|Nationality).*?(REPUBLIC OF [A-Z]+)/i,
     /(?:국적|Nationality).*?([A-Z]{3,})/i,
     /REPUBLIC OF ([A-Z]+)/,
   ];
 
+  // NATIONALITIES에서 유효한 국적 찾기
+  let foundNationality = null;
   for (const pattern of nationalityPatterns) {
     const match = fullText.match(pattern);
-    if (match && !data.nationality) {
-      data.nationality = match[1];
-      break;
+    if (match) {
+      const parsedNationality = match[1];
+      // NATIONALITIES 배열에서 해당 국적이 있는지 확인
+      foundNationality = NATIONALITIES.find(
+        (nat) =>
+          nat.value.toUpperCase().includes(parsedNationality.toUpperCase()) ||
+          parsedNationality.toUpperCase().includes(nat.value.toUpperCase()),
+      );
+      if (foundNationality) break;
     }
   }
+
+  // 파싱된 국적이 유효하면 설정, 아니면 사용자가 직접 선택
+  data.nationality = foundNationality ? foundNationality.value : '';
 
   // 발급일자
   if (!data.issueDate) {
