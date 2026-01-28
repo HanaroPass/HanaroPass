@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
@@ -18,6 +19,12 @@ type CommonFieldsProps = {
 
 // 공통 필드 (이름, 국적)
 export function CommonFields({ initialData = {} }: CommonFieldsProps) {
+  const [selectedNationality, setSelectedNationality] = useState(
+    initialData.nationality && initialData.nationality.trim() !== ''
+      ? initialData.nationality
+      : '',
+  );
+
   return (
     <>
       {/* 성 이름 */}
@@ -45,13 +52,10 @@ export function CommonFields({ initialData = {} }: CommonFieldsProps) {
       {/* 국적 */}
       <div className="space-y-2">
         <Label className="font-normal text-gray-600 text-sm">국적</Label>
+        <input type="hidden" name="nationality" value={selectedNationality} />
         <Select
-          name="nationality"
-          defaultValue={
-            initialData.nationality && initialData.nationality.trim() !== ''
-              ? initialData.nationality
-              : undefined
-          }
+          value={selectedNationality}
+          onValueChange={setSelectedNationality}
         >
           <SelectTrigger className="flex h-12 min-h-12 w-full items-center border-0 bg-gray-50">
             <SelectValue placeholder="국적을 선택해주세요" />
