@@ -76,6 +76,10 @@ function DatePicker({
 }
 
 export function PassportFields({ initialData = {} }: PassportFieldsProps) {
+  const [selectedGender, setSelectedGender] = useState(
+    initialData.gender || '',
+  );
+
   return (
     <div className="flex gap-8.25">
       <div className="flex-1 space-y-2">
@@ -90,7 +94,8 @@ export function PassportFields({ initialData = {} }: PassportFieldsProps) {
       </div>
       <div className="flex-1 space-y-2">
         <Label className="font-normal text-gray-600 text-sm">성별</Label>
-        <Select name="gender" defaultValue={initialData.gender || ''}>
+        <input type="hidden" name="gender" value={selectedGender} />
+        <Select value={selectedGender} onValueChange={setSelectedGender}>
           <SelectTrigger className="flex h-12 min-h-12 w-full items-center border-0 bg-gray-50">
             <SelectValue placeholder="선택하세요" />
           </SelectTrigger>

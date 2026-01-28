@@ -7,11 +7,9 @@ import {
 } from '@/lib/errorHandler';
 import { prisma } from '@/lib/prisma';
 import { getUserIdFromSession, saveUserIdToSession } from '@/lib/session';
+import { ArcFormSchema } from './identity.schema'; // 스키마 임포트 확인
 
 const parseLocalDate = (dateStr: string) => {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
-    throw new HttpError('날짜 형식이 올바르지 않습니다. (YYYY-MM-DD)', 400);
-  }
   const [y, m, d] = dateStr.split('-').map(Number);
   return new Date(Date.UTC(y, m - 1, d, 12, 0, 0));
 };
@@ -21,65 +19,44 @@ export async function saveArcData(
   formData: FormData,
 ): Promise<ActionResult<Record<string, string>>> {
   try {
-    const sessionUserId = await getUserIdFromSession();
-
-    const registrationNumber = formData.get('registrationNumber') as string;
-    const registrationNumberSuffix = formData.get(
-      'registrationNumberSuffix',
-    ) as string;
-    const residenceStatus = formData.get('residenceStatus') as string;
-    const issueDate = formData.get('issueDate') as string;
-    const userPhotoUrl = (formData.get('userPhotoUrl') as string) || '';
-    const lastName = formData.get('lastName') as string;
-    const firstName = formData.get('firstName') as string;
-    const nationality = formData.get('nationality') as string;
-
+    const rawData = Object.fromEntries(formData.entries());
     const arcNumber =
-      registrationNumber && registrationNumberSuffix
-        ? `${registrationNumber}-${registrationNumberSuffix}`
+      rawData.registrationNumber && rawData.registrationNumberSuffix
+        ? `${rawData.registrationNumber}-${rawData.registrationNumberSuffix}`
         : '';
 
-    if (!arcNumber || arcNumber.length < 14) {
-      throw new HttpError('외국인 등록번호를 올바르게 입력해주세요.', 400);
-    }
-    if (!residenceStatus) {
-      throw new HttpError('체류 자격 정보가 누락되었습니다.', 400);
-    }
-    if (!issueDate) {
-      throw new HttpError('발급 일자가 누락되었습니다.', 400);
-    }
-    if (!lastName || !firstName) {
-      throw new HttpError('이름 정보가 누락되었습니다.', 400);
-    }
-    if (!nationality) {
-      throw new HttpError('국적 정보가 누락되었습니다.', 400);
-    }
+    const validated = ArcFormSchema.parse({
+      ...rawData,
+      arcNumber,
+    });
 
-    const nickname =
-      lastName && firstName ? `${lastName} ${firstName}`.trim() : '';
+    const {
+      lastName,
+      firstName,
+      nationality,
+      residenceStatus,
+      issueDate,
+      userPhotoUrl,
+    } = validated;
+    const nickname = `${lastName} ${firstName}`.trim();
+    const sessionUserId = await getUserIdFromSession();
 
     const result = await prisma.$transaction(async (tx) => {
-      // 기존에 동일한 신분증 번호를 가진 정보가 있는지 먼저 확인
       const existingArc = await tx.aRC.findUnique({
-        where: { arcNumber },
+        where: { arcNumber: validated.arcNumber },
         select: { id: true, userId: true },
       });
 
       if (existingArc) {
-        // 이미 존재하는 신분증인 경우 막기
         if (sessionUserId && existingArc.userId !== sessionUserId) {
           throw new HttpError('이미 다른 계정에 등록된 ARC 번호입니다.', 409);
         }
         return existingArc;
       }
 
-      // 신분증 번호가 신규라면: 로그인 상태면 그 userId로 연결, 아니면 user 생성
       let userIdToUse = sessionUserId ?? null;
 
       if (!userIdToUse) {
-        if (!nickname || !nationality) {
-          throw new HttpError('사용자 정보가 누락되었습니다.', 400);
-        }
         const user = await tx.user.create({
           data: { nickname, nationality },
           select: { id: true },
@@ -87,34 +64,26 @@ export async function saveArcData(
         userIdToUse = user.id;
       }
 
-      const created = await tx.aRC.create({
+      return await tx.aRC.create({
         data: {
           userId: userIdToUse,
-          arcNumber,
+          arcNumber: validated.arcNumber,
           residenceStatus,
           issueDate: parseLocalDate(issueDate),
           userPhotoUrl,
         },
         select: { id: true, userId: true },
       });
-
-      return created;
     });
 
-    // 세션 저장
     await saveUserIdToSession(result.userId);
 
     return {
       success: true,
       data: {
-        arcNumber,
-        registrationNumber,
-        registrationNumberSuffix,
-        residenceStatus,
-        issueDate,
-        lastName,
-        firstName,
-        nationality,
+        ...validated,
+        registrationNumber: rawData.registrationNumber as string,
+        registrationNumberSuffix: rawData.registrationNumberSuffix as string,
       },
     };
   } catch (error) {

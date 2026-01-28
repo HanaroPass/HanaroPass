@@ -7,11 +7,9 @@ import {
 } from '@/lib/errorHandler';
 import { prisma } from '@/lib/prisma';
 import { getUserIdFromSession, saveUserIdToSession } from '@/lib/session';
+import { PassportFormSchema } from './identity.schema';
 
 const parseLocalDate = (dateStr: string) => {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
-    throw new HttpError('날짜 형식이 올바르지 않습니다. (YYYY-MM-DD)', 400);
-  }
   const [y, m, d] = dateStr.split('-').map(Number);
   return new Date(Date.UTC(y, m - 1, d, 12, 0, 0));
 };
@@ -21,57 +19,34 @@ export async function savePassportData(
   formData: FormData,
 ): Promise<ActionResult<Record<string, string>>> {
   try {
-    const passportNumber = formData.get('passportNumber') as string;
-    const gender = formData.get('gender') as string;
-    const issueDate = formData.get('issueDate') as string;
-    const expiryDate = formData.get('expiryDate') as string;
-    const lastName = formData.get('lastName') as string;
-    const firstName = formData.get('firstName') as string;
-    const userPhotoUrl = formData.get('userPhotoUrl') as string;
-    const nationality = formData.get('nationality') as string;
+    const validated = PassportFormSchema.parse(
+      Object.fromEntries(formData.entries()),
+    );
 
-    if (
-      !passportNumber ||
-      !gender ||
-      !issueDate ||
-      !expiryDate ||
-      !lastName ||
-      !firstName ||
-      !nationality
-    ) {
-      throw new HttpError('모든 정보를 정확히 입력해주세요.', 400);
+    const { lastName, firstName } = validated;
+    const nickname = `${lastName} ${firstName}`.trim();
+    const expiryDateObj = parseLocalDate(validated.expiryDate);
+
+    if (expiryDateObj <= new Date()) {
+      throw new HttpError('만료된 여권은 등록할 수 없습니다.', 400);
     }
 
     const sessionUserId = await getUserIdFromSession();
 
-    const nickname = `${lastName} ${firstName}`.trim();
-
     const result = await prisma.$transaction(async (tx) => {
-      // 기존에 동일한 여권번호를 가진 정보가 있는지 먼저 확인
-      const existingPassport = await tx.passport.findUnique({
-        where: { passportNumber },
-        select: { id: true, userId: true },
+      const existing = await tx.passport.findUnique({
+        where: { passportNumber: validated.passportNumber },
       });
 
-      if (existingPassport) {
-        // 이미 존재하는 여권인 경우 막기
-        if (sessionUserId && existingPassport.userId !== sessionUserId) {
-          throw new HttpError('이미 다른 계정에 등록된 여권번호입니다.', 409);
-        }
-        return existingPassport;
+      if (existing && sessionUserId && existing.userId !== sessionUserId) {
+        throw new HttpError('이미 다른 계정에 등록된 여권번호입니다.', 409);
       }
 
-      // 여권번호가 신규라면: 로그인 상태면 그 userId로 연결, 아니면 user 생성
       let userIdToUse = sessionUserId ?? null;
 
       if (!userIdToUse) {
-        if (!nickname || !nationality) {
-          throw new HttpError('사용자 정보가 누락되었습니다.', 400);
-        }
-
         const user = await tx.user.create({
-          data: { nickname, nationality },
-          select: { id: true },
+          data: { nickname, nationality: validated.nationality },
         });
         userIdToUse = user.id;
       }
@@ -79,32 +54,18 @@ export async function savePassportData(
       return await tx.passport.create({
         data: {
           userId: userIdToUse,
-          passportNumber,
-          gender: gender as 'MALE' | 'FEMALE' | 'OTHERS',
-          issueDate: parseLocalDate(issueDate),
-          expiryDate: parseLocalDate(expiryDate),
-          userPhotoUrl: userPhotoUrl || '',
+          passportNumber: validated.passportNumber,
+          gender: validated.gender as 'MALE' | 'FEMALE' | 'OTHERS',
+          issueDate: parseLocalDate(validated.issueDate),
+          expiryDate: expiryDateObj,
+          userPhotoUrl: validated.userPhotoUrl,
         },
-        select: { id: true, userId: true },
       });
     });
-
-    // 세션 저장
+    console.log('formdata', formData);
     await saveUserIdToSession(result.userId);
-
-    return {
-      success: true,
-      data: {
-        passportNumber,
-        gender,
-        issueDate,
-        expiryDate,
-        lastName,
-        firstName,
-        nationality,
-      },
-    };
-  } catch (error: unknown) {
+    return { success: true, data: { ...validated } };
+  } catch (error) {
     return handleActionResult(error);
   }
 }

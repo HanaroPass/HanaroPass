@@ -21,7 +21,7 @@ type BaseDrawerProps = {
   showButtons?: boolean;
   isPending?: boolean;
   children: ReactNode;
-  requireNationality?: boolean; // 국적 필수 여부
+  requireNationality?: boolean;
 };
 
 export function BaseDrawer({
