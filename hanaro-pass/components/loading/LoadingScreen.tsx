@@ -4,7 +4,7 @@ import Image from 'next/image';
 
 export default function LoadingScreen() {
   return (
-    <div className="relative h-dvh w-full overflow-hidden bg-color-white-ez">
+    <div className="relative h-dvh w-full overflow-hidden bg-white-ez">
       <div className="px-10 pt-30">
         <h1
           className="text-[44px] leading-none tracking-[-0.5px]"
@@ -29,7 +29,7 @@ export default function LoadingScreen() {
         </p>
       </div>
 
-      <div className="absolute inset-x-0 bottom-30 flex flex-col items-center">
+      <div className="absolute inset-x-0 bottom-20 flex flex-col items-center">
         <div className="relative h-90 w-90 max-w-[92vw]">
           <Image
             src="/images/loading/back.png"

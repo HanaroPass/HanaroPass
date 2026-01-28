@@ -24,8 +24,8 @@ export default function LoadingGate({
       return;
     }
 
-    const minMs = 1300; // 스플래시
-    const outMs = 520; // 페이드아웃
+    const minMs = 1700; // 스플래시
+    const outMs = 100; // 페이드아웃
 
     const t1 = window.setTimeout(() => setPhase('splash-out'), minMs);
     const t2 = window.setTimeout(() => {

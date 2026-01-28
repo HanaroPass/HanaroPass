@@ -279,23 +279,20 @@ input[type="search"]::-webkit-search-results-decoration {
 /* ===== Splash transition ===== */
 .page-hidden {
   opacity: 0;
-  transform: translateY(8px);
   pointer-events: none;
 }
 
 .page-in {
-  animation: pageIn 520ms ease-out both;
+  animation: pageIn 360ms ease-out both;
 }
 
 @keyframes pageIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
     filter: blur(2px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
     filter: blur(0);
   }
 }
@@ -303,38 +300,37 @@ input[type="search"]::-webkit-search-results-decoration {
 .splash-in {
   position: absolute;
   inset: 0;
-  animation: splashIn 320ms ease-out both;
+  animation: splashIn 220ms ease-out both;
 }
 
 @keyframes splashIn {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    filter: blur(2px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    filter: blur(0);
   }
 }
 
 .splash-out {
   position: absolute;
   inset: 0;
-  animation: splashOut 520ms cubic-bezier(0.2, 0.9, 0.2, 1) both;
+  animation: splashOut 300ms ease-in both;
 }
 
 @keyframes splashOut {
   from {
     opacity: 1;
-    transform: translateY(0);
     filter: blur(0);
   }
   to {
     opacity: 0;
-    transform: translateY(-14px);
     filter: blur(2px);
   }
 }
+
 @media (prefers-reduced-motion: reduce) {
   .page-in,
   .splash-in,
@@ -343,6 +339,5 @@ input[type="search"]::-webkit-search-results-decoration {
   }
   .page-hidden {
     opacity: 1;
-    transform: none;
   }
 }

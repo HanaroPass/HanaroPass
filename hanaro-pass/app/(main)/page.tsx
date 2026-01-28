@@ -9,6 +9,7 @@ import PassportUnregisteredContent from './components/PassportUnregisteredConten
 import Pay from './components/Pay';
 import Service from './components/Service';
 import Transfer from './components/Transfer';
+import LoadingGate from '@/components/loading/LoadingGate';
 
 const TAB_COMPONENTS = {
   pay: Pay,
@@ -39,10 +40,12 @@ export default async function Page({
   const isRegistered = Boolean(passport || arc);
   if (!isRegistered) {
     return (
-      <MainWrapper activeTab={tab} isRegistered={false}>
-        <MainWrapper.Title>환율 정보</MainWrapper.Title>
-        <PassportUnregisteredContent />
-      </MainWrapper>
+      <LoadingGate>
+        <MainWrapper activeTab={tab} isRegistered={false}>
+          <MainWrapper.Title>환율 정보</MainWrapper.Title>
+          <PassportUnregisteredContent />
+        </MainWrapper>
+      </LoadingGate>
     );
   }
 
@@ -61,33 +64,35 @@ export default async function Page({
     ) : null;
 
   return (
-    <MainWrapper activeTab={tab} isRegistered>
-      <div className="app-layout">
-        <MainWrapper.Title>
-          {tab === 'pay' && 'EZ Pay'}
-          {tab === 'transfer' && '조회/이체'}
-          {tab === 'service' && '서비스'}
-        </MainWrapper.Title>
+    <LoadingGate>
+      <MainWrapper activeTab={tab} isRegistered>
+        <div className="app-layout">
+          <MainWrapper.Title>
+            {tab === 'pay' && 'EZ Pay'}
+            {tab === 'transfer' && '조회/이체'}
+            {tab === 'service' && '서비스'}
+          </MainWrapper.Title>
 
-        <div className="app-main">
-          {tab === 'pay' ? (
-            <Suspense
-              fallback={
-                <div className="flex justify-center py-10">
-                  <Loader className="animate-spin text-green-ez" />
-                </div>
-              }
-            >
-              <TabComponent
-                cardsPromise={cardsPromise}
-                couponList={couponList}
-              />
-            </Suspense>
-          ) : (
-            <TabComponent />
-          )}
+          <div className="app-main">
+            {tab === 'pay' ? (
+              <Suspense
+                fallback={
+                  <div className="flex justify-center py-10">
+                    <Loader className="animate-spin text-green-ez" />
+                  </div>
+                }
+              >
+                <TabComponent
+                  cardsPromise={cardsPromise}
+                  couponList={couponList}
+                />
+              </Suspense>
+            ) : (
+              <TabComponent />
+            )}
+          </div>
         </div>
-      </div>
-    </MainWrapper>
+      </MainWrapper>
+    </LoadingGate>
   );
 }

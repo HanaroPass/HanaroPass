@@ -4,7 +4,6 @@ import { Toaster } from 'sonner';
 import AuthStatusWrapper from './(main)/components/AuthStatusWrapper';
 import './globals.css';
 import { AlertDialogProvider } from '@/providers/alertProvider';
-import LoadingGate from '@/components/loading/LoadingGate';
 
 export const metadata: Metadata = {
   title: 'Hanaro Pass',
@@ -22,9 +21,7 @@ export default function RootLayout({
       <body className="antialiased">
         <Suspense fallback={null}>
           <AlertDialogProvider>
-            <div className="app-shell">
-              <LoadingGate>{children}</LoadingGate>
-            </div>
+            <div className="app-shell">{children}</div>
           </AlertDialogProvider>
         </Suspense>
         <Toaster
