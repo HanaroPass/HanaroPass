@@ -1,4 +1,4 @@
-import { SAVED_PLACES_MOCK } from '@/app/map/constants/savedPlaces';
+import { SAVED_PLACES_DATA } from '@/app/map/constants/savedPlaces';
 import type { PlaceCategory } from '@/lib/generated/prisma';
 import { prisma } from '@/lib/prisma';
 
@@ -11,7 +11,7 @@ export async function seedSavedPlaces() {
   const users = await prisma.user.findMany();
 
   for (const user of users) {
-    const shuffled = [...SAVED_PLACES_MOCK].sort(() => Math.random() - 0.5);
+    const shuffled = [...SAVED_PLACES_DATA].sort(() => Math.random() - 0.5);
 
     const selectedPlaces = shuffled.slice(0, 25);
 
