@@ -5,7 +5,7 @@ import ActionButton from '@/components/ui/ActionButton';
 import { deleteUserDocs } from '../actions/userDocs';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/useToast';
-import { ConfirmModal } from '@/components/toast/ConfirmModal';
+import { useAlert } from '@/providers/alertProvider';
 
 type Props = {
   docId: string;
@@ -16,8 +16,8 @@ type Props = {
 export default function DocsDetailPageClient({ docId, fileUrl, title }: Props) {
   const router = useRouter();
   const [isDeleting, setIsDeleting] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const { success, actionError, systemError } = useToast();
+  const { alert } = useAlert();
 
   const handleDelete = async () => {
     if (isDeleting) return;
@@ -35,6 +35,23 @@ export default function DocsDetailPageClient({ docId, fileUrl, title }: Props) {
     } finally {
       setIsDeleting(false);
     }
+  };
+
+  const openDeleteDialog = () => {
+    alert({
+      title: '서류 삭제',
+      description: `'${title}' 서류를 삭제하시겠습니까?`,
+      actionLabel: isDeleting ? '삭제 중...' : '삭제',
+      cancelLabel: '취소',
+      variant: 'destructive',
+      contentClassName: '!max-w-[340px]',
+      closeOnAction: false,
+      actionProps: { disabled: isDeleting },
+      cancelProps: { disabled: isDeleting },
+      onAction: async () => {
+        await handleDelete();
+      },
+    });
   };
 
   const handleDownload = async () => {
@@ -58,34 +75,23 @@ export default function DocsDetailPageClient({ docId, fileUrl, title }: Props) {
   };
 
   return (
-    <>
-      <div className="mx-auto mt-10 flex w-full max-w-84 gap-4">
-        <div className="flex-1 text-black">
-          <ActionButton
-            text={isDeleting ? '삭제 중...' : '삭제'}
-            disabled={isDeleting}
-            onClick={() => setShowDeleteModal(true)}
-            className="bg-white text-black hover:bg-black/5 active:bg-black/5"
-          />
-        </div>
-
-        <div className="flex-1">
-          <ActionButton
-            text="다운로드"
-            disabled={!fileUrl}
-            onClick={handleDownload}
-          />
-        </div>
+    <div className="mx-auto mt-10 flex w-full max-w-84 gap-4">
+      <div className="flex-1 text-black">
+        <ActionButton
+          text={isDeleting ? '삭제 중...' : '삭제'}
+          disabled={isDeleting}
+          onClick={openDeleteDialog}
+          className="bg-white text-black hover:bg-black/5 active:bg-black/5"
+        />
       </div>
-      <ConfirmModal
-        open={showDeleteModal}
-        onOpenChange={setShowDeleteModal}
-        title="서류 삭제"
-        description={`'${title}' 서류를 삭제하시겠습니까?`}
-        confirmText="삭제"
-        variant="danger"
-        onConfirm={handleDelete}
-      />
-    </>
+
+      <div className="flex-1">
+        <ActionButton
+          text="다운로드"
+          disabled={!fileUrl}
+          onClick={handleDownload}
+        />
+      </div>
+    </div>
   );
 }

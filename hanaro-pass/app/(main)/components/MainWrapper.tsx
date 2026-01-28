@@ -118,7 +118,7 @@ export default function MainWrapper({
             </div>
           </section>
         )}
-        <section className="rounded-t-4xl bg-white px-4 pt-5 pb-7">
+        <section className="rounded-t-4xl bg-white px-4 pt-5 pb-17">
           {children}
         </section>
       </main>

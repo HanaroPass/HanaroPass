@@ -15,7 +15,7 @@ import type {
 } from '../../actions/getCouponList.schema';
 import Coupon from './Coupon';
 
-type Props = {
+type CouponListClientProps = {
   coupons: CouponListResponse[];
   initialCategory: CouponTabValue;
   initialQuery: string;
@@ -25,7 +25,7 @@ export default function CouponListClient({
   coupons,
   initialCategory,
   initialQuery,
-}: Props) {
+}: CouponListClientProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();

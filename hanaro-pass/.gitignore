@@ -50,3 +50,6 @@ storybook-static
 /mysql/
 
 public/uploads/
+
+# macOS
+.DS_Store
