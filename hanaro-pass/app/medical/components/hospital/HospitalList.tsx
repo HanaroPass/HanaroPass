@@ -7,10 +7,6 @@ import { useMyLocation } from '@/lib/getMyLocation';
 import { cn } from '@/lib/utils';
 import type { HospitalWithStatus } from '../../symptoms/types';
 
-type Props = {
-  hospitals: HospitalWithStatus[];
-};
-
 export default function HospitalList({
   hospitals,
 }: {
