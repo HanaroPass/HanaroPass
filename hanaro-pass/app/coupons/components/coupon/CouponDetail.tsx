@@ -1,11 +1,12 @@
 'use client';
-
+import { Lock } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import Barcode from 'react-barcode';
 import { postPaymentAction } from '@/app/(main)/actions/postPayment.action';
+import { useCardLockGate } from '@/app/(main)/hooks/useCardLock';
 
 interface CouponDetailProps {
   brandName: string;
@@ -13,6 +14,7 @@ interface CouponDetailProps {
   tag: string;
   couponNumber: string;
   id: number;
+  defaultCardId: number;
 }
 
 export default function CouponDetail({
@@ -21,17 +23,23 @@ export default function CouponDetail({
   tag,
   couponNumber,
   id,
+  defaultCardId,
 }: CouponDetailProps) {
   const router = useRouter();
   const [isPaying, setIsPaying] = useState(false);
 
-  const onBarcodeClick = async () => {
+  const gate = useCardLockGate();
+
+  const isDefaultUnlocked = useMemo(
+    () => gate.isUnlocked(defaultCardId),
+    [gate, defaultCardId],
+  );
+
+  const pay = useCallback(async () => {
     if (isPaying) return;
     setIsPaying(true);
 
-    const res = await postPaymentAction({
-      couponId: id,
-    });
+    const res = await postPaymentAction({ couponId: id });
 
     setIsPaying(false);
 
@@ -42,6 +50,14 @@ export default function CouponDetail({
 
     alert('결제가 완료되었습니다.');
     router.push('/');
+  }, [id, isPaying, router]);
+
+  const onBarcodeClick = async () => {
+    if (!isDefaultUnlocked) {
+      gate.requestUnlock(defaultCardId);
+      return;
+    }
+    await pay();
   };
 
   return (
@@ -79,10 +95,18 @@ export default function CouponDetail({
         type="button"
         onClick={onBarcodeClick}
         disabled={isPaying}
-        className="flex flex-col items-center gap-3 active:opacity-70 disabled:opacity-40"
-        aria-label="쿠폰으로 결제하기"
+        className="relative flex flex-col items-center gap-3 active:opacity-70 disabled:opacity-40"
+        aria-label={
+          !isDefaultUnlocked
+            ? 'PIN 번호를 입력하여 바코드 보기'
+            : '쿠폰으로 결제하기'
+        }
       >
-        <div className="flex items-center justify-center overflow-hidden py-2">
+        <div
+          className={`flex items-center justify-center overflow-hidden rounded-md bg-white py-2 transition-all duration-700 ease-in-out ${
+            !isDefaultUnlocked ? 'blur-sm' : 'blur-0'
+          }`}
+        >
           <Barcode
             value={couponNumber}
             format="CODE128"
@@ -93,6 +117,14 @@ export default function CouponDetail({
             background="transparent"
           />
         </div>
+
+        {!isDefaultUnlocked && (
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+            <div className="rounded-full border border-gray-100 bg-white/90 p-3 shadow-lg">
+              <Lock className="text-black-800" size={24} />
+            </div>
+          </div>
+        )}
 
         <p className="font-medium text-gray-400 text-sm">
           쿠폰번호: <span className="uppercase">{couponNumber}</span>

@@ -9,7 +9,7 @@ interface PinInputProps {
   onCloseAction: () => void;
 }
 
-function shuffle<T>(arr: T[]) {
+function shuffle<T>(arr: T[]): T[] {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i -= 1) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -23,7 +23,6 @@ export default function PinInput({
   onCloseAction,
 }: PinInputProps) {
   const [pin, setPin] = useState('');
-
   const [digits, setDigits] = useState<string[]>(() =>
     shuffle(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']),
   );
@@ -31,11 +30,12 @@ export default function PinInput({
   useEffect(() => {
     if (pin.length !== 6) return;
 
-    // TODO: PIN 어떻게 할지 정하기
-    if (pin === '111111') {
+    const isValidPin = pin === '111111';
+
+    if (isValidPin) {
       onSuccessAction();
     } else {
-      alert('잘못된 번호입니다.');
+      alert('잘못된 PIN 번호입니다.');
       setPin('');
     }
   }, [pin, onSuccessAction]);
@@ -106,6 +106,7 @@ export default function PinInput({
                     type="button"
                     onClick={onReorder}
                     className="font-bold text-green-ez text-sm active:opacity-30"
+                    aria-label="숫자 키패드 재배열"
                   >
                     재배열
                   </button>
