@@ -2,7 +2,7 @@ import type { SavedPlace } from '@/lib/generated/prisma';
 
 type SavedPlaceConstantData = Omit<SavedPlace, 'id' | 'userId'>;
 
-export const SAVED_PLACES_MOCK: SavedPlaceConstantData[] = [
+export const SAVED_PLACES_DATA: SavedPlaceConstantData[] = [
   {
     placeName: '디올 성수',
     category: 'SHOP',
