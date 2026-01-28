@@ -194,7 +194,9 @@ export default function MapPageClient({ hospitals, userId }: Props) {
         <ToggleButton
           variant="pill"
           label="병원"
-          icon={<Cross className="h-4 w-4" />}
+          icon={
+            <Cross className="h-4 w-4" fill="currentColor" strokeWidth={3} />
+          }
           active={openSheet === 'hospital'}
           iconColorVariant="red"
           onClick={() => {
