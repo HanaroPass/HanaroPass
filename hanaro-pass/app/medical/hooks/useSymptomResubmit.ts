@@ -1,10 +1,37 @@
 'use client';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useState } from 'react';
-import { postSymptomForm } from '../actions/symptoms';
+import { useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import {
+  getTTS,
+  type outputType,
+  parseOutput,
+  postSymptomForm,
+} from '../actions/symptoms.action';
 
-export default function useSymptomResubmit() {
+export default function useSymptomResubmit(reloadTrigger: number) {
   const [isLoading, setLoading] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [writtenSymptom, setWrittenSymptom] = useState('');
+  const [result, setResult] = useState<outputType>();
+  const searchParams = useSearchParams();
+  const mode = searchParams.get('mode');
+
+  useEffect(() => {
+    console.log('reloadTrigger:', reloadTrigger);
+    const parse = async () => {
+      setWrittenSymptom(localStorage.getItem('written-symptom') as string);
+      const data = localStorage.getItem('symptom-result');
+      if (!data) return;
+
+      try {
+        const result = await parseOutput(data);
+        setResult(result);
+      } catch (e) {
+        console.error('증상 결과 파싱 실패', e);
+      }
+    };
+    parse();
+  }, [reloadTrigger]);
 
   const handleResubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     if (isLoading) return;
@@ -28,7 +55,10 @@ export default function useSymptomResubmit() {
         }
       }
 
-      const response = await postSymptomForm(formData);
+      const { fromCached, response } = await postSymptomForm(formData);
+      if (fromCached) {
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+      }
       localStorage.setItem('symptom-result', response);
       localStorage.setItem(
         'written-symptom',
@@ -43,5 +73,30 @@ export default function useSymptomResubmit() {
     }
   };
 
-  return { isLoading, handleResubmit };
+  const playAudio = async () => {
+    const base64 = await getTTS(JSON.stringify(result?.번역_내용));
+    const audio = new Audio(`data:audio/mp3;base64,${base64}`);
+    audio.play();
+  };
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(result?.번역_내용 || '');
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch (e) {
+      console.error('클립보드 복사 실패', e);
+    }
+  };
+
+  return {
+    result,
+    writtenSymptom,
+    copied,
+    playAudio,
+    handleCopy,
+    isLoading,
+    handleResubmit,
+    mode,
+  };
 }
