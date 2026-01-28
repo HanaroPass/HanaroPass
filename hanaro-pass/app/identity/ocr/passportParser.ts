@@ -112,6 +112,7 @@ export const parsePassportData = (text: string): ParsedData => {
     return coreRegex.test(fullText);
   });
 
-  data.nationality = foundNationality ? foundNationality.value : '-';
+  // 파싱된 국적이 유효하면 설정, 아니면 사용자가 직접 선택
+  data.nationality = foundNationality ? foundNationality.value : '';
   return data;
 };

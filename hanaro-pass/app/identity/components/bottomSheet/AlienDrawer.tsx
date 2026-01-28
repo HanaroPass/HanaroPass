@@ -43,6 +43,7 @@ export function AlienDrawer({
       className={className}
       showButtons={true}
       isPending={isPending}
+      requireNationality={true}
     >
       <CommonFields initialData={initialData} />
       <AlienFields initialData={initialData} />

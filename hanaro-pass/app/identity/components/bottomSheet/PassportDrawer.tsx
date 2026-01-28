@@ -43,6 +43,7 @@ export function PassportDrawer({
       className={className}
       showButtons={true}
       isPending={isPending}
+      requireNationality={true}
     >
       <CommonFields initialData={initialData} />
       <PassportFields initialData={initialData} />

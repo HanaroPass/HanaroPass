@@ -97,9 +97,13 @@ export default function ResultStep({
   };
 
   const currentDisplayData = useMemo(() => {
-    if (initialData) return initialData;
-    return activeTab === 'passport' ? passportData : arcData;
-  }, [activeTab, passportData, arcData, initialData]);
+    if (initialData && identityType && identityType === activeTab) {
+      return initialData;
+    }
+
+    const dbData = activeTab === 'passport' ? passportData : arcData;
+    return dbData;
+  }, [activeTab, passportData, arcData, initialData, identityType]);
 
   return (
     <>

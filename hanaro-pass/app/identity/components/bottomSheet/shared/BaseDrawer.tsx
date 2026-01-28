@@ -21,6 +21,7 @@ type BaseDrawerProps = {
   showButtons?: boolean;
   isPending?: boolean;
   children: ReactNode;
+  requireNationality?: boolean; // 국적 필수 여부
 };
 
 export function BaseDrawer({
@@ -33,11 +34,34 @@ export function BaseDrawer({
   showButtons = true,
   isPending = false,
   children,
+  requireNationality = false,
 }: BaseDrawerProps) {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    // 국적 체크가 필요한 경우에만 검증
+    if (requireNationality) {
+      const formData = new FormData(e.currentTarget);
+      const nationality = formData.get('nationality') as string;
+
+      if (
+        !nationality ||
+        nationality.trim() === '' ||
+        nationality === 'undefined'
+      ) {
+        e.preventDefault();
+        alert('국적을 선택해주세요.');
+        return;
+      }
+    }
+  };
+
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent className={className || 'mx-auto max-w-[375px]'}>
-        <form action={formAction} key={open ? 'open' : 'closed'}>
+        <form
+          action={formAction}
+          onSubmit={handleSubmit}
+          key={open ? 'open' : 'closed'}
+        >
           <DrawerHeader className="relative border-b">
             <DrawerTitle className="text-center font-semibold text-base">
               {title}
@@ -67,7 +91,7 @@ export function BaseDrawer({
                 className="h-12 flex-1 bg-hana-green text-white hover:bg-green-700"
                 disabled={isPending}
               >
-                {isPending ? '저장 중...' : '확인'}
+                {isPending ? '저장 중' : '확인'}
               </Button>
             </div>
           )}
