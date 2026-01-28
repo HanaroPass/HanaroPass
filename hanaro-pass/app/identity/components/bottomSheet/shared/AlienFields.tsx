@@ -133,8 +133,8 @@ export function AlienExtraFields({
       <div className="space-y-2">
         <Label className="font-normal text-gray-600 text-sm">발급일자</Label>
         <DatePicker
-          value={formData.issuedDate}
-          onChange={(date) => updateField('issuedDate', date)}
+          value={formData.issueDate}
+          onChange={(date) => updateField('issueDate', date)}
         />
       </div>
     </>

@@ -26,7 +26,7 @@ export async function saveArcData(
       registrationNumber,
       registrationNumberSuffix,
       residenceStatus,
-      issuedDate,
+      issueDate,
       userPhotoUrl = '',
       lastName,
       firstName,
@@ -44,7 +44,7 @@ export async function saveArcData(
     if (!residenceStatus) {
       throw new HttpError('체류 자격 정보가 누락되었습니다.', 400);
     }
-    if (!issuedDate) {
+    if (!issueDate) {
       throw new HttpError('발급 일자가 누락되었습니다.', 400);
     }
 
@@ -85,7 +85,7 @@ export async function saveArcData(
           userId: userIdToUse,
           arcNumber,
           residenceStatus,
-          issueDate: parseLocalDate(issuedDate),
+          issueDate: parseLocalDate(issueDate),
           userPhotoUrl,
         },
         select: { id: true, userId: true },

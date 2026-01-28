@@ -62,7 +62,7 @@ export const parseArcData = (text: string): ParsedData => {
   }
 
   // 발급일자
-  if (!data.issuedDate) {
+  if (!data.issueDate) {
     // YYYY.MM.DD 형태
     const dotDateMatch = fullText.match(/(\d{4})\.(\d{1,2})\.(\d{1,2})/);
     if (dotDateMatch) {
@@ -71,13 +71,13 @@ export const parseArcData = (text: string): ParsedData => {
       const day = dotDateMatch[3].padStart(2, '0');
       const yearNum = parseInt(year, 10);
       if (yearNum >= 2010 && yearNum <= 2030) {
-        data.issuedDate = `${year}-${month}-${day}`;
+        data.issueDate = `${year}-${month}-${day}`;
       }
     }
   }
 
   // 발급일자
-  if (!data.issuedDate) {
+  if (!data.issueDate) {
     const issueDateMatches = fullText.match(/(\d{8})/g);
     if (issueDateMatches) {
       for (const dateStr of issueDateMatches) {
@@ -98,7 +98,7 @@ export const parseArcData = (text: string): ParsedData => {
           dayNum >= 1 &&
           dayNum <= 31
         ) {
-          data.issuedDate = `${year}-${month}-${day}`;
+          data.issueDate = `${year}-${month}-${day}`;
           break;
         }
       }

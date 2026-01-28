@@ -34,7 +34,6 @@ export function CommonFields({
           <Label className="font-normal text-gray-600 text-sm">성</Label>
           <Input
             type="text"
-            placeholder="HAN"
             value={formData.lastName || ''}
             onChange={(e) => updateField('lastName', e.target.value)}
             className="h-12 border-0 bg-gray-50"
@@ -44,7 +43,6 @@ export function CommonFields({
           <Label className="font-normal text-gray-600 text-sm">이름</Label>
           <Input
             type="text"
-            placeholder="SUJEONG"
             value={formData.firstName || ''}
             onChange={(e) => updateField('firstName', e.target.value)}
             className="h-12 border-0 bg-gray-50"

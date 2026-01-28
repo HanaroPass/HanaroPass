@@ -32,7 +32,7 @@ export function AlienDrawer({
   const normalizedInitialData = useMemo(
     () => ({
       ...initialData,
-      issuedDate: initialData.issuedDate || initialData.issueDate || '',
+      issueDate: initialData.issuedDate || initialData.issueDate || '',
     }),
     [initialData],
   );
