@@ -83,6 +83,8 @@ export default function CouponDetail({
   };
 
   const handlePinSuccess = async () => {
+    if (isPaying || isLoading) return;
+
     unlockCard();
     setShowPinInput(false);
     await processPayment();
