@@ -3,10 +3,10 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import {
   getTTS,
-  type outputType,
   parseOutput,
   postSymptomForm,
 } from '../actions/symptoms.action';
+import type { outputType } from '../symptoms/types';
 
 export default function useSymptomResubmit(reloadTrigger: number) {
   const [isLoading, setLoading] = useState(false);
@@ -19,13 +19,13 @@ export default function useSymptomResubmit(reloadTrigger: number) {
   useEffect(() => {
     console.log('reloadTrigger:', reloadTrigger);
     const parse = async () => {
-      setWrittenSymptom(localStorage.getItem('written-symptom') as string);
       const data = localStorage.getItem('symptom-result');
       if (!data) return;
 
       try {
         const result = await parseOutput(data);
         setResult(result);
+        setWrittenSymptom(result.재출력);
       } catch (e) {
         console.error('증상 결과 파싱 실패', e);
       }
@@ -60,10 +60,6 @@ export default function useSymptomResubmit(reloadTrigger: number) {
         await new Promise((resolve) => setTimeout(resolve, 2000));
       }
       localStorage.setItem('symptom-result', response);
-      localStorage.setItem(
-        'written-symptom',
-        formData.get('description') as string,
-      );
       console.log(response);
     } catch (err) {
       console.error('재제출 실패', err);

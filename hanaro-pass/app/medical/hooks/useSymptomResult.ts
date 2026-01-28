@@ -37,11 +37,6 @@ export default function useSymptomResult() {
     setLoading(true);
     try {
       const formData = new FormData(e.currentTarget);
-      localStorage.setItem(
-        'written-symptom',
-        formData.get('description') as string,
-      );
-
       const imageDataArray = await Promise.all(
         images
           .filter((image) => image && image.size > 0)

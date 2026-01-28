@@ -6,7 +6,7 @@ import { getName } from '../../actions/getName.action';
 import { parseOutput } from '../../actions/symptoms.action';
 import HospitalList from '../../components/hospital/HospitalList';
 import SymptomHeader from '../../components/hospital/SymptomHeader';
-import type { HospitalWithStatus } from './types';
+import type { HospitalWithStatus } from '../types';
 
 export default function SymptomRecommendPage() {
   const [symptom, setSymptom] = useState<string[] | undefined>(undefined);

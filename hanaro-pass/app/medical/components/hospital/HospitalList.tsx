@@ -5,7 +5,7 @@ import { HospitalCard } from '@/components/ui/HospitalCard';
 import getDistance from '@/lib/getDistance';
 import { useMyLocation } from '@/lib/getMyLocation';
 import { cn } from '@/lib/utils';
-import type { HospitalWithStatus } from '../../symptoms/recommend/types';
+import type { HospitalWithStatus } from '../../symptoms/types';
 
 interface Props {
   hospitals: HospitalWithStatus[];
