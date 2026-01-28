@@ -7,8 +7,8 @@ import { useState } from 'react';
 import Barcode from 'react-barcode';
 import { postPaymentAction } from '@/app/(main)/actions/postPayment.action';
 import PinInput from '@/app/(main)/components/PinInput';
-import { useCardLockGate } from '@/app/(main)/hooks/useCardLockGate';
 import PaymentResultModal from '@/components/payResult/PayResult';
+import { useCardLockGate } from '@/hooks/card/useCardLockGate';
 import { useAlert } from '@/providers/alertProvider';
 
 interface CouponDetailProps {

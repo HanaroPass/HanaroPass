@@ -2,9 +2,9 @@
 
 import type { ReactNode } from 'react';
 import { use, useCallback, useMemo, useState } from 'react';
+import { useCardLock } from '@/hooks/card/useCardLock';
 import type { ActionResult } from '@/lib/errorHandler';
 import type { UserCardResponse } from '../actions/getUserCards.schema';
-import { useCardLock } from '../hooks/useCardLock';
 import Card from './Card';
 import { MenuList } from './MenuList';
 import PinInput from './PinInput';

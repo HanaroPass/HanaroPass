@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getUserCardsAction } from '../actions/getUserCards.action';
+import { getUserCardsAction } from '@/app/(main)/actions/getUserCards.action';
 
 interface UseCardLockGateReturn {
   defaultCardId: number | null;
