@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { Loader2 } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 type Props = {
   fileUrl: string;
@@ -12,6 +12,11 @@ type Props = {
 export default function DocsPreviewClient({ fileUrl, title }: Props) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+
+  useEffect(() => {
+    setLoading(true);
+    setError(false);
+  }, []);
 
   const isPdf = useMemo(() => {
     try {
