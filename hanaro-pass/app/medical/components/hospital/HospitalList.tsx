@@ -85,6 +85,7 @@ export default function HospitalList({ hospitals }: Props) {
               languages: hospital.languages,
               departments: hospital.departments,
               aiSummary: hospital.aiSummary ?? undefined,
+              imageUrl: hospital.imageUrl,
             }}
           />
         </div>
