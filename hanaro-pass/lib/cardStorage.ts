@@ -1,4 +1,4 @@
-const STORAGE_KEY = 'cardLock.v1';
+const STORAGE_KEY = 'cardLock';
 
 type Stored = {
   unlockedCardIds: number[];
