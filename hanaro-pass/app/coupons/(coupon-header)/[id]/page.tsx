@@ -1,10 +1,7 @@
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import { getUserIdFromSession } from '@/lib/session';
-import {
-  type CouponDetailResponse,
-  getCouponById,
-} from '../../actions/getCoupon';
+import { getCouponDetailForUser } from '../../actions/getCoupon';
 import CouponDetail from '../../components/coupon/CouponDetail';
 
 export const revalidate = 3600;
@@ -27,15 +24,14 @@ export default async function Page({ params }: PageProps) {
   const userId = await getUserIdFromSession();
   if (!userId) notFound();
 
-  const [coupon, defaultCard] = await Promise.all([
-    getCouponById({ id }).catch(() => null),
-    prisma.userCard.findFirst({
-      where: { userId, isDefault: true },
-      select: { id: true },
-    }),
-  ]);
+  const data = await getCouponDetailForUser({
+    couponId: id,
+    userId,
+  });
 
-  if (!coupon || !defaultCard) notFound();
+  if (!data) notFound();
+
+  const { coupon, defaultCardId } = data;
 
   return (
     <CouponDetail
@@ -44,7 +40,7 @@ export default async function Page({ params }: PageProps) {
       tag={coupon.tag ?? ''}
       couponNumber={coupon.couponCode}
       id={coupon.id}
-      defaultCardId={defaultCard.id}
+      defaultCardId={defaultCardId}
     />
   );
 }

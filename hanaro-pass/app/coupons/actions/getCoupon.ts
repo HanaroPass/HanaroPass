@@ -66,3 +66,25 @@ export async function getCouponById(
     description: coupon.description,
   };
 }
+const CouponDetailForUserRequest = z.object({
+  couponId: z.union([z.string(), z.number()]),
+  userId: z.number().int().positive(),
+});
+
+export async function getCouponDetailForUser(
+  input: z.infer<typeof CouponDetailForUserRequest>,
+) {
+  const { couponId, userId } = CouponDetailForUserRequest.parse(input);
+
+  const [coupon, defaultCard] = await Promise.all([
+    getCouponById({ id: couponId }).catch(() => null),
+    prisma.userCard.findFirst({
+      where: { userId, isDefault: true },
+      select: { id: true },
+    }),
+  ]);
+
+  if (!coupon || !defaultCard) return null;
+
+  return { coupon, defaultCardId: defaultCard.id };
+}

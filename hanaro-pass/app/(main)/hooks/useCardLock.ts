@@ -11,7 +11,6 @@ export function useCardLockGate() {
   const [unlocked, setUnlocked] = useState<Set<number>>(() => new Set());
   const [gate, setGate] = useState<GateState>({ isOpen: false, cardId: null });
 
-  // mount 시 세션에서 로드
   useEffect(() => {
     setUnlocked(cardLockStorage.loadUnlockedSet());
   }, []);
@@ -50,14 +49,11 @@ export function useCardLockGate() {
   );
 
   return {
-    // 상태
-    unlockedCardIds: unlocked, // Pay에서 그대로 쓰고 싶으면 제공
+    unlockedCardIds: unlocked,
     isUnlocked,
-
-    // 액션
-    requestUnlock, // 카드 눌렀을 때 PIN 열기
+    requestUnlock,
     pendingCardId,
     closeGate,
-    confirmUnlock, // PIN 성공 시 호출
+    confirmUnlock,
   };
 }

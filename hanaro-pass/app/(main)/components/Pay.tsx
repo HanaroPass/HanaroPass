@@ -24,13 +24,19 @@ export default function Pay({ cardsPromise, couponList }: PayProps) {
 
   const errorMessage = !result ? null : result.success ? null : result.message;
 
-  const gate = useCardLockGate();
+  const {
+    requestUnlock,
+    pendingCardId,
+    confirmUnlock,
+    closeGate,
+    unlockedCardIds,
+  } = useCardLockGate();
 
   const handleUnlockRequest = useCallback(
     (id: number) => {
-      gate.requestUnlock(id);
+      requestUnlock(id);
     },
-    [gate],
+    [requestUnlock],
   );
 
   return (
@@ -43,7 +49,7 @@ export default function Pay({ cardsPromise, couponList }: PayProps) {
 
       <Card
         cards={cards}
-        unlockedCardIds={gate.unlockedCardIds}
+        unlockedCardIds={unlockedCardIds}
         onLockClickAction={handleUnlockRequest}
       />
 
@@ -51,11 +57,8 @@ export default function Pay({ cardsPromise, couponList }: PayProps) {
 
       <MenuList type="pay" />
 
-      {gate.pendingCardId !== null && (
-        <PinInput
-          onSuccessAction={gate.confirmUnlock}
-          onCloseAction={gate.closeGate}
-        />
+      {pendingCardId !== null && (
+        <PinInput onSuccessAction={confirmUnlock} onCloseAction={closeGate} />
       )}
     </div>
   );
