@@ -17,7 +17,7 @@ const parseLocalDate = (dateStr: string) => {
 };
 
 export async function savePassportData(
-  prevState: ActionResult<Record<string, string>> | null,
+  _prevState: ActionResult<Record<string, string>> | null,
   formData: FormData,
 ): Promise<ActionResult<Record<string, string>>> {
   try {

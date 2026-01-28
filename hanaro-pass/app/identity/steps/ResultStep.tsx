@@ -104,7 +104,7 @@ export default function ResultStep({
     const dbData = activeTab === 'passport' ? passportData : arcData;
 
     if (dbData && activeTab === 'passport' && !dbData.nationality) {
-      return { ...dbData, nationality: 'KINGDOM OF CAMBODIA' };
+      return { ...dbData, nationality: '-' };
     }
 
     return dbData;

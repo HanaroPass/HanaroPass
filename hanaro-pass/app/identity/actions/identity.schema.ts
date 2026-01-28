@@ -10,6 +10,7 @@ const PassportIdentitySchema = z.object({
   issueDate: ISODateSchema,
   expiryDate: ISODateSchema,
   userPhotoUrl: z.string(),
+  nationality: z.string().min(1),
 });
 
 const ArcIdentitySchema = z.object({
@@ -17,6 +18,7 @@ const ArcIdentitySchema = z.object({
   residenceStatus: z.string().min(1),
   issueDate: ISODateSchema,
   userPhotoUrl: z.string(),
+  nationality: z.string().min(1),
 });
 
 export const IdentityDataSchema = z.object({
