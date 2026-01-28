@@ -57,7 +57,7 @@ export default function PassportUnregisteredContent() {
             src="/images/main/medical.svg"
             width={80}
             height={80}
-            alt="모바일 번호표"
+            alt="우리 병원 진료 가능 언어 등록하기"
             className="-mt-1 ml-auto"
           />
         </Link>
