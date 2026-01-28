@@ -2,10 +2,11 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import Barcode from 'react-barcode';
 import { postPaymentAction } from '@/app/(main)/actions/postPayment.action';
+import PaymentResultModal from '@/components/payResult/PayResult';
+import { useAlert } from '@/providers/alertProvider';
 
 interface CouponDetailProps {
   brandName: string;
@@ -22,7 +23,7 @@ export default function CouponDetail({
   couponNumber,
   id,
 }: CouponDetailProps) {
-  const router = useRouter();
+  const { alert } = useAlert();
   const [isPaying, setIsPaying] = useState(false);
 
   const onBarcodeClick = async () => {
@@ -36,12 +37,33 @@ export default function CouponDetail({
     setIsPaying(false);
 
     if (!res.success) {
-      alert(res.message);
+      alert({
+        render: () => (
+          <PaymentResultModal
+            variant="fail"
+            title="결제가 완료되지 않았어요"
+            description={res.message ?? '카드 정보를 다시 확인해주세요'}
+          />
+        ),
+        srTitle: '결제가 완료되지 않았어요',
+        srDescription: res.message ?? '카드 정보를 다시 확인해주세요',
+      });
       return;
     }
 
-    alert('결제가 완료되었습니다.');
-    router.push('/');
+    const data = res.data;
+    alert({
+      render: () => (
+        <PaymentResultModal
+          variant="success"
+          title="결제가 완료됐어요"
+          amountLabel={`원화 ${data.paidAmount.toLocaleString()}원`}
+          savedAmount={data.savedAmount}
+        />
+      ),
+      srTitle: '결제가 완료됐어요',
+      srDescription: `원화 ${data.paidAmount.toLocaleString()}원 결제`,
+    });
   };
 
   return (
