@@ -15,6 +15,7 @@ import {
   type DocsCardId,
 } from '../../constants/docsCardItem';
 import { addUserDocs } from '../../actions/userDocs';
+import { useToast } from '@/hooks/useToast';
 
 export default function DocsAddPage({ params }: DocsProps) {
   const { docId } = use(params);
@@ -26,6 +27,7 @@ export default function DocsAddPage({ params }: DocsProps) {
   const { file, previewUrl, isPdf, isImage, setSelectedFile } =
     useFilePreview();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { actionError, systemError, registerSuccess, warning } = useToast();
 
   const handlePick = () => inputRef.current?.click();
 
@@ -34,7 +36,7 @@ export default function DocsAddPage({ params }: DocsProps) {
     const res = setSelectedFile(selected);
 
     if (!res.ok) {
-      alert(res.error);
+      warning('파일 선택 오류', res.error);
       e.target.value = '';
     }
   };
@@ -44,7 +46,7 @@ export default function DocsAddPage({ params }: DocsProps) {
 
     const req = DOC_ID_TO_REQUIREMENT[docId as DocsCardId];
     if (req.kind !== 'USER_DOC') {
-      alert('이 서류는 현재 등록 방식(UserDocument 저장)을 지원하지 않습니다.');
+      warning('등록 불가', '이 서류는 현재 등록을 지원하지 않습니다.');
       return;
     }
 
@@ -65,12 +67,12 @@ export default function DocsAddPage({ params }: DocsProps) {
         );
         router.push(`/docs/add/${docId}/done`);
       } else {
-        alert(result.message);
+        actionError(result);
         setIsSubmitting(false);
       }
     } catch (e) {
       console.error(e);
-      alert('네트워크 오류가 발생했습니다.');
+      systemError('서류 업로드');
       setIsSubmitting(false);
     }
   };

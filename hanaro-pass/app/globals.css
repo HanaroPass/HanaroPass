@@ -259,3 +259,86 @@ input[type="search"]::-webkit-search-results-decoration {
     @apply bg-background text-foreground;
   }
 }
+
+@keyframes starFloat {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-8px) scale(1.02);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-star-float {
+  animation: starFloat 2.4s ease-in-out infinite;
+}
+
+/* ===== Splash transition ===== */
+.page-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.page-in {
+  animation: pageIn 360ms ease-out both;
+}
+
+@keyframes pageIn {
+  from {
+    opacity: 0;
+    filter: blur(2px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+.splash-in {
+  position: absolute;
+  inset: 0;
+  animation: splashIn 220ms ease-out both;
+}
+
+@keyframes splashIn {
+  from {
+    opacity: 0;
+    filter: blur(2px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+.splash-out {
+  position: absolute;
+  inset: 0;
+  animation: splashOut 100ms ease-in both;
+}
+
+@keyframes splashOut {
+  from {
+    opacity: 1;
+    filter: blur(0);
+  }
+  to {
+    opacity: 0;
+    filter: blur(2px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-in,
+  .splash-in,
+  .splash-out {
+    animation: none !important;
+  }
+  .page-hidden {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
