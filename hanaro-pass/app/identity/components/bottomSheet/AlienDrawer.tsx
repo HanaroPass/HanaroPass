@@ -1,6 +1,5 @@
 'use client';
 
-import { useMemo } from 'react';
 import { useToast } from '@/hooks/useToast';
 import { saveArcData } from '../../actions/arc';
 import { useDrawerForm } from './hooks/useDrawerForm';
@@ -29,57 +28,31 @@ export function AlienDrawer({
 }: AlienDrawerProps) {
   const { actionError } = useToast();
 
-  const normalizedInitialData = useMemo(
-    () => ({
-      ...initialData,
-      issueDate: initialData.issuedDate || initialData.issueDate || '',
-    }),
-    [initialData],
-  );
-
-  const handleSave = async (data: Record<string, string>) => {
-    const result = await saveArcData(data);
-
-    if (result.success) {
-      if (onSubmit) onSubmit(data);
-      onOpenChange(false);
-    } else {
-      actionError(result);
-    }
-  };
-
-  const { formData, resetForm, handleFormDataChange } = useDrawerForm({
-    onSubmit: undefined,
+  const { state, formAction, isPending } = useDrawerForm({
+    action: saveArcData,
+    onSuccess: () => onSubmit?.(initialData),
     onOpenChange,
-    initialData: normalizedInitialData,
   });
 
-  const handleSubmit = () => {
-    void handleSave(formData);
-  };
+  // 에러 발생 시 토스트 표시
+  if (state && !state.success) {
+    actionError(state);
+  }
 
   return (
     <BaseDrawer
       open={open}
       onOpenChange={onOpenChange}
       title="외국인 등록증 정보 확인"
-      onSubmit={handleSubmit}
-      onReset={onReset || resetForm}
+      formAction={formAction}
+      onReset={onReset || (() => {})}
       className={className}
       showButtons={true}
+      isPending={isPending}
     >
-      <CommonFields
-        formData={formData}
-        onFormDataChange={handleFormDataChange}
-      />
-      <AlienFields
-        formData={formData}
-        onFormDataChange={handleFormDataChange}
-      />
-      <AlienExtraFields
-        formData={formData}
-        onFormDataChange={handleFormDataChange}
-      />
+      <CommonFields initialData={initialData} />
+      <AlienFields initialData={initialData} />
+      <AlienExtraFields initialData={initialData} />
     </BaseDrawer>
   );
 }

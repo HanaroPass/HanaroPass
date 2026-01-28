@@ -1,41 +1,32 @@
-import { useEffect, useState } from 'react';
+import { useActionState, useEffect } from 'react';
+import type { ActionResult } from '@/lib/errorHandler';
 
-type UseDrawerFormProps = {
-  onSubmit?: (data: Record<string, string>) => void;
+type UseDrawerFormProps<T> = {
+  action: (
+    prevState: ActionResult<T> | null,
+    formData: FormData,
+  ) => Promise<ActionResult<T>>;
+  onSuccess?: () => void;
   onOpenChange: (open: boolean) => void;
-  initialData?: Record<string, string>;
 };
 
-export function useDrawerForm({
-  onSubmit,
+export function useDrawerForm<T>({
+  action,
+  onSuccess,
   onOpenChange,
-  initialData = {},
-}: UseDrawerFormProps) {
-  const [formData, setFormData] = useState<Record<string, string>>(initialData);
+}: UseDrawerFormProps<T>) {
+  const [state, formAction, isPending] = useActionState(action, null);
 
   useEffect(() => {
-    if (initialData && Object.keys(initialData).length > 0) {
-      setFormData((prev) => ({ ...prev, ...initialData }));
+    if (state?.success) {
+      onSuccess?.();
+      onOpenChange(false);
     }
-  }, [initialData]);
-
-  const handleSubmit = () => {
-    onSubmit?.(formData);
-    onOpenChange(false);
-  };
-
-  const resetForm = () => {
-    setFormData({});
-  };
-
-  const handleFormDataChange = (data: Record<string, string>) => {
-    setFormData(data);
-  };
+  }, [state, onSuccess, onOpenChange]);
 
   return {
-    formData,
-    handleSubmit,
-    resetForm,
-    handleFormDataChange,
+    state,
+    formAction,
+    isPending,
   };
 }

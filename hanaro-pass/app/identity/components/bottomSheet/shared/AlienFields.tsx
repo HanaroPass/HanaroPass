@@ -3,7 +3,7 @@
 import { format, parse } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { CalendarIcon } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Input } from '@/components/ui/input';
@@ -15,67 +15,60 @@ import {
 } from '@/components/ui/popover';
 
 type AlienFieldsProps = {
-  formData: Record<string, string>;
-  onFormDataChange: (data: Record<string, string>) => void;
+  initialData?: Record<string, string>;
 };
 
 function DatePicker({
-  value,
-  onChange,
+  name,
+  defaultValue,
 }: {
-  value?: string;
-  onChange: (date: string) => void;
+  name: string;
+  defaultValue?: string;
 }) {
   const [date, setDate] = useState<Date | undefined>(() =>
-    value ? parse(value, 'yyyy-MM-dd', new Date()) : undefined,
+    defaultValue ? parse(defaultValue, 'yyyy-MM-dd', new Date()) : undefined,
   );
 
-  useEffect(() => {
-    if (value) {
-      setDate(parse(value, 'yyyy-MM-dd', new Date()));
-    } else {
-      setDate(undefined);
-    }
-  }, [value]);
+  const [dateStr, setDateStr] = useState(defaultValue || '');
 
   return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <Button
-          type="button"
-          variant="outline"
-          className="h-12 w-full justify-start border-0 bg-gray-50 text-left font-normal"
-        >
-          {date ? (
-            format(date, 'yyyy-MM-dd', { locale: ko })
-          ) : (
-            <span className="text-gray-400">날짜 선택</span>
-          )}
-          <CalendarIcon className="ml-auto h-4 w-4 text-gray-400" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-auto p-0">
-        <Calendar
-          mode="single"
-          selected={date}
-          onSelect={(newDate) => {
-            setDate(newDate);
-            if (newDate) {
-              onChange(format(newDate, 'yyyy-MM-dd'));
-            }
-          }}
-          locale={ko}
-        />
-      </PopoverContent>
-    </Popover>
+    <>
+      <input type="hidden" name={name} value={dateStr} />
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button
+            type="button"
+            variant="outline"
+            className="h-12 w-full justify-start border-0 bg-gray-50 text-left font-normal"
+          >
+            {date ? (
+              format(date, 'yyyy-MM-dd', { locale: ko })
+            ) : (
+              <span className="text-gray-400">날짜 선택</span>
+            )}
+            <CalendarIcon className="ml-auto h-4 w-4 text-gray-400" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0">
+          <Calendar
+            mode="single"
+            selected={date}
+            onSelect={(newDate) => {
+              setDate(newDate);
+              if (newDate) {
+                const formatted = format(newDate, 'yyyy-MM-dd');
+                setDateStr(formatted);
+              }
+            }}
+            locale={ko}
+          />
+        </PopoverContent>
+      </Popover>
+    </>
   );
 }
 
-export function AlienFields({ formData, onFormDataChange }: AlienFieldsProps) {
-  const updateField = (field: string, value: string) => {
-    onFormDataChange({ ...formData, [field]: value });
-  };
-
+export function AlienFields({ initialData = {} }: AlienFieldsProps) {
   return (
     <div className="space-y-2">
       <Label className="font-normal text-gray-600 text-sm">
@@ -83,22 +76,20 @@ export function AlienFields({ formData, onFormDataChange }: AlienFieldsProps) {
       </Label>
       <div className="flex items-center gap-1.5">
         <Input
+          name="registrationNumber"
           type="text"
           placeholder="020919"
           maxLength={6}
-          value={formData.registrationNumber || ''}
-          onChange={(e) => updateField('registrationNumber', e.target.value)}
+          defaultValue={initialData.registrationNumber || ''}
           className="h-12 flex-1 border-0 bg-gray-50"
         />
         <span className="px-2 text-gray-600">-</span>
         <Input
+          name="registrationNumberSuffix"
           type="password"
           placeholder="•••••••"
           maxLength={7}
-          value={formData.registrationNumberSuffix || ''}
-          onChange={(e) =>
-            updateField('registrationNumberSuffix', e.target.value)
-          }
+          defaultValue={initialData.registrationNumberSuffix || ''}
           className="h-12 flex-1 border-0 bg-gray-50"
         />
       </div>
@@ -107,24 +98,17 @@ export function AlienFields({ formData, onFormDataChange }: AlienFieldsProps) {
 }
 
 // 외국인등록증용 추가 필드
-export function AlienExtraFields({
-  formData,
-  onFormDataChange,
-}: AlienFieldsProps) {
-  const updateField = (field: string, value: string) => {
-    onFormDataChange({ ...formData, [field]: value });
-  };
-
+export function AlienExtraFields({ initialData = {} }: AlienFieldsProps) {
   return (
     <>
       {/* 체류자격 */}
       <div className="space-y-2">
         <Label className="font-normal text-gray-600 text-sm">체류자격</Label>
         <Input
+          name="residenceStatus"
           type="text"
           placeholder="D-8"
-          value={formData.residenceStatus || ''}
-          onChange={(e) => updateField('residenceStatus', e.target.value)}
+          defaultValue={initialData.residenceStatus || ''}
           className="h-12 border-0 bg-gray-50"
         />
       </div>
@@ -133,8 +117,8 @@ export function AlienExtraFields({
       <div className="space-y-2">
         <Label className="font-normal text-gray-600 text-sm">발급일자</Label>
         <DatePicker
-          value={formData.issueDate}
-          onChange={(date) => updateField('issueDate', date)}
+          name="issueDate"
+          defaultValue={initialData.issuedDate || initialData.issueDate || ''}
         />
       </div>
     </>

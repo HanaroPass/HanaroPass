@@ -1,6 +1,5 @@
 'use client';
 
-import { useDrawerForm } from './hooks/useDrawerForm';
 import { AccountFields } from './shared/AccountFields';
 import { BaseDrawer } from './shared/BaseDrawer';
 
@@ -17,12 +16,6 @@ export function AccountDrawer({
   onSubmit,
   className,
 }: AccountDrawerProps) {
-  const { formData, handleSubmit, resetForm, handleFormDataChange } =
-    useDrawerForm({
-      onSubmit,
-      onOpenChange,
-    });
-
   const handleAccountSelect = (accountData: Record<string, string>) => {
     onSubmit?.(accountData);
     onOpenChange(false);
@@ -33,16 +26,11 @@ export function AccountDrawer({
       open={open}
       onOpenChange={onOpenChange}
       title="출입계좌 선택"
-      onSubmit={handleSubmit}
-      onReset={resetForm}
+      onReset={() => {}}
       className={className}
       showButtons={false}
     >
-      <AccountFields
-        formData={formData}
-        onFormDataChange={handleFormDataChange}
-        onAccountSelect={handleAccountSelect}
-      />
+      <AccountFields onAccountSelect={handleAccountSelect} />
     </BaseDrawer>
   );
 }

@@ -17,21 +17,20 @@ const parseLocalDate = (dateStr: string) => {
 };
 
 export async function saveArcData(
-  data: Record<string, string>,
+  prevState: ActionResult<{ id: number; userId: number }> | null,
+  formData: FormData,
 ): Promise<ActionResult<{ id: number; userId: number }>> {
   try {
     const sessionUserId = await getUserIdFromSession();
 
-    const {
-      registrationNumber,
-      registrationNumberSuffix,
-      residenceStatus,
-      issueDate,
-      userPhotoUrl = '',
-      lastName,
-      firstName,
-      nationality,
-    } = data;
+    const registrationNumber = formData.get('registrationNumber') as string;
+    const registrationNumberSuffix = formData.get('registrationNumberSuffix') as string;
+    const residenceStatus = formData.get('residenceStatus') as string;
+    const issueDate = formData.get('issueDate') as string;
+    const userPhotoUrl = (formData.get('userPhotoUrl') as string) || '';
+    const lastName = formData.get('lastName') as string;
+    const firstName = formData.get('firstName') as string;
+    const nationality = formData.get('nationality') as string;
 
     const arcNumber =
       registrationNumber && registrationNumberSuffix

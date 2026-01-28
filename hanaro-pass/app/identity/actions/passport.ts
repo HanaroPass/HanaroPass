@@ -17,19 +17,18 @@ const parseLocalDate = (dateStr: string) => {
 };
 
 export async function savePassportData(
-  data: Record<string, string>,
+  prevState: ActionResult<{ id: number; userId: number }> | null,
+  formData: FormData,
 ): Promise<ActionResult<{ id: number; userId: number }>> {
   try {
-    const {
-      passportNumber,
-      gender,
-      issueDate,
-      expiryDate,
-      lastName,
-      firstName,
-      userPhotoUrl,
-      nationality,
-    } = data;
+    const passportNumber = formData.get('passportNumber') as string;
+    const gender = formData.get('gender') as string;
+    const issueDate = formData.get('issueDate') as string;
+    const expiryDate = formData.get('expiryDate') as string;
+    const lastName = formData.get('lastName') as string;
+    const firstName = formData.get('firstName') as string;
+    const userPhotoUrl = formData.get('userPhotoUrl') as string;
+    const nationality = formData.get('nationality') as string;
 
     if (
       !passportNumber ||
