@@ -1,55 +1,46 @@
 'use client';
 
+import { X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { HospitalCard } from '@/components/ui/HospitalCard';
+import {
+  type Hospital,
+  useHospitalFilters,
+} from '../../hooks/useHospitalFilters';
+import { getHospitalStatus, parseOpenHours } from '../../utils/mapUtils';
 import DepartmentFilterPanel from './DepartmentFilterPanel';
 import FilterPanel from './FilterPanel';
 import LanguageFilterPanel from './LanguageFilterPanel';
 
-function getHospitalStatus(openHours: string): '진료 중' | '진료 종료' {
-  const [open, close] = openHours.split('-');
-  const now = new Date();
-
-  const [openH, openM] = open.split(':').map(Number);
-  const [closeH, closeM] = close.split(':').map(Number);
-
-  const openTime = new Date(now);
-  openTime.setHours(openH, openM, 0, 0);
-
-  const closeTime = new Date(now);
-  closeTime.setHours(closeH, closeM, 0, 0);
-
-  return now >= openTime && now < closeTime ? '진료 중' : '진료 종료';
-}
-
-type FilterType = 'language' | 'department' | null;
 type Mode = 'list' | 'detail';
-
-type Hospital = {
-  id: number;
-  nameKo: string;
-  address: string;
-  phone: string | null;
-  openHours: string;
-  imageUrl?: string | null;
-  languages: string[];
-  departments: string[];
-  aiSummary?: string;
-};
 
 type Props = {
   mode: Mode;
   hospitals: Hospital[];
   hospital?: Hospital;
+  onBackToList?: () => void;
 };
 
-export function HospitalContent({ mode, hospitals, hospital }: Props) {
+export function HospitalContent({
+  mode,
+  hospitals,
+  hospital,
+  onBackToList,
+}: Props) {
   const router = useRouter();
-  const [active, setActive] = useState<FilterType>(null);
-  const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
-  const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
+
+  const {
+    active,
+    toggleFilter,
+    selectedLanguages,
+    setSelectedLanguages,
+    selectedDepartments,
+    setSelectedDepartments,
+    filteredHospitals,
+    languageLabel,
+    departmentLabel,
+  } = useHospitalFilters(hospitals);
 
   /* =====================
    * DETAIL MODE (병원 하나 상세)
@@ -57,14 +48,23 @@ export function HospitalContent({ mode, hospitals, hospital }: Props) {
   if (mode === 'detail') {
     if (!hospital) return null;
 
+    const { openTime, closeTime } = parseOpenHours(hospital.openHours);
+
     return (
-      <div className="flex h-full flex-col px-6 pt-2">
+      <div className="relative flex h-full flex-col px-6 pt-2">
+        <button
+          onClick={onBackToList}
+          aria-label="목록으로 나가기"
+          className="-top-1 absolute right-4 z-10 text-gray-400 transition-colors"
+        >
+          <X width={20} height={20} />
+        </button>
         <HospitalCard
           hospital={{
             name: hospital.nameKo,
             status: getHospitalStatus(hospital.openHours),
-            openTime: hospital.openHours.split('-')[0],
-            closeTime: hospital.openHours.split('-')[1],
+            openTime,
+            closeTime,
             address: hospital.address,
             phone: hospital.phone ?? '-',
             languages: hospital.languages,
@@ -95,32 +95,16 @@ export function HospitalContent({ mode, hospitals, hospital }: Props) {
   const inactivePill = 'bg-white border-gray-300 text-gray-700';
   const activePill = 'bg-green-ez border-green-ez text-white';
 
-  const languageLabel = makeLabel(selectedLanguages, '소통 가능 언어');
-  const departmentLabel = makeLabel(selectedDepartments, '진료 과목');
-
-  const filteredHospitals = hospitals.filter((h) => {
-    const languageMatch =
-      selectedLanguages.length === 0 ||
-      selectedLanguages.some((lang) => h.languages.includes(lang));
-
-    const departmentMatch =
-      selectedDepartments.length === 0 ||
-      selectedDepartments.some((dep) => h.departments.includes(dep));
-    return languageMatch && departmentMatch;
-  });
-
   return (
     <div className="relative flex h-full flex-col">
       {/* 필터 토글 */}
-      <div className="bg-white px-4 pt-1">
+      <div className="-top-px sticky z-20 bg-white px-4 py-1">
         <div className="flex gap-2">
           <button
             className={`${basePill} ${
               active === 'language' ? activePill : inactivePill
             }`}
-            onClick={() =>
-              setActive((p) => (p === 'language' ? null : 'language'))
-            }
+            onClick={() => toggleFilter('language')}
           >
             {languageLabel}
           </button>
@@ -129,9 +113,7 @@ export function HospitalContent({ mode, hospitals, hospital }: Props) {
             className={`${basePill} ${
               active === 'department' ? activePill : inactivePill
             }`}
-            onClick={() =>
-              setActive((p) => (p === 'department' ? null : 'department'))
-            }
+            onClick={() => toggleFilter('department')}
           >
             {departmentLabel}
           </button>
@@ -140,7 +122,7 @@ export function HospitalContent({ mode, hospitals, hospital }: Props) {
 
       {/* 언어 필터 */}
       {active === 'language' && (
-        <div className="absolute inset-x-0 top-14 z-30 px-6">
+        <div className="sticky top-11 z-30 bg-white px-6">
           <FilterPanel title="소통 가능 언어">
             <LanguageFilterPanel
               value={selectedLanguages}
@@ -152,7 +134,7 @@ export function HospitalContent({ mode, hospitals, hospital }: Props) {
 
       {/* 진료과 필터 */}
       {active === 'department' && (
-        <div className="absolute inset-x-0 top-14 z-30 px-6">
+        <div className="sticky top-11 z-30 bg-white px-6">
           <FilterPanel title="진료 과목">
             <DepartmentFilterPanel
               value={selectedDepartments}
@@ -163,39 +145,45 @@ export function HospitalContent({ mode, hospitals, hospital }: Props) {
       )}
 
       {/* 병원 리스트 */}
-      <div className="flex-1 overflow-y-auto px-6 pt-3">
-        {filteredHospitals.map((h, idx) => {
-          const [openTime, closeTime] = h.openHours.split('-');
+      <div className="flex-1 overflow-y-auto px-6 pt-0">
+        {filteredHospitals.length === 0 ? (
+          <div className="flex min-h-60 items-center justify-center text-gray-500 text-sm">
+            조건에 만족하는 병원이 없습니다.
+          </div>
+        ) : (
+          filteredHospitals.map((h, idx) => {
+            const { openTime, closeTime } = parseOpenHours(h.openHours);
 
-          return (
-            <div
-              key={h.id}
-              className={
-                idx === filteredHospitals.length - 1
-                  ? ''
-                  : 'border-gray-300 border-b'
-              }
-            >
-              <HospitalCard
-                hospital={{
-                  name: h.nameKo,
-                  status: getHospitalStatus(h.openHours),
-                  openTime,
-                  closeTime,
-                  address: h.address,
-                  phone: h.phone ?? '-',
-                  languages: h.languages,
-                  departments: h.departments,
-                  imageUrl: h.imageUrl,
-                  aiSummary: h.aiSummary,
-                }}
-              />
-            </div>
-          );
-        })}
+            return (
+              <div
+                key={h.id}
+                className={
+                  idx === filteredHospitals.length - 1
+                    ? ''
+                    : 'border-gray-300 border-b'
+                }
+              >
+                <HospitalCard
+                  hospital={{
+                    name: h.nameKo,
+                    status: getHospitalStatus(h.openHours),
+                    openTime,
+                    closeTime,
+                    address: h.address,
+                    phone: h.phone ?? '-',
+                    languages: h.languages,
+                    departments: h.departments,
+                    imageUrl: h.imageUrl,
+                    aiSummary: h.aiSummary,
+                  }}
+                />
+              </div>
+            );
+          })
+        )}
       </div>
 
-      <div className="border-[#F0F3F4] border-t bg-white px-6 py-4">
+      <div className="sticky bottom-0 border-[#F0F3F4] border-t bg-white px-6 py-4">
         <Button
           className="h-14 w-full rounded-xl bg-green-ez text-white"
           onClick={() =>
@@ -207,11 +195,4 @@ export function HospitalContent({ mode, hospitals, hospital }: Props) {
       </div>
     </div>
   );
-}
-
-function makeLabel(selected: string[], defaultLabel: string) {
-  if (selected.length === 0) return defaultLabel;
-  if (selected.length === 1) return selected[0];
-  if (selected.length === 2) return `${selected[0]}, ${selected[1]}`;
-  return `${selected[0]}, ${selected[1]} 외 ${selected.length - 2}개`;
 }

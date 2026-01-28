@@ -21,78 +21,96 @@ export function useExchangeSearch(currentMapRegion: string) {
     [],
   );
   const lastSearchedRegionRef = useRef('');
+
+  const latestRequestIdRef = useRef(0);
+
   const [isLoading, setIsLoading] = useState(false);
 
-  const searchExchanges = useCallback(async () => {
-    const isSameRegion = lastSearchedRegionRef.current === currentMapRegion;
+  const searchExchanges = useCallback(
+    async (force = false, manualRegion?: string) => {
+      const targetRegion = manualRegion || currentMapRegion;
 
-    if (isSameRegion) return exchangeResults;
-
-    setIsLoading(true);
-
-    try {
-      const regions = currentMapRegion.split(' ');
-      const guName = regions[0] || '';
-      const dongName = regions[1] || '';
-      const keywords = ['환전', '환전소', '머니박스', '무인환전'];
-
-      const allQueries = keywords.flatMap((word) => [
-        `${guName} ${guName} ${word}`,
-        `${guName} ${dongName} ${word}`,
-        `${dongName} ${word}`,
-      ]);
-
-      const results = await Promise.allSettled(
-        allQueries.map((q) => fetchExchanges(q)),
-      );
-
-      const allRawItems = results.reduce((acc, result) => {
-        if (result.status === 'fulfilled') {
-          acc.push(...result.value);
-        }
-        return acc;
-      }, [] as NaverLocalSearchItem[]);
-
-      const itemMap = new Map<string, NaverSearchResult>();
-      for (const item of allRawItems) {
-        if (!item.mapx || !item.mapy) continue;
-
-        const coordinateKey = `${item.mapx}-${item.mapy}`;
-        if (!itemMap.has(coordinateKey)) {
-          itemMap.set(coordinateKey, {
-            title: item.title.replace(/<[^>]*>?/g, '').trim(),
-            roadAddress: item.roadAddress,
-            telephone: item.telephone,
-            category: item.category,
-            mapx: item.mapx,
-            mapy: item.mapy,
-          });
-        }
+      if (
+        !force &&
+        (!targetRegion || lastSearchedRegionRef.current === targetRegion)
+      ) {
+        return;
       }
 
-      const uniqueResults = Array.from(itemMap.values());
+      const requestId = ++latestRequestIdRef.current;
+      setIsLoading(true);
 
-      // 데이터 세팅
-      setExchangeResults(uniqueResults);
+      try {
+        const regions = targetRegion.split(' ');
+        const guName = regions[0] || '';
+        const dongName = regions[1] || '';
+        const keywords = ['환전', '환전소', '무인환전', '머니박스'];
 
-      // 성공 시 갱신
-      lastSearchedRegionRef.current = currentMapRegion;
+        const allQueries = keywords.flatMap((word) => [
+          `${guName} ${dongName} ${word}`,
+          `${dongName} ${word}`,
+        ]);
 
-      return uniqueResults;
-    } catch (error) {
-      console.error('Exchange search failed:', error);
+        const results = await Promise.allSettled(
+          allQueries.map((q) => fetchExchanges(q)),
+        );
 
-      // 실패, 다음 번에 재시도 가능하도록 ref 비움
-      lastSearchedRegionRef.current = '';
-      return [];
-    } finally {
-      setIsLoading(false);
-    }
-  }, [currentMapRegion, exchangeResults]);
+        if (requestId !== latestRequestIdRef.current) return;
+
+        const isAnySuccess = results.some(
+          (r) => r.status === 'fulfilled' && r.value && r.value.length > 0,
+        );
+
+        setExchangeResults((prev) => {
+          const itemMap = new Map<string, NaverSearchResult>();
+
+          results.forEach((result) => {
+            if (result.status === 'fulfilled') {
+              result.value.forEach((item: NaverLocalSearchItem) => {
+                const key = `${item.mapx}-${item.mapy}`;
+                if (!itemMap.has(key)) {
+                  itemMap.set(key, {
+                    title: item.title.replace(/<[^>]*>?/g, '').trim(),
+                    roadAddress: item.roadAddress,
+                    telephone: item.telephone,
+                    category: item.category,
+                    mapx: item.mapx,
+                    mapy: item.mapy,
+                  });
+                }
+              });
+            }
+          });
+          if (lastSearchedRegionRef.current === targetRegion) {
+            prev.forEach((item) => {
+              const key = `${item.mapx}-${item.mapy}`;
+              if (!itemMap.has(key)) itemMap.set(key, item);
+            });
+          }
+          return Array.from(itemMap.values()).slice(0, 30);
+        });
+
+        if (isAnySuccess && requestId === latestRequestIdRef.current) {
+          lastSearchedRegionRef.current = targetRegion;
+        }
+      } catch (error) {
+        if (requestId === latestRequestIdRef.current) {
+          console.error('Exchange search failed:', error);
+        }
+      } finally {
+        if (requestId === latestRequestIdRef.current) {
+          setIsLoading(false);
+        }
+      }
+    },
+    [currentMapRegion],
+  );
 
   const clearResults = useCallback(() => {
     setExchangeResults([]);
     lastSearchedRegionRef.current = '';
+    latestRequestIdRef.current = 0;
+    setIsLoading(false);
   }, []);
 
   return { exchangeResults, searchExchanges, clearResults, isLoading };

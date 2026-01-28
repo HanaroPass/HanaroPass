@@ -2,10 +2,10 @@
 
 import { DEPARTMENTS } from '../../constants/departments';
 
-interface Props {
+type Props = {
   value: string[];
   onChange: (value: string[]) => void;
-}
+};
 
 export default function DepartmentFilterPanel({ value, onChange }: Props) {
   const toggle = (dep: string) => {

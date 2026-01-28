@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export type ActionResult<T> =
-  | { success: true; data: T }
+  | { success: true; data: T; message?: string }
   | { success: false; message: string; status: number };
 
 export class HttpError extends Error {

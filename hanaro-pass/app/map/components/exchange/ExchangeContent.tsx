@@ -3,11 +3,11 @@
 import { MapPinOff, X } from 'lucide-react';
 import { type LocationInfo, PlaceCard } from '../ui/PlaceCard';
 
-interface ExchangeContentProps {
+type ExchangeContentProps = {
   results: LocationInfo[];
   selectedPlace: LocationInfo | null;
   onBackToList: () => void;
-}
+};
 
 export function ExchangeContent({
   results,
@@ -20,7 +20,7 @@ export function ExchangeContent({
         <button
           type="button"
           onClick={onBackToList}
-          className="absolute top-0 right-4 z-10 text-gray-400 transition-colors hover:text-gray-600"
+          className="absolute top-0 right-4 z-10 text-gray-400 transition-colors"
           aria-label="목록으로 나가기"
         >
           <X width={20} height={20} />

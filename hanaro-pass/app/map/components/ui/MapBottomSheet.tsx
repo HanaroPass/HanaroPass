@@ -9,7 +9,7 @@ import {
 } from '../../types/map';
 
 /**
- * @interface MapBottomSheetProps
+ * @type MapBottomSheetProps
  * @description MapBottomSheet 컴포넌트의 타입 정의입니다.
  */
 type MapBottomSheetProps = {
@@ -104,6 +104,7 @@ export function MapBottomSheet({
         <VisuallyHidden>
           <h2>{SHEET_TITLE[openSheet]}</h2>
         </VisuallyHidden>
+
         <div ref={contentRef}>{children}</div>
       </div>
     </div>

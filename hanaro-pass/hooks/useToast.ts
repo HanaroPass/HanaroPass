@@ -1,14 +1,6 @@
 import { useCallback } from 'react';
 import { toast } from 'sonner';
-
-// 서버 액션 결과에 대한 타입
-interface ActionResult<T = unknown> {
-  success: boolean;
-  data?: T;
-  error?: string;
-  message?: string;
-  status?: number;
-}
+import type { ActionResult } from '@/lib/errorHandler';
 
 export const useToast = () => {
   // 등록 완료 전용 형식
@@ -28,12 +20,11 @@ export const useToast = () => {
   }, []);
 
   // 서버 에러 전용 핸들러
-  const actionError = useCallback((result: ActionResult) => {
-    const errorMessage = result?.error || result?.message;
-    if (result && !result.success) {
+  const actionError = useCallback((result: ActionResult<unknown>) => {
+    if (!result.success) {
       toast.error('요청 실패', {
-        id: errorMessage || 'unknown-error',
-        description: errorMessage || '처리 중 오류가 발생했습니다.',
+        id: result.message,
+        description: result.message || '처리 중 오류가 발생했습니다.',
       });
     }
   }, []);
