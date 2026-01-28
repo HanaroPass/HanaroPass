@@ -55,7 +55,7 @@ export function HospitalContent({
         <button
           onClick={onBackToList}
           aria-label="목록으로 나가기"
-          className="-top-1 absolute right-4 z-10 text-gray-400 transition-colors hover:text-gray-600"
+          className="-top-1 absolute right-4 z-10 text-gray-400 transition-colors"
         >
           <X width={20} height={20} />
         </button>
