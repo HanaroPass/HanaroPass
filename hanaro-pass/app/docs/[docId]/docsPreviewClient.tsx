@@ -13,10 +13,14 @@ export default function DocsPreviewClient({ fileUrl, title }: Props) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
-  const isPdf = useMemo(
-    () => fileUrl?.toLowerCase().endsWith('.pdf'),
-    [fileUrl],
-  );
+  const isPdf = useMemo(() => {
+    try {
+      const pathname = new URL(fileUrl, window.location.origin).pathname;
+      return pathname.toLowerCase().endsWith('.pdf');
+    } catch {
+      return fileUrl?.toLowerCase().endsWith('.pdf');
+    }
+  }, [fileUrl]);
 
   if (!fileUrl) {
     return (
