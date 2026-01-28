@@ -12,24 +12,78 @@ type CameraCaptureProps = {
 const CameraCapture = ({ onClick, onImageSelect }: CameraCaptureProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
-  const handleFileSelect = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      const file = event.target.files?.[0];
+  const startCamera = useCallback(async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment' },
+      });
+      streamRef.current = stream;
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        videoRef.current.muted = true;
+        await videoRef.current.play().catch(() => {});
+      }
+      return stream;
+    } catch (error) {
+      console.error('카메라 접근 실패:', error);
+      return null;
+    }
+  }, []);
 
-      if (file && onImageSelect) {
-        if (selectedImage) {
-          URL.revokeObjectURL(selectedImage);
+  useEffect(() => {
+    let isEffectActive = true;
+    let localStream: MediaStream | null = null;
+
+    const init = async () => {
+      if (!selectedImage) {
+        const stream = await startCamera();
+        if (!isEffectActive && stream) {
+          stream.getTracks().forEach((track) => {
+            track.stop();
+          });
+          return;
         }
 
-        const imageUrl = URL.createObjectURL(file);
-        setSelectedImage(imageUrl);
-        onImageSelect(file);
+        if (stream) {
+          localStream = stream;
+        }
       }
-    },
-    [onImageSelect, selectedImage],
-  );
+    };
+
+    init();
+
+    return () => {
+      console.log('카메라 종료 로직 실행');
+      isEffectActive = false;
+
+      if (videoRef.current) {
+        videoRef.current.srcObject = null;
+      }
+
+      if (localStream) {
+        localStream.getTracks().forEach((track) => {
+          track.stop();
+          track.enabled = false;
+        });
+      }
+
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => {
+          track.stop();
+        });
+        streamRef.current = null;
+      }
+    };
+  }, [startCamera, selectedImage]);
+
+  useEffect(() => {
+    return () => {
+      if (selectedImage) URL.revokeObjectURL(selectedImage);
+    };
+  }, [selectedImage]);
 
   const handleVideoClick = useCallback(() => {
     if (onImageSelect && fileInputRef.current) {
@@ -48,46 +102,6 @@ const CameraCapture = ({ onClick, onImageSelect }: CameraCaptureProps) => {
     },
     [handleVideoClick],
   );
-
-  const startCamera = useCallback(async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment' },
-      });
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        videoRef.current.muted = true;
-        await videoRef.current.play().catch(() => {});
-      }
-    } catch (error) {
-      console.error('카메라 접근 실패:', error);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!selectedImage) {
-      startCamera();
-    }
-
-    return () => {
-      if (videoRef.current?.srcObject) {
-        const tracks = (videoRef.current.srcObject as MediaStream).getTracks();
-
-        for (const track of tracks) {
-          track.stop();
-        }
-      }
-    };
-  }, [startCamera, selectedImage]);
-
-  useEffect(() => {
-    return () => {
-      if (selectedImage) {
-        URL.revokeObjectURL(selectedImage);
-      }
-    };
-  }, [selectedImage]);
-
   return (
     <div className="flex flex-col bg-black text-white">
       <div className="mb-12 flex flex-col items-center px-6">
@@ -117,7 +131,12 @@ const CameraCapture = ({ onClick, onImageSelect }: CameraCaptureProps) => {
             onKeyDown={handleKeyDown}
             aria-label="Start camera or select image"
           >
-            <video ref={videoRef} className="h-full w-full object-cover">
+            <video
+              ref={videoRef}
+              className="h-full w-full object-cover"
+              playsInline
+              muted
+            >
               <track kind="captions" />
             </video>
           </button>
@@ -127,7 +146,14 @@ const CameraCapture = ({ onClick, onImageSelect }: CameraCaptureProps) => {
           ref={fileInputRef}
           type="file"
           accept="image/*"
-          onChange={handleFileSelect}
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file && onImageSelect) {
+              if (selectedImage) URL.revokeObjectURL(selectedImage);
+              setSelectedImage(URL.createObjectURL(file));
+              onImageSelect(file);
+            }
+          }}
           className="hidden"
         />
       </div>
