@@ -10,7 +10,6 @@ export async function getFilteredHospitals(
   let hospitals: (Hospital & {
     HospitalDept: { deptName: string }[];
     HospitalLang: { langName: string }[];
-    HospitalReview: { aiSummary: string } | null;
   })[];
   if (type === 'PROCEDURE') {
     hospitals = await prisma.hospital.findMany({
@@ -24,11 +23,10 @@ export async function getFilteredHospitals(
       include: {
         HospitalDept: { select: { deptName: true } },
         HospitalLang: { select: { langName: true } },
-        HospitalReview: { select: { aiSummary: true } },
       },
     });
   } else {
-    if (!symptom || symptom.length === 0) {
+    if (!symptom || symptom.every((s) => !s.trim())) {
       hospitals = await prisma.hospital.findMany({
         where: {
           HospitalDept: {
@@ -40,7 +38,6 @@ export async function getFilteredHospitals(
         include: {
           HospitalDept: { select: { deptName: true } },
           HospitalLang: { select: { langName: true } },
-          HospitalReview: { select: { aiSummary: true } },
         },
       });
     } else {
@@ -66,7 +63,6 @@ export async function getFilteredHospitals(
         include: {
           HospitalDept: { select: { deptName: true } },
           HospitalLang: { select: { langName: true } },
-          HospitalReview: { select: { aiSummary: true } },
         },
       });
     }

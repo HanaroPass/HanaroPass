@@ -7,11 +7,15 @@ import { useMyLocation } from '@/lib/getMyLocation';
 import { cn } from '@/lib/utils';
 import type { HospitalWithStatus } from '../../symptoms/types';
 
-interface Props {
+type Props = {
   hospitals: HospitalWithStatus[];
-}
+};
 
-export default function HospitalList({ hospitals }: Props) {
+export default function HospitalList({
+  hospitals,
+}: {
+  hospitals: HospitalWithStatus[];
+}) {
   const [sortByDistance, setSortByDistance] = useState(false);
   const [isOpened, setOpened] = useState(false);
   const { location } = useMyLocation();
