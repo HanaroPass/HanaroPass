@@ -14,6 +14,7 @@ export function useAdminReview(id: number) {
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { success, actionError, systemError } = useToast();
 
   const fetchDetail = useCallback(async () => {
     try {
@@ -33,20 +34,20 @@ export function useAdminReview(id: number) {
       else {
         setData(null);
         setError(result.message);
+        actionError(result);
       }
     } catch (err: unknown) {
       setData(null);
       setError((err as Error).message || '데이터 로딩 중 오류가 발생했습니다.');
+      systemError('데이터 로드');
     } finally {
       setIsLoading(false);
     }
-  }, [id]);
+  }, [id, actionError, systemError]);
 
   useEffect(() => {
     fetchDetail();
   }, [fetchDetail]);
-
-  const { success, actionError, systemError } = useToast();
 
   const handleUpdateStatus = async (status: 'APPROVED' | 'REJECTED') => {
     try {
