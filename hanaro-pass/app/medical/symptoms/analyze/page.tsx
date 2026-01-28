@@ -4,18 +4,14 @@ import Image from 'next/image';
 import ActionButton from '@/components/ui/ActionButton';
 import AnalysisTip from '../../components/symptom/AnalysisTip';
 import SymptomRadioGroup from '../../components/symptom/SymptomRadioGroup';
+import { useImageUpload } from '../../hooks/useImageUpload';
 import useSymptomResult from '../../hooks/useSymptomResult';
 
-export default function SymptomAnalyzeContent() {
-  const {
-    images,
-    imageUrls,
-    isLoading,
-    isImageCntOK,
-    handleImages,
-    handleSubmit,
-    clearImages,
-  } = useSymptomResult();
+export default function SymptomAnalyzePage() {
+  const { images, imageUrls, isImageCntOK, handleImages, clearImages } =
+    useImageUpload();
+
+  const { isLoading, handleSubmit } = useSymptomResult(images);
 
   return (
     <>
