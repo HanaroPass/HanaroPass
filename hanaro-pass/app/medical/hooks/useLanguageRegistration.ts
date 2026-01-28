@@ -3,6 +3,7 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useToast } from '@/hooks/useToast';
+import { useAlert } from '@/providers/alertProvider';
 import {
   getHospitalDetailAction,
   submitLanguageApplicationAction,
@@ -13,6 +14,7 @@ import { IdSchema, SubmitSchema } from '../schemas/languageRegist.schema';
 export function useLanguageRegistration() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { alert } = useAlert();
 
   const rawHospitalId = Number(searchParams.get('hospitalId'));
   const hospitalId = IdSchema.safeParse(rawHospitalId).success
@@ -23,10 +25,9 @@ export function useLanguageRegistration() {
   const [selectedIds, setSelectedIds] = useState<LanguageId[]>([]);
   const [initialIds, setInitialIds] = useState<LanguageId[]>([]); // 기존에 선택된 언어들
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showPendingModal, setShowPendingModal] = useState(false);
+
   const { registerSuccess, error, warning, actionError, systemError } =
     useToast();
-
   const hasFetched = useRef(false);
 
   useEffect(() => {
@@ -42,13 +43,22 @@ export function useLanguageRegistration() {
         const result = await getHospitalDetailAction(hospitalId);
 
         if (result.success) {
+          setHospitalName(result.data.nameKo);
+
           if (result.data.isPENDING) {
-            setHospitalName(result.data.nameKo);
-            setShowPendingModal(true);
+            alert({
+              title: '심사 진행 중',
+              description: `'${result.data.nameKo}'에 대해 이미 심사 중인 내역이 있습니다.\n결과가 나올 때까지 추가 신청이 불가능합니다.`,
+              actionLabel: '내역 확인하기',
+              cancelLabel: '돌아가기',
+              onAction: () =>
+                router.replace(`/medical/registrations/${hospitalId}`),
+              cancelProps: {
+                onClick: () => router.back(),
+              },
+            });
             return;
           }
-
-          setHospitalName(result.data.nameKo);
           setSelectedIds(result.data.existingLangs);
           setInitialIds(result.data.existingLangs);
         } else {
@@ -62,7 +72,7 @@ export function useLanguageRegistration() {
     };
 
     fetchHospital();
-  }, [hospitalId, router, error, actionError, systemError]);
+  }, [hospitalId, router, error, actionError, systemError, alert]);
 
   const toggleLanguage = (id: LanguageId) => {
     setSelectedIds((prev) => {
@@ -111,8 +121,6 @@ export function useLanguageRegistration() {
         hospitalId,
         selectedIds,
       );
-      setIsSubmitting(false);
-
       if (result.success) {
         registerSuccess(hospitalName);
         router.push(
@@ -129,7 +137,6 @@ export function useLanguageRegistration() {
   };
 
   return {
-    hospitalId,
     hospitalName,
     selectedIds,
     initialIds,
@@ -139,7 +146,5 @@ export function useLanguageRegistration() {
     isSubmitting,
     isChanged,
     isValid,
-    showPendingModal,
-    setShowPendingModal,
   };
 }
