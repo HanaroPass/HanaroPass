@@ -62,7 +62,6 @@ export async function savePassportData(
         },
       });
     });
-    console.log('formdata', formData);
     await saveUserIdToSession(result.userId);
     return { success: true, data: { ...validated } };
   } catch (error) {

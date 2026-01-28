@@ -82,8 +82,10 @@ export async function saveArcData(
       success: true,
       data: {
         ...validated,
-        registrationNumber: rawData.registrationNumber as string,
-        registrationNumberSuffix: rawData.registrationNumberSuffix as string,
+        registrationNumber: String(rawData.registrationNumber ?? ''),
+        registrationNumberSuffix: String(
+          rawData.registrationNumberSuffix ?? '',
+        ),
       },
     };
   } catch (error) {

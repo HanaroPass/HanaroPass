@@ -39,7 +39,6 @@ export async function getIdentityData(): Promise<IdentityData> {
     select: { nationality: true },
   });
 
-  console.log(userId);
   const res = {
     passport: passport
       ? {

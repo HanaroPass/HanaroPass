@@ -94,7 +94,7 @@ const CameraCapture = ({ onClick, onImageSelect }: CameraCaptureProps) => {
         {selectedImage ? (
           <button
             type="button"
-            className="p h-72 w-full max-w-sm cursor-pointer overflow-hidden rounded-xl bg-gray-700"
+            className="h-72 w-full max-w-sm cursor-pointer overflow-hidden rounded-xl bg-gray-700"
             onClick={handleVideoClick}
             onKeyDown={handleKeyDown}
             aria-label="Change selected document image"
