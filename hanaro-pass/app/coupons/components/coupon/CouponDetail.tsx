@@ -1,5 +1,6 @@
 'use client';
 
+import { Lock } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -33,11 +34,10 @@ export default function CouponDetail({
     useCardLockGate();
 
   const processPayment = async () => {
+    if (isPaying) return;
     setIsPaying(true);
 
-    const res = await postPaymentAction({
-      couponId: id,
-    });
+    const res = await postPaymentAction({ couponId: id });
 
     setIsPaying(false);
 
@@ -71,7 +71,8 @@ export default function CouponDetail({
     });
   };
 
-  const onBarcodeClick = async () => {
+  const onBarcodeClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
     if (isPaying || isLoading) return;
 
     if (defaultCardId !== null && !isCardUnlocked) {
@@ -87,7 +88,6 @@ export default function CouponDetail({
 
     unlockCard();
     setShowPinInput(false);
-    await processPayment();
   };
 
   return (
@@ -113,10 +113,14 @@ export default function CouponDetail({
         type="button"
         onClick={onBarcodeClick}
         disabled={isPaying || isLoading}
-        className="flex flex-col items-center gap-3 active:opacity-70 disabled:opacity-40"
+        className="relative mx-auto mt-2 flex h-28 w-65 flex-col items-center justify-center bg-white transition-opacity active:opacity-70 disabled:opacity-50"
         aria-label="쿠폰으로 결제하기"
       >
-        <div className="flex items-center justify-center overflow-hidden py-2">
+        <div
+          className={`flex h-14 w-full items-center justify-center overflow-hidden rounded-md border bg-white transition-all duration-700 ease-in-out ${
+            !isCardUnlocked ? 'blur-sm' : 'blur-0'
+          }`}
+        >
           <Barcode
             value={couponNumber}
             format="CODE128"
@@ -128,11 +132,18 @@ export default function CouponDetail({
           />
         </div>
 
-        <p className="font-medium text-gray-400 text-sm">
-          쿠폰번호: <span className="uppercase">{couponNumber}</span>
-        </p>
+        {!isCardUnlocked && (
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+            <div className="rounded-full border border-gray-100 bg-white/90 p-3 shadow-lg">
+              <Lock className="text-black-800" size={24} />
+            </div>
+          </div>
+        )}
       </button>
 
+      <p className="font-medium text-gray-400 text-sm">
+        쿠폰번호: <span className="uppercase">{couponNumber}</span>
+      </p>
       <div className="mt-6 w-full px-4 text-center text-gray-800 text-xs">
         <p className="mb-2">
           본 쿠폰은{' '}
