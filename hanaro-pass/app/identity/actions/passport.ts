@@ -13,13 +13,13 @@ const parseLocalDate = (dateStr: string) => {
     throw new HttpError('날짜 형식이 올바르지 않습니다. (YYYY-MM-DD)', 400);
   }
   const [y, m, d] = dateStr.split('-').map(Number);
-  return new Date(y, m - 1, d);
+  return new Date(Date.UTC(y, m - 1, d, 12, 0, 0));
 };
 
 export async function savePassportData(
-  prevState: ActionResult<{ id: number; userId: number }> | null,
+  prevState: ActionResult<Record<string, string>> | null,
   formData: FormData,
-): Promise<ActionResult<{ id: number; userId: number }>> {
+): Promise<ActionResult<Record<string, string>>> {
   try {
     const passportNumber = formData.get('passportNumber') as string;
     const gender = formData.get('gender') as string;
@@ -94,7 +94,15 @@ export async function savePassportData(
 
     return {
       success: true,
-      data: { id: result.id, userId: result.userId },
+      data: {
+        passportNumber,
+        gender,
+        issueDate,
+        expiryDate,
+        lastName,
+        firstName,
+        nationality,
+      },
     };
   } catch (error: unknown) {
     return handleActionResult(error);

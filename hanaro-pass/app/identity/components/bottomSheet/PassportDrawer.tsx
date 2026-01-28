@@ -16,28 +16,22 @@ type PassportDrawerProps = {
   initialData?: Record<string, string>;
 };
 
-const DEFAULT_INITIAL_DATA: Record<string, string> = {};
-
 export function PassportDrawer({
   open,
   onOpenChange,
   onSubmit,
   onReset,
   className,
-  initialData = DEFAULT_INITIAL_DATA,
+  initialData = {},
 }: PassportDrawerProps) {
   const { actionError } = useToast();
 
-  const { state, formAction, isPending } = useDrawerForm({
+  const { formAction, isPending } = useDrawerForm({
     action: savePassportData,
-    onSuccess: () => onSubmit?.(initialData),
+    onSuccess: (data) => onSubmit?.(data),
+    onError: (error) => actionError(error),
     onOpenChange,
   });
-
-  // 에러 발생 시 토스트 표시
-  if (state && !state.success) {
-    actionError(state);
-  }
 
   return (
     <BaseDrawer

@@ -13,13 +13,13 @@ const parseLocalDate = (dateStr: string) => {
     throw new HttpError('날짜 형식이 올바르지 않습니다. (YYYY-MM-DD)', 400);
   }
   const [y, m, d] = dateStr.split('-').map(Number);
-  return new Date(y, m - 1, d);
+  return new Date(Date.UTC(y, m - 1, d, 12, 0, 0));
 };
 
 export async function saveArcData(
-  prevState: ActionResult<{ id: number; userId: number }> | null,
+  prevState: ActionResult<Record<string, string>> | null,
   formData: FormData,
-): Promise<ActionResult<{ id: number; userId: number }>> {
+): Promise<ActionResult<Record<string, string>>> {
   try {
     const sessionUserId = await getUserIdFromSession();
 
@@ -45,6 +45,12 @@ export async function saveArcData(
     }
     if (!issueDate) {
       throw new HttpError('발급 일자가 누락되었습니다.', 400);
+    }
+    if (!lastName || !firstName) {
+      throw new HttpError('이름 정보가 누락되었습니다.', 400);
+    }
+    if (!nationality) {
+      throw new HttpError('국적 정보가 누락되었습니다.', 400);
     }
 
     const nickname =
@@ -93,9 +99,22 @@ export async function saveArcData(
       return created;
     });
 
+    // 세션 저장
     await saveUserIdToSession(result.userId);
 
-    return { success: true, data: { id: result.id, userId: result.userId } };
+    return {
+      success: true,
+      data: {
+        arcNumber,
+        registrationNumber,
+        registrationNumberSuffix,
+        residenceStatus,
+        issueDate,
+        lastName,
+        firstName,
+        nationality,
+      },
+    };
   } catch (error) {
     return handleActionResult(error);
   }

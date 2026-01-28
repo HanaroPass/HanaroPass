@@ -45,7 +45,7 @@ export function CommonFields({ initialData = {} }: CommonFieldsProps) {
       {/* 국적 */}
       <div className="space-y-2">
         <Label className="font-normal text-gray-600 text-sm">국적</Label>
-        <Select name="nationality" defaultValue={initialData.nationality || ''}>
+        <Select name="nationality" defaultValue={initialData.nationality}>
           <SelectTrigger className="flex h-12 min-h-12 w-full items-center border-0 bg-gray-50">
             <SelectValue placeholder="선택하세요" />
           </SelectTrigger>

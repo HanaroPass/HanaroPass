@@ -23,6 +23,7 @@ export default function OCRPageContent({
 }: OCRPageContentProps) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [ocrData, setOcrData] = useState<Record<string, string>>({});
+  const [ocrKey, setOcrKey] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false);
 
   const isMountedRef = useRef(true);
@@ -50,6 +51,7 @@ export default function OCRPageContent({
           : parseArcData(data.text);
 
       setOcrData(parsedData);
+      setOcrKey((prev) => prev + 1);
 
       setIsDrawerOpen(true);
     } catch (error) {
@@ -70,6 +72,7 @@ export default function OCRPageContent({
   const handleRetake = () => {
     setIsDrawerOpen(false);
     setOcrData({});
+    setOcrKey((prev) => prev + 1);
   };
 
   if (!type) return null;
@@ -135,6 +138,7 @@ export default function OCRPageContent({
 
       {type === 'passport' ? (
         <PassportDrawer
+          key={ocrKey}
           open={isDrawerOpen}
           onOpenChange={setIsDrawerOpen}
           onSubmit={handleSubmit}
@@ -143,6 +147,7 @@ export default function OCRPageContent({
         />
       ) : (
         <AlienDrawer
+          key={ocrKey}
           open={isDrawerOpen}
           onOpenChange={setIsDrawerOpen}
           onSubmit={handleSubmit}

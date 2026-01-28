@@ -97,11 +97,9 @@ export default function ResultStep({
   };
 
   const currentDisplayData = useMemo(() => {
-    if (initialData && activeTab === identityType) {
-      return initialData;
-    }
+    // DB 데이터만 사용 (저장 후 데이터)
     return activeTab === 'passport' ? passportData : arcData;
-  }, [activeTab, identityType, initialData, passportData, arcData]);
+  }, [activeTab, passportData, arcData]);
 
   return (
     <>

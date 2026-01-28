@@ -143,7 +143,7 @@ export default function MobileQr({ type, data }: MobileQrProps) {
 
               <div>
                 <p className="mb-1 font-semibold text-xl">Permission</p>
-                <p className="font-regular text-sm">{data.issueDate}</p>
+                <p className="font-regular text-sm">{data.issueDate || '-'}</p>
               </div>
             </div>
           </div>
