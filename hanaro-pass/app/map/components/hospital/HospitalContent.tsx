@@ -2,43 +2,18 @@
 
 import { X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { HospitalCard } from '@/components/ui/HospitalCard';
+import {
+  type Hospital,
+  useHospitalFilters,
+} from '../../hooks/useHospitalFilters';
+import { getHospitalStatus, parseOpenHours } from '../../utils/mapUtils';
 import DepartmentFilterPanel from './DepartmentFilterPanel';
 import FilterPanel from './FilterPanel';
 import LanguageFilterPanel from './LanguageFilterPanel';
 
-function getHospitalStatus(openHours: string): '진료 중' | '진료 종료' {
-  const [open, close] = openHours.split('-');
-  const now = new Date();
-
-  const [openH, openM] = open.split(':').map(Number);
-  const [closeH, closeM] = close.split(':').map(Number);
-
-  const openTime = new Date(now);
-  openTime.setHours(openH, openM, 0, 0);
-
-  const closeTime = new Date(now);
-  closeTime.setHours(closeH, closeM, 0, 0);
-
-  return now >= openTime && now < closeTime ? '진료 중' : '진료 종료';
-}
-
-type FilterType = 'language' | 'department' | null;
 type Mode = 'list' | 'detail';
-
-type Hospital = {
-  id: number;
-  nameKo: string;
-  address: string;
-  phone: string | null;
-  openHours: string;
-  imageUrl?: string | null;
-  languages: string[];
-  departments: string[];
-  aiSummary?: string;
-};
 
 type Props = {
   mode: Mode;
@@ -54,15 +29,26 @@ export function HospitalContent({
   onBackToList,
 }: Props) {
   const router = useRouter();
-  const [active, setActive] = useState<FilterType>(null);
-  const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
-  const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
+
+  const {
+    active,
+    toggleFilter,
+    selectedLanguages,
+    setSelectedLanguages,
+    selectedDepartments,
+    setSelectedDepartments,
+    filteredHospitals,
+    languageLabel,
+    departmentLabel,
+  } = useHospitalFilters(hospitals);
 
   /* =====================
    * DETAIL MODE (병원 하나 상세)
    * ===================== */
   if (mode === 'detail') {
     if (!hospital) return null;
+
+    const { openTime, closeTime } = parseOpenHours(hospital.openHours);
 
     return (
       <div className="relative flex h-full flex-col px-6 pt-2">
@@ -77,8 +63,8 @@ export function HospitalContent({
           hospital={{
             name: hospital.nameKo,
             status: getHospitalStatus(hospital.openHours),
-            openTime: hospital.openHours.split('-')[0],
-            closeTime: hospital.openHours.split('-')[1],
+            openTime,
+            closeTime,
             address: hospital.address,
             phone: hospital.phone ?? '-',
             languages: hospital.languages,
@@ -109,20 +95,6 @@ export function HospitalContent({
   const inactivePill = 'bg-white border-gray-300 text-gray-700';
   const activePill = 'bg-green-ez border-green-ez text-white';
 
-  const languageLabel = makeLabel(selectedLanguages, '소통 가능 언어');
-  const departmentLabel = makeLabel(selectedDepartments, '진료 과목');
-
-  const filteredHospitals = hospitals.filter((h) => {
-    const languageMatch =
-      selectedLanguages.length === 0 ||
-      selectedLanguages.some((lang) => h.languages.includes(lang));
-
-    const departmentMatch =
-      selectedDepartments.length === 0 ||
-      selectedDepartments.some((dep) => h.departments.includes(dep));
-    return languageMatch && departmentMatch;
-  });
-
   return (
     <div className="relative flex h-full flex-col">
       {/* 필터 토글 */}
@@ -132,9 +104,7 @@ export function HospitalContent({
             className={`${basePill} ${
               active === 'language' ? activePill : inactivePill
             }`}
-            onClick={() =>
-              setActive((p) => (p === 'language' ? null : 'language'))
-            }
+            onClick={() => toggleFilter('language')}
           >
             {languageLabel}
           </button>
@@ -143,9 +113,7 @@ export function HospitalContent({
             className={`${basePill} ${
               active === 'department' ? activePill : inactivePill
             }`}
-            onClick={() =>
-              setActive((p) => (p === 'department' ? null : 'department'))
-            }
+            onClick={() => toggleFilter('department')}
           >
             {departmentLabel}
           </button>
@@ -184,7 +152,7 @@ export function HospitalContent({
           </div>
         ) : (
           filteredHospitals.map((h, idx) => {
-            const [openTime, closeTime] = h.openHours.split('-');
+            const { openTime, closeTime } = parseOpenHours(h.openHours);
 
             return (
               <div
@@ -227,11 +195,4 @@ export function HospitalContent({
       </div>
     </div>
   );
-}
-
-function makeLabel(selected: string[], defaultLabel: string) {
-  if (selected.length === 0) return defaultLabel;
-  if (selected.length === 1) return selected[0];
-  if (selected.length === 2) return `${selected[0]}, ${selected[1]}`;
-  return `${selected[0]}, ${selected[1]} 외 ${selected.length - 2}개`;
 }

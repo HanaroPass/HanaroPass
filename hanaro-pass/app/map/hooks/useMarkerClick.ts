@@ -2,7 +2,6 @@ import { useCallback } from 'react';
 import type { Embassy, SavedPlace } from '@/lib/generated/prisma';
 
 import type { NaverSearchResult } from '../components/ui/NaverMap';
-import type { Hospital } from '../mapPageClient';
 import type { SheetType } from '../types/map';
 import {
   isEmbassy,
@@ -10,6 +9,7 @@ import {
   isHospitalPlace,
   isSavedPlace,
 } from '../utils/mapUtils';
+import type { Hospital } from './useHospitalFilters';
 import type { ClickablePlace } from './useMapMarkers';
 
 type UseMarkerClickProps = {
