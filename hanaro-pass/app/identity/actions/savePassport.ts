@@ -27,7 +27,9 @@ export async function savePassportData(
     const nickname = `${lastName} ${firstName}`.trim();
     const expiryDateObj = parseLocalDate(validated.expiryDate);
 
-    if (expiryDateObj <= new Date()) {
+    const todayUTC = new Date();
+    todayUTC.setUTCHours(0, 0, 0, 0);
+    if (expiryDateObj <= todayUTC) {
       throw new HttpError('만료된 여권은 등록할 수 없습니다.', 400);
     }
 
