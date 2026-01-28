@@ -64,6 +64,15 @@ const HOSPITAL_IMAGE_MAP: Record<string, string> = {
   '1삼성탑의원': '/images/hospitals/samsungtop.jpg',
 };
 
+// 병원 이미지 랜덤
+const REAL_HOSPITAL_IMAGES = Object.values(HOSPITAL_IMAGE_MAP);
+
+const getRandomHospitalImage = () => {
+  return REAL_HOSPITAL_IMAGES[
+    Math.floor(Math.random() * REAL_HOSPITAL_IMAGES.length)
+  ];
+};
+
 /**
  * 확률 기반 언어 랜덤 배정 함수
  */
@@ -182,7 +191,7 @@ export async function fetchAndSeedHospitals() {
           data: {
             nameKo: item.yadmNm,
             imageUrl:
-              HOSPITAL_IMAGE_MAP[item.yadmNm] ?? getDefaultHospitalImage(),
+              HOSPITAL_IMAGE_MAP[item.yadmNm] ?? getRandomHospitalImage(),
             address: item.addr,
             latitude,
             longitude,
