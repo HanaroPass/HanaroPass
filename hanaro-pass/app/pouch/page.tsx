@@ -1,7 +1,6 @@
 'use client';
 
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import ActionButton from '@/components/ui/ActionButton';
 import { useToast } from '@/hooks/useToast';
@@ -12,9 +11,8 @@ const POUCH_ILLUSTRATION = '/images/pouch/lucky_pouch.png';
 const POUCH_VIDEO = '/videos/pouch/pouch_send.mp4';
 
 export default function LuckyPouchPage() {
-  const router = useRouter();
   const { alert, close } = useAlert();
-  const { success } = useToast();
+  const { success, error } = useToast();
 
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -32,9 +30,17 @@ export default function LuckyPouchPage() {
         </div>
       ),
       actionLabel: '링크 복사하기',
-      onAction: () => {
-        navigator.clipboard.writeText(shareLink);
-        success('복사 완료', '공유 링크가 클립보드에 복사되었습니다.');
+      onAction: async () => {
+        try {
+          await navigator.clipboard.writeText(shareLink);
+          success('복사 완료', '공유 링크가 클립보드에 복사되었습니다.');
+        } catch (err) {
+          console.error('Failed to copy:', err);
+          error(
+            '복사 실패',
+            '보안 설정으로 인해 자동 복사가 차단되었습니다. 화면의 링크를 길게 눌러 복사해주세요.',
+          );
+        }
       },
     });
   };
@@ -84,7 +90,7 @@ export default function LuckyPouchPage() {
             />
           </div>
         )}
-        <main className="flex flex-1 flex-col items-center justify-center pt-6">
+        <div className="flex flex-1 flex-col items-center justify-center pt-6">
           <div className="px-6 text-center">
             <h2 className="font-semibold text-2xl text-black-900 tracking-tight">
               친구에게 복주머니를 보내세요!
@@ -113,7 +119,7 @@ export default function LuckyPouchPage() {
           <HospitalGuide
             text={`캐리어에서 친구의 네임태그를 선택하면 \n 복주머니가 발송돼요!`}
           />
-        </main>
+        </div>
       </main>
       <footer className="px-6 py-8">
         <ActionButton
