@@ -41,7 +41,7 @@ export function useExchangeSearch(currentMapRegion: string) {
       setIsLoading(true);
 
       try {
-        const regions = currentMapRegion.split(' ');
+        const regions = targetRegion.split(' ');
         const guName = regions[0] || '';
         const dongName = regions[1] || '';
         const keywords = ['환전', '환전소', '무인환전', '머니박스'];
@@ -81,7 +81,7 @@ export function useExchangeSearch(currentMapRegion: string) {
               });
             }
           });
-          if (lastSearchedRegionRef.current === currentMapRegion) {
+          if (lastSearchedRegionRef.current === targetRegion) {
             prev.forEach((item) => {
               const key = `${item.mapx}-${item.mapy}`;
               if (!itemMap.has(key)) itemMap.set(key, item);
@@ -91,7 +91,7 @@ export function useExchangeSearch(currentMapRegion: string) {
         });
 
         if (isAnySuccess && requestId === latestRequestIdRef.current) {
-          lastSearchedRegionRef.current = currentMapRegion;
+          lastSearchedRegionRef.current = targetRegion;
         }
       } catch (error) {
         if (requestId === latestRequestIdRef.current) {
