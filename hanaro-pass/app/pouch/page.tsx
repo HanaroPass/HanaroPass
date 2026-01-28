@@ -91,8 +91,8 @@ export default function LuckyPouchPage() {
   };
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden bg-white font-sans">
-      <main className="relative flex flex-1 flex-col items-center overflow-hidden">
+    <div className="flex h-screen flex-col bg-white font-sans">
+      <main className="relative flex flex-1 flex-col items-center pb-8">
         {isPlaying && (
           <div className="fixed inset-0 z-100 bg-linear-to-b from-[#74a5cb] to-[#d2e8f1]">
             <video
@@ -140,7 +140,7 @@ export default function LuckyPouchPage() {
           />
         </div>
       </main>
-      <footer className="px-6 py-8">
+      <footer className="sticky bottom-0 z-50 bg-white px-6 pt-6 pb-8">
         <ActionButton
           text="적립된 하나머니 확인"
           onClick={handleCheckPouch}
