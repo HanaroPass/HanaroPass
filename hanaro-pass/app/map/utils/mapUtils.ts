@@ -82,7 +82,7 @@ const BANK_KEYWORDS = [
   '카카오뱅크',
   '토스뱅크',
   'bank',
-  '뱅크',
+  'iM뱅크',
 ];
 
 export function getExchangeType(name: string): '은행' | '환전소' | '기타' {
@@ -104,6 +104,7 @@ export function getExchangeType(name: string): '은행' | '환전소' | '기타'
     '익스체인지',
     'exchange',
     '환전기',
+    '머니',
   ];
   if (exchangeKeywords.some((k) => lower.includes(k.toLowerCase()))) {
     return '환전소';
