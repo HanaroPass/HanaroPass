@@ -101,6 +101,10 @@ export default function LuckyPouchPage() {
               muted
               playsInline
               onEnded={showShareModal}
+              onError={() => {
+                setIsPlaying(false);
+                error('비디오 로드 실패', '잠시 후 다시 시도해 주세요.');
+              }}
               className="pointer-events-none h-full w-full object-contain"
             />
           </div>
