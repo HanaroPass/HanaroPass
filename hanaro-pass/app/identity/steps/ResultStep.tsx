@@ -97,9 +97,9 @@ export default function ResultStep({
   };
 
   const currentDisplayData = useMemo(() => {
-    // DB 데이터만 사용 (저장 후 데이터)
+    if (initialData) return initialData;
     return activeTab === 'passport' ? passportData : arcData;
-  }, [activeTab, passportData, arcData]);
+  }, [activeTab, passportData, arcData, initialData]);
 
   return (
     <>
