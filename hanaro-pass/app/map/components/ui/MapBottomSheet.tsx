@@ -9,7 +9,7 @@ import {
 } from '../../types/map';
 
 /**
- * @interface MapBottomSheetProps
+ * @type MapBottomSheetProps
  * @description MapBottomSheet 컴포넌트의 타입 정의입니다.
  */
 type MapBottomSheetProps = {

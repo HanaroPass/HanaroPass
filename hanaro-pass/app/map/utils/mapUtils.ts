@@ -57,6 +57,62 @@ export const parseOpenHours = (openHours: string) => {
   }
 };
 
+const BANK_KEYWORDS = [
+  '국민은행',
+  '신한은행',
+  '우리은행',
+  '하나은행',
+  '농협은행',
+  'NH농협',
+  '기업은행',
+  '씨티은행',
+  'SC제일은행',
+  '산업은행',
+  'KDB',
+  '부산은행',
+  '광주은행',
+  '전북은행',
+  '경남은행',
+  '제주은행',
+  '새마을금고',
+  '신협',
+  '수협',
+  '우체국',
+  '케이뱅크',
+  '카카오뱅크',
+  '토스뱅크',
+  'bank',
+  'iM뱅크',
+];
+
+export function getExchangeType(name: string): '은행' | '환전소' | '기타' {
+  if (!name) return '기타';
+
+  const lower = name.toLowerCase();
+
+  if (
+    lower.includes('은행') ||
+    BANK_KEYWORDS.some((k) => lower.includes(k.toLowerCase()))
+  ) {
+    return '은행';
+  }
+
+  const exchangeKeywords = [
+    '환전',
+    '환전소',
+    '머니박스',
+    '익스체인지',
+    'exchange',
+    '환전기',
+    '머니',
+  ];
+  if (exchangeKeywords.some((k) => lower.includes(k.toLowerCase()))) {
+    return '환전소';
+  }
+
+  return '기타';
+}
+
 // HTML 태그 제거 및 데이터 포맷팅
 export const formatExchangeData = (
   results: NaverSearchResult[],
@@ -64,7 +120,7 @@ export const formatExchangeData = (
   return results.map((item) => ({
     id: `${item.mapx}-${item.mapy}`,
     name: item.title.replace(/<[^>]*>?/g, ''),
-    type: '환전소',
+    type: getExchangeType(item.title),
     address: item.roadAddress || item.address || '',
     phone: item.telephone || '',
     distance: '',
@@ -83,7 +139,7 @@ export const mapDbToInfo = (
     return {
       id: `${db.mapx}-${db.mapy}`,
       name: db.title.replace(/<[^>]*>?/g, ''),
-      type: '환전소',
+      type: getExchangeType(db.title),
       address: db.roadAddress || db.address || '',
       phone: db.telephone || '',
       distance: '',

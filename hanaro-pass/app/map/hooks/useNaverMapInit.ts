@@ -96,6 +96,8 @@ export function useNaverMapInit(
         },
         () => {
           renderMap(DEFAULT_COORDS.lat, DEFAULT_COORDS.lng);
+
+          onMapMoved?.('서울특별시 성동구 성수동');
         },
         { enableHighAccuracy: true, timeout: 10000 },
       );
@@ -133,7 +135,7 @@ export function useNaverMapInit(
         existingScript.removeEventListener('load', initMap);
       }
     };
-  }, [updateCenterAddress, containerRef]);
+  }, [updateCenterAddress, containerRef, onMapMoved]);
 
   return { mapRef, isMapReady, LATITUDE_OFFSET };
 }
