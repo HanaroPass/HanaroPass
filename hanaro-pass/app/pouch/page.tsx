@@ -16,6 +16,11 @@ export default function LuckyPouchPage() {
 
   const [isPlaying, setIsPlaying] = useState(false);
 
+  const sideBySideLayout =
+    '[&>footer]:flex-row [&>footer]:gap-3 sm:max-w-[380px]';
+  const brandBtnStyle = '!bg-(--color-green-dark) !text-white flex-1';
+  const cancelBtnStyle = 'flex-1 mt-0';
+
   const showShareModal = () => {
     setIsPlaying(false);
     const randomId = Math.random().toString(36).substring(2, 10);
@@ -24,12 +29,16 @@ export default function LuckyPouchPage() {
     alert({
       title: '복주머니 준비 완료!',
       description: '아래 링크를 친구에게 공유하면 복주머니가 적립됩니다.',
+      contentClassName: sideBySideLayout,
       content: (
-        <div className="mt-4 break-all rounded-lg border border-gray-100 bg-gray-50 p-3 font-mono text-(--color-green-dark) text-xs">
+        <div className="mt-1 break-all rounded-lg border border-gray-100 bg-gray-50 p-3 font-mono text-(--color-green-dark) text-xs">
           {shareLink}
         </div>
       ),
       actionLabel: '링크 복사하기',
+      cancelLabel: '취소',
+      actionProps: { className: brandBtnStyle },
+      cancelProps: { className: cancelBtnStyle },
       onAction: async () => {
         try {
           await navigator.clipboard.writeText(shareLink);
@@ -48,9 +57,12 @@ export default function LuckyPouchPage() {
   const handlePouchClick = () => {
     alert({
       title: '복주머니 보내기',
+      contentClassName: sideBySideLayout,
       description: 'Jessica Kim님께 복주머니를 보내시겠습니까?',
       actionLabel: '보내기',
       cancelLabel: '취소',
+      actionProps: { className: brandBtnStyle },
+      cancelProps: { className: cancelBtnStyle },
       closeOnAction: false,
       onAction: () => {
         setIsPlaying(true);
@@ -72,6 +84,9 @@ export default function LuckyPouchPage() {
       ),
       actionLabel: '확인',
       hideCancel: true,
+      actionProps: {
+        className: '!bg-(--color-green-dark) !text-white w-32 mx-auto',
+      },
     });
   };
 
