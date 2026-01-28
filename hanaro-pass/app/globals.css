@@ -317,7 +317,7 @@ input[type="search"]::-webkit-search-results-decoration {
 .splash-out {
   position: absolute;
   inset: 0;
-  animation: splashOut 300ms ease-in both;
+  animation: splashOut 100ms ease-in both;
 }
 
 @keyframes splashOut {
