@@ -1,11 +1,14 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { useAlert } from '@/providers/alertProvider';
 import { getRegistrationResultAction } from '../actions/languageRegist.action';
 import type { StatusType } from '../constants/statusConfig';
 
 export function useRegistrationResult() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { alert: modalAlert } = useAlert();
+
   const hospitalId = Number(searchParams.get('hospitalId'));
 
   const [data, setData] = useState<{
@@ -18,8 +21,13 @@ export function useRegistrationResult() {
 
   useEffect(() => {
     if (!hospitalId) {
-      alert('유효하지 않은 접근입니다.');
-      router.push('/medical/registrations');
+      modalAlert({
+        title: '유효하지 않은 접근',
+        description: '병원 정보가 올바르지 않습니다.',
+        actionLabel: '확인',
+        onAction: () => router.push('/medical/registrations'),
+        hideCancel: true,
+      });
       return;
     }
 
@@ -31,7 +39,14 @@ export function useRegistrationResult() {
         if (result.success) {
           setData({
             hospitalName: result.data.hospitalName,
-            createdAt: new Date(result.data.createdAt).toLocaleString('ko-KR'),
+            createdAt: new Date(result.data.createdAt).toLocaleString('ko-KR', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit',
+              hour12: true,
+            }),
             status: result.data.status,
           });
         } else {
@@ -46,7 +61,7 @@ export function useRegistrationResult() {
     };
 
     fetchResult();
-  }, [hospitalId, router]);
+  }, [hospitalId, router, modalAlert]);
 
   return { data, isLoading, hospitalId };
 }

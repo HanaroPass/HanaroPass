@@ -107,7 +107,7 @@ export default function LanguageRegistrationClient() {
           </div>
         </div>
         <div className="border-gray-200 border-t bg-white pb-8">
-          <HospitalGuide text="등록하신 정보는 외국인 환자 병원을 검색할 때 표시됩니다." />
+          <HospitalGuide text="등록하신 정보는 외국인 환자에게 제공되는 병원 목록에 표시됩니다." />
         </div>
       </div>
       <div className="border-gray-200 border-t bg-white px-6 py-4 pb-8">
