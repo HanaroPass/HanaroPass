@@ -56,7 +56,9 @@ export function HospitalCard({ hospital }: { hospital: HospitalInfo }) {
           {/* 언어 */}
           <div className="text-sm">
             <span className="font-semibold text-gray-700">소통 언어</span>
-            <span className="text-gray-800">: {hospital.languages}</span>
+            <span className="text-gray-800">
+              : {hospital.languages.join(', ')}
+            </span>
           </div>
 
           {/* 진료과목 */}
@@ -93,8 +95,8 @@ export function HospitalCard({ hospital }: { hospital: HospitalInfo }) {
               src={hospital.imageUrl}
               alt={`${hospital.name} 병원 이미지`}
               fill
-              className="object-cover"
-              sizes="96px"
+              className="object-cover object-center"
+              unoptimized
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center text-gray-400 text-xs">

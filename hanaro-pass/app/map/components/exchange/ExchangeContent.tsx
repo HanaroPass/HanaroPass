@@ -3,11 +3,11 @@
 import { MapPinOff, X } from 'lucide-react';
 import { type LocationInfo, PlaceCard } from '../ui/PlaceCard';
 
-interface ExchangeContentProps {
+type ExchangeContentProps = {
   results: LocationInfo[];
   selectedPlace: LocationInfo | null;
   onBackToList: () => void;
-}
+};
 
 export function ExchangeContent({
   results,

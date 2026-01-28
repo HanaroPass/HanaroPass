@@ -1,11 +1,11 @@
 'use client';
 
 import { forwardRef, useImperativeHandle, useRef } from 'react';
+import { useToast } from '@/hooks/useToast';
 import type { Embassy, SavedPlace } from '@/lib/generated/prisma';
-
+import type { Hospital } from '../../hooks/useHospitalFilters';
 import { type ClickablePlace, useMapMarkers } from '../../hooks/useMapMarkers';
 import { useNaverMapInit } from '../../hooks/useNaverMapInit';
-import type { Hospital } from '../../mapPageClient';
 
 export type NaverSearchResult = {
   title: string;
@@ -40,6 +40,7 @@ export type NaverMapHandle = {
 export const NaverMap = forwardRef<NaverMapHandle, NaverMapProps>(
   (props, ref) => {
     const containerRef = useRef<HTMLDivElement>(null);
+    const { warning } = useToast();
 
     // 지도 초기화 훅
     const { mapRef, isMapReady, LATITUDE_OFFSET } = useNaverMapInit(
@@ -71,7 +72,7 @@ export const NaverMap = forwardRef<NaverMapHandle, NaverMapProps>(
               '위치 정보를 가져오는데 실패했습니다:',
               error.message,
             );
-            alert('위치 권한을 허용해주세요.');
+            warning('내 위치를 찾으려면 위치 권한을 허용해주세요.');
           },
         );
       },

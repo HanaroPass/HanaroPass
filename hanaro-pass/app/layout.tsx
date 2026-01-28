@@ -3,6 +3,7 @@ import { Suspense } from 'react';
 import { Toaster } from 'sonner';
 import AuthStatusWrapper from './(main)/components/AuthStatusWrapper';
 import './globals.css';
+import { AlertDialogProvider } from '@/providers/alertProvider';
 
 export const metadata: Metadata = {
   title: 'Hanaro Pass',
@@ -19,7 +20,9 @@ export default function RootLayout({
     <html lang="ko" suppressHydrationWarning>
       <body className="antialiased">
         <Suspense fallback={null}>
-          <div className="app-shell">{children}</div>
+          <AlertDialogProvider>
+            <div className="app-shell">{children}</div>
+          </AlertDialogProvider>
         </Suspense>
         <Toaster
           position="top-center"

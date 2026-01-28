@@ -26,6 +26,7 @@ import { PlaceCard } from './components/ui/PlaceCard';
 import { ToggleButton } from './components/ui/ToggleButton';
 import { useBottomSheet } from './hooks/useBottomSheet';
 import { useExchangeSearch } from './hooks/useExchangeSearch';
+import type { Hospital } from './hooks/useHospitalFilters';
 import { useMarkerClick } from './hooks/useMarkerClick';
 import { formatExchangeData, mapDbToInfo } from './utils/mapUtils';
 
@@ -36,20 +37,6 @@ import { formatExchangeData, mapDbToInfo } from './utils/mapUtils';
  * useBottomSheet 커스텀 훅을 사용하여 시트 관련 모든 로직을 주입받아 사용합니다.
  */
 
-export type Hospital = {
-  id: number;
-  nameKo: string;
-  address: string;
-  latitude: number;
-  longitude: number;
-  phone: string | null;
-  openHours: string;
-  languages: string[];
-  departments: string[];
-  imageUrl?: string | null;
-  aiSummary?: string;
-};
-
 type Props = {
   hospitals: Hospital[];
   userId: number | null;
@@ -57,10 +44,8 @@ type Props = {
 
 export default function MapPageClient({ hospitals, userId }: Props) {
   const [bookmark, setBookmark] = useState(false);
-
   const [savedPlaces, setSavedPlaces] = useState<SavedPlace[]>([]);
   const [myEmbassy, setMyEmbassy] = useState<Embassy | null>(null);
-
   const [selectedPlace, setSelectedPlace] = useState<
     SavedPlace | Embassy | NaverSearchResult | null
   >(null);
@@ -68,11 +53,10 @@ export default function MapPageClient({ hospitals, userId }: Props) {
     null,
   );
   const [currentMapRegion, setCurrentMapRegion] = useState('');
-
   const mapControlRef = useRef<NaverMapHandle>(null);
-
-  const { exchangeResults, searchExchanges } =
+  const { exchangeResults, searchExchanges, clearResults } =
     useExchangeSearch(currentMapRegion);
+  const [userCoords, setUserCoords] = useState<{ lat: number; lng: number }>();
 
   const {
     openSheet,
@@ -85,6 +69,30 @@ export default function MapPageClient({ hospitals, userId }: Props) {
     handleTouchEnd,
     getTranslateValue,
   } = useBottomSheet();
+
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          setUserCoords({
+            lat: pos.coords.latitude,
+            lng: pos.coords.longitude,
+          });
+        },
+        (err) => console.error('위치 정보를 가져올 수 없습니다.', err),
+      );
+    }
+  }, []);
+
+  useEffect(() => {
+    if (openSheet !== 'exchange' || !currentMapRegion) return;
+
+    const timer = setTimeout(() => {
+      searchExchanges();
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, [currentMapRegion, openSheet, searchExchanges]);
 
   useEffect(() => {
     if (!userId) return;
@@ -132,13 +140,16 @@ export default function MapPageClient({ hospitals, userId }: Props) {
 
   const handleExchangeClick = useCallback(async () => {
     if (openSheet === 'exchange') {
+      clearResults();
       toggleSheet('exchange');
       setSelectedPlace(null);
       return;
     }
-    await searchExchanges();
+
+    clearResults();
+    await searchExchanges(true);
     toggleSheet('exchange');
-  }, [openSheet, toggleSheet, searchExchanges]);
+  }, [openSheet, toggleSheet, searchExchanges, clearResults]);
 
   const { handleMarkerClick } = useMarkerClick({
     selectedPlace,
@@ -170,7 +181,9 @@ export default function MapPageClient({ hospitals, userId }: Props) {
         <ToggleButton
           variant="pill"
           label="병원"
-          icon={<Cross className="h-4 w-4" />}
+          icon={
+            <Cross className="h-4 w-4" fill="currentColor" strokeWidth={3} />
+          }
           active={openSheet === 'hospital'}
           iconColorVariant="red"
           onClick={() => {
@@ -250,7 +263,10 @@ export default function MapPageClient({ hospitals, userId }: Props) {
       >
         {openSheet === 'bookmark' && !!selectedPlace && (
           <div className="px-2">
-            <PlaceCard data={mapDbToInfo(selectedPlace)} />
+            <PlaceCard
+              data={mapDbToInfo(selectedPlace)}
+              userCoords={userCoords}
+            />
           </div>
         )}
         {openSheet === 'hospital' && (
@@ -258,6 +274,10 @@ export default function MapPageClient({ hospitals, userId }: Props) {
             mode={selectedHospital ? 'detail' : 'list'}
             hospitals={hospitals}
             hospital={selectedHospital ?? undefined}
+            onBackToList={() => {
+              setSelectedHospital(null);
+              toggleSheet('hospital', true);
+            }}
           />
         )}
         {openSheet === 'siren' && <SirenContent />}
@@ -275,7 +295,9 @@ export default function MapPageClient({ hospitals, userId }: Props) {
             }}
           />
         )}
-        {openSheet === 'embassy' && <EmbassyContent data={myEmbassy} />}
+        {openSheet === 'embassy' && (
+          <EmbassyContent data={myEmbassy} userCoords={userCoords} />
+        )}
       </MapBottomSheet>
     </main>
   );
