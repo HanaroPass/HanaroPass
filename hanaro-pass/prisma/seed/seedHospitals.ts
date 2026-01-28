@@ -47,21 +47,21 @@ const HOSPITAL_IMAGE_MAP: Record<string, string> = {
   서울프라임병원: '/images/hospitals/prime.jpg',
   연세무척나은병원: '/images/hospitals/mucheok.jpg',
   제니스병원: '/images/hospitals/zenith.jpg',
-  동부참사랑요양병원: '/images/hospitals/dongbu.jpg',
-  편안한요양병원: '/images/hospitals/pyeonanhan.jpg',
   국립정신건강센터: '/images/hospitals/national_mental_health.jpg',
   '(사)인구보건복지협회 서울지회 가족보건의원':
     '/images/hospitals/family_health.jpg',
+  '24시열린의원': '/images/hospitals/24open.jpg',
+  '365류마고내과의원': '/images/hospitals/365rheuma.jpg',
+  '365아산원탑마취통증의학과재활의학과의원': '/images/hospitals/365asan.jpg',
+  'Dr. 고 신경정신과의원': '/images/hospitals/drko.jpg',
   한양대학교병원: '/images/hospitals/hanyang.jpg',
   재단법인베스티안재단베스티안서울병원: '/images/hospitals/bestian.jpg',
   '9988병원': '/images/hospitals/9988.jpg',
   연세바로척병원: '/images/hospitals/yonsei_chuk.jpg',
   연세슬기병원: '/images/hospitals/yonsei_seulgi.jpg',
   '학교법인대진교육재단 제인병원': '/images/hospitals/jain.jpg',
-  굿모닝요양병원: '/images/hospitals/goodmorning.jpg',
-  서울효사랑요양병원: '/images/hospitals/hoesarang.jpg',
-  시온요양병원: '/images/hospitals/sion.jpg',
   '1삼성탑의원': '/images/hospitals/samsungtop.jpg',
+  '365다움의원': '/images/hospitals/365daum.jpg',
 };
 
 // 병원 이미지 랜덤
@@ -152,7 +152,7 @@ export async function fetchAndSeedHospitals() {
     const params = new URLSearchParams({
       ServiceKey: SERVICE_KEY!,
       pageNo: '1',
-      numOfRows: '10',
+      numOfRows: '15',
       sidoCd: '110000',
       sgguCd: district.sgguCd,
       _type: 'json',
@@ -177,6 +177,10 @@ export async function fetchAndSeedHospitals() {
       );
 
       for (const item of items) {
+        if (item.yadmNm.includes('요양')) {
+          console.log(`[ 제외 ] 요양 관련 병원: ${item.yadmNm}`);
+          continue;
+        }
         const departments = await getHospitalDepartments(item.ykiho);
         const langs = getRandomLangs(); // 확률 로직 적용 - 최대 3개까지 언어 지원 가능
 
