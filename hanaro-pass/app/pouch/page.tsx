@@ -53,6 +53,22 @@ export default function LuckyPouchPage() {
     });
   };
 
+  const handleCheckPouch = () => {
+    alert({
+      title: '받은 하나머니',
+      content: (
+        <div className="flex flex-col items-center justify-center py-4">
+          <p className="mb-1 text-black-600 text-sm">현재까지 적립된 포인트</p>
+          <span className="font-bold text-(--color-green-dark) text-4xl">
+            10,000P
+          </span>
+        </div>
+      ),
+      actionLabel: '확인',
+      hideCancel: true,
+    });
+  };
+
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-white font-sans">
       <main className="relative flex flex-1 flex-col items-center overflow-hidden">
@@ -102,8 +118,8 @@ export default function LuckyPouchPage() {
       <footer className="px-6 py-8">
         <ActionButton
           text="받은 하나머니 확인"
-          onClick={() => router.push('/medical/registrations')}
-          className="bg-(--color-green-dark) text-white" // 포인트 컬러 적용
+          onClick={handleCheckPouch}
+          className="bg-(--color-green-dark) text-white"
         />
       </footer>
     </div>
