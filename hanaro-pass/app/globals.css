@@ -339,5 +339,6 @@ input[type="search"]::-webkit-search-results-decoration {
   }
   .page-hidden {
     opacity: 1;
+    pointer-events: auto;
   }
 }
