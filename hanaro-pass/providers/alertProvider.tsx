@@ -261,9 +261,9 @@ export function AlertDialogProvider({ children }: { children: ReactNode }) {
         <AlertDialogContent className={options.contentClassName}>
           <VisuallyHidden.Root>
             {!options.title && <AlertDialogTitle>{a11yTitle}</AlertDialogTitle>}
-            {!options.disableAriaDescription ? (
+            {!options.description && !options.disableAriaDescription && (
               <AlertDialogDescription>{a11yDescription}</AlertDialogDescription>
-            ) : null}
+            )}
           </VisuallyHidden.Root>
 
           {renderMain()}
