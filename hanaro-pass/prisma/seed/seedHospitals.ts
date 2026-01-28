@@ -8,10 +8,12 @@ export const BASIS_API_URL =
   'https://apis.data.go.kr/B551182/hospInfoServicev2/getHospBasisList';
 const DEPT_API_URL =
   'https://apis.data.go.kr/B551182/MadmDtlInfoService2.7/getDgsbjtInfo2.7';
-// 향후 강남구까지 확장 가능
 export const TARGET_DISTRICTS = [
   { name: '광진구', sgguCd: '110023' },
   { name: '성동구', sgguCd: '110011' },
+  { name: '강남구', sgguCd: '110001' },
+  { name: '중구', sgguCd: '110017' },
+  { name: '미포구', sgguCd: '110009' },
 ];
 // 네이버 지도 기준 지원 하는 진료과목 리스트 로딩
 const DEPT_CODE_MAP: Record<string, string> = {
