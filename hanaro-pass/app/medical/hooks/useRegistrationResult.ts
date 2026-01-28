@@ -21,6 +21,8 @@ export function useRegistrationResult() {
 
   useEffect(() => {
     if (!hospitalId) {
+      setData(null);
+      setIsLoading(false);
       modalAlert({
         title: '유효하지 않은 접근',
         description: '병원 정보가 올바르지 않습니다.',
@@ -40,6 +42,7 @@ export function useRegistrationResult() {
           setData({
             hospitalName: result.data.hospitalName,
             createdAt: new Date(result.data.createdAt).toLocaleString('ko-KR', {
+              timeZone: 'Asia/Seoul',
               year: 'numeric',
               month: 'long',
               day: 'numeric',
