@@ -7,8 +7,6 @@ import {
   NAVER_MAP_SCRIPT_URL,
 } from '../constants/map';
 
-const LATITUDE_OFFSET = -0.004;
-
 export function useNaverMapInit(
   containerRef: React.RefObject<HTMLDivElement | null>,
   onMapMoved?: (address: string) => void,
@@ -18,9 +16,7 @@ export function useNaverMapInit(
 
   const updateCenterAddress = useCallback(() => {
     const map = mapRef.current;
-    if (!map || !window.naver?.maps?.Service) {
-      return;
-    }
+    if (!map || !window.naver?.maps?.Service) return;
 
     window.naver.maps.Service.reverseGeocode(
       {
@@ -31,9 +27,7 @@ export function useNaverMapInit(
         ].join(','),
       },
       (status, response) => {
-        if (status !== window.naver.maps.Service.Status.OK) {
-          return;
-        }
+        if (status !== window.naver.maps.Service.Status.OK) return;
         const result = response.v2;
         const region = result.results[0]?.region;
         const fullRegionName =
@@ -48,29 +42,27 @@ export function useNaverMapInit(
   useEffect(() => {
     const NAVER_MAP_KEY = process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID;
     const container = containerRef.current;
-    if (!NAVER_MAP_KEY || !container) {
-      return;
-    }
+    if (!NAVER_MAP_KEY || !container) return;
 
     let idleListener: naver.maps.MapEventListener | null = null;
     let isMounted = true;
 
     const initMap = () => {
-      if (!container || mapRef.current || !isMounted) {
-        return;
-      }
+      if (!container || mapRef.current || !isMounted) return;
 
       const renderMap = (lat: number, lng: number) => {
         if (!isMounted) return;
 
         const map = new window.naver.maps.Map(container, {
-          center: new window.naver.maps.LatLng(lat + LATITUDE_OFFSET, lng),
+          center: new window.naver.maps.LatLng(lat, lng),
           zoom: 15,
           logoControl: false,
         });
 
         mapRef.current = map;
         setIsMapReady(true);
+
+        map.panBy(new window.naver.maps.Point(0, 150));
 
         new window.naver.maps.Marker({
           position: new window.naver.maps.LatLng(lat, lng),
@@ -91,9 +83,7 @@ export function useNaverMapInit(
       };
 
       navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          renderMap(pos.coords.latitude, pos.coords.longitude);
-        },
+        (pos) => renderMap(pos.coords.latitude, pos.coords.longitude),
         () => {
           renderMap(DEFAULT_COORDS.lat, DEFAULT_COORDS.lng);
 
@@ -116,26 +106,16 @@ export function useNaverMapInit(
       script.onload = () => initMap();
       document.head.appendChild(script);
     } else {
-      if (window.naver?.maps) {
-        initMap();
-      } else {
-        existingScript.addEventListener('load', initMap);
-      }
+      if (window.naver?.maps) initMap();
+      else existingScript.addEventListener('load', initMap);
     }
 
-    // Cleanup
     return () => {
-      isMounted = false; // 더 이상 상태 업데이트 안 함
-
-      if (idleListener) {
-        window.naver.maps.Event.removeListener(idleListener);
-      }
-
-      if (existingScript) {
-        existingScript.removeEventListener('load', initMap);
-      }
+      isMounted = false;
+      if (idleListener) window.naver.maps.Event.removeListener(idleListener);
+      if (existingScript) existingScript.removeEventListener('load', initMap);
     };
   }, [updateCenterAddress, containerRef, onMapMoved]);
 
-  return { mapRef, isMapReady, LATITUDE_OFFSET };
+  return { mapRef, isMapReady };
 }
