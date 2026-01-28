@@ -34,32 +34,13 @@ export function BaseDrawer({
   showButtons = true,
   isPending = false,
   children,
-  requireNationality = false,
 }: BaseDrawerProps) {
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    // 국적 체크가 필요한 경우에만 검증
-    if (requireNationality) {
-      const formData = new FormData(e.currentTarget);
-      const nationality = formData.get('nationality') as string;
-
-      if (
-        !nationality ||
-        nationality.trim() === '' ||
-        nationality === 'undefined'
-      ) {
-        e.preventDefault();
-        alert('국적을 선택해주세요.');
-        return;
-      }
-    }
-  };
-
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent className={className || 'mx-auto max-w-[375px]'}>
         <form
           action={formAction}
-          onSubmit={handleSubmit}
+          // onSubmit={handleSubmit}
           key={open ? 'open' : 'closed'}
         >
           <DrawerHeader className="relative border-b">

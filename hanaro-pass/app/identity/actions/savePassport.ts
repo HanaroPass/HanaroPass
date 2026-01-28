@@ -30,16 +30,31 @@ export async function savePassportData(
     const userPhotoUrl = formData.get('userPhotoUrl') as string;
     const nationality = formData.get('nationality') as string;
 
-    if (
-      !passportNumber ||
-      !gender ||
-      !issueDate ||
-      !expiryDate ||
-      !lastName ||
-      !firstName ||
-      !nationality
-    ) {
-      throw new HttpError('모든 정보를 정확히 입력해주세요.', 400);
+    // 개별 필드 검증으로 더 구체적인 에러 메시지 제공
+    if (!nationality) {
+      throw new HttpError('국적을 선택해주세요.', 400);
+    }
+
+    if (!passportNumber) {
+      throw new HttpError('여권번호를 입력해주세요.', 400);
+    }
+
+    if (!gender) {
+      throw new HttpError('성별을 선택해주세요.', 400);
+    }
+
+    if (!issueDate || !expiryDate) {
+      throw new HttpError('여권 발급일과 만료일을 입력해주세요.', 400);
+    }
+
+    if (!lastName || !firstName) {
+      throw new HttpError('성명을 입력해주세요.', 400);
+    }
+
+    // 여권 만료일 검증
+    const expiryDateObj = parseLocalDate(expiryDate);
+    if (expiryDateObj <= new Date()) {
+      throw new HttpError('만료된 여권은 등록할 수 없습니다.', 400);
     }
 
     const sessionUserId = await getUserIdFromSession();
