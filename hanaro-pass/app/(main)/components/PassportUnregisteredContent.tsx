@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 
 function ExchangeCard({
   code,
@@ -47,6 +48,19 @@ export default function PassportUnregisteredContent() {
           alt="모바일 번호표"
           className="-mt-8 ml-auto"
         />
+      </section>
+
+      <section className="h-30 rounded-3xl bg-[#FFD9C0] p-5 pr-8">
+        <Link href={'/medical/registrations'}>
+          <p className="font-bold text-base">우리 병원 진료 가능 언어 등록</p>
+          <Image
+            src="/images/main/medical.svg"
+            width={80}
+            height={80}
+            alt="우리 병원 진료 가능 언어 등록하기"
+            className="-mt-1 ml-auto"
+          />
+        </Link>
       </section>
 
       <section className="grid h-36.25 grid-cols-2 gap-4">

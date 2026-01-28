@@ -16,14 +16,14 @@ export type PrimaryMenuItem = {
 export const MAIN_MENUS: Record<MainPageKey, MenuItem[]> = {
   pay: [
     {
-      label: '하나 EZ 카드 등록하기',
+      label: '하나더이지 카드 등록하기',
       icon: '/images/main/card.svg',
       link: '',
     },
     {
       label: '쿠폰 zone',
       icon: '/images/main/coupon.svg',
-      link: '',
+      link: '/coupons',
     },
   ],
 
@@ -64,13 +64,13 @@ export const PRIMARY_MENUS: Record<MainPageKey, PrimaryMenuItem[]> = {
       title: '모바일 신분증',
       description: '여권·외국인등록증을 조회해요',
       icon: '/images/main/mobile-id.svg',
-      link: '',
+      link: '/identity?step=result',
     },
     {
       title: 'K-Map 안내',
       description: '맞춤형 병원/대사관/환전소\n정보를 한눈에 보여줘요',
       icon: '/images/main/k-map.svg',
-      link: '',
+      link: '/map',
     },
     {
       title: '다국어 전화 안내',
@@ -80,7 +80,7 @@ export const PRIMARY_MENUS: Record<MainPageKey, PrimaryMenuItem[]> = {
     {
       title: '서류 보관함',
       icon: '/images/main/documents.svg',
-      link: '',
+      link: '/docs',
     },
   ],
 };

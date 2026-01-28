@@ -1,11 +1,14 @@
 'use client';
 
+import { Lock } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 import Barcode from 'react-barcode';
 import { postPaymentAction } from '@/app/(main)/actions/postPayment.action';
+import PinInput from '@/app/(main)/components/PinInput';
 import PaymentResultModal from '@/components/payResult/PayResult';
+import { useCardLockGate } from '@/hooks/card/useCardLockGate';
 import { useAlert } from '@/providers/alertProvider';
 
 interface CouponDetailProps {
@@ -25,14 +28,16 @@ export default function CouponDetail({
 }: CouponDetailProps) {
   const { alert } = useAlert();
   const [isPaying, setIsPaying] = useState(false);
+  const [showPinInput, setShowPinInput] = useState(false);
 
-  const onBarcodeClick = async () => {
+  const { defaultCardId, isCardUnlocked, isLoading, unlockCard } =
+    useCardLockGate();
+
+  const processPayment = async () => {
     if (isPaying) return;
     setIsPaying(true);
 
-    const res = await postPaymentAction({
-      couponId: id,
-    });
+    const res = await postPaymentAction({ couponId: id });
 
     setIsPaying(false);
 
@@ -66,6 +71,25 @@ export default function CouponDetail({
     });
   };
 
+  const onBarcodeClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    if (isPaying || isLoading) return;
+
+    if (defaultCardId !== null && !isCardUnlocked) {
+      setShowPinInput(true);
+      return;
+    }
+
+    await processPayment();
+  };
+
+  const handlePinSuccess = async () => {
+    if (isPaying || isLoading) return;
+
+    unlockCard();
+    setShowPinInput(false);
+  };
+
   return (
     <main className="flex flex-1 flex-col items-center px-6 py-10">
       <div className="mb-4 h-20 w-20 overflow-hidden rounded-full border border-gray-100 shadow-sm">
@@ -81,18 +105,6 @@ export default function CouponDetail({
       <h2 className="font-black text-3xl text-black-900">{brandName}</h2>
       <p className="mt-1 font-medium text-gray-500 text-sm">{tag}</p>
 
-      <div className="my-10 aspect-square w-full max-w-70 overflow-hidden rounded-2xl bg-[#E0F2F1]/50">
-        <div className="flex h-full items-center justify-center bg-linear-to-br from-[#E0F2F1] to-white p-6">
-          <Image
-            src="/images/benefits/character_star.svg"
-            alt="쿠폰 캐릭터"
-            width={240}
-            height={240}
-            className="object-contain"
-          />
-        </div>
-      </div>
-
       <p className="mb-6 text-gray-700 text-sm">
         매장에서 바코드를 제시해주세요
       </p>
@@ -100,11 +112,15 @@ export default function CouponDetail({
       <button
         type="button"
         onClick={onBarcodeClick}
-        disabled={isPaying}
-        className="flex flex-col items-center gap-3 active:opacity-70 disabled:opacity-40"
+        disabled={isPaying || isLoading}
+        className="relative mx-auto mt-2 flex h-28 w-65 flex-col items-center justify-center bg-white transition-opacity active:opacity-70 disabled:opacity-50"
         aria-label="쿠폰으로 결제하기"
       >
-        <div className="flex items-center justify-center overflow-hidden py-2">
+        <div
+          className={`flex h-14 w-full items-center justify-center overflow-hidden rounded-md border bg-white transition-all duration-700 ease-in-out ${
+            !isCardUnlocked ? 'blur-sm' : 'blur-0'
+          }`}
+        >
           <Barcode
             value={couponNumber}
             format="CODE128"
@@ -116,11 +132,18 @@ export default function CouponDetail({
           />
         </div>
 
-        <p className="font-medium text-gray-400 text-sm">
-          쿠폰번호: <span className="uppercase">{couponNumber}</span>
-        </p>
+        {!isCardUnlocked && (
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+            <div className="rounded-full border border-gray-100 bg-white/90 p-3 shadow-lg">
+              <Lock className="text-black-800" size={24} />
+            </div>
+          </div>
+        )}
       </button>
 
+      <p className="font-medium text-gray-400 text-sm">
+        쿠폰번호: <span className="uppercase">{couponNumber}</span>
+      </p>
       <div className="mt-6 w-full px-4 text-center text-gray-800 text-xs">
         <p className="mb-2">
           본 쿠폰은{' '}
@@ -134,6 +157,13 @@ export default function CouponDetail({
           메인으로 이동
         </Link>
       </div>
+
+      {showPinInput && (
+        <PinInput
+          onSuccessAction={handlePinSuccess}
+          onCloseAction={() => setShowPinInput(false)}
+        />
+      )}
     </main>
   );
 }
