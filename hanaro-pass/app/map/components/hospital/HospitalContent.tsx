@@ -169,7 +169,7 @@ export function HospitalContent({
                 className={
                   idx === visibleHospitals.length - 1
                     ? ''
-                    : 'border-gray-300 border-b'
+                    : 'border-gray-100 border-b'
                 }
               >
                 <HospitalCard
