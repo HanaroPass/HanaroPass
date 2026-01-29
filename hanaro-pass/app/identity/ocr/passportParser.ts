@@ -31,7 +31,6 @@ export const parsePassportData = (text: string): ParsedData => {
     '12월': '12',
   };
 
-  // 여권번호
   const passportMatch =
     fullText.match(/PM\s+KOR\s+([A-Z][0-9A-Z]{8})/i) ||
     fullText.match(/\b([A-Z][0-9]{3}[A-Z][0-9]{4})\b/i) ||
@@ -41,7 +40,6 @@ export const parsePassportData = (text: string): ParsedData => {
     data.passportNumber = passportMatch[1].toUpperCase();
   }
 
-  // 이름/성
   const mrzNameMatch = fullText.match(/([A-Z]+)<<([A-Z]+)</i);
 
   if (mrzNameMatch) {
@@ -59,7 +57,6 @@ export const parsePassportData = (text: string): ParsedData => {
     if (givenNameMatch) data.firstName = givenNameMatch[1].toUpperCase();
   }
 
-  // 날짜 추출
   const flexibleDatePattern =
     /(\d{1,2})\s+.*?(JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC|[1-9]월|1[0-2]월).*?(\d{4})/gi;
   interface DateInfo {
@@ -81,7 +78,6 @@ export const parsePassportData = (text: string): ParsedData => {
     })
     .filter((d): d is DateInfo => d !== null);
 
-  // 날짜 정렬 후 할당
   if (foundDates.length > 0) {
     foundDates.sort((a, b) => a.timestamp - b.timestamp);
     if (foundDates.length >= 3) {
@@ -95,7 +91,6 @@ export const parsePassportData = (text: string): ParsedData => {
     }
   }
 
-  // 성별
   const genderMatch =
     fullText.match(/(?:Sex|성별)\s*[:\s]*([MF])/i) ||
     fullText.match(/\s([MF])\s/i);
@@ -103,7 +98,6 @@ export const parsePassportData = (text: string): ParsedData => {
     data.gender = genderMatch[1].toUpperCase() === 'M' ? 'MALE' : 'FEMALE';
   }
 
-  // 국적
   const foundNationality = NATIONALITIES.find((nat) => {
     if (fullText.toUpperCase().includes(nat.value.toUpperCase())) return true;
 
@@ -112,7 +106,6 @@ export const parsePassportData = (text: string): ParsedData => {
     return coreRegex.test(fullText);
   });
 
-  // 파싱된 국적이 유효하면 설정, 아니면 사용자가 직접 선택
   data.nationality = foundNationality ? foundNationality.value : '';
   return data;
 };

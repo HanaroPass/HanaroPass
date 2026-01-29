@@ -56,7 +56,6 @@ const CameraCapture = ({ onClick, onImageSelect }: CameraCaptureProps) => {
     init();
 
     return () => {
-      console.log('카메라 종료 로직 실행');
       isEffectActive = false;
 
       if (videoRef.current) {
@@ -111,11 +110,11 @@ const CameraCapture = ({ onClick, onImageSelect }: CameraCaptureProps) => {
             className="h-72 w-full max-w-sm cursor-pointer overflow-hidden rounded-xl bg-gray-700"
             onClick={handleVideoClick}
             onKeyDown={handleKeyDown}
-            aria-label="Change selected document image"
+            aria-label="Change selected ID card image"
           >
             <Image
               src={selectedImage}
-              alt="Selected document"
+              alt="Selected ID card"
               width={400}
               height={288}
               className="h-full w-full object-cover"

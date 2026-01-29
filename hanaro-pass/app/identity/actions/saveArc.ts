@@ -1,5 +1,6 @@
 'use server';
 
+import type { z } from 'zod';
 import {
   type ActionResult,
   HttpError,
@@ -7,7 +8,13 @@ import {
 } from '@/lib/errorHandler';
 import { prisma } from '@/lib/prisma';
 import { getUserIdFromSession, saveUserIdToSession } from '@/lib/session';
-import { ArcFormSchema } from './identity.schema'; // 스키마 임포트 확인
+import { ArcFormSchema } from './identity.schema';
+
+type ArcFormValues = z.infer<typeof ArcFormSchema>;
+type ArcActionData = ArcFormValues & {
+  registrationNumber: string;
+  registrationNumberSuffix: string;
+};
 
 const parseLocalDate = (dateStr: string) => {
   const [y, m, d] = dateStr.split('-').map(Number);
@@ -15,15 +22,15 @@ const parseLocalDate = (dateStr: string) => {
 };
 
 export async function saveArcData(
-  _prevState: ActionResult<Record<string, string>> | null,
+  _prevState: ActionResult<ArcActionData> | null,
   formData: FormData,
-): Promise<ActionResult<Record<string, string>>> {
+): Promise<ActionResult<ArcActionData>> {
   try {
     const rawData = Object.fromEntries(formData.entries());
-    const arcNumber =
-      rawData.registrationNumber && rawData.registrationNumberSuffix
-        ? `${rawData.registrationNumber}-${rawData.registrationNumberSuffix}`
-        : '';
+
+    const regNum = String(rawData.registrationNumber ?? '');
+    const regSuffix = String(rawData.registrationNumberSuffix ?? '');
+    const arcNumber = regNum && regSuffix ? `${regNum}-${regSuffix}` : '';
 
     const validated = ArcFormSchema.parse({
       ...rawData,
@@ -38,6 +45,7 @@ export async function saveArcData(
       issueDate,
       userPhotoUrl,
     } = validated;
+
     const nickname = `${lastName} ${firstName}`.trim();
     const sessionUserId = await getUserIdFromSession();
 
@@ -54,7 +62,7 @@ export async function saveArcData(
         return existingArc;
       }
 
-      let userIdToUse = sessionUserId ?? null;
+      let userIdToUse = sessionUserId;
 
       if (!userIdToUse) {
         const user = await tx.user.create({
@@ -82,10 +90,8 @@ export async function saveArcData(
       success: true,
       data: {
         ...validated,
-        registrationNumber: String(rawData.registrationNumber ?? ''),
-        registrationNumberSuffix: String(
-          rawData.registrationNumberSuffix ?? '',
-        ),
+        registrationNumber: regNum,
+        registrationNumberSuffix: regSuffix,
       },
     };
   } catch (error) {

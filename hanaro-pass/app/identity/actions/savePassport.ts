@@ -1,5 +1,6 @@
 'use server';
 
+import type { z } from 'zod';
 import {
   type ActionResult,
   HttpError,
@@ -9,23 +10,25 @@ import { prisma } from '@/lib/prisma';
 import { getUserIdFromSession, saveUserIdToSession } from '@/lib/session';
 import { PassportFormSchema } from './identity.schema';
 
+type PassportFormValues = z.infer<typeof PassportFormSchema>;
+
 const parseLocalDate = (dateStr: string) => {
   const [y, m, d] = dateStr.split('-').map(Number);
   return new Date(Date.UTC(y, m - 1, d, 12, 0, 0));
 };
 
 export async function savePassportData(
-  _prevState: ActionResult<Record<string, string>> | null,
+  _prevState: ActionResult<PassportFormValues> | null,
   formData: FormData,
-): Promise<ActionResult<Record<string, string>>> {
+): Promise<ActionResult<PassportFormValues>> {
   try {
     const validated = PassportFormSchema.parse(
       Object.fromEntries(formData.entries()),
     );
 
-    const { lastName, firstName } = validated;
+    const { lastName, firstName, expiryDate, issueDate } = validated;
     const nickname = `${lastName} ${firstName}`.trim();
-    const expiryDateObj = parseLocalDate(validated.expiryDate);
+    const expiryDateObj = parseLocalDate(expiryDate);
 
     const todayUTC = new Date();
     todayUTC.setUTCHours(0, 0, 0, 0);
@@ -67,14 +70,19 @@ export async function savePassportData(
           userId: userIdToUse,
           passportNumber: validated.passportNumber,
           gender: validated.gender as 'MALE' | 'FEMALE' | 'OTHERS',
-          issueDate: parseLocalDate(validated.issueDate),
+          issueDate: parseLocalDate(issueDate),
           expiryDate: expiryDateObj,
           userPhotoUrl: validated.userPhotoUrl,
         },
       });
     });
+
     await saveUserIdToSession(result.userId);
-    return { success: true, data: { ...validated } };
+
+    return {
+      success: true,
+      data: validated,
+    };
   } catch (error) {
     return handleActionResult(error);
   }

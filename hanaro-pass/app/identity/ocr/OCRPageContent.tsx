@@ -115,7 +115,7 @@ export default function OCRPageContent({
         </p>
         <p className="font-semibold text-xl">
           {isProcessing
-            ? '이미지를 인식하고 있습니다...'
+            ? '이미지를 인식하고 있습니다.'
             : '자동으로 촬영됩니다.'}
         </p>
       </div>

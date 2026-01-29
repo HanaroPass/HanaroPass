@@ -16,7 +16,7 @@ export function useFormState<T extends Record<string, string>>(initialData: T) {
     }));
   };
 
-  // 외국인등록증 여권
+  // 외국인등록증, 여권
   const handleValueChange = (name: keyof T, value: string) => {
     setFormData((prev) => ({
       ...prev,
