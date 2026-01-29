@@ -39,7 +39,7 @@ export default function AdminReviewPage() {
       actionLabel: '승인하기',
       onAction: async () => {
         const success = await handleUpdateStatus('APPROVED');
-        if (success) router.push('/medical/admin');
+        if (success) router.push('/medical/admin?status=APPROVED');
       },
     });
   };
@@ -52,7 +52,7 @@ export default function AdminReviewPage() {
       actionLabel: '반려하기',
       onAction: async () => {
         const success = await handleUpdateStatus('REJECTED');
-        if (success) router.push('/medical/admin');
+        if (success) router.push('/medical/admin?status=REJECTED');
       },
     });
   };
