@@ -35,8 +35,8 @@ export default function useSymptomResubmit(reloadTrigger: number) {
   }, [reloadTrigger]);
 
   const handleResubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    if (isLoading) return;
     e.preventDefault();
+    if (isLoading) return;
     setLoading(true);
 
     try {
@@ -76,15 +76,17 @@ export default function useSymptomResubmit(reloadTrigger: number) {
     if (isPlaying) return;
 
     setIsPlaying(true);
-
+    try {
     const text = JSON.stringify(result?.번역_내용);
     const base64 = await getTTS(text);
 
     const audio = new Audio(`data:audio/mp3;base64,${base64}`);
-    audio.onended = () => {
-      setIsPlaying(false);
-    };
+    audio.onended = () => setIsPlaying(false);
+    audio.onerror = () => setIsPlaying(false);
     await audio.play();
+    } catch (e) {
+    setIsPlaying(false);
+    throw e;  }
   };
 
   const handleCopy = async () => {

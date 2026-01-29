@@ -50,7 +50,7 @@ async function main() {
   await prisma.$executeRaw`ALTER TABLE Coupons AUTO_INCREMENT = 1`;
   await prisma.$executeRaw`ALTER TABLE UserCard AUTO_INCREMENT = 1`;
   await prisma.$executeRaw`ALTER TABLE Notification AUTO_INCREMENT = 1`;
-  await prisma.$executeRaw`ALTER TABLE SymptomMapping AUTO_INCREMET = 1`;
+  await prisma.$executeRaw`ALTER TABLE SymptomMapping AUTO_INCREMENT = 1`;
 
   await fetchAndSeedHospitals();
   await seedUsers();
