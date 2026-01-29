@@ -49,7 +49,6 @@ export function HospitalCard({ hospital }: { hospital: HospitalInfo }) {
                   : 'bg-gray-200 text-gray-600'
               }`}
             >
-              {/* <Clock className="h-3 w-3" /> */}
               {hospital.status}
             </span>
           </div>
@@ -78,7 +77,7 @@ export function HospitalCard({ hospital }: { hospital: HospitalInfo }) {
         </div>
 
         {/* 오른쪽 사진 (고정 높이) */}
-        <div className="relative h-32 w-30 self-start overflow-hidden rounded-xl bg-gray-100">
+        <div className="relative h-32 w-32 self-start overflow-hidden rounded-xl bg-gray-100">
           {hospital.imageUrl ? (
             <Image
               src={hospital.imageUrl}
