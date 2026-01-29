@@ -28,29 +28,24 @@ export default function IntroStep({
   const guideRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    let mounted = true;
-
     const checkUserIdentity = async () => {
       try {
         setError(null);
         const res = await getIdentityData();
-        if (!mounted) return;
         // 데이터가 있으면 true, 없으면 false (null 체크)
         setHasPassport(!!res.passport);
         setHasArc(!!res.arc);
       } catch (error) {
         console.error('데이터 로드 실패:', error);
-        if (mounted) setError('데이터를 불러오는데 실패했습니다.');
+        setError('데이터를 불러오는데 실패했습니다.');
       } finally {
-        if (mounted) setIsLoading(false);
+        setIsLoading(false);
       }
     };
 
     checkUserIdentity();
 
-    return () => {
-      mounted = false;
-    };
+    return () => {};
   }, []);
 
   const handleGuideToggle = () => {

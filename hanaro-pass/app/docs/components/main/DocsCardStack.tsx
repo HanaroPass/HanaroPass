@@ -1,9 +1,9 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import DocsCard from './DocsCard';
 import { cn } from '@/lib/utils';
 import type { DocsCardItem } from '../../constants/docsCardItem';
+import DocsCard from './DocsCard';
 
 type DocCardProps = {
   userName: string;

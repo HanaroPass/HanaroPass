@@ -1,6 +1,6 @@
-import { DOCS_CARD_ITEMS } from '../constants/docsCardItem';
 import Header from '@/components/header/Header';
 import { getUserDocs } from '../actions/userDocs';
+import { DOCS_CARD_ITEMS } from '../constants/docsCardItem';
 import DocsDetailPageClient from './docsDetailPageClient';
 import DocsPreviewClient from './docsPreviewClient';
 
