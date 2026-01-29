@@ -92,12 +92,16 @@ export default function IdentityPageClient() {
       <AccountStep
         onSubmit={async (data) => {
           try {
-            const formData = new FormData();
-            if (context.identityData) {
-              Object.entries(context.identityData).forEach(([k, v]) => {
-                formData.append(k, v as string);
-              });
+            if (!context.identityData) {
+              systemError('신분증 정보 등록');
+              return;
             }
+            const formData = new FormData();
+            Object.entries(context.identityData).forEach(([k, v]) => {
+              if (v !== undefined && v !== null) {
+                formData.append(k, String(v));
+              }
+            });
             // 계좌 단계에서 db 저장
             const res = await saveArcData(null, formData);
             if (res.success) {
