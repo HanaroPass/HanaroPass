@@ -28,6 +28,7 @@ export default function MedicalPage() {
         {/* 1. 검색 입력 (상태에 따라 변함) */}
         <div className="mt-4 px-6">
           <SearchInput
+            placeholder="병원명을 검색해주세요 (ex: 하나병원)"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onClear={() => setSearchQuery('')}
