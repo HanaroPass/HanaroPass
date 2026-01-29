@@ -1,7 +1,12 @@
 'use client';
 
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
-import { type ReactNode, type RefObject, useEffect } from 'react';
+import {
+  type ReactNode,
+  type RefObject,
+  useEffect,
+  useLayoutEffect,
+} from 'react';
 import {
   SHEET_TITLE,
   type SheetPosition,
@@ -39,6 +44,15 @@ export function MapBottomSheet({
   getTranslateValue,
   children,
 }: MapBottomSheetProps) {
+  useLayoutEffect(() => {
+    if (openSheet && contentRef.current) {
+      const scrollContainer = contentRef.current.parentElement;
+      if (scrollContainer) {
+        scrollContainer.scrollTop = 0;
+      }
+    }
+  }, [openSheet, contentRef]);
+
   /**
    * @effect 애니메이션 제어
    * @description 시트의 좌표가 결정될 때마다 transform 트랜지션을 적용합니다.
