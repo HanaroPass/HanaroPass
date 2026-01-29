@@ -2,13 +2,13 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
+import { useToast } from '@/hooks/useToast';
+import { saveArcData } from './actions/saveArc';
 import { useFunnel } from './hooks/useFunnel';
 import OCRPageContent from './ocr/OCRPageContent';
 import AccountStep from './steps/AccountStep';
 import IntroStep from './steps/IntroStep';
 import ResultStep from './steps/ResultStep';
-import { saveArcData } from './actions/saveArc';
-import { useToast } from '@/hooks/useToast';
 
 export type IdentityType = 'passport' | 'arc';
 
