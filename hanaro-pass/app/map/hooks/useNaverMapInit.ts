@@ -9,7 +9,15 @@ import {
 
 export function useNaverMapInit(
   containerRef: React.RefObject<HTMLDivElement | null>,
-  onMapMoved?: (address: string) => void,
+  onMapMoved?: (
+    address: string,
+    bounds?: {
+      south: number;
+      west: number;
+      north: number;
+      east: number;
+    },
+  ) => void,
 ) {
   const mapRef = useRef<naver.maps.Map | null>(null);
   const [isMapReady, setIsMapReady] = useState(false);
@@ -17,6 +25,17 @@ export function useNaverMapInit(
   const updateCenterAddress = useCallback(() => {
     const map = mapRef.current;
     if (!map || !window.naver?.maps?.Service) return;
+
+    const bounds = map.getBounds() as naver.maps.LatLngBounds;
+    const sw = bounds.getSW();
+    const ne = bounds.getNE();
+
+    const mapBounds = {
+      south: sw.lat(),
+      west: sw.lng(),
+      north: ne.lat(),
+      east: ne.lng(),
+    };
 
     const proj = map.getProjection();
     const centerPoint = proj.fromCoordToOffset(map.getCenter());
@@ -41,7 +60,7 @@ export function useNaverMapInit(
         const fullRegionName =
           `${region?.area2?.name || ''} ${region?.area3?.name || ''}`.trim();
         if (onMapMoved && fullRegionName) {
-          onMapMoved(fullRegionName);
+          onMapMoved(fullRegionName, mapBounds);
         }
       },
     );
