@@ -8,7 +8,7 @@ import {
   LocateFixed,
   Siren,
 } from 'lucide-react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Embassy, SavedPlace } from '@/lib/generated/prisma';
 import { EmbassyContent } from './components/embassy/EmbassyContent';
 import { ExchangeContent } from './components/exchange/ExchangeContent';
@@ -41,7 +41,6 @@ export default function MapPageClient({
 }: MapPageClientProps) {
   const [savedPlaces] = useState<SavedPlace[]>(initialSavedPlaces);
   const [myEmbassy] = useState<Embassy | null>(initialEmbassy);
-
   const [bookmark, setBookmark] = useState(false);
   const [selectedPlace, setSelectedPlace] = useState<
     SavedPlace | Embassy | NaverSearchResult | null
@@ -67,6 +66,13 @@ export default function MapPageClient({
     getTranslateValue,
   } = useBottomSheet();
 
+  const [mapBounds, setMapBounds] = useState<{
+    south: number;
+    west: number;
+    north: number;
+    east: number;
+  } | null>(null);
+
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -91,9 +97,21 @@ export default function MapPageClient({
     return () => clearTimeout(timer);
   }, [currentMapRegion, openSheet, searchExchanges]);
 
-  const handleMapMove = useCallback((address: string) => {
-    setCurrentMapRegion(address);
-  }, []);
+  const handleMapMove = useCallback(
+    (
+      address: string,
+      bounds?: {
+        south: number;
+        west: number;
+        north: number;
+        east: number;
+      },
+    ) => {
+      setCurrentMapRegion(address);
+      if (bounds) setMapBounds(bounds);
+    },
+    [],
+  );
 
   const handleExchangeClick = useCallback(async () => {
     if (openSheet === 'exchange') {
@@ -115,6 +133,18 @@ export default function MapPageClient({
     setSelectedHospital,
     toggleSheet,
   });
+
+  const visibleHospitals = useMemo(() => {
+    if (!mapBounds) return hospitals;
+
+    return hospitals.filter(
+      (h) =>
+        h.latitude >= mapBounds.south &&
+        h.latitude <= mapBounds.north &&
+        h.longitude >= mapBounds.west &&
+        h.longitude <= mapBounds.east,
+    );
+  }, [hospitals, mapBounds]);
 
   return (
     <main className="relative h-screen w-screen overflow-hidden bg-gray-100">
@@ -228,7 +258,7 @@ export default function MapPageClient({
         {openSheet === 'hospital' && (
           <HospitalContent
             mode={selectedHospital ? 'detail' : 'list'}
-            hospitals={hospitals}
+            hospitals={visibleHospitals}
             hospital={selectedHospital ?? undefined}
             onBackToList={() => {
               setSelectedHospital(null);

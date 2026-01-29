@@ -43,6 +43,10 @@ export default function OCRPageContent({
         logger: (m) => console.log(m),
       });
 
+      console.log('------------------------------');
+      console.log('🔍 OCR RAW TEXT:', data.text);
+      console.log('------------------------------');
+
       if (!isMountedRef.current) return;
 
       const parsedData =

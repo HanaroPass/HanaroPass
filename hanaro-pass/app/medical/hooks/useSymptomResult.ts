@@ -1,14 +1,13 @@
 'use client';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { type ChangeEvent, useState } from 'react';
-import { postSymptomForm } from '../actions/symptoms';
+import { postSymptomForm } from '../actions/symptoms.action';
 
 export default function useSymptomResult() {
   const [images, setImages] = useState<File[]>([]);
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [isLoading, setLoading] = useState(false);
   const [isImageCntOK, setImageCntOK] = useState(true);
-
   const router = useRouter();
 
   const searchParams = useSearchParams();
@@ -38,11 +37,6 @@ export default function useSymptomResult() {
     setLoading(true);
     try {
       const formData = new FormData(e.currentTarget);
-      localStorage.setItem(
-        'written-symptom',
-        formData.get('description') as string,
-      );
-
       const imageDataArray = await Promise.all(
         images
           .filter((image) => image && image.size > 0)
@@ -61,7 +55,11 @@ export default function useSymptomResult() {
           }),
       );
       localStorage.setItem('symptom-images', JSON.stringify(imageDataArray));
-      const response = await postSymptomForm(formData);
+      const { fromCached, response } = await postSymptomForm(formData);
+      if (fromCached) {
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+      }
+
       console.log(response);
       localStorage.setItem('symptom-result', response);
       router.push(`/medical/symptoms/result?mode=${mode}`);

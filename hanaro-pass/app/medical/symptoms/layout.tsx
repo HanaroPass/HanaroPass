@@ -1,6 +1,6 @@
 'use client';
 
-import { usePathname, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import type { PropsWithChildren } from 'react';
 import { Suspense } from 'react';
 import Header from '@/components/header/Header';
@@ -9,7 +9,7 @@ function SymptomsHeaderSection() {
   const searchParams = useSearchParams();
   const mode = searchParams.get('mode');
 
-  const title = mode === 'recommend' ? 'AI 병원 추천' : 'AI 번역';
+  const title = mode === 'translate' ? 'AI 번역' : 'AI 병원 추천';
 
   return <Header title={title} />;
 }

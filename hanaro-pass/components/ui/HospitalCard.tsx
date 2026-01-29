@@ -38,7 +38,8 @@ export function HospitalCard({ hospital }: { hospital: HospitalInfo }) {
           <div className="flex items-center gap-1.5 whitespace-nowrap text-sm">
             <span className="font-semibold text-gray-700">영업 시간</span>
             <span className="text-gray-800">
-              {hospital.openTime} ~ {hospital.closeTime}
+              {hospital.openTime}
+              {hospital.closeTime?.trim() && ` ~ ${hospital.closeTime}`}
             </span>
 
             <span
