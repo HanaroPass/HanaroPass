@@ -78,7 +78,7 @@ export default function DocsPageClient({ userName, docStatus }: UserProps) {
                   router.replace(`/identity?step=intro&type=${id}&from=docs`);
                 } else {
                   // 기타 일반 서류
-                  router.push(`/docs/add/${id}`);
+                  router.replace(`/docs/add/${id}`);
                 }
               }}
             />

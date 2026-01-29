@@ -15,8 +15,7 @@ export default function IdentityPageClient() {
   const searchParams = useSearchParams();
 
   const stepParam = searchParams.get('step');
-  const isFromDocs =
-    searchParams.get('from') === 'docs' || stepParam === 'result';
+  const isFromDocs = searchParams.get('from') === 'docs';
 
   const initialStep =
     stepParam === 'result' || stepParam === 'ocr' || stepParam === 'account'
@@ -41,15 +40,24 @@ export default function IdentityPageClient() {
       params.set('step', currentStep);
     }
 
+    if (isFromDocs) {
+      params.set('from', 'docs');
+    }
+
     const queryString = params.toString() ? `?${params.toString()}` : '';
     const newUrl = `${window.location.pathname}${queryString}`;
 
-    window.history.replaceState(null, '', newUrl);
-  }, [currentStep]);
+    router.replace(newUrl, { scroll: false });
+  }, [currentStep, isFromDocs, router]);
 
   const handleClose = () => {
     if (isFromDocs) {
       router.replace('/docs');
+      return;
+    }
+
+    if (currentStep === 'result') {
+      router.replace('/');
       return;
     }
 
@@ -60,7 +68,6 @@ export default function IdentityPageClient() {
     }
   };
 
-  // Intro Step
   if (currentStep === 'intro') {
     return (
       <IntroStep
@@ -76,7 +83,6 @@ export default function IdentityPageClient() {
     );
   }
 
-  // OCR Step
   if (currentStep === 'ocr') {
     return (
       <OCRPageContent
@@ -93,7 +99,6 @@ export default function IdentityPageClient() {
     );
   }
 
-  // Account Step
   if (currentStep === 'account') {
     return (
       <AccountStep
@@ -108,7 +113,6 @@ export default function IdentityPageClient() {
     );
   }
 
-  // Result Step
   if (currentStep === 'result') {
     return (
       <ResultStep
@@ -116,7 +120,7 @@ export default function IdentityPageClient() {
         identityData={context.identityData}
         onClose={handleClose}
         onRegister={() => {
-          router.replace('/identity');
+          router.push('/identity');
           history.push('intro', {
             identityType: null,
             identityData: null,
