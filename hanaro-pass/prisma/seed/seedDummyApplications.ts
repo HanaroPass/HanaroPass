@@ -1,61 +1,47 @@
-import { prisma } from '@/lib/prisma';
+import { prisma } from '../../lib/prisma'; // 경로 주의 (파일 위치에 따라 수정)
 
 /**
  * [신규] ID 1, 2, 3번 병원을 대상으로 테스트 데이터 생성
  */
 export async function seedDummyApplications() {
-  console.log('[ 추가 작업 - ID 1, 2, 3번 대상 테스트 데이터 생성 중... ]');
+  console.log('[ 📝 병원 언어 등록 신청 테스트 데이터 생성 중... ]');
 
-  const user = await prisma.user.findFirst({
-    select: { id: true },
-  });
-
-  if (!user) {
-    console.error(
-      '[ 에러 ] 유저 데이터가 없어 신청 데이터를 생성할 수 없습니다.',
-    );
-    return;
-  }
-
-  const userId = user.id;
+  const testEmail = 'sjo2088@naver.com';
 
   // 1. ID 1번: 신청 완료 (PENDING)
-  // 상세 페이지에서 "노란색 상태 배지"와 "대기 중 타임라인" 확인용
   await prisma.hospitalLanguageApplication.create({
     data: {
       hospitalId: 1,
-      userId: userId,
+      applicantEmail: testEmail,
       status: 'PENDING',
-      requestLangs: ['en', 'cn'], // 영어, 중국어 신청
+      requestLangs: ['en', 'cn'],
       createdAt: new Date('2026-01-19T09:43:00'),
     },
   });
 
   // 2. ID 2번: 승인 완료 (APPROVED)
-  // 상세 페이지에서 "초록색 상태 배지"와 "승인 완료 일시" 확인용
   await prisma.hospitalLanguageApplication.create({
     data: {
       hospitalId: 2,
-      userId: userId,
+      applicantEmail: testEmail,
       status: 'APPROVED',
-      requestLangs: ['jp'], // 일본어 신청
+      requestLangs: ['jp'],
       createdAt: new Date('2026-01-10T14:20:00'),
-      processedAt: new Date('2026-01-11T10:00:00'), // 승인 처리됨
+      processedAt: new Date('2026-01-11T10:00:00'),
     },
   });
 
   // 3. ID 3번: 반려 (REJECTED)
-  // 상세 페이지에서 "빨간색 상태 배지"와 "반려 일시" 확인용
   await prisma.hospitalLanguageApplication.create({
     data: {
       hospitalId: 3,
-      userId: userId,
+      applicantEmail: testEmail,
       status: 'REJECTED',
-      requestLangs: ['vi', 'th'], // 베트남어, 태국어 신청
+      requestLangs: ['vi', 'th'],
       createdAt: new Date('2026-01-15T11:30:00'),
-      processedAt: new Date('2026-01-16T15:00:00'), // 반려 처리됨
+      processedAt: new Date('2026-01-16T15:00:00'),
     },
   });
 
-  console.log('[ 완료 ] ID 1(대기), 2(승인), 3(반려) 데이터 생성 완료.');
+  console.log('[ 완료 ] 1(대기), 2(승인), 3(반려) 신청 데이터 생성 완료.');
 }
