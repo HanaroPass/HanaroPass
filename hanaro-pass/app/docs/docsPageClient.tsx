@@ -40,7 +40,7 @@ export default function DocsPageClient({ userName, docStatus }: UserProps) {
   }, [ownedItems]);
 
   return (
-    <>
+    <div className="flex h-dvh flex-col overflow-hidden">
       <Header title="서류 보관함" />
       <main className="relative min-h-dvh bg-linear-to-br from-(--color-green-ez) to-[#89D5D8] px-5 pt-4">
         {/* 상단 타이틀 */}
@@ -62,7 +62,7 @@ export default function DocsPageClient({ userName, docStatus }: UserProps) {
           </button>
         </div>
         {/* 카드 아코디언 */}
-        <div className="pb-10">
+        <div className="flex flex-col items-center pb-20">
           <DocsCardStack userName={userName} items={ownedItems} />
         </div>
 
@@ -85,6 +85,6 @@ export default function DocsPageClient({ userName, docStatus }: UserProps) {
           ) : null}
         </BottomSheet>
       </main>
-    </>
+    </div>
   );
 }
