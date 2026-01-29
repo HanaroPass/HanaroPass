@@ -79,7 +79,7 @@ export default function MobileQr({ type, data }: MobileQrProps) {
           </p>
         </div>
 
-        <div className="mx-auto aspect-square w-70 rounded-xl bg-white p-4">
+        <div className="mx-auto aspect-square w-72 rounded-xl bg-white p-4">
           <div
             className={`flex h-full w-full items-center justify-center transition-all duration-300 ${
               isExpired ? 'opacity-50 blur-sm' : 'opacity-100'

@@ -29,7 +29,9 @@ export default function ResultStep({
 }: ResultStepProps) {
   const { registerSuccess, systemError } = useToast();
   const searchParams = useSearchParams();
-  const typeParam = searchParams.get('type') as IdentityType | null;
+  const rawTypeParam = searchParams.get('type');
+  const typeParam: IdentityType | null =
+    rawTypeParam === 'passport' || rawTypeParam === 'arc' ? rawTypeParam : null;
 
   const [activeTab, setActiveTab] = useState<IdentityType | null>(
     identityType || typeParam || null,
@@ -56,7 +58,7 @@ export default function ResultStep({
         setPassportData(res.passport);
         setArcData(res.arc);
 
-        const nextTab =
+        const nextTab: IdentityType =
           identityType ??
           typeParam ??
           (res.passport ? 'passport' : res.arc ? 'arc' : DEFAULT_TAB);
