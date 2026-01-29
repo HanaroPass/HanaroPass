@@ -88,7 +88,7 @@ export default function LanguageRegistrationClient() {
             <Input
               id="email"
               type="email"
-              placeholder="example@mail.com"
+              placeholder="example@email.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="h-12 rounded-xl border-gray-200 focus:border-hana-red focus:ring-hana-red"
