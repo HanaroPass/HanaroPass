@@ -1,9 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-
 import {
   Select,
   SelectContent,
@@ -17,24 +16,36 @@ type CommonFieldsProps = {
   initialData?: Record<string, string>;
 };
 
-// 공통 필드 (이름, 국적)
 export function CommonFields({ initialData = {} }: CommonFieldsProps) {
-  const [selectedNationality, setSelectedNationality] = useState(
-    initialData.nationality && initialData.nationality.trim() !== ''
-      ? initialData.nationality
-      : '',
-  );
+  const [formData, setFormData] = useState({
+    lastName: initialData.lastName || '',
+    firstName: initialData.firstName || '',
+    nationality: initialData.nationality || '',
+  });
+
+  useEffect(() => {
+    setFormData({
+      lastName: initialData.lastName || '',
+      firstName: initialData.firstName || '',
+      nationality: initialData.nationality || '',
+    });
+  }, [initialData]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   return (
     <>
-      {/* 성 이름 */}
       <div className="flex gap-8.25">
         <div className="flex-1 space-y-2">
           <Label className="font-normal text-gray-600 text-sm">성</Label>
           <Input
             name="lastName"
             type="text"
-            defaultValue={initialData.lastName || ''}
+            value={formData.lastName}
+            onChange={handleChange}
             className="h-12 border-0 bg-gray-50"
           />
         </div>
@@ -43,19 +54,21 @@ export function CommonFields({ initialData = {} }: CommonFieldsProps) {
           <Input
             name="firstName"
             type="text"
-            defaultValue={initialData.firstName || ''}
+            value={formData.firstName}
+            onChange={handleChange}
             className="h-12 border-0 bg-gray-50"
           />
         </div>
       </div>
 
-      {/* 국적 */}
       <div className="space-y-2">
         <Label className="font-normal text-gray-600 text-sm">국적</Label>
-        <input type="hidden" name="nationality" value={selectedNationality} />
+        <input type="hidden" name="nationality" value={formData.nationality} />
         <Select
-          value={selectedNationality}
-          onValueChange={setSelectedNationality}
+          value={formData.nationality}
+          onValueChange={(val) =>
+            setFormData((prev) => ({ ...prev, nationality: val }))
+          }
         >
           <SelectTrigger className="flex h-12 min-h-12 w-full items-center border-0 bg-gray-50">
             <SelectValue placeholder="국적을 선택해주세요" />

@@ -1,9 +1,9 @@
 'use client';
 
-import { format, parse } from 'date-fns';
+import { format, isValid, parse } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { CalendarIcon } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Input } from '@/components/ui/input';
@@ -25,11 +25,21 @@ function DatePicker({
   name: string;
   defaultValue?: string;
 }) {
-  const [date, setDate] = useState<Date | undefined>(() =>
-    defaultValue ? parse(defaultValue, 'yyyy-MM-dd', new Date()) : undefined,
-  );
-
+  const [date, setDate] = useState<Date | undefined>(undefined);
   const [dateStr, setDateStr] = useState(defaultValue || '');
+
+  useEffect(() => {
+    if (defaultValue) {
+      const parsed = parse(defaultValue, 'yyyy-MM-dd', new Date());
+      if (isValid(parsed)) {
+        setDate(parsed);
+        setDateStr(defaultValue);
+      }
+    } else {
+      setDate(undefined);
+      setDateStr('');
+    }
+  }, [defaultValue]);
 
   return (
     <>
@@ -49,16 +59,13 @@ function DatePicker({
             <CalendarIcon className="ml-auto h-4 w-4 text-gray-400" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0">
+        <PopoverContent className="w-auto p-0" align="start">
           <Calendar
             mode="single"
             selected={date}
             onSelect={(newDate) => {
               setDate(newDate);
-              if (newDate) {
-                const formatted = format(newDate, 'yyyy-MM-dd');
-                setDateStr(formatted);
-              }
+              setDateStr(newDate ? format(newDate, 'yyyy-MM-dd') : '');
             }}
             locale={ko}
           />
@@ -69,6 +76,23 @@ function DatePicker({
 }
 
 export function AlienFields({ initialData = {} }: AlienFieldsProps) {
+  const [formData, setFormData] = useState({
+    registrationNumber: initialData.registrationNumber || '',
+    registrationNumberSuffix: initialData.registrationNumberSuffix || '',
+  });
+
+  useEffect(() => {
+    setFormData({
+      registrationNumber: initialData.registrationNumber || '',
+      registrationNumberSuffix: initialData.registrationNumberSuffix || '',
+    });
+  }, [initialData]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
   return (
     <div className="space-y-2">
       <Label className="font-normal text-gray-600 text-sm">
@@ -78,42 +102,53 @@ export function AlienFields({ initialData = {} }: AlienFieldsProps) {
         <Input
           name="registrationNumber"
           type="text"
-          placeholder="020919"
           maxLength={6}
-          defaultValue={initialData.registrationNumber || ''}
+          value={formData.registrationNumber}
+          onChange={handleChange}
           className="h-12 flex-1 border-0 bg-gray-50"
         />
         <span className="px-2 text-gray-600">-</span>
         <Input
           name="registrationNumberSuffix"
           type="password"
-          placeholder="•••••••"
           maxLength={7}
-          defaultValue={initialData.registrationNumberSuffix || ''}
+          value={formData.registrationNumberSuffix}
+          onChange={handleChange}
           className="h-12 flex-1 border-0 bg-gray-50"
         />
       </div>
     </div>
   );
 }
-
-// 외국인등록증용 추가 필드
 export function AlienExtraFields({ initialData = {} }: AlienFieldsProps) {
+  const [formData, setFormData] = useState({
+    residenceStatus: initialData.residenceStatus || '',
+  });
+
+  useEffect(() => {
+    setFormData({
+      residenceStatus: initialData.residenceStatus || '',
+    });
+  }, [initialData]);
+
   return (
     <>
-      {/* 체류자격 */}
       <div className="space-y-2">
         <Label className="font-normal text-gray-600 text-sm">체류자격</Label>
         <Input
           name="residenceStatus"
           type="text"
-          placeholder="D-8"
-          defaultValue={initialData.residenceStatus || ''}
+          value={formData.residenceStatus} // value로 제어
+          onChange={(e) =>
+            setFormData((prev) => ({
+              ...prev,
+              residenceStatus: e.target.value,
+            }))
+          }
           className="h-12 border-0 bg-gray-50"
         />
       </div>
 
-      {/* 발급일자 */}
       <div className="space-y-2">
         <Label className="font-normal text-gray-600 text-sm">발급일자</Label>
         <DatePicker

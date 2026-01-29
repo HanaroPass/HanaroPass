@@ -1,9 +1,9 @@
 'use client';
 
-import { format, parse } from 'date-fns';
+import { format, isValid, parse } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { CalendarIcon } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Input } from '@/components/ui/input';
@@ -32,11 +32,18 @@ function DatePicker({
   name: string;
   defaultValue?: string;
 }) {
-  const [date, setDate] = useState<Date | undefined>(() =>
-    defaultValue ? parse(defaultValue, 'yyyy-MM-dd', new Date()) : undefined,
-  );
-
+  const [date, setDate] = useState<Date | undefined>(undefined);
   const [dateStr, setDateStr] = useState(defaultValue || '');
+
+  useEffect(() => {
+    if (defaultValue) {
+      const parsed = parse(defaultValue, 'yyyy-MM-dd', new Date());
+      if (isValid(parsed)) {
+        setDate(parsed);
+        setDateStr(defaultValue);
+      }
+    }
+  }, [defaultValue]);
 
   return (
     <>
@@ -78,9 +85,22 @@ function DatePicker({
 }
 
 export function PassportFields({ initialData = {} }: PassportFieldsProps) {
-  const [selectedGender, setSelectedGender] = useState(
-    initialData.gender || '',
-  );
+  const [formData, setFormData] = useState({
+    passportNumber: initialData.passportNumber || '',
+    gender: initialData.gender || '',
+  });
+
+  useEffect(() => {
+    setFormData({
+      passportNumber: initialData.passportNumber || '',
+      gender: initialData.gender || '',
+    });
+  }, [initialData]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   return (
     <div className="flex gap-8.25">
@@ -89,15 +109,20 @@ export function PassportFields({ initialData = {} }: PassportFieldsProps) {
         <Input
           name="passportNumber"
           type="text"
-          placeholder="M12345678"
-          defaultValue={initialData.passportNumber || ''}
+          value={formData.passportNumber}
+          onChange={handleChange}
           className="h-12 border-0 bg-gray-50"
         />
       </div>
       <div className="flex-1 space-y-2">
         <Label className="font-normal text-gray-600 text-sm">성별</Label>
-        <input type="hidden" name="gender" value={selectedGender} />
-        <Select value={selectedGender} onValueChange={setSelectedGender}>
+        <input type="hidden" name="gender" value={formData.gender} />
+        <Select
+          value={formData.gender}
+          onValueChange={(val) =>
+            setFormData((prev) => ({ ...prev, gender: val }))
+          }
+        >
           <SelectTrigger className="flex h-12 min-h-12 w-full items-center border-0 bg-gray-50">
             <SelectValue placeholder="선택하세요" />
           </SelectTrigger>

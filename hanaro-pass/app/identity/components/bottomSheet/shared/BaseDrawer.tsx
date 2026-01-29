@@ -37,11 +37,7 @@ export function BaseDrawer({
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent className={className || 'mx-auto max-w-[375px]'}>
-        <form
-          action={formAction}
-          // onSubmit={handleSubmit}
-          key={open ? 'open' : 'closed'}
-        >
+        <form action={formAction}>
           <DrawerHeader className="relative border-b">
             <DrawerTitle className="text-center font-semibold text-base">
               {title}
