@@ -23,14 +23,14 @@ export default function CouponItem({ item }: CouponItemProps) {
         {item.distanceLabel}
       </div>
 
-      <div className="flex h-8.75 items-center justify-center">
+      <div className="flex h-8.75 w-8.75 items-center justify-center">
         <Image
           src={item.logo}
           alt={item.brand}
-          height={35}
-          width={0}
+          width={35}
+          height={0}
           sizes="100vw"
-          className="h-8.75 w-auto object-contain"
+          className="h-auto w-8.75 object-contain"
           priority
         />
       </div>
