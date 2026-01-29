@@ -7,7 +7,7 @@ import {
   handleActionResult,
 } from '@/lib/errorHandler';
 import { prisma } from '@/lib/prisma';
-import { createDefaultSavedPlaces } from '@/lib/savedPlace';
+import { createDefaultSavedPlaces } from '@/lib/savedPlaces';
 import { getUserIdFromSession, saveUserIdToSession } from '@/lib/session';
 import { PassportFormSchema } from './identity.schema';
 
