@@ -1,6 +1,6 @@
 'use client';
 
-import { Calendar, Globe, Hospital } from 'lucide-react';
+import { Calendar, Globe, Hospital, Mail } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import React from 'react';
 import ActionButton from '@/components/ui/ActionButton';
@@ -60,6 +60,11 @@ export default function AdminReviewPage() {
   const infoItems = [
     { label: '병원 정보', icon: Hospital, content: data.hospitalName },
     {
+      label: '신청자 연락처',
+      icon: Mail,
+      content: data.applicantEmail,
+    },
+    {
       label: '진료 가능 언어',
       icon: Globe,
       content: (
@@ -86,7 +91,6 @@ export default function AdminReviewPage() {
   return (
     <>
       <main className="app-main no-scrollbar flex flex-col pb-6 font-sans">
-        {/* 1. DescriptionSection: 상단 가이드 */}
         <DescriptionSection
           title="신청 심사 상세 정보"
           descriptions={[
