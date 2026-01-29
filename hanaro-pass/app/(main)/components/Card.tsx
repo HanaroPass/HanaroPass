@@ -28,16 +28,24 @@ const CardItem = memo(
     activeIndex: number;
   }) => {
     const diff = index - activeIndex;
-    const translateX = diff * 60;
+    const rotateY = diff === 0 ? 0 : diff > 0 ? -25 : 25;
+    const translateX = diff * 70;
     const translateZ = Math.abs(diff) * -150;
-    const rotateY = diff * -15;
+    const scale = 1 - Math.abs(diff) * 0.1;
 
     return (
       <div
         className="pointer-events-none absolute inset-0 flex items-center justify-center transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]"
         style={{
-          transform: `translateX(${translateX}px) translateZ(${translateZ}px) rotateY(${rotateY}deg)`,
+          transformStyle: 'preserve-3d',
+          transform: `
+            translateX(${translateX}px) 
+            translateZ(${translateZ}px) 
+            rotateY(${rotateY}deg) 
+            scale(${scale})
+          `,
           zIndex: 100 - Math.abs(diff),
+          opacity: Math.abs(diff) > 2 ? 0 : 1,
         }}
       >
         <div className="h-41.25 w-65.5 overflow-hidden rounded-xl">
