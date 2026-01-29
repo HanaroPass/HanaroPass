@@ -32,7 +32,7 @@ export default function PassportUnregisteredContent() {
   return (
     <div className="space-y-6">
       <section>
-        <div className="no-scrollbar flex gap-3 overflow-x-auto pb-2">
+        <div className="no-scrollbar -mx-4 flex gap-3 overflow-x-auto px-4 pb-2">
           <ExchangeCard code="USD" value="1,472.70" delta="2.40" />
           <ExchangeCard code="CAD" value="1,060.03" delta="1.69" />
           <ExchangeCard code="EUR" value="1,060.03" delta="1.69" />
