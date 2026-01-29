@@ -18,7 +18,7 @@ export const ApplicationStatusAlert = ({
   isAdmin = false,
 }: ApplicationStatusAlertProps) => {
   const config = STATUS_CONFIG[status];
-  const { Icon, alert, message, label } = config;
+  const { Icon, alert, message } = config;
 
   return (
     <div className="mt-4 px-6">

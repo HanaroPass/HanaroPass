@@ -188,7 +188,6 @@ const HistoryItem = ({
   iconColor,
   label,
   date,
-  isLast,
   isItalic,
 }: HistoryItemProps) => (
   <div className="relative flex w-full flex-row items-center justify-between">
