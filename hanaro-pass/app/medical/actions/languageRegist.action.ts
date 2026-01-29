@@ -139,7 +139,7 @@ export async function submitLanguageApplicationAction(
   hospitalId: number,
   languageIds: string[],
   email: string,
-): Promise<ActionResult<null>> {
+): Promise<ActionResult<{ id: number }>> {
   try {
     const { hospitalId: vId, languageIds: vLangs } = SubmitSchema.parse({
       hospitalId,
@@ -180,7 +180,7 @@ export async function submitLanguageApplicationAction(
         })),
       });
     }
-    return { success: true, data: null };
+    return { success: true, data: { id: newApp.id } };
   } catch (err) {
     return handleActionResult(err);
   }
@@ -192,16 +192,15 @@ export async function submitLanguageApplicationAction(
  * 완료 페이지에서 신청한 병원명, 신청 시간, 상태를 보여주기 위해 사용
  */
 export async function getRegistrationResultAction(
-  hospitalId: number,
+  id: number,
 ): Promise<
   ActionResult<{ hospitalName: string; createdAt: Date; status: StatusType }>
 > {
   try {
-    const validatedId = IdSchema.parse(hospitalId);
+    const validatedId = IdSchema.parse(id);
 
-    const application = await prisma.hospitalLanguageApplication.findFirst({
-      where: { hospitalId: validatedId },
-      orderBy: { createdAt: 'desc' },
+    const application = await prisma.hospitalLanguageApplication.findUnique({
+      where: { id: validatedId },
       include: {
         Hospital: {
           select: { nameKo: true },
@@ -232,35 +231,39 @@ export async function getRegistrationResultAction(
  * 신청 내역 상세 페이지에서 신청한 병원명, 신청 시간, 상태, 요청 언어 리스트를 보여주기 위해 사용
  */
 export async function getRegistrationDetailAction(
-  hospitalId: number,
-  email: string,
+  id: number,
 ): Promise<ActionResult<RegistrationDetailResponse>> {
   try {
-    const validatedId = IdSchema.parse(hospitalId);
+    const validatedId = IdSchema.parse(id);
 
-    const applications = await prisma.hospitalLanguageApplication.findMany({
-      where: { hospitalId: validatedId, applicantEmail: email },
-      orderBy: { createdAt: 'desc' },
+    const application = await prisma.hospitalLanguageApplication.findUnique({
+      where: { id: validatedId },
       include: {
         Hospital: { select: { nameKo: true } },
       },
     });
 
-    if (applications.length === 0) {
+    if (!application) {
       throw new HttpError('신청 내역을 찾을 수 없습니다.', 404);
     }
 
-    const latest = applications[0]; // 가장 최근 건
+    const history = await prisma.hospitalLanguageApplication.findMany({
+      where: {
+        hospitalId: application.hospitalId,
+        applicantEmail: application.applicantEmail,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
 
     return {
       success: true,
       data: {
-        hospitalName: latest.Hospital.nameKo,
-        status: latest.status as StatusType,
-        requestLangs: mapLanguages(latest.requestLangs as string[]),
-        createdAt: latest.createdAt,
-        processedAt: latest.processedAt,
-        history: applications.map((app) => ({
+        hospitalName: application.Hospital.nameKo,
+        status: application.status as StatusType,
+        requestLangs: mapLanguages(application.requestLangs as string[]),
+        createdAt: application.createdAt,
+        processedAt: application.processedAt,
+        history: history.map((app) => ({
           id: app.id,
           status: app.status as StatusType,
           createdAt: app.createdAt,

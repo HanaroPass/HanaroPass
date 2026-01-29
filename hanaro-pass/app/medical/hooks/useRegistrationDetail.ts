@@ -4,21 +4,16 @@ import { useEffect, useState } from 'react';
 import { getRegistrationDetailAction } from '../actions/languageRegist.action';
 import type { RegistrationDetailResponse } from '../schemas/languageRegist.schema';
 
-export function useRegistrationDetail(hospitalId: number) {
+export function useRegistrationDetail(id: number) {
   const [data, setData] = useState<RegistrationDetailResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!hospitalId) {
-      setData(null);
-      setIsLoading(false);
-      return;
-    }
-
-    const fetchDetail = async () => {
+    async function fetchDetail() {
+      if (!id) return;
       setIsLoading(true);
       try {
-        const result = await getRegistrationDetailAction(hospitalId);
+        const result = await getRegistrationDetailAction(id);
         if (result.success) {
           setData(result.data);
         } else {
@@ -30,10 +25,10 @@ export function useRegistrationDetail(hospitalId: number) {
       } finally {
         setIsLoading(false);
       }
-    };
+    }
 
     fetchDetail();
-  }, [hospitalId]);
+  }, [id]);
 
   const formattedLangs = data?.requestLangs || [];
   const history = data?.history || [];
