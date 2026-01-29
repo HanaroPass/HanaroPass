@@ -1,4 +1,7 @@
-import { pickRandomPlasticReviews, pickRandomReviews } from '@/app/map/constants/hospitalsReview';
+import {
+  pickRandomPlasticReviews,
+  pickRandomReviews,
+} from '@/app/map/constants/hospitalsReview';
 import { prisma } from '@/lib/prisma';
 import OpenAI from 'openai';
 
@@ -21,7 +24,7 @@ async function generateSummary(reviews: string[]): Promise<string> {
 - "이 병원은" 같은 말로 시작하지 말 것
 
 후기 목록:
-${reviews.map(r => `- ${r}`).join('\n')}
+${reviews.map((r) => `- ${r}`).join('\n')}
 `;
 
   const response = await openai.chat.completions.create({
@@ -47,18 +50,17 @@ export async function seedHospitalReviews() {
     },
   });
 
-  
   for (const hospital of hospitals) {
-    console.log(hospital)
-    let reviews:string[];
-    if(hospital.HospitalDept.some(d=>d.deptName==='성형외과')){
+    console.log(hospital);
+    let reviews: string[];
+    if (hospital.HospitalDept.some((d) => d.deptName === '성형외과')) {
       reviews = pickRandomPlasticReviews();
-    }else reviews = pickRandomReviews();
-
+    } else reviews = pickRandomReviews();
+    console.log(reviews);
     const aiSummary = await generateSummary(reviews);
 
     await prisma.hospitalReview.create({
-      data: {hospitalId:hospital.id, aiSummary}
+      data: { hospitalId: hospital.id, aiSummary },
     });
 
     console.log(`✅ 병원 ${hospital.nameKo} AI 요약 완료`);
