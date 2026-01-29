@@ -7,11 +7,13 @@ import { useMyLocation } from '@/lib/getMyLocation';
 import { cn } from '@/lib/utils';
 import type { HospitalWithStatus } from '../../symptoms/types';
 
-interface Props {
+export default function HospitalList({
+  hospitals,
+  isLoading,
+}: {
   hospitals: HospitalWithStatus[];
-}
-
-export default function HospitalList({ hospitals }: Props) {
+  isLoading: boolean;
+}) {
   const [sortByDistance, setSortByDistance] = useState(false);
   const [isOpened, setOpened] = useState(false);
   const { location } = useMyLocation();
@@ -57,7 +59,7 @@ export default function HospitalList({ hospitals }: Props) {
             !location && 'cursor-not-allowed opacity-50',
           )}
         >
-          {location ? '거리순' : '로딩중'}
+          거리순
         </button>
         <button
           onClick={() => setOpened((v) => !v)}
@@ -93,7 +95,7 @@ export default function HospitalList({ hospitals }: Props) {
 
       {sortedHospitals.length === 0 && (
         <div className="py-10 text-center text-gray-400 text-sm">
-          조건에 맞는 병원이 없어요
+          {isLoading ? '로딩중...' : '조건에 맞는 병원이 없어요'}
         </div>
       )}
     </div>

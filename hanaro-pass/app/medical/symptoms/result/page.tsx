@@ -67,16 +67,16 @@ export default function SymptomResultContent() {
         />
       </form>
 
-      <div className="mt-7 text-black-800 text-sm">AI 번역 내용</div>
-      <div className="relative mt-3 mb-6 w-full rounded-2xl bg-gray-200 p-6 text-black-800 text-sm">
+      <div className="mt-7 pr-4 text-black-800 text-sm">AI 번역 내용</div>
+      <div className="relative mt-3 mb-6 w-full rounded-2xl bg-gray-200 p-6 pb-9 text-black-800 text-sm">
         <button
           onClick={handleCopy}
-          className="absolute top-2 right-2 text-hana-green"
+          className="absolute right-5 bottom-5 text-hana-green"
         >
           {copied ? (
             <Check className="h-4.5 w-4.5 text-green-600" />
           ) : (
-            <Copy className="h-4.5 w-4.5" />
+            <Copy className="h-4.5 w-4.5 scale-x-[-1]" />
           )}
         </button>
 

@@ -1,6 +1,6 @@
 'use server';
 
-import { postOpenAI } from '@/app/medical/actions/symptoms.action';
+import { postOpenAI } from '@/lib/ai/openaiClient';
 
 type SummaryInput = {
   reviews: string[];

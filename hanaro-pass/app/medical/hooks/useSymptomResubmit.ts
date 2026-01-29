@@ -1,6 +1,7 @@
 'use client';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import {
   getTTS,
   parseOutput,
@@ -34,8 +35,8 @@ export default function useSymptomResubmit(reloadTrigger: number) {
   }, [reloadTrigger]);
 
   const handleResubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    if (isLoading) return;
     e.preventDefault();
+    if (isLoading) return;
     setLoading(true);
 
     try {
@@ -69,18 +70,33 @@ export default function useSymptomResubmit(reloadTrigger: number) {
     }
   };
 
+  const [isPlaying, setIsPlaying] = useState(false);
+
   const playAudio = async () => {
-    const base64 = await getTTS(JSON.stringify(result?.번역_내용));
+    if (isPlaying) return;
+
+    setIsPlaying(true);
+    try {
+    const text = JSON.stringify(result?.번역_내용);
+    const base64 = await getTTS(text);
+
     const audio = new Audio(`data:audio/mp3;base64,${base64}`);
-    audio.play();
+    audio.onended = () => setIsPlaying(false);
+    audio.onerror = () => setIsPlaying(false);
+    await audio.play();
+    } catch (e) {
+    setIsPlaying(false);
+    throw e;  }
   };
 
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(result?.번역_내용 || '');
       setCopied(true);
+      toast.success('복사되었습니다.', { duration: 1500 });
       setTimeout(() => setCopied(false), 1500);
     } catch (e) {
+      toast.error('복사에 실패하였습니다.');
       console.error('클립보드 복사 실패', e);
     }
   };
