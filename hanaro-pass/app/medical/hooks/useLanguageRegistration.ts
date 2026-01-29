@@ -1,87 +1,150 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useToast } from '@/hooks/useToast';
+import { useAlert } from '@/providers/alertProvider';
 import {
   getHospitalDetailAction,
   submitLanguageApplicationAction,
-} from '../actions/language-regist.action';
+} from '../actions/languageRegist.action';
+import type { LanguageId } from '../constants/language';
+import { IdSchema, SubmitSchema } from '../schemas/languageRegist.schema';
 
 export function useLanguageRegistration() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const hospitalId = Number(searchParams.get('hospitalId'));
+  const { alert } = useAlert();
+
+  const rawHospitalId = Number(searchParams.get('hospitalId'));
+  const hospitalId = IdSchema.safeParse(rawHospitalId).success
+    ? rawHospitalId
+    : null;
 
   const [hospitalName, setHospitalName] = useState('');
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [selectedIds, setSelectedIds] = useState<LanguageId[]>([]);
+  const [initialIds, setInitialIds] = useState<LanguageId[]>([]); // 기존에 선택된 언어들
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [initialIds, setInitialIds] = useState<string[]>([]); // 기존에 선택된 언어들
 
+  const { registerSuccess, error, warning, actionError, systemError } =
+    useToast();
   const hasFetched = useRef(false);
 
   useEffect(() => {
-    if (!hospitalId || hasFetched.current) return;
-
+    if (hospitalId === null) {
+      error('유효하지 않은 접근입니다.', '병원 정보가 올바르지 않습니다.');
+      router.back();
+      return;
+    }
+    if (hasFetched.current) return;
     const fetchHospital = async () => {
-      hasFetched.current = true;
-      const result = await getHospitalDetailAction(hospitalId);
+      try {
+        hasFetched.current = true;
+        const result = await getHospitalDetailAction(hospitalId);
 
-      if (result.success) {
-        if (result.data.isPending) {
-          alert(
-            '이미 신청하여 심사 중인 내역이 있습니다.\n결과가 나올 때까지 추가 신청이 불가능합니다.',
-          );
-          router.replace(`/medical/registrations/${hospitalId}`);
-          return;
+        if (result.success) {
+          setHospitalName(result.data.nameKo);
+
+          if (result.data.isPENDING) {
+            alert({
+              title: '심사 진행 중',
+              description: `'${result.data.nameKo}'에 대해 이미 심사 중인 내역이 있습니다.\n결과가 나올 때까지 추가 신청이 불가능합니다.`,
+              actionLabel: '내역 확인하기',
+              cancelLabel: '돌아가기',
+              onAction: () =>
+                router.replace(`/medical/registrations/${hospitalId}`),
+              cancelProps: {
+                onClick: () => router.back(),
+              },
+            });
+            return;
+          }
+          setSelectedIds(result.data.existingLangs);
+          setInitialIds(result.data.existingLangs);
+        } else {
+          actionError(result);
+          router.back();
         }
-
-        setHospitalName(result.data.nameKo);
-        setSelectedIds(result.data.existingLangs);
-        setInitialIds(result.data.existingLangs);
-      } else {
-        alert(result.message);
-        router.back();
+      } catch {
+        hasFetched.current = false;
+        systemError('병원 정보 불러오기');
       }
     };
 
     fetchHospital();
-  }, [hospitalId, router]);
+  }, [hospitalId, router, error, actionError, systemError, alert]);
 
-  const toggleLanguage = (id: string) => {
-    setSelectedIds((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
-    );
+  const toggleLanguage = (id: LanguageId) => {
+    setSelectedIds((prev) => {
+      const isSelecting = !prev.includes(id);
+
+      if (isSelecting && prev.length >= 5) {
+        warning('선택 제한', '언어는 최대 5개까지만 등록 가능합니다.');
+        return prev;
+      }
+
+      return isSelecting ? [...prev, id] : prev.filter((item) => item !== id);
+    });
   };
+
+  const isChanged = useMemo(() => {
+    if (initialIds.length !== selectedIds.length) return true;
+    const sortedInitial = [...initialIds].sort();
+    const sortedSelected = [...selectedIds].sort();
+    return sortedInitial.some((id, index) => id !== sortedSelected[index]);
+  }, [initialIds, selectedIds]);
+
+  const isValid = useMemo(() => {
+    const validation = SubmitSchema.safeParse({
+      hospitalId,
+      languageIds: selectedIds,
+    });
+    return validation.success && isChanged;
+  }, [hospitalId, selectedIds, isChanged]);
 
   const submitApplication = async () => {
-    if (selectedIds.length === 0 || !isChanged) return;
+    if (!hospitalId || !isValid) return;
+
+    const validation = SubmitSchema.safeParse({
+      hospitalId,
+      languageIds: selectedIds,
+    });
+
+    if (!validation.success) {
+      warning('입력 정보를 확인해주세요.', validation.error.issues[0].message);
+      return;
+    }
 
     setIsSubmitting(true);
-    const result = await submitLanguageApplicationAction(
-      hospitalId,
-      selectedIds,
-    );
-    setIsSubmitting(false);
-
-    if (result.success) {
-      router.push('/medical/registrations/complete');
-    } else {
-      alert(result.message);
+    try {
+      const result = await submitLanguageApplicationAction(
+        hospitalId,
+        selectedIds,
+      );
+      if (result.success) {
+        registerSuccess(hospitalName);
+        router.push(
+          `/medical/registrations/complete/?hospitalId=${hospitalId}`,
+        );
+      } else {
+        actionError(result);
+      }
+    } catch {
+      systemError('언어 등록 신청');
+    } finally {
+      setIsSubmitting(false);
     }
   };
-
-  const isChanged =
-    JSON.stringify([...initialIds].sort()) !==
-    JSON.stringify([...selectedIds].sort());
 
   return {
     hospitalName,
     selectedIds,
     initialIds,
+    setSelectedIds,
     toggleLanguage,
     submitApplication,
     isSubmitting,
     isChanged,
-    isValid: selectedIds.length > 0 && isChanged,
+    isValid,
   };
 }

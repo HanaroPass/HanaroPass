@@ -1,76 +1,23 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { ApplicationStatusTabs } from '../components/languageAdmin/ApplicationAdminTabs';
 import { HospitalApplicationCard } from '../components/languageAdmin/HospitalApplicationCard';
 import type { StatusType } from '../constants/statusConfig';
-
-const MOCK_APPLICATIONS = [
-  {
-    id: 1,
-    name: '서울대학교병원',
-    status: 'pending' as StatusType,
-    langCount: 3,
-    languages: ['영어', '중국어', '일본어'],
-    date: '2026.01.19 14:23',
-  },
-  {
-    id: 2,
-    name: '강남세브란스병원',
-    status: 'pending' as StatusType,
-    langCount: 4,
-    languages: ['영어', '중국어', '일본어', '+1'],
-    date: '2026.01.19 10:15',
-  },
-  {
-    id: 3,
-    name: '삼성서울병원',
-    status: 'approved' as StatusType,
-    langCount: 4,
-    languages: ['영어', '중국어', '일본어', '+1'],
-    date: '2026.01.17 09:30',
-  },
-  {
-    id: 4,
-    name: '삼성서울병원1',
-    status: 'approved' as StatusType,
-    langCount: 4,
-    languages: ['영어', '중국어', '일본어', '+1'],
-    date: '2026.01.17 09:30',
-  },
-  {
-    id: 5,
-    name: '삼성서울병원2',
-    status: 'approved' as StatusType,
-    langCount: 4,
-    languages: ['영어', '중국어', '일본어', '+1'],
-    date: '2026.01.17 09:30',
-  },
-  {
-    id: 6,
-    name: '삼성서울병원3',
-    status: 'approved' as StatusType,
-    langCount: 4,
-    languages: ['영어', '중국어', '일본어', '+1'],
-    date: '2026.01.17 09:30',
-  },
-];
+import { useAdminApplications } from '../hooks/useAdminApplication';
+import { useRequireAdmin } from '../hooks/useRequireAdmin';
+import { LoadingScreen } from '../registrations/complete/page';
 
 export default function AdminDashboardPage() {
-  const [activeTab, setActiveTab] = useState<StatusType>('pending');
+  const [activeTab, setActiveTab] = useState<StatusType>('PENDING');
+  const { applications, counts, isLoading, error } = useAdminApplications();
+  useRequireAdmin(error);
 
-  // QQQ : 실제 데이터에서 상태별 개수 계산!
-  const counts = {
-    pending: MOCK_APPLICATIONS.filter((app) => app.status === 'pending').length,
-    approved: MOCK_APPLICATIONS.filter((app) => app.status === 'approved')
-      .length,
-    rejected: MOCK_APPLICATIONS.filter((app) => app.status === 'rejected')
-      .length,
-  };
+  const filteredApplications = useMemo(() => {
+    return applications.filter((app) => app.status === activeTab);
+  }, [applications, activeTab]);
 
-  const filteredApplications = MOCK_APPLICATIONS.filter(
-    (app) => app.status === activeTab,
-  );
+  if (isLoading) return <LoadingScreen />;
 
   return (
     <div className="flex h-full flex-col bg-(--color-gray-200)">
@@ -95,11 +42,17 @@ export default function AdminDashboardPage() {
               <HospitalApplicationCard
                 key={app.id}
                 id={app.id}
-                name={app.name}
+                name={app.hospitalName} // 스키마의 hospitalName 매핑
                 status={app.status}
-                langCount={app.langCount}
-                languages={app.languages}
-                date={app.date}
+                langCount={app.requestLangs.length}
+                languages={app.requestLangs} // 언어 ID 배열 전달
+                date={new Date(app.createdAt).toLocaleString('ko-KR', {
+                  year: 'numeric',
+                  month: '2-digit',
+                  day: '2-digit',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}
               />
             ))
           )}
@@ -107,4 +60,11 @@ export default function AdminDashboardPage() {
       </section>
     </div>
   );
+}
+function actionError(arg0: {
+  success: boolean;
+  message: string;
+  status: number;
+}) {
+  throw new Error('Function not implemented.');
 }

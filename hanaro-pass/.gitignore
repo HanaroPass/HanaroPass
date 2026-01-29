@@ -48,3 +48,8 @@ storybook-static
 /.vscode
 
 /mysql/
+
+public/uploads/
+
+# macOS
+.DS_Store

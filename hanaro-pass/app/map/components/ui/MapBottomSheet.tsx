@@ -1,7 +1,12 @@
 'use client';
 
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
-import { useEffect, type ReactNode, type RefObject } from 'react';
+import {
+  type ReactNode,
+  type RefObject,
+  useEffect,
+  useLayoutEffect,
+} from 'react';
 import {
   SHEET_TITLE,
   type SheetPosition,
@@ -9,7 +14,7 @@ import {
 } from '../../types/map';
 
 /**
- * @interface MapBottomSheetProps
+ * @type MapBottomSheetProps
  * @description MapBottomSheet 컴포넌트의 타입 정의입니다.
  */
 type MapBottomSheetProps = {
@@ -39,6 +44,15 @@ export function MapBottomSheet({
   getTranslateValue,
   children,
 }: MapBottomSheetProps) {
+  useLayoutEffect(() => {
+    if (openSheet && contentRef.current) {
+      const scrollContainer = contentRef.current.parentElement;
+      if (scrollContainer) {
+        scrollContainer.scrollTop = 0;
+      }
+    }
+  }, [openSheet, contentRef]);
+
   /**
    * @effect 애니메이션 제어
    * @description 시트의 좌표가 결정될 때마다 transform 트랜지션을 적용합니다.
@@ -104,6 +118,7 @@ export function MapBottomSheet({
         <VisuallyHidden>
           <h2>{SHEET_TITLE[openSheet]}</h2>
         </VisuallyHidden>
+
         <div ref={contentRef}>{children}</div>
       </div>
     </div>

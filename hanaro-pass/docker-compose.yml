@@ -1,6 +1,6 @@
 services:
   localdb:
-    container_name: hana8db
+    container_name: hanaropass
     image: mysql:8.0
     restart: always
     ports:
@@ -13,9 +13,25 @@ services:
     command:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
+      - --skip-character-set-client-handshake
       - --log_bin_trust_function_creators=1
       - --default-time-zone=Asia/Seoul
       - --innodb_ft_min_token_size=2
-    
+      - --innodb_ft_enable_stopword=OFF
+
     volumes:
       - ./mysql:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+
+  redis:
+    container_name: hanaropass-redis
+    image: redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command:
+      - redis-server
+      - --save ""
+      - --appendonly no
+      - --maxmemory 1gb
+      - --maxmemory-policy allkeys-lru

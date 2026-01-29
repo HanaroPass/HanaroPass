@@ -21,8 +21,26 @@ export type LanguageId = (typeof LANGUAGES)[number]['id'];
 
 export const NAME_TO_ID = Object.fromEntries(
   LANGUAGES.map((lang) => [lang.name, lang.id]),
-) as Record<string, string>;
+) as Record<string, LanguageId>;
 
 export const ID_TO_NAME = Object.fromEntries(
   LANGUAGES.map((lang) => [lang.id, lang.name]),
-) as Record<string, string>;
+) as Record<LanguageId, string>;
+
+export type LanguageInfo = {
+  id: string;
+  name: string;
+  sub: string;
+  flag: string;
+};
+
+export const mapLanguages = (ids: string[]): LanguageInfo[] =>
+  ids.map((id) => {
+    const info = LANGUAGES.find((l) => l.id === id);
+    return {
+      id,
+      name: info?.name || id,
+      sub: info?.sub || '',
+      flag: info?.flag || '🌐',
+    };
+  });
