@@ -25,10 +25,7 @@ export default function BottomSheet({
   const isEmpty = React.Children.count(children) === 0;
   return (
     <Drawer open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DrawerContent
-        className="-translate-x-1/2 left-1/2 w-full max-w-93.75"
-        aria-describedby={undefined}
-      >
+      <DrawerContent className="w-full" aria-describedby={undefined}>
         <div className="w-full">
           <DrawerHeader className="flex flex-row items-center justify-between px-5 py-4">
             <DrawerTitle className="font-bold font-sans text-[18px] text-black-900">
