@@ -97,8 +97,8 @@ export const parsePassportData = (text: string): ParsedData => {
 
   // 성별
   const genderMatch =
-    fullText.match(/\b([MF])\b/i) ||
-    fullText.match(/(?:Sex|성별)\s*[:\s]*([MF])/i);
+    fullText.match(/(?:Sex|성별)\s*[:\s]*([MF])/i) ||
+    fullText.match(/\s([MF])\s/i);
   if (genderMatch) {
     data.gender = genderMatch[1].toUpperCase() === 'M' ? 'MALE' : 'FEMALE';
   }

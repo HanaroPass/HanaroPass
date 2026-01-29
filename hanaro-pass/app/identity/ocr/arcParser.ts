@@ -35,7 +35,7 @@ export const parseArcData = (text: string): ParsedData => {
   }
 
   if (!nameFound) {
-    const nameMatch = fullText.match(/\b([A-Z]{2,})\s+([A-Z]{2,})\b/);
+    const nameMatch = fullText.match(/\b([A-Z]{2,})\s+([A-Z]{2,})\b/i);
     if (nameMatch) {
       data.lastName = nameMatch[1];
       data.firstName = nameMatch[2];
