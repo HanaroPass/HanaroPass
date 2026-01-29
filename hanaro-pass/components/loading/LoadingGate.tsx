@@ -3,17 +3,15 @@
 import { useEffect, useState } from 'react';
 import LoadingScreen from './LoadingScreen';
 
-type Phase = 'splash-in' | 'splash-out' | 'done';
-
+type Phase = 'init' | 'splash-in' | 'splash-out' | 'done';
 export default function LoadingGate({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [phase, setPhase] = useState<Phase>('splash-in');
-
+  const [phase, setPhase] = useState<Phase>('init');
   useEffect(() => {
-    const key = 'hanaez_splash_seen';
+    const key = 'splash_seen';
     const seen = sessionStorage.getItem(key);
 
     // 개발 중 항상 보여주고 싶으면 아래 줄 주석 해제
@@ -23,6 +21,8 @@ export default function LoadingGate({
       setPhase('done');
       return;
     }
+
+    setPhase('splash-in');
 
     const minMs = 1700; // 스플래시
     const outMs = 100; // 페이드아웃
@@ -38,6 +38,10 @@ export default function LoadingGate({
       window.clearTimeout(t2);
     };
   }, []);
+
+  if (phase === 'init') {
+    return <div className="min-h-dvh bg-white-ez" />;
+  }
 
   return (
     <div className="relative">
