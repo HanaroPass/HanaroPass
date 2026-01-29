@@ -6,6 +6,7 @@ import {
   handleActionResult,
 } from '@/lib/errorHandler';
 import type { Hospital } from '@/lib/generated/prisma';
+import { sendApplicationSubmissionEmail } from '@/lib/mail';
 import { prisma } from '@/lib/prisma';
 import { type LanguageId, mapLanguages } from '../constants/language';
 import type { StatusType } from '../constants/statusConfig';
@@ -81,6 +82,7 @@ export async function getHospitalDetailAction(id: number): Promise<
     nameKo: string;
     existingLangs: LanguageId[];
     isPENDING: boolean;
+    pendingAppId?: number;
   }>
 > {
   try {
@@ -105,6 +107,7 @@ export async function getHospitalDetailAction(id: number): Promise<
         hospitalId: validatedId,
         status: 'PENDING',
       },
+      select: { id: true },
     });
 
     const validatedLangs = LanguageTransformSchema.parse(
@@ -117,6 +120,7 @@ export async function getHospitalDetailAction(id: number): Promise<
         nameKo: hospital.nameKo,
         existingLangs: validatedLangs,
         isPENDING: !!PENDINGApp,
+        pendingAppId: PENDINGApp?.id,
       },
     };
   } catch (err) {
@@ -185,6 +189,20 @@ export async function submitLanguageApplicationAction(
         })),
       });
     }
+
+    if (email) {
+      try {
+        await sendApplicationSubmissionEmail(
+          email,
+          newApp.Hospital.nameKo,
+          newApp.id,
+        );
+        console.log(`[Submission Email Sent] To: ${email}`);
+      } catch (mailError) {
+        console.error('[Submission Email Failed]', mailError);
+      }
+    }
+
     return { success: true, data: { id: newApp.id } };
   } catch (err) {
     return handleActionResult(err);
@@ -267,6 +285,8 @@ export async function getRegistrationDetailAction(
     return {
       success: true,
       data: {
+        hospitalId: application.hospitalId,
+        applicantEmail: application.applicantEmail,
         hospitalName: application.Hospital.nameKo,
         status: application.status as StatusType,
         requestLangs: mapLanguages(application.requestLangs as string[]),

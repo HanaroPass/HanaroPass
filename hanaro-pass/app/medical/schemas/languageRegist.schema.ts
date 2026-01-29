@@ -20,6 +20,8 @@ export const LanguageTransformSchema = z
   );
 
 export const RegistrationDetailSchema = z.object({
+  hospitalId: z.number(),
+  applicantEmail: z.string(),
   hospitalName: z.string(),
   status: z.enum(['PENDING', 'APPROVED', 'REJECTED']),
   requestLangs: z.array(LanguageInfoSchema),

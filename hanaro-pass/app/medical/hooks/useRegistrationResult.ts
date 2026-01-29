@@ -4,7 +4,7 @@ import { useAlert } from '@/providers/alertProvider';
 import { getRegistrationResultAction } from '../actions/languageRegist.action';
 import type { StatusType } from '../constants/statusConfig';
 
-export function useRegistrationResult(id: number) {
+export function useRegistrationResult(applicationId: number) {
   const router = useRouter();
   const { alert: modalAlert } = useAlert();
 
@@ -18,15 +18,13 @@ export function useRegistrationResult(id: number) {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (!id || Number.isNaN(id)) {
+    if (!applicationId || Number.isNaN(applicationId)) {
       setData(null);
       setIsLoading(false);
       modalAlert({
-        title: '유효하지 않은 접근',
-        description: '병원 정보가 올바르지 않습니다.',
-        actionLabel: '확인',
+        title: '접근 오류',
+        description: '잘못된 신청 정보입니다.',
         onAction: () => router.push('/'),
-        hideCancel: true,
       });
       return;
     }
@@ -34,7 +32,7 @@ export function useRegistrationResult(id: number) {
     const fetchResult = async () => {
       setIsLoading(true);
       try {
-        const result = await getRegistrationResultAction(id);
+        const result = await getRegistrationResultAction(applicationId);
 
         if (result.success) {
           setData({
@@ -66,7 +64,7 @@ export function useRegistrationResult(id: number) {
     };
 
     fetchResult();
-  }, [id, router, modalAlert]);
+  }, [applicationId, router, modalAlert]);
 
-  return { data, isLoading, applicationId: id };
+  return { data, isLoading, applicationId };
 }

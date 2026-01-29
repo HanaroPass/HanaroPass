@@ -9,6 +9,7 @@ import {
   History,
   Hospital,
   type LucideIcon,
+  Mail,
 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import React, { useMemo } from 'react';
@@ -19,14 +20,16 @@ import ActionButton from '@/components/ui/ActionButton';
 import { ApplicationStatusAlert } from '../../components/ApplicationStatusAlert';
 import { InfoDetailPlate } from '../../components/InfoDetailPlate';
 import { useRegistrationDetail } from '../../hooks/useRegistrationDetail';
+import { LoadingScreen } from '../complete/page';
 
 export default function HospitalRegistrationDetailsPage() {
   const router = useRouter();
   const params = useParams();
-  const hospitalId = Number(params.hospitalId);
+
+  const applicationId = Number(params.id);
 
   const { data, isLoading, formattedLangs, formatDate } =
-    useRegistrationDetail(hospitalId);
+    useRegistrationDetail(applicationId);
 
   const historySteps = useMemo(() => {
     if (!data?.history) return [];
@@ -69,8 +72,7 @@ export default function HospitalRegistrationDetailsPage() {
     });
   }, [data?.history, formatDate]);
 
-  if (isLoading)
-    return <div className="p-10 text-center">정보를 불러오는 중...</div>;
+  if (isLoading) return <LoadingScreen />;
   if (!data)
     return (
       <div className="p-10 text-center text-black-600">
@@ -80,6 +82,7 @@ export default function HospitalRegistrationDetailsPage() {
 
   const hospitalInfo = [
     { label: '병원 정보', icon: Hospital, content: data.hospitalName },
+    { label: '신청자 이메일', icon: Mail, content: data.applicantEmail },
     {
       label: '진료 가능 언어',
       icon: Globe,
@@ -159,7 +162,9 @@ export default function HospitalRegistrationDetailsPage() {
           <ActionButton
             text="다시 신청하기"
             onClick={() =>
-              router.push(`/medical/registrations/new?hospitalId=${hospitalId}`)
+              router.push(
+                `/medical/registrations/new?hospitalId=${data.hospitalId}`,
+              )
             }
             className="flex-1 bg-hana-red text-white-ez transition-opacity hover:bg-hana-red hover:opacity-90"
           />

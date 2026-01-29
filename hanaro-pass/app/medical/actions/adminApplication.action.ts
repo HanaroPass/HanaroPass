@@ -164,15 +164,22 @@ export async function updateApplicationStatusAction(
     });
 
     if (applicantEmail) {
-      sendApplicationResultEmail(
-        applicantEmail,
-        hospitalName,
-        vStatus,
-        vId,
-      ).then((res) => {
-        if (res.success) console.log(`[Email Sent] To: ${applicantEmail}`);
-        else console.error(`[Email Failed]`, res.error);
-      });
+      try {
+        const mailRes = await sendApplicationResultEmail(
+          applicantEmail,
+          hospitalName,
+          vStatus,
+          vId,
+        );
+
+        if (mailRes.success) {
+          console.log(`[Email Sent Success] To: ${applicantEmail}`);
+        } else {
+          console.error(`[Email Sent Failed]`, mailRes.error);
+        }
+      } catch (mailError) {
+        console.error(`[Email Exception]`, mailError);
+      }
     }
 
     return { success: true, data: null };
