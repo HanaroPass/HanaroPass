@@ -66,13 +66,17 @@ export default function DocsCard({
 
         {/* 프리뷰 영역 */}
         <div
+          aria-hidden={!isOpen}
           className={`overflow-hidden transition-all duration-300 ease-in-out ${
-            isOpen ? 'max-h-175 opacity-100' : 'max-h-0 opacity-0'
+            isOpen
+              ? 'max-h-175 opacity-100'
+              : 'pointer-events-none max-h-0 opacity-0'
           }`}
         >
           <button
             type="button"
             onClick={goDetail}
+            tabIndex={isOpen ? 0 : -1}
             className="pointer-events-auto mt-4 ml-4 inline-flex transition-transform duration-150 ease-out active:scale-[0.97]"
           >
             <DocsPreview userName={userName} />
