@@ -8,6 +8,7 @@ export const SubmitSchema = z.object({
   languageIds: z
     .array(z.string())
     .min(1, '최소 하나의 언어를 선택해야 합니다.'),
+  email: z.string().email('올바른 이메일 형식을 입력해주세요'),
 });
 export const SearchSchema = z.string().max(50);
 export const LanguageTransformSchema = z

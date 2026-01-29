@@ -7,8 +7,6 @@ import {
 } from '@/lib/errorHandler';
 import type { Hospital } from '@/lib/generated/prisma';
 import { prisma } from '@/lib/prisma';
-import { getSession } from '@/lib/session';
-import { validateUser } from '@/lib/user';
 import { type LanguageId, mapLanguages } from '../constants/language';
 import type { StatusType } from '../constants/statusConfig';
 import {
@@ -17,7 +15,6 @@ import {
   type RegistrationDetailResponse,
   SubmitSchema,
 } from '../schemas/languageRegist.schema';
-import { triggerPushNotification } from './push.action';
 
 /**
  * [병원 검색 서버 액션]
@@ -141,6 +138,7 @@ export async function getHospitalDetailAction(id: number): Promise<
 export async function submitLanguageApplicationAction(
   hospitalId: number,
   languageIds: string[],
+  email: string,
 ): Promise<ActionResult<null>> {
   try {
     const { hospitalId: vId, languageIds: vLangs } = SubmitSchema.parse({
@@ -148,13 +146,7 @@ export async function submitLanguageApplicationAction(
       languageIds,
     });
 
-    const session = await getSession();
-    const userId = session?.userId;
-    if (!userId) {
-      throw new HttpError('로그인이 필요한 서비스입니다.', 401);
-    }
-
-    await prisma.$transaction(async (tx) => {
+    const newApp = await prisma.$transaction(async (tx) => {
       const existingPENDING = await tx.hospitalLanguageApplication.findFirst({
         where: {
           hospitalId: vId,
@@ -166,24 +158,28 @@ export async function submitLanguageApplicationAction(
         throw new HttpError('이미 심사 중인 신청 건이 존재합니다.', 400);
       }
 
-      await tx.hospitalLanguageApplication.create({
+      return await tx.hospitalLanguageApplication.create({
         data: {
-          userId: userId,
+          applicantEmail: email,
           hospitalId: vId,
           requestLangs: vLangs,
           status: 'PENDING',
         },
+        include: { Hospital: { select: { nameKo: true } } },
       });
     });
 
-    const pushTitle = '신청 접수 완료';
-    const pushBody =
-      '외국어 진료 서비스 신청이 정상적으로 접수되었습니다. 심사 결과가 나오면 바로 알려드릴게요!';
-    const targetUrl = '/medical/notifications'; // 알림 클릭 시 이동할 곳
-
-    triggerPushNotification(userId, pushTitle, pushBody, targetUrl).catch(
-      (err) => console.error('[제출 알림 전송 실패]:', err),
-    );
+    const admins = await prisma.user.findMany({ where: { role: 'ADMIN' } });
+    if (admins.length > 0) {
+      await prisma.notification.createMany({
+        data: admins.map((admin) => ({
+          userId: admin.id,
+          title: '새로운 병원 언어 등록 신청',
+          content: `[${newApp.Hospital.nameKo}] ${email}님의 신청이 접수되었습니다.`,
+          link: '/medical/admin?status=PENDING',
+        })),
+      });
+    }
     return { success: true, data: null };
   } catch (err) {
     return handleActionResult(err);
@@ -237,13 +233,13 @@ export async function getRegistrationResultAction(
  */
 export async function getRegistrationDetailAction(
   hospitalId: number,
+  email: string,
 ): Promise<ActionResult<RegistrationDetailResponse>> {
   try {
     const validatedId = IdSchema.parse(hospitalId);
-    const userId = await validateUser();
 
     const applications = await prisma.hospitalLanguageApplication.findMany({
-      where: { hospitalId: validatedId, userId: userId },
+      where: { hospitalId: validatedId, applicantEmail: email },
       orderBy: { createdAt: 'desc' },
       include: {
         Hospital: { select: { nameKo: true } },
@@ -271,49 +267,6 @@ export async function getRegistrationDetailAction(
           processedAt: app.processedAt,
         })),
       },
-    };
-  } catch (err) {
-    return handleActionResult(err);
-  }
-}
-
-/**
- * [내 신청 내역 전체 조회]
- * 로그인된 사용자가 신청한 모든 병원 언어 등록 내역을 가져옵니다.
- */
-export async function getMyApplicationsAction() {
-  try {
-    const session = await getSession();
-    const userId = session?.userId;
-    if (!userId) throw new HttpError('로그인이 필요합니다.', 401);
-
-    const apps = await prisma.hospitalLanguageApplication.findMany({
-      where: { userId },
-      orderBy: { createdAt: 'desc' },
-      include: {
-        Hospital: { select: { nameKo: true, address: true } },
-      },
-    });
-
-    const applications = apps.map((app) => ({
-      id: app.id,
-      hospitalId: app.hospitalId,
-      hospitalName: app.Hospital.nameKo,
-      address: app.Hospital.address,
-      status: app.status as StatusType,
-      requestLangs: mapLanguages(app.requestLangs as string[]), // 언어 정보 필수
-      createdAt: app.createdAt,
-    }));
-
-    const counts = {
-      PENDING: applications.filter((a) => a.status === 'PENDING').length,
-      APPROVED: applications.filter((a) => a.status === 'APPROVED').length,
-      REJECTED: applications.filter((a) => a.status === 'REJECTED').length,
-    };
-
-    return {
-      success: true,
-      data: { applications, counts },
     };
   } catch (err) {
     return handleActionResult(err);

@@ -1,8 +1,8 @@
 import 'dotenv/config';
 import { prisma } from '../lib/prisma';
-import { seedDummyApplications } from './seed/seedApplications';
 import { seedCoupons } from './seed/seedCoupons';
 import { seedUserDocs, seedUserIdentityDocs } from './seed/seedDocuments';
+import { seedDummyApplications } from './seed/seedDummyApplications';
 import { seedEmbassies } from './seed/seedEmbassies';
 import { fetchAndSeedHospitals, SERVICE_KEY } from './seed/seedHospitals';
 import { seedNotifications } from './seed/seedNotifications';
