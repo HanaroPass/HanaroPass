@@ -276,3 +276,46 @@ export async function getRegistrationDetailAction(
     return handleActionResult(err);
   }
 }
+
+/**
+ * [내 신청 내역 전체 조회]
+ * 로그인된 사용자가 신청한 모든 병원 언어 등록 내역을 가져옵니다.
+ */
+export async function getMyApplicationsAction() {
+  try {
+    const session = await getSession();
+    const userId = session?.userId;
+    if (!userId) throw new HttpError('로그인이 필요합니다.', 401);
+
+    const apps = await prisma.hospitalLanguageApplication.findMany({
+      where: { userId },
+      orderBy: { createdAt: 'desc' },
+      include: {
+        Hospital: { select: { nameKo: true, address: true } },
+      },
+    });
+
+    const applications = apps.map((app) => ({
+      id: app.id,
+      hospitalId: app.hospitalId,
+      hospitalName: app.Hospital.nameKo,
+      address: app.Hospital.address,
+      status: app.status as StatusType,
+      requestLangs: mapLanguages(app.requestLangs as string[]), // 언어 정보 필수
+      createdAt: app.createdAt,
+    }));
+
+    const counts = {
+      PENDING: applications.filter((a) => a.status === 'PENDING').length,
+      APPROVED: applications.filter((a) => a.status === 'APPROVED').length,
+      REJECTED: applications.filter((a) => a.status === 'REJECTED').length,
+    };
+
+    return {
+      success: true,
+      data: { applications, counts },
+    };
+  } catch (err) {
+    return handleActionResult(err);
+  }
+}

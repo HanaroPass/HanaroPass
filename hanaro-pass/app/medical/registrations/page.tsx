@@ -18,13 +18,21 @@ export default function MedicalPage() {
   return (
     <div className="flex h-full flex-col">
       <div className="flex-1 overflow-y-auto">
-        <DescriptionSection
-          title="병원 등록"
-          descriptions={[
-            '이미 지도에 등록된 병원을 검색해',
-            '외국어 진료 가능 여부를 추가로 등록해주세요',
-          ]}
-        />
+        <div className="relative">
+          <DescriptionSection
+            title="병원 등록"
+            descriptions={[
+              '이미 지도에 등록된 병원을 검색해',
+              '외국어 진료 가능 여부를 추가로 등록해주세요',
+            ]}
+          />
+          <button
+            onClick={() => router.push('/medical/registrations/my')}
+            className="absolute top-6 right-6 flex items-center gap-1.5 rounded-full border border-gray-300 bg-white/80 px-3 py-1.5 text-[11px] text-black-800 transition-all hover:border-green-dark/30 hover:text-green-dark active:scale-95"
+          >
+            <span className="font-medium">내 신청 내역</span>
+          </button>
+        </div>
         {/* 1. 검색 입력 (상태에 따라 변함) */}
         <div className="mt-4 px-6">
           <SearchInput
