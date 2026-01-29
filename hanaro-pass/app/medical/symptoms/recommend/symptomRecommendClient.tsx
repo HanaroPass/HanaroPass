@@ -10,7 +10,7 @@ export default function SymptomRecommendClient() {
   const [user, setUser] = useState('HANA');
   const [symptom, setSymptom] = useState<string[]>();
   const [hospitals, setHospitals] = useState<HospitalWithStatus[]>([]);
-
+  const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     const run = async () => {
       const raw = localStorage.getItem('symptom-result');
@@ -20,6 +20,7 @@ export default function SymptomRecommendClient() {
       setUser(result.user);
       setSymptom(result.symptom);
       setHospitals(result.hospitals);
+      setIsLoading(false);
     };
 
     run();
@@ -28,7 +29,7 @@ export default function SymptomRecommendClient() {
   return (
     <div className="space-y-4 px-4 py-6">
       <SymptomHeader user={user} symptom={symptom} />
-      <HospitalList hospitals={hospitals} />
+      <HospitalList hospitals={hospitals} isLoading={isLoading} />
     </div>
   );
 }

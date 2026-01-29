@@ -27,7 +27,7 @@ export default function SymptomAnalyzePage() {
       <div className="px-8">
         <AnalysisTip />
         <form onSubmit={handleSubmit}>
-          <div className="font-medium text-base leading-6">
+          <div className="mb-2 font-medium text-base leading-6">
             증상/시술을 선택해주세요.<span className="text-orange-400">*</span>
           </div>
           <SymptomRadioGroup />
