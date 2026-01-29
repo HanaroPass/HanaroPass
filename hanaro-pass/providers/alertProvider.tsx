@@ -200,22 +200,26 @@ export function AlertDialogProvider({ children }: { children: ReactNode }) {
     const cancelDisabled = isActing || options.cancelProps?.disabled === true;
 
     return (
-      <AlertDialogFooter>
+      <AlertDialogFooter className="flex flex-row gap-3 sm:space-x-0">
         {!options.hideCancel && (
-          <AlertDialogCancel {...options.cancelProps} disabled={cancelDisabled}>
+          <AlertDialogCancel
+            {...options.cancelProps}
+            disabled={cancelDisabled}
+            className={`m-0 h-10 flex-1 rounded-lg border-none bg-gray-100 text-black-800 sm:mt-0 ${options.cancelProps?.className ?? ''}`}
+          >
             {options.cancelLabel}
           </AlertDialogCancel>
         )}
 
         <AlertDialogAction
           onClick={handleAction}
-          className={
-            options.variant === 'destructive'
-              ? 'bg-red-600 hover:bg-red-700'
-              : undefined
-          }
           {...options.actionProps}
           disabled={actionDisabled}
+          className={`m-0 h-10 flex-1 rounded-lg font-semibold text-white transition-all ${
+            options.variant === 'destructive'
+              ? 'bg-red-600! hover:bg-red-700!'
+              : 'bg-green-dark! hover:bg-green-dark/90! active:scale-95'
+          } ${options.actionProps?.className ?? ''}`}
         >
           {options.actionLabel}
         </AlertDialogAction>

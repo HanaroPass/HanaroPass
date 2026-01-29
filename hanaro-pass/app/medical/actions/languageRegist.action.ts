@@ -41,7 +41,6 @@ export async function searchHospitalAction(
     const searchTerms = cleanedQuery
       .split(/\s+/)
       .filter((term) => term.length > 0)
-      .map((term) => `+${term}`)
       .join(' ');
 
     if (!searchTerms) {

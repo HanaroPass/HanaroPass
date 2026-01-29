@@ -53,7 +53,12 @@ export function useLanguageRegistration() {
               cancelLabel: '돌아가기',
               onAction: () =>
                 router.replace(`/medical/registrations/${hospitalId}`),
+              actionProps: {
+                className: 'py-3 rounded-lg font-semibold active:opacity-90',
+              },
               cancelProps: {
+                className:
+                  'py-3 rounded-lg font-semibold bg-gray-100 text-black-800 active:opacity-90',
                 onClick: () => router.back(),
               },
             });
