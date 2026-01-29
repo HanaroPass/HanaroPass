@@ -18,14 +18,13 @@ export default function AccountStep({ onSubmit, onClose }: AccountStepProps) {
   const [selectedAccount, setSelectedAccount] = useState<string | null>(null);
 
   const handleDrawerSubmit = (data: Record<string, string>) => {
-    // 실제 계좌번호나 계좌명을 저장
     const accountInfo =
       data.accountNumber ||
       data.accountName ||
       data.account ||
       '하나은행 1234-567890-123';
     setSelectedAccount(accountInfo);
-    setIsDrawerOpen(false); // 바텀시트 닫기
+    setIsDrawerOpen(false);
   };
 
   const handleAccountSelect = () => {

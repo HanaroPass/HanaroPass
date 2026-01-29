@@ -1,11 +1,11 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useFunnel } from './hooks/useFunnel';
+import OCRPageContent from './ocr/OCRPageContent';
 import AccountStep from './steps/AccountStep';
 import IntroStep from './steps/IntroStep';
 import ResultStep from './steps/ResultStep';
-import { useFunnel } from './hooks/useFunnel';
-import OCRPageContent from './ocr/OCRPageContent';
 
 export type IdentityType = 'passport' | 'arc';
 
