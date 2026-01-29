@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import type { MapBounds } from '../types/map';
 
 export type Hospital = {
   id: number;
@@ -16,10 +17,16 @@ export type Hospital = {
 
 type FilterType = 'language' | 'department' | null;
 
-export function useHospitalFilters(hospitals: Hospital[]) {
+export function useHospitalFilters(
+  hospitals: Hospital[],
+  mapBounds: MapBounds | null,
+) {
   const [active, setActive] = useState<FilterType>(null);
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
   const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
+  const [selectedHospital, setSelectedHospital] = useState<Hospital | null>(
+    null,
+  );
 
   const filteredHospitals = useMemo(() => {
     return hospitals.filter((h) => {
@@ -31,9 +38,16 @@ export function useHospitalFilters(hospitals: Hospital[]) {
         selectedDepartments.length === 0 ||
         selectedDepartments.some((dep) => h.departments.includes(dep));
 
-      return languageMatch && departmentMatch;
+      const boundsMatch =
+        !mapBounds ||
+        (h.latitude >= mapBounds.south &&
+          h.latitude <= mapBounds.north &&
+          h.longitude >= mapBounds.west &&
+          h.longitude <= mapBounds.east);
+
+      return languageMatch && departmentMatch && boundsMatch;
     });
-  }, [hospitals, selectedLanguages, selectedDepartments]);
+  }, [hospitals, selectedLanguages, selectedDepartments, mapBounds]);
 
   const makeLabel = (selected: string[], defaultLabel: string) => {
     if (selected.length === 0) return defaultLabel;
@@ -60,5 +74,8 @@ export function useHospitalFilters(hospitals: Hospital[]) {
     filteredHospitals,
     languageLabel,
     departmentLabel,
+    selectedHospital,
+    setSelectedHospital,
+    visibleHospitals: filteredHospitals,
   };
 }

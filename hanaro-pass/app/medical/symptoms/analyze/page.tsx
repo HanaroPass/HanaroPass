@@ -4,18 +4,14 @@ import Image from 'next/image';
 import ActionButton from '@/components/ui/ActionButton';
 import AnalysisTip from '../../components/symptom/AnalysisTip';
 import SymptomRadioGroup from '../../components/symptom/SymptomRadioGroup';
+import { useImageUpload } from '../../hooks/useImageUpload';
 import useSymptomResult from '../../hooks/useSymptomResult';
 
-export default function SymptomAnalyzeContent() {
-  const {
-    images,
-    imageUrls,
-    isLoading,
-    isImageCntOK,
-    handleImages,
-    handleSubmit,
-    clearImages,
-  } = useSymptomResult();
+export default function SymptomAnalyzePage() {
+  const { images, imageUrls, isImageCntOK, handleImages, clearImages } =
+    useImageUpload();
+
+  const { isLoading, handleSubmit } = useSymptomResult(images);
 
   return (
     <>
@@ -31,7 +27,7 @@ export default function SymptomAnalyzeContent() {
       <div className="px-8">
         <AnalysisTip />
         <form onSubmit={handleSubmit}>
-          <div className="font-medium text-base leading-6">
+          <div className="mb-2 font-medium text-base leading-6">
             증상/시술을 선택해주세요.<span className="text-orange-400">*</span>
           </div>
           <SymptomRadioGroup />

@@ -6,8 +6,8 @@ import { useEffect, useRef, useState } from 'react';
 import Header from '@/components/header/Header';
 import ActionButton from '@/components/ui/ActionButton';
 import { Button } from '@/components/ui/button';
-import type { IdentityType } from '../IdentityPageClient';
 import { getIdentityData } from '../actions/identity';
+import type { IdentityType } from '../IdentityPageClient';
 
 type IntroStepProps = {
   onSelectIdentityType: (type: IdentityType) => void;
@@ -132,7 +132,6 @@ export default function IntroStep({
                 </div>
               ) : (
                 <>
-                  {/* 여권 정보가 없는 경우에만 버튼 노출 */}
                   {!hasPassport && (
                     <ActionButton
                       text="여권"
@@ -141,7 +140,6 @@ export default function IntroStep({
                     />
                   )}
 
-                  {/* 외국인등록증 정보가 없는 경우에만 버튼 노출 */}
                   {!hasArc && (
                     <ActionButton
                       text="외국인등록증"
@@ -150,7 +148,6 @@ export default function IntroStep({
                     />
                   )}
 
-                  {/* 만약 모든 신분증이 다 있다면 보여줄 안내 */}
                   {hasPassport && hasArc && (
                     <p className="py-4 text-center text-gray-500 text-sm">
                       이미 모든 신분증이 등록되어 있습니다.
