@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect } from 'react';
 import { useFunnel } from './hooks/useFunnel';
 import OCRPageContent from './ocr/OCRPageContent';
 import AccountStep from './steps/AccountStep';
@@ -16,11 +17,9 @@ export default function IdentityPageClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // 진입 경로 확인
-  const isFromDocs = searchParams.get('step') === 'result';
-
-  // URL에 ?step=result가 있으면 해당 스텝으로
   const stepParam = searchParams.get('step');
+  const isFromDocs = searchParams.get('from') === 'docs';
+
   const initialStep =
     stepParam === 'result' || stepParam === 'ocr' || stepParam === 'account'
       ? stepParam
@@ -36,24 +35,42 @@ export default function IdentityPageClient() {
     },
   });
 
-  const handleClose = () => {
-    // 서류 보관함에서 바로 결과 페이지로 온 경우 -> 보관함 메인으로 이동
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (currentStep === 'intro') {
+      params.delete('step');
+    } else {
+      params.set('step', currentStep);
+    }
+
     if (isFromDocs) {
-      router.push('/docs'); // 혹은 보관함 주소
+      params.set('from', 'docs');
+    }
+
+    const queryString = params.toString() ? `?${params.toString()}` : '';
+    const newUrl = `${window.location.pathname}${queryString}`;
+
+    router.replace(newUrl, { scroll: false });
+  }, [currentStep, isFromDocs, router]);
+
+  const handleClose = () => {
+    if (isFromDocs) {
+      router.replace('/docs');
       return;
     }
 
-    // 일반적인 등록 프로세스 중인 경우
+    if (currentStep === 'result') {
+      router.replace('/');
+      return;
+    }
+
     if (currentStep !== 'intro') {
-      // 등록 중이었다면 인트로 단계로 후퇴
       history.push('intro');
     } else {
-      // 인트로 단계에서 X를 눌렀다면 메인 페이지로 이동
-      router.push('/');
+      router.replace('/');
     }
   };
 
-  // Intro Step
   if (currentStep === 'intro') {
     return (
       <IntroStep
@@ -69,7 +86,6 @@ export default function IdentityPageClient() {
     );
   }
 
-  // OCR Step
   if (currentStep === 'ocr') {
     return (
       <OCRPageContent
@@ -86,7 +102,6 @@ export default function IdentityPageClient() {
     );
   }
 
-  // Account Step
   if (currentStep === 'account') {
     return (
       <AccountStep
@@ -122,7 +137,6 @@ export default function IdentityPageClient() {
     );
   }
 
-  // Result Step
   if (currentStep === 'result') {
     return (
       <ResultStep
@@ -130,7 +144,7 @@ export default function IdentityPageClient() {
         identityData={context.identityData}
         onClose={handleClose}
         onRegister={() => {
-          // intro로 이동하여 새로운 등록 시작
+          router.push('/identity');
           history.push('intro', {
             identityType: null,
             identityData: null,

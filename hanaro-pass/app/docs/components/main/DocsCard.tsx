@@ -1,9 +1,9 @@
 'use client';
 
+import { ChevronUp, CreditCard } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { CARD_GRADIENT_CLASS, type CardColor } from '../../constants/cardColor';
 import DocsPreview from './DocsPreview';
-import { ChevronUp, CreditCard } from 'lucide-react';
 
 type DocsCardProps = {
   title: string;
@@ -26,9 +26,9 @@ export default function DocsCard({
   const goDetail = (e: React.MouseEvent | React.KeyboardEvent) => {
     e.stopPropagation();
     if (docId === 'passport' || docId === 'arc') {
-      router.push(`/identity?step=result&type=${docId}`);
+      router.push(`/identity?step=result&type=${docId}&from=docs`);
     } else {
-      router.push(`/docs/${docId}`);
+      router.replace(`/docs/${docId}`);
     }
   };
 
