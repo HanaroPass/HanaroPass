@@ -8,7 +8,7 @@ import {
   LocateFixed,
   Siren,
 } from 'lucide-react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Embassy, SavedPlace } from '@/lib/generated/prisma';
 import { EmbassyContent } from './components/embassy/EmbassyContent';
 import { ExchangeContent } from './components/exchange/ExchangeContent';
@@ -24,8 +24,9 @@ import { PlaceCard } from './components/ui/PlaceCard';
 import { ToggleButton } from './components/ui/ToggleButton';
 import { useBottomSheet } from './hooks/useBottomSheet';
 import { useExchangeSearch } from './hooks/useExchangeSearch';
-import type { Hospital } from './hooks/useHospitalFilters';
+import { type Hospital, useHospitalFilters } from './hooks/useHospitalFilters';
 import { useMarkerClick } from './hooks/useMarkerClick';
+import type { MapBounds } from './types/map';
 import { formatExchangeData, mapDbToInfo } from './utils/mapUtils';
 
 type MapPageClientProps = {
@@ -45,9 +46,7 @@ export default function MapPageClient({
   const [selectedPlace, setSelectedPlace] = useState<
     SavedPlace | Embassy | NaverSearchResult | null
   >(null);
-  const [selectedHospital, setSelectedHospital] = useState<Hospital | null>(
-    null,
-  );
+
   const [currentMapRegion, setCurrentMapRegion] = useState('');
   const mapControlRef = useRef<NaverMapHandle>(null);
   const { exchangeResults, searchExchanges, clearResults } =
@@ -66,12 +65,12 @@ export default function MapPageClient({
     getTranslateValue,
   } = useBottomSheet();
 
-  const [mapBounds, setMapBounds] = useState<{
-    south: number;
-    west: number;
-    north: number;
-    east: number;
-  } | null>(null);
+  const [mapBounds, setMapBounds] = useState<MapBounds | null>(null);
+
+  const { selectedHospital, setSelectedHospital } = useHospitalFilters(
+    hospitals,
+    mapBounds,
+  );
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -97,21 +96,10 @@ export default function MapPageClient({
     return () => clearTimeout(timer);
   }, [currentMapRegion, openSheet, searchExchanges]);
 
-  const handleMapMove = useCallback(
-    (
-      address: string,
-      bounds?: {
-        south: number;
-        west: number;
-        north: number;
-        east: number;
-      },
-    ) => {
-      setCurrentMapRegion(address);
-      if (bounds) setMapBounds(bounds);
-    },
-    [],
-  );
+  const handleMapMove = useCallback((address: string, bounds?: MapBounds) => {
+    setCurrentMapRegion(address);
+    if (bounds) setMapBounds(bounds);
+  }, []);
 
   const handleExchangeClick = useCallback(async () => {
     if (openSheet === 'exchange') {
@@ -133,18 +121,6 @@ export default function MapPageClient({
     setSelectedHospital,
     toggleSheet,
   });
-
-  const visibleHospitals = useMemo(() => {
-    if (!mapBounds) return hospitals;
-
-    return hospitals.filter(
-      (h) =>
-        h.latitude >= mapBounds.south &&
-        h.latitude <= mapBounds.north &&
-        h.longitude >= mapBounds.west &&
-        h.longitude <= mapBounds.east,
-    );
-  }, [hospitals, mapBounds]);
 
   return (
     <main className="relative h-screen w-screen overflow-hidden bg-gray-100">
@@ -168,10 +144,10 @@ export default function MapPageClient({
         <ToggleButton
           variant="pill"
           label="병원"
+          active={openSheet === 'hospital'}
           icon={
             <Cross className="h-4 w-4" fill="currentColor" strokeWidth={3} />
           }
-          active={openSheet === 'hospital'}
           iconColorVariant="red"
           onClick={() => {
             setSelectedHospital(null);
@@ -258,14 +234,15 @@ export default function MapPageClient({
         {openSheet === 'hospital' && (
           <HospitalContent
             mode={selectedHospital ? 'detail' : 'list'}
-            hospitals={visibleHospitals}
+            hospitals={hospitals}
+            mapBounds={mapBounds}
             hospital={selectedHospital ?? undefined}
             onBackToList={() => {
               setSelectedHospital(null);
               toggleSheet('hospital', true);
             }}
           />
-        )}
+        )}{' '}
         {openSheet === 'siren' && <SirenContent />}
         {openSheet === 'exchange' && (
           <ExchangeContent
