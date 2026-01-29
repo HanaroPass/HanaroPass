@@ -166,7 +166,7 @@ export function HospitalContent({
                 className={
                   idx === filteredHospitals.length - 1
                     ? ''
-                    : 'border-gray-300 border-b'
+                    : 'border-gray-100 border-b'
                 }
               >
                 <HospitalCard

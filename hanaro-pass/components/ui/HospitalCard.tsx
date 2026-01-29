@@ -1,4 +1,4 @@
-import { Clock, MapPin, Phone } from 'lucide-react';
+import { MapPin, Phone } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
 import AIResultIcon from '@/components/ui/AIResultIcon';
@@ -28,8 +28,9 @@ export function HospitalCard({ hospital }: { hospital: HospitalInfo }) {
   return (
     <div className="py-4">
       {/* ================= 상단: 정보 + 사진 ================= */}
-      <div className="grid grid-cols-[minmax(0,1fr)_96px] gap-4">
+      <div className="grid grid-cols-[minmax(0,1fr)_120px] gap-5">
         {/* 왼쪽 정보 */}
+
         <div className="space-y-1">
           {/* 병원명 */}
           <div className="font-bold text-gray-900 text-lg">{hospital.name}</div>
@@ -41,15 +42,13 @@ export function HospitalCard({ hospital }: { hospital: HospitalInfo }) {
               {hospital.openTime}
               {hospital.closeTime?.trim() && ` ~ ${hospital.closeTime}`}
             </span>
-
             <span
-              className={`inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 font-medium text-xs ${
+              className={`inline-flex shrink-0 items-center justify-center gap-1 rounded-full px-2 py-1 font-medium text-xs ${
                 hospital.status === '진료 중'
-                  ? 'bg-green-100 text-green-900'
+                  ? 'bg-green-500 text-green-900'
                   : 'bg-gray-200 text-gray-600'
               }`}
             >
-              <Clock className="h-3 w-3" />
               {hospital.status}
             </span>
           </div>
@@ -75,22 +74,10 @@ export function HospitalCard({ hospital }: { hospital: HospitalInfo }) {
               </button>
             )}
           </div>
-
-          {/* 주소 */}
-          <div className="flex items-center gap-2 text-gray-500 text-sm">
-            <MapPin className="h-4 w-4 shrink-0" />
-            <span>{hospital.address}</span>
-          </div>
-
-          {/* 전화 */}
-          <div className="flex items-center gap-2 text-gray-500 text-sm">
-            <Phone className="h-4 w-4 shrink-0" />
-            <span>{hospital.phone ?? '-'}</span>
-          </div>
         </div>
 
         {/* 오른쪽 사진 (고정 높이) */}
-        <div className="relative h-36 w-24 self-start overflow-hidden rounded-xl bg-gray-100">
+        <div className="relative h-32 w-32 self-start overflow-hidden rounded-xl bg-gray-100">
           {hospital.imageUrl ? (
             <Image
               src={hospital.imageUrl}
@@ -105,6 +92,18 @@ export function HospitalCard({ hospital }: { hospital: HospitalInfo }) {
             </div>
           )}
         </div>
+      </div>
+
+      {/* 주소 */}
+      <div className="flex items-center gap-2 pt-2 text-gray-500 text-sm">
+        <MapPin className="h-4 w-4 shrink-0" />
+        <span>{hospital.address}</span>
+      </div>
+
+      {/* 전화 */}
+      <div className="flex items-center gap-2 text-gray-500 text-sm">
+        <Phone className="h-4 w-4 shrink-0" />
+        <span>{hospital.phone ?? '-'}</span>
       </div>
 
       {/* ================= 하단: AI 한줄 요약 (전체 폭) ================= */}
