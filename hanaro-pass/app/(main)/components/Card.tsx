@@ -210,7 +210,7 @@ export default function Card({
         }
       >
         <div
-          className={`flex h-14 w-full items-center justify-center overflow-hidden rounded-md border bg-white transition-all duration-700 ease-in-out ${
+          className={`flex h-14 w-full items-center justify-center overflow-hidden rounded-md border bg-white ${
             !isCurrentUnlocked ? 'blur-sm' : 'blur-0'
           }`}
         >
