@@ -1,7 +1,7 @@
 'use client';
 
 import { useToast } from '@/hooks/useToast';
-import { savePassportData } from '../../actions/passport';
+import { savePassportData } from '../../actions/savePassport';
 import { useDrawerForm } from './hooks/useDrawerForm';
 import { BaseDrawer } from './shared/BaseDrawer';
 import { CommonFields } from './shared/CommonFields';
@@ -13,6 +13,7 @@ type PassportDrawerProps = {
   onSubmit?: (data: Record<string, string>) => void;
   onReset?: () => void;
   className?: string;
+  initialData?: Record<string, string>;
 };
 
 export function PassportDrawer({
@@ -21,51 +22,31 @@ export function PassportDrawer({
   onSubmit,
   onReset,
   className,
+  initialData = {},
 }: PassportDrawerProps) {
-  const { registerSuccess, actionError } = useToast();
-  const handleSave = async (data: Record<string, string>) => {
-    const result = await savePassportData(data);
+  const { actionError } = useToast();
 
-    if (result.success) {
-      registerSuccess('여권');
-
-      if (onSubmit) onSubmit(data);
-      onOpenChange(false);
-    } else {
-      actionError(result);
-    }
-  };
-
-  const { formData, resetForm, handleFormDataChange } = useDrawerForm({
-    onSubmit: undefined,
+  const { formAction, isPending } = useDrawerForm({
+    action: savePassportData,
+    onSuccess: (data) => onSubmit?.(data),
+    onError: (error) => actionError(error),
     onOpenChange,
   });
-  const handleSubmit = () => {
-    void handleSave(formData);
-  };
 
   return (
     <BaseDrawer
       open={open}
       onOpenChange={onOpenChange}
       title="여권 정보 확인"
-      onSubmit={handleSubmit}
-      onReset={onReset || resetForm}
+      formAction={formAction}
+      onReset={onReset || (() => {})}
       className={className}
       showButtons={true}
+      isPending={isPending}
     >
-      <CommonFields
-        formData={formData}
-        onFormDataChange={handleFormDataChange}
-      />
-      <PassportFields
-        formData={formData}
-        onFormDataChange={handleFormDataChange}
-      />
-      <PassportDateFields
-        formData={formData}
-        onFormDataChange={handleFormDataChange}
-      />
+      <CommonFields initialData={initialData} />
+      <PassportFields initialData={initialData} />
+      <PassportDateFields initialData={initialData} />
     </BaseDrawer>
   );
 }

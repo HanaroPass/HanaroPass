@@ -1,7 +1,7 @@
 'use client';
 
 import { useToast } from '@/hooks/useToast';
-import { saveArcData } from '../../actions/arc';
+import { saveArcData } from '../../actions/saveArc';
 import { useDrawerForm } from './hooks/useDrawerForm';
 import { AlienExtraFields, AlienFields } from './shared/AlienFields';
 import { BaseDrawer } from './shared/BaseDrawer';
@@ -13,6 +13,7 @@ type AlienDrawerProps = {
   onSubmit?: (data: Record<string, string>) => void;
   onReset?: () => void;
   className?: string;
+  initialData?: Record<string, string>;
 };
 
 export function AlienDrawer({
@@ -21,49 +22,31 @@ export function AlienDrawer({
   onSubmit,
   onReset,
   className,
+  initialData = {},
 }: AlienDrawerProps) {
   const { actionError } = useToast();
-  const handleSave = async (data: Record<string, string>) => {
-    const result = await saveArcData(data);
 
-    if (result.success) {
-      if (onSubmit) onSubmit(data);
-      onOpenChange(false);
-    } else {
-      actionError(result);
-    }
-  };
-
-  const { formData, resetForm, handleFormDataChange } = useDrawerForm({
-    onSubmit: undefined,
+  const { formAction, isPending } = useDrawerForm({
+    action: saveArcData,
+    onSuccess: (data) => onSubmit?.(data),
+    onError: (error) => actionError(error),
     onOpenChange,
   });
-  const handleSubmit = () => {
-    void handleSave(formData);
-  };
 
   return (
     <BaseDrawer
       open={open}
       onOpenChange={onOpenChange}
       title="외국인 등록증 정보 확인"
-      onSubmit={handleSubmit}
-      onReset={onReset || resetForm}
+      formAction={formAction}
+      onReset={onReset || (() => {})}
       className={className}
       showButtons={true}
+      isPending={isPending}
     >
-      <CommonFields
-        formData={formData}
-        onFormDataChange={handleFormDataChange}
-      />
-      <AlienFields
-        formData={formData}
-        onFormDataChange={handleFormDataChange}
-      />
-      <AlienExtraFields
-        formData={formData}
-        onFormDataChange={handleFormDataChange}
-      />
+      <CommonFields initialData={initialData} />
+      <AlienFields initialData={initialData} />
+      <AlienExtraFields initialData={initialData} />
     </BaseDrawer>
   );
 }

@@ -54,18 +54,12 @@ export default function MobileQr({ type, data }: MobileQrProps) {
     </div>
   );
 
-  const rawCountry = data.nationality || 'UNITED STATES OF AMERICA';
+  const rawCountry = data.nationality || '-';
 
-  // 나라별 국기 이미지
-  // 매핑 테이블에서 이름을 찾고, 없으면 공백을 언더바로 바꾼 값을 기본으로 시도
   const fileName =
     COUNTRY_IMAGE_MAP[rawCountry] || rawCountry.replace(/\s+/g, '_');
 
-  const [imgSrc, setImgSrc] = useState(`/images/identity/${fileName}.png`);
-
-  useEffect(() => {
-    setImgSrc(`/images/identity/${fileName}.png`);
-  }, [fileName]);
+  const imgSrc = `/images/nation/${fileName}.png`;
 
   return (
     <div
@@ -130,7 +124,7 @@ export default function MobileQr({ type, data }: MobileQrProps) {
             <div className="flex w-full items-center justify-between rounded-2xl bg-gray-50 px-6 py-5 text-gray-800">
               <span className="sm font-regular">Passport Number</span>
               <span className="font-bold text-green-ez text-xl tracking-tight">
-                {data.passportNumber || 'M12345678'}
+                {data.passportNumber || '-'}
               </span>
             </div>
           </div>
@@ -141,7 +135,7 @@ export default function MobileQr({ type, data }: MobileQrProps) {
               <div>
                 <p className="mb-1 font-semibold text-xl">Status</p>
                 <p className="font-regular text-sm">
-                  {data.residenceStatus || 'B-04'}
+                  {data.residenceStatus || '-'}
                 </p>
               </div>
 
@@ -149,9 +143,7 @@ export default function MobileQr({ type, data }: MobileQrProps) {
 
               <div>
                 <p className="mb-1 font-semibold text-xl">Permission</p>
-                <p className="font-regular text-sm">
-                  {data.issueDate || '2024-03-15'}
-                </p>
+                <p className="font-regular text-sm">{data.issueDate || '-'}</p>
               </div>
             </div>
           </div>

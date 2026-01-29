@@ -1,11 +1,14 @@
 'use client';
 
 import { X } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import Tesseract from 'tesseract.js';
 import { AlienDrawer } from '../components/bottomSheet/AlienDrawer';
 import { PassportDrawer } from '../components/bottomSheet/PassportDrawer';
 import CameraCapture from '../components/CameraCapture';
 import type { IdentityType } from '../IdentityPageClient';
+import { parseArcData } from './arcParser';
+import { parsePassportData } from './passportParser';
 
 type OCRPageContentProps = {
   type: IdentityType | null;
@@ -18,21 +21,59 @@ export default function OCRPageContent({
   onSubmit,
   onClose,
 }: OCRPageContentProps) {
-  const [isDrawerOpen, setIsDrawerOpen] = useState(true);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [ocrData, setOcrData] = useState<Record<string, string>>({});
+  const [ocrKey, setOcrKey] = useState(0);
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
+  const handleImageSelect = async (file: File) => {
+    setIsProcessing(true);
+
+    try {
+      const { data } = await Tesseract.recognize(file, 'kor+eng', {
+        logger: (m) => console.log(m),
+      });
+      if (!isMountedRef.current) return;
+
+      const parsedData =
+        type === 'passport'
+          ? parsePassportData(data.text)
+          : parseArcData(data.text);
+
+      setOcrData(parsedData);
+      setOcrKey((prev) => prev + 1);
+
+      setIsDrawerOpen(true);
+    } catch {
+      if (!isMountedRef.current) return;
+      alert('이미지 인식에 실패했습니다. 다시 시도해주세요.');
+    } finally {
+      if (isMountedRef.current) {
+        setIsProcessing(false);
+      }
+    }
+  };
 
   const handleSubmit = (data: Record<string, string>) => {
-    console.log('제출된 정보:', data);
     onSubmit(data);
   };
 
   const handleRetake = () => {
     setIsDrawerOpen(false);
+    setOcrData({});
+    setOcrKey((prev) => prev + 1);
   };
 
-  // type이 null인 경우 처리
-  if (!type) {
-    return null;
-  }
+  if (!type) return null;
 
   return (
     <div className="min-h-screen bg-black">
@@ -66,10 +107,29 @@ export default function OCRPageContent({
         <p className="mb-2 font-semibold text-xl sm:mb-3 md:mb-4">
           {type === 'passport' ? '여권' : '신분증'} 앞면을 시각 영역에 맞추면
         </p>
-        <p className="font-semibold text-xl">자동으로 촬영됩니다.</p>
+        <p className="font-semibold text-xl">
+          {isProcessing
+            ? '이미지를 인식하고 있습니다.'
+            : '자동으로 촬영됩니다.'}
+        </p>
       </div>
 
-      <CameraCapture type={type} />
+      {!isProcessing && !isDrawerOpen ? (
+        <CameraCapture
+          type={type}
+          onClick={() => setIsDrawerOpen(true)}
+          onImageSelect={handleImageSelect}
+        />
+      ) : (
+        <div className="flex aspect-3/4 w-full items-center justify-center bg-black">
+          {isProcessing && (
+            <div className="flex flex-col items-center gap-4">
+              <div className="h-10 w-10 animate-spin rounded-full border-4 border-white border-t-transparent" />
+              <p className="text-white">OCR 분석 중</p>
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="bg-black px-8 pb-6 text-left sm:pb-8 md:pb-10 lg:pb-12">
         <div className="flex flex-col gap-4 sm:gap-5 md:gap-6">
@@ -87,17 +147,21 @@ export default function OCRPageContent({
 
       {type === 'passport' ? (
         <PassportDrawer
+          key={ocrKey}
           open={isDrawerOpen}
           onOpenChange={setIsDrawerOpen}
           onSubmit={handleSubmit}
           onReset={handleRetake}
+          initialData={ocrData}
         />
       ) : (
         <AlienDrawer
+          key={ocrKey}
           open={isDrawerOpen}
           onOpenChange={setIsDrawerOpen}
           onSubmit={handleSubmit}
           onReset={handleRetake}
+          initialData={ocrData}
         />
       )}
     </div>
