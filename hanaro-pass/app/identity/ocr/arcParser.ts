@@ -3,123 +3,83 @@ import type { ParsedData } from './ocrTypes';
 
 export const parseArcData = (text: string): ParsedData => {
   const data: ParsedData = {};
+  // 모든 공백과 줄바꿈을 단일 공백으로 치환하여 분석 효율을 극대화합니다.
   const fullText = text.replace(/\s+/g, ' ');
 
-  // 외국인등록번호
-  const arcNumberPatterns = [
-    /(\d{6})-(\d{7})/,
-    /(\d{6})\s+(\d{7})/,
-    /외국인.*?(\d{6})-?(\d{7})/,
+  // 1. 외국인등록번호 (123456-1234567)
+  const arcNumberMatch = fullText.match(/(\d{6})\s*-\s*(\d{7})/);
+  if (arcNumberMatch) {
+    data.arcNumber = `${arcNumberMatch[1]}-${arcNumberMatch[2]}`;
+    data.registrationNumber = arcNumberMatch[1];
+    data.registrationNumberSuffix = arcNumberMatch[2];
+  }
+
+  // 2. 성별 추출 (F/M) - 번호 근처나 '별' 키워드 근처에서 탐색
+  const genderMatch =
+    fullText.match(/\b([MF])\b/i) || fullText.match(/[별\s]+([MF])\b/i);
+  if (genderMatch) {
+    data.gender = genderMatch[1].toUpperCase() === 'M' ? 'MALE' : 'FEMALE';
+  }
+
+  // 3. 성명 (Anna Patricia Lopez -> 성: LOPEZ / 이름: ANNA PATRICIA)
+  // '성' 뒤에 어떤 깨진 소문자(do 등)가 오더라도 대문자/소문자 이름을 낚아챕니다.
+  const nameMatch = fullText.match(
+    /(?:성\s*명|성\s*[a-z]{0,3}|Name)\s*[:\s]*([A-Za-z\s]{3,})/i,
+  );
+  const forbiddenWords = [
+    'ALIEN',
+    'REGISTRATION',
+    'CARD',
+    'REPUBLIC',
+    'KOREA',
+    'OF',
+    'THE',
   ];
 
-  for (const pattern of arcNumberPatterns) {
-    const match = fullText.match(pattern);
-    if (match && !data.arcNumber) {
-      const fullArcNumber = `${match[1]}-${match[2]}`;
-      data.arcNumber = fullArcNumber;
+  if (nameMatch) {
+    const rawName = nameMatch[1].trim().split(/\s+/);
+    // 금지어 필터링
+    const filteredWords = rawName.filter(
+      (word) => !forbiddenWords.includes(word.toUpperCase()),
+    );
 
-      data.registrationNumber = match[1];
-      data.registrationNumberSuffix = match[2];
-      break;
+    if (filteredWords.length >= 2) {
+      // ✅ 규칙: 마지막 한 단어만 성(lastName)
+      const last = filteredWords.pop();
+      data.lastName = last ? last.toUpperCase() : '';
+      // ✅ 규칙: 앞의 나머지 모든 단어를 이름(firstName)으로 합침
+      data.firstName = filteredWords.join(' ').toUpperCase();
+      data.nickname = `${data.lastName} ${data.firstName}`;
     }
   }
 
-  // 이름 파싱
-  let nameFound = false;
-
-  const nameWithLabel = fullText.match(/(?:성명|Name).*?([A-Z]+)\s+([A-Z]+)/i);
-  if (nameWithLabel && !nameFound) {
-    data.lastName = nameWithLabel[1];
-    data.firstName = nameWithLabel[2];
-    nameFound = true;
-  }
-
-  if (!nameFound) {
-    const nameMatch = fullText.match(/\b([A-Z]{2,})\s+([A-Z]{2,})\b/);
-    if (nameMatch) {
-      data.lastName = nameMatch[1];
-      data.firstName = nameMatch[2];
-    }
-  }
-
-  // nickname
-  if (data.lastName && data.firstName && !data.nickname) {
-    data.nickname = `${data.lastName} ${data.firstName}`;
-  }
-
-  // 국적 - OCR에서 파싱하되, 유효한 국적이 없으면 빈 값으로 설정 (사용자가 직접 선택)
-  const nationalityPatterns = [
-    /(?:국적|Nationality).*?(REPUBLIC OF [A-Z]+)/i,
-    /(?:국적|Nationality).*?([A-Z]{3,})/i,
-    /REPUBLIC OF ([A-Z]+)/,
-  ];
-
-  // NATIONALITIES에서 유효한 국적 찾기
-  let foundNationality = null;
-  for (const pattern of nationalityPatterns) {
-    const match = fullText.match(pattern);
-    if (match) {
-      const parsedNationality = match[1];
-      // NATIONALITIES 배열에서 해당 국적이 있는지 확인
-      foundNationality = NATIONALITIES.find(
-        (nat) =>
-          nat.value.toUpperCase().includes(parsedNationality.toUpperCase()) ||
-          parsedNationality.toUpperCase().includes(nat.value.toUpperCase()),
-      );
-      if (foundNationality) break;
-    }
-  }
-
-  // 파싱된 국적이 유효하면 설정, 아니면 사용자가 직접 선택
+  // 4. 국적 (REPUBLIC OF THE PHILIPPINES 등 상수에 대응)
+  const foundNationality = NATIONALITIES.find((nat) => {
+    const upperText = fullText.toUpperCase();
+    return upperText.includes(nat.value.toUpperCase());
+  });
   data.nationality = foundNationality ? foundNationality.value : '';
 
-  // 발급일자
-  if (!data.issueDate) {
-    // YYYY.MM.DD 형태
-    const dotDateMatch = fullText.match(/(\d{4})\.(\d{1,2})\.(\d{1,2})/);
-    if (dotDateMatch) {
-      const year = dotDateMatch[1];
-      const month = dotDateMatch[2].padStart(2, '0');
-      const day = dotDateMatch[3].padStart(2, '0');
-      const yearNum = parseInt(year, 10);
-      if (yearNum >= 2010 && yearNum <= 2030) {
-        data.issueDate = `${year}-${month}-${day}`;
-      }
-    }
-  }
-
-  // 발급일자
-  if (!data.issueDate) {
-    const issueDateMatches = fullText.match(/(\d{8})/g);
-    if (issueDateMatches) {
-      for (const dateStr of issueDateMatches) {
-        const year = dateStr.substring(0, 4);
-        const month = dateStr.substring(4, 6);
-        const day = dateStr.substring(6, 8);
-
-        const yearNum = parseInt(year, 10);
-        const monthNum = parseInt(month, 10);
-        const dayNum = parseInt(day, 10);
-
-        // 유효한 발급일자 조건 검사
-        if (
-          yearNum >= 2010 &&
-          yearNum <= 2030 &&
-          monthNum >= 1 &&
-          monthNum <= 12 &&
-          dayNum >= 1 &&
-          dayNum <= 31
-        ) {
-          data.issueDate = `${year}-${month}-${day}`;
-          break;
-        }
-      }
-    }
-  }
-  // 체류자격
+  // 5. 체류자격 (D-8, A-1 등 비자 코드 추출)
   const visaStatusMatch = fullText.match(/([A-Z]-\d+)/);
-  if (visaStatusMatch && !data.residenceStatus) {
+  if (visaStatusMatch) {
     data.residenceStatus = visaStatusMatch[1];
+  }
+
+  // 6. 발급일자 (2011.11 또는 2020.11 대응)
+  // 규칙: 일이 누락된 경우 자동으로 '01'일을 기본값으로 채워 YYYY-MM-DD 포맷을 맞춥니다.
+  const issueDateMatch = fullText.match(
+    /(?:발급일자|Date\s*of\s*Issue)\s*(\d{4})[\s.](\d{1,2})(?:[\s.](\d{1,2}))?/i,
+  );
+  if (issueDateMatch) {
+    const year = issueDateMatch[1];
+    const month = issueDateMatch[2].padStart(2, '0');
+    const day = (issueDateMatch[3] || '01').padStart(2, '0');
+
+    const yearNum = parseInt(year, 10);
+    if (yearNum >= 2000 && yearNum <= 2036) {
+      data.issueDate = `${year}-${month}-${day}`;
+    }
   }
 
   return data;
