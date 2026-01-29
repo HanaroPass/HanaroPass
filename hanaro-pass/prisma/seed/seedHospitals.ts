@@ -8,10 +8,12 @@ export const BASIS_API_URL =
   'https://apis.data.go.kr/B551182/hospInfoServicev2/getHospBasisList';
 const DEPT_API_URL =
   'https://apis.data.go.kr/B551182/MadmDtlInfoService2.7/getDgsbjtInfo2.7';
-// 향후 강남구까지 확장 가능
 export const TARGET_DISTRICTS = [
   { name: '광진구', sgguCd: '110023' },
   { name: '성동구', sgguCd: '110011' },
+  { name: '강남구', sgguCd: '110001' },
+  { name: '중구', sgguCd: '110017' },
+  { name: '마포구', sgguCd: '110009' },
 ];
 // 네이버 지도 기준 지원 하는 진료과목 리스트 로딩
 const DEPT_CODE_MAP: Record<string, string> = {
@@ -41,25 +43,33 @@ const DEPT_CODE_MAP: Record<string, string> = {
 const HOSPITAL_IMAGE_MAP: Record<string, string> = {
   건국대학교병원: '/images/hospitals/konkuk.jpg',
   혜민병원: '/images/hospitals/hemin.jpg',
-  바른본병원: '/images/hospitals/bareun.jpg',
-  서울프라임병원: '/images/hospitals/prime.jpg',
-  연세무척나은병원: '/images/hospitals/mucheok.jpg',
-  제니스병원: '/images/hospitals/zenith.jpg',
-  동부참사랑요양병원: '/images/hospitals/dongbu.jpg',
-  편안한요양병원: '/images/hospitals/pyeonanhan.jpg',
-  국립정신건강센터: '/images/hospitals/national_mental_health.jpg',
-  '(사)인구보건복지협회 서울지회 가족보건의원':
-    '/images/hospitals/family_health.jpg',
+  건대성모외과의원: '/images/hospitals/kondae_sungmo.jpg',
+  SC제일산부인과의원: '/images/hospitals/sc_first_obgyn.jpg',
+  가온정신건강의학과의원: '/images/hospitals/gaon_psychiatry.jpg',
+  강한서울정형외과의원: '/images/hospitals/kanghan_seoul.jpg',
+  '24시열린의원': '/images/hospitals/24open.jpg',
+  건대닥터에버스의원: '/images/hospitals/doctorevers.jpg',
+  '365아산원탑마취통증의학과재활의학과의원': '/images/hospitals/365asan.jpg',
+  'Dr. 고 신경정신과의원': '/images/hospitals/drko.jpg',
   한양대학교병원: '/images/hospitals/hanyang.jpg',
   재단법인베스티안재단베스티안서울병원: '/images/hospitals/bestian.jpg',
   '9988병원': '/images/hospitals/9988.jpg',
-  연세바로척병원: '/images/hospitals/yonsei_chuk.jpg',
-  연세슬기병원: '/images/hospitals/yonsei_seulgi.jpg',
-  '학교법인대진교육재단 제인병원': '/images/hospitals/jain.jpg',
-  굿모닝요양병원: '/images/hospitals/goodmorning.jpg',
-  서울효사랑요양병원: '/images/hospitals/hoesarang.jpg',
-  시온요양병원: '/images/hospitals/sion.jpg',
+  금호바른정형외과의원: '/images/hospitals/kumho_bareun.jpg',
+  금호퀸산부인과의원: '/images/hospitals/kumho_queen.jpg',
+  금호누리내과의원: '/images/hospitals/kumho_nuri.jpg',
+  강태영내과의원: '/images/hospitals/kang_ty.jpg',
+  금호퍼스트내과의원: '/images/hospitals/kumho_first.jpg',
   '1삼성탑의원': '/images/hospitals/samsungtop.jpg',
+  권희정정신건강의학과의원: '/images/hospitals/kwon_psychiatry.jpg',
+};
+
+// 병원 이미지 랜덤
+const REAL_HOSPITAL_IMAGES = Object.values(HOSPITAL_IMAGE_MAP);
+
+const getRandomHospitalImage = () => {
+  return REAL_HOSPITAL_IMAGES[
+    Math.floor(Math.random() * REAL_HOSPITAL_IMAGES.length)
+  ];
 };
 
 /**
@@ -141,7 +151,7 @@ export async function fetchAndSeedHospitals() {
     const params = new URLSearchParams({
       ServiceKey: SERVICE_KEY!,
       pageNo: '1',
-      numOfRows: '10',
+      numOfRows: '30',
       sidoCd: '110000',
       sgguCd: district.sgguCd,
       _type: 'json',
@@ -165,7 +175,18 @@ export async function fetchAndSeedHospitals() {
         `[ 시딩 작업 완료 - ${district.name}: 총 ${items.length}개의 병원 발견.`,
       );
 
-      for (const item of items) {
+      // 요양 병원 제거
+      const filteredItems = items.filter(
+        (item: any) => !item.yadmNm.includes('요양'),
+      );
+
+      // 랜덤 셔플
+      const shuffledItems = filteredItems.sort(() => 0.5 - Math.random());
+
+      // 각 구당 10개 고정
+      const selectedItems = shuffledItems.slice(0, 10);
+
+      for (const item of selectedItems) {
         const departments = await getHospitalDepartments(item.ykiho);
         const langs = getRandomLangs(); // 확률 로직 적용 - 최대 3개까지 언어 지원 가능
 
@@ -180,7 +201,7 @@ export async function fetchAndSeedHospitals() {
           data: {
             nameKo: item.yadmNm,
             imageUrl:
-              HOSPITAL_IMAGE_MAP[item.yadmNm] ?? getDefaultHospitalImage(),
+              HOSPITAL_IMAGE_MAP[item.yadmNm] ?? getRandomHospitalImage(),
             address: item.addr,
             latitude,
             longitude,

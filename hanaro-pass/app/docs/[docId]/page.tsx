@@ -3,6 +3,7 @@ import { DOCS_CARD_ITEMS } from '../constants/docsCardItem';
 import Header from '@/components/header/Header';
 import { getUserDocs } from '../actions/userDocs';
 import DocsDetailPageClient from './docsDetailPageClient';
+import DocsPreviewClient from './docsPreviewClient';
 
 export type DocsProps = {
   params: Promise<{ docId: string }>;
@@ -17,8 +18,6 @@ export default async function DocsDetailPage({ params }: DocsProps) {
   const userDoc = await getUserDocs(docId);
   const fileUrl = userDoc?.fileUrl ?? '';
 
-  const isPdf = fileUrl?.toLowerCase().endsWith('.pdf');
-
   return (
     <>
       <Header title={doc?.title ?? '서류'} />
@@ -27,29 +26,10 @@ export default async function DocsDetailPage({ params }: DocsProps) {
         <div className="mx-auto w-full max-w-84">
           <div className="rounded-2xl bg-white shadow-[0_5px_10px_rgba(0,0,0,0.18)]">
             <div className="flex h-105 flex-col items-center justify-center px-6">
-              {!fileUrl ? (
-                <div className="flex h-full w-full items-center justify-center">
-                  <p className="text-black/50">서류를 불러올 수 없습니다.</p>
-                </div>
-              ) : isPdf ? (
-                <div className="relative h-full w-full p-4">
-                  <iframe
-                    src={fileUrl}
-                    title={doc?.title ?? 'document-preview'}
-                    className="h-full w-full border-none"
-                  />
-                </div>
-              ) : (
-                <div className="relative h-full w-full p-4">
-                  <Image
-                    src={fileUrl}
-                    alt="preview"
-                    fill
-                    className="object-contain"
-                    unoptimized
-                  />
-                </div>
-              )}
+              <DocsPreviewClient
+                fileUrl={fileUrl}
+                title={doc?.title ?? 'document-preview'}
+              />
               <div className="mt-2 mb-8 flex flex-col items-center text-center">
                 <p className="text-center font-sans text-[10px] text-black/45 leading-[1.4]">
                   전자서명법 기준을 준수한 안전한 인증서

@@ -19,7 +19,19 @@ services:
       - --innodb_ft_min_token_size=2
       - --innodb_ft_enable_stopword=OFF
 
-    
     volumes:
       - ./mysql:/var/lib/mysql
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+
+  redis:
+    container_name: hanaropass-redis
+    image: redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command:
+      - redis-server
+      - --save ""
+      - --appendonly no
+      - --maxmemory 1gb
+      - --maxmemory-policy allkeys-lru

@@ -21,7 +21,15 @@ export type NaverSearchResult = {
 
 type NaverMapProps = {
   onMarkerClick: (place: ClickablePlace) => void;
-  onMapMoved?: (address: string) => void;
+  onMapMoved?: (
+    address: string,
+    bounds?: {
+      south: number;
+      west: number;
+      north: number;
+      east: number;
+    },
+  ) => void;
   savedPlaces?: SavedPlace[];
   embassyData?: Embassy[];
   exchangeResults?: NaverSearchResult[];
