@@ -123,7 +123,7 @@ export default function MapPageClient({
   });
 
   return (
-    <main className="relative h-screen w-screen overflow-hidden bg-gray-100">
+    <main className="relative h-screen w-full overflow-hidden bg-gray-100">
       <div className="absolute inset-0 z-0">
         <NaverMap
           ref={mapControlRef}
@@ -242,7 +242,7 @@ export default function MapPageClient({
               toggleSheet('hospital', true);
             }}
           />
-        )}{' '}
+        )}
         {openSheet === 'siren' && <SirenContent />}
         {openSheet === 'exchange' && (
           <ExchangeContent
