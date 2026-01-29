@@ -217,7 +217,7 @@ export function AlertDialogProvider({ children }: { children: ReactNode }) {
           disabled={actionDisabled}
           className={`m-0 h-10 flex-1 rounded-lg font-semibold text-white transition-all ${
             options.variant === 'destructive'
-              ? 'bg-red-600! hover:bg-red-700!'
+              ? 'bg-hana-red! shadow-hana-red/20 shadow-lg hover:bg-hana-red/90!'
               : 'bg-green-dark! hover:bg-green-dark/90! active:scale-95'
           } ${options.actionProps?.className ?? ''}`}
         >
