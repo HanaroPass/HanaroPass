@@ -62,15 +62,15 @@ export default function MobileQr({ type, data }: MobileQrProps) {
   const imgSrc = `/images/nation/${fileName}.png`;
 
   return (
-    <div className="flex min-h-full flex-col gap-6 overflow-y-auto pb-4">
+    <div className="flex min-h-full flex-col gap-6 overflow-y-auto pb-3">
       <div
-        className="rounded-2xl py-9 text-white shadow-lg"
+        className="rounded-2xl py-8 text-white shadow-lg"
         style={{
           background:
             'linear-gradient(139deg, #01A5AC 0%, #5BC1C4 19.54%, #D9E8E5 98.01%)',
         }}
       >
-        <div className="mb-4 text-center">
+        <div className="mb-3 text-center">
           <p className="font-semibold text-lg opacity-90">
             남은 시간 : {timeLeft}초
             {isExpired && (
@@ -79,7 +79,7 @@ export default function MobileQr({ type, data }: MobileQrProps) {
           </p>
         </div>
 
-        <div className="mx-auto aspect-square w-80 rounded-xl bg-white p-4">
+        <div className="mx-auto aspect-square w-70 rounded-xl bg-white p-4">
           <div
             className={`flex h-full w-full items-center justify-center transition-all duration-300 ${
               isExpired ? 'opacity-50 blur-sm' : 'opacity-100'

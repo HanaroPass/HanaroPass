@@ -31,8 +31,8 @@ export default function ResultStep({
   const searchParams = useSearchParams();
   const typeParam = searchParams.get('type') as IdentityType | null;
 
-  const [activeTab, setActiveTab] = useState<IdentityType>(
-    identityType || typeParam || DEFAULT_TAB,
+  const [activeTab, setActiveTab] = useState<IdentityType | null>(
+    identityType || typeParam || null,
   );
   const [passportData, setPassportData] = useState<Record<
     string,
@@ -41,12 +41,6 @@ export default function ResultStep({
   const [arcData, setArcData] = useState<Record<string, string> | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (identityType) {
-      setActiveTab(identityType);
-    }
-  }, [identityType]);
 
   useEffect(() => {
     let mounted = true;
@@ -62,19 +56,17 @@ export default function ResultStep({
         setPassportData(res.passport);
         setArcData(res.arc);
 
+        const nextTab =
+          identityType ??
+          typeParam ??
+          (res.passport ? 'passport' : res.arc ? 'arc' : DEFAULT_TAB);
+
+        setActiveTab(nextTab);
+
         if (initialData) {
           const typeLabel =
             identityType === 'passport' ? '여권' : '외국인 등록증';
           registerSuccess(typeLabel);
-        }
-
-        if (identityType) {
-          setActiveTab(identityType);
-        } else if (typeParam) {
-          setActiveTab(typeParam);
-        } else {
-          if (res.passport) setActiveTab('passport');
-          else if (res.arc) setActiveTab('arc');
         }
       } catch (_err) {
         if (mounted) {
@@ -157,18 +149,18 @@ export default function ResultStep({
             <div className="flex h-full items-center justify-center text-red-500">
               {error}
             </div>
-          ) : currentDisplayData ? (
+          ) : activeTab && currentDisplayData ? (
             <div className="flex h-full flex-col">
               <MobileQr type={activeTab} data={currentDisplayData} />
             </div>
-          ) : (
+          ) : activeTab ? (
             <div className="flex h-full flex-col">
               <EmptyIdentityCard
                 type={activeTab}
                 onRegister={() => handleRegister(activeTab)}
               />
             </div>
-          )}
+          ) : null}
         </div>
       </div>
     </>
