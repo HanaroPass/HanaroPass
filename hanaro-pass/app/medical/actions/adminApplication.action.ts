@@ -5,6 +5,7 @@ import {
   HttpError,
   handleActionResult,
 } from '@/lib/errorHandler';
+import { sendApplicationResultEmail } from '@/lib/mail';
 import { prisma } from '@/lib/prisma';
 import { validateAdmin } from '@/lib/user';
 import { LANGUAGES, mapLanguages } from '../constants/language';
@@ -162,11 +163,16 @@ export async function updateApplicationStatusAction(
       }
     });
 
-    // TODO : mail.utils 연결 예정
     if (applicantEmail) {
-      console.log(
-        `[메일 발송] ${applicantEmail}님께 [${hospitalName}]의 ${vStatus} 결과 안내 예정`,
-      );
+      sendApplicationResultEmail(
+        applicantEmail,
+        hospitalName,
+        vStatus,
+        vId,
+      ).then((res) => {
+        if (res.success) console.log(`[Email Sent] To: ${applicantEmail}`);
+        else console.error(`[Email Failed]`, res.error);
+      });
     }
 
     return { success: true, data: null };
