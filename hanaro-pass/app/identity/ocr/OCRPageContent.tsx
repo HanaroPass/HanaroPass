@@ -42,11 +42,6 @@ export default function OCRPageContent({
       const { data } = await Tesseract.recognize(file, 'kor+eng', {
         logger: (m) => console.log(m),
       });
-
-      console.log('------------------------------');
-      console.log('🔍 OCR RAW TEXT:', data.text);
-      console.log('------------------------------');
-
       if (!isMountedRef.current) return;
 
       const parsedData =
@@ -58,9 +53,8 @@ export default function OCRPageContent({
       setOcrKey((prev) => prev + 1);
 
       setIsDrawerOpen(true);
-    } catch (error) {
+    } catch {
       if (!isMountedRef.current) return;
-      console.error('OCR 처리 중 오류:', error);
       alert('이미지 인식에 실패했습니다. 다시 시도해주세요.');
     } finally {
       if (isMountedRef.current) {
@@ -131,7 +125,7 @@ export default function OCRPageContent({
           {isProcessing && (
             <div className="flex flex-col items-center gap-4">
               <div className="h-10 w-10 animate-spin rounded-full border-4 border-white border-t-transparent" />
-              <p className="text-white">OCR 분석 중...</p>
+              <p className="text-white">OCR 분석 중</p>
             </div>
           )}
         </div>
