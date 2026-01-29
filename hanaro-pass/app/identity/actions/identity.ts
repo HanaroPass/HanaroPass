@@ -47,7 +47,7 @@ export async function getIdentityData(): Promise<IdentityData> {
           issueDate: toISODate(passport.issueDate),
           expiryDate: toISODate(passport.expiryDate),
           userPhotoUrl: passport.userPhotoUrl ?? '',
-          nationality: user?.nationality ?? '',
+          nationality: user?.nationality,
         }
       : null,
 
@@ -57,7 +57,7 @@ export async function getIdentityData(): Promise<IdentityData> {
           residenceStatus: arc.residenceStatus,
           issueDate: toISODate(arc.issueDate),
           userPhotoUrl: arc.userPhotoUrl ?? '',
-          nationality: user?.nationality ?? '',
+          nationality: user?.nationality,
         }
       : null,
   };
