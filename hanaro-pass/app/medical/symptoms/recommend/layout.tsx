@@ -8,7 +8,7 @@ export default function recommendLayout({ children }: PropsWithChildren) {
     <>
       {children}
 
-      <div className="-translate-x-1/2 fixed bottom-0 left-1/2 w-full max-w-93.75 bg-white px-4 py-5">
+      <div className="-translate-x-1/2 fixed bottom-0 left-1/2 w-full bg-white px-5 py-5">
         <Link href="/">
           <ActionButton
             className="w-full"
