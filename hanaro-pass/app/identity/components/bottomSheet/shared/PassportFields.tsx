@@ -65,6 +65,8 @@ function DatePicker({
               if (newDate) {
                 const formatted = format(newDate, 'yyyy-MM-dd');
                 setDateStr(formatted);
+              } else {
+                setDateStr('');
               }
             }}
             locale={ko}

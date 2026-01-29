@@ -118,7 +118,7 @@ export function AlienExtraFields({ initialData = {} }: AlienFieldsProps) {
         <Label className="font-normal text-gray-600 text-sm">발급일자</Label>
         <DatePicker
           name="issueDate"
-          defaultValue={initialData.issuedDate || initialData.issueDate || ''}
+          defaultValue={initialData.issueDate || ''}
         />
       </div>
     </>

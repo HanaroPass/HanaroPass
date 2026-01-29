@@ -40,8 +40,17 @@ export async function savePassportData(
         where: { passportNumber: validated.passportNumber },
       });
 
-      if (existing && sessionUserId && existing.userId !== sessionUserId) {
-        throw new HttpError('이미 다른 계정에 등록된 여권번호입니다.', 409);
+      if (existing) {
+        if (!sessionUserId) {
+          throw new HttpError(
+            '이미 등록된 여권번호입니다. 로그인 후 시도해주세요.',
+            409,
+          );
+        }
+        if (existing.userId !== sessionUserId) {
+          throw new HttpError('이미 다른 계정에 등록된 여권번호입니다.', 409);
+        }
+        return existing;
       }
 
       let userIdToUse = sessionUserId ?? null;
