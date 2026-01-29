@@ -14,6 +14,7 @@ import { EmbassyContent } from './components/embassy/EmbassyContent';
 import { ExchangeContent } from './components/exchange/ExchangeContent';
 import { HospitalContent } from './components/hospital/HospitalContent';
 import { SirenContent } from './components/siren/SirenContent';
+import { FloatingLayer } from './components/ui/FloatingLayer';
 import { MapBottomSheet } from './components/ui/MapBottomSheet';
 import {
   NaverMap,
@@ -164,78 +165,80 @@ export default function MapPageClient({
         />
       </div>
 
-      <div className="absolute top-3 left-3 z-10 flex gap-2.5">
-        <ToggleButton
-          variant="pill"
-          label="병원"
-          icon={
-            <Cross className="h-4 w-4" fill="currentColor" strokeWidth={3} />
-          }
-          active={openSheet === 'hospital'}
-          iconColorVariant="red"
-          onClick={() => {
-            setSelectedHospital(null);
-            toggleSheet('hospital');
-          }}
-        />
-        <ToggleButton
-          variant="pill"
-          label="대사관"
-          icon={<Landmark className="h-4 w-4" />}
-          active={openSheet === 'embassy'}
-          iconColorVariant="blue"
-          onClick={() => {
-            const isOpening = openSheet !== 'embassy';
-            toggleSheet('embassy');
-            if (isOpening && myEmbassy) {
-              mapControlRef.current?.panToLocation(
-                Number(myEmbassy.latitude),
-                Number(myEmbassy.longitude),
-              );
+      <FloatingLayer>
+        <div className="fixed top-20 left-3 z-40 flex gap-2.5">
+          <ToggleButton
+            variant="pill"
+            label="병원"
+            icon={
+              <Cross className="h-4 w-4" fill="currentColor" strokeWidth={3} />
             }
-          }}
-        />
-        <ToggleButton
-          variant="pill"
-          label="환전소"
-          icon={<CircleDollarSign className="h-4 w-4" />}
-          active={openSheet === 'exchange'}
-          iconColorVariant="yellow"
-          onClick={handleExchangeClick}
-        />
-      </div>
+            active={openSheet === 'hospital'}
+            iconColorVariant="red"
+            onClick={() => {
+              setSelectedHospital(null);
+              toggleSheet('hospital');
+            }}
+          />
+          <ToggleButton
+            variant="pill"
+            label="대사관"
+            icon={<Landmark className="h-4 w-4" />}
+            active={openSheet === 'embassy'}
+            iconColorVariant="blue"
+            onClick={() => {
+              const isOpening = openSheet !== 'embassy';
+              toggleSheet('embassy');
+              if (isOpening && myEmbassy) {
+                mapControlRef.current?.panToLocation(
+                  Number(myEmbassy.latitude),
+                  Number(myEmbassy.longitude),
+                );
+              }
+            }}
+          />
+          <ToggleButton
+            variant="pill"
+            label="환전소"
+            icon={<CircleDollarSign className="h-4 w-4" />}
+            active={openSheet === 'exchange'}
+            iconColorVariant="yellow"
+            onClick={handleExchangeClick}
+          />
+        </div>
 
-      <div className="absolute top-[15%] right-3 z-10 flex flex-col gap-2.5">
-        <ToggleButton
-          variant="icon"
-          icon={<LocateFixed className="h-5 w-5" />}
-          active={false}
-          iconColorVariant="gray"
-          ariaLabel="내 위치 토글"
-          onClick={() => mapControlRef.current?.centerToMyPosition()}
-        />
-        <ToggleButton
-          variant="icon"
-          icon={
-            <Bookmark
-              className="h-5 w-5"
-              fill={bookmark ? 'currentColor' : 'none'}
-            />
-          }
-          active={bookmark}
-          ariaLabel="저장 토글"
-          onClick={() => setBookmark(!bookmark)}
-        />
-        <ToggleButton
-          variant="icon"
-          icon={<Siren className="h-5 w-5" />}
-          active={openSheet === 'siren'}
-          iconColorVariant="red"
-          colorVariant="red"
-          ariaLabel="긴급 상황 토글"
-          onClick={() => toggleSheet('siren')}
-        />
-      </div>
+        <div className="fixed top-[15%] right-3 z-40 flex flex-col gap-2.5">
+          <ToggleButton
+            variant="icon"
+            icon={<LocateFixed className="h-5 w-5" />}
+            active={false}
+            iconColorVariant="gray"
+            ariaLabel="내 위치 토글"
+            onClick={() => mapControlRef.current?.centerToMyPosition()}
+          />
+          <ToggleButton
+            variant="icon"
+            icon={
+              <Bookmark
+                className="h-5 w-5"
+                fill={bookmark ? 'currentColor' : 'none'}
+              />
+            }
+            active={bookmark}
+            ariaLabel="저장 토글"
+            onClick={() => setBookmark(!bookmark)}
+          />
+          <ToggleButton
+            variant="icon"
+            icon={<Siren className="h-5 w-5" />}
+            active={openSheet === 'siren'}
+            iconColorVariant="red"
+            colorVariant="red"
+            ariaLabel="긴급 상황 토글"
+            onClick={() => toggleSheet('siren')}
+          />
+        </div>
+      </FloatingLayer>
 
       <MapBottomSheet
         openSheet={openSheet}
