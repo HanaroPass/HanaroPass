@@ -8,6 +8,7 @@ import {
   type Hospital,
   useHospitalFilters,
 } from '../../hooks/useHospitalFilters';
+import type { MapBounds } from '../../types/map';
 import { getHospitalStatus, parseOpenHours } from '../../utils/mapUtils';
 import DepartmentFilterPanel from './DepartmentFilterPanel';
 import FilterPanel from './FilterPanel';
@@ -19,6 +20,7 @@ type Props = {
   mode: Mode;
   hospitals: Hospital[];
   hospital?: Hospital;
+  mapBounds: MapBounds | null;
   onBackToList?: () => void;
 };
 
@@ -26,6 +28,7 @@ export function HospitalContent({
   mode,
   hospitals,
   hospital,
+  mapBounds,
   onBackToList,
 }: Props) {
   const router = useRouter();
@@ -37,10 +40,10 @@ export function HospitalContent({
     setSelectedLanguages,
     selectedDepartments,
     setSelectedDepartments,
-    filteredHospitals,
+    visibleHospitals,
     languageLabel,
     departmentLabel,
-  } = useHospitalFilters(hospitals);
+  } = useHospitalFilters(hospitals, mapBounds);
 
   /* =====================
    * DETAIL MODE (병원 하나 상세)
@@ -149,12 +152,12 @@ export function HospitalContent({
 
       {/* 병원 리스트 */}
       <div className="flex-1 overflow-y-auto px-6 pt-0">
-        {filteredHospitals.length === 0 ? (
+        {visibleHospitals.length === 0 ? (
           <div className="flex min-h-60 items-center justify-center text-gray-500 text-sm">
             조건에 만족하는 병원이 없습니다.
           </div>
         ) : (
-          filteredHospitals.map((h, idx) => {
+          visibleHospitals.map((h, idx) => {
             const { openTime, closeTime } = parseOpenHours(
               h.openHours,
               h.nameKo,
@@ -164,7 +167,7 @@ export function HospitalContent({
               <div
                 key={h.id}
                 className={
-                  idx === filteredHospitals.length - 1
+                  idx === visibleHospitals.length - 1
                     ? ''
                     : 'border-gray-100 border-b'
                 }

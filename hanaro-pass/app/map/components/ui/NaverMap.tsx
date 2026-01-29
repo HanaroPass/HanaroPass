@@ -6,6 +6,7 @@ import type { Embassy, SavedPlace } from '@/lib/generated/prisma';
 import type { Hospital } from '../../hooks/useHospitalFilters';
 import { type ClickablePlace, useMapMarkers } from '../../hooks/useMapMarkers';
 import { useNaverMapInit } from '../../hooks/useNaverMapInit';
+import type { MapBounds } from '../../types/map';
 
 export type NaverSearchResult = {
   title: string;
@@ -21,15 +22,7 @@ export type NaverSearchResult = {
 
 type NaverMapProps = {
   onMarkerClick: (place: ClickablePlace) => void;
-  onMapMoved?: (
-    address: string,
-    bounds?: {
-      south: number;
-      west: number;
-      north: number;
-      east: number;
-    },
-  ) => void;
+  onMapMoved?: (address: string, bounds?: MapBounds) => void;
   savedPlaces?: SavedPlace[];
   embassyData?: Embassy[];
   exchangeResults?: NaverSearchResult[];

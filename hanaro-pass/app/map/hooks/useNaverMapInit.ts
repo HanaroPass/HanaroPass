@@ -6,18 +6,11 @@ import {
   MARKER_ICONS,
   NAVER_MAP_SCRIPT_URL,
 } from '../constants/map';
+import type { MapBounds } from '../types/map';
 
 export function useNaverMapInit(
   containerRef: React.RefObject<HTMLDivElement | null>,
-  onMapMoved?: (
-    address: string,
-    bounds?: {
-      south: number;
-      west: number;
-      north: number;
-      east: number;
-    },
-  ) => void,
+  onMapMoved?: (address: string, bounds?: MapBounds) => void,
 ) {
   const mapRef = useRef<naver.maps.Map | null>(null);
   const [isMapReady, setIsMapReady] = useState(false);
