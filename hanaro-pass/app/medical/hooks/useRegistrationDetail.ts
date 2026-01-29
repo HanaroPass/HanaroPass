@@ -9,8 +9,12 @@ export function useRegistrationDetail(id: number) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    if (!id) {
+      setData(null);
+      setIsLoading(false);
+      return;
+    }
     async function fetchDetail() {
-      if (!id) return;
       setIsLoading(true);
       try {
         const result = await getRegistrationDetailAction(id);

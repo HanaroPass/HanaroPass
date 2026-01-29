@@ -78,10 +78,8 @@ export default function LanguageRegistrationClient() {
         />
 
         <div className="mb-4 px-2">
-          {' '}
           <SectionHeader icon={Mail} title="결과 수신 이메일" />
           <div className="mt-2 space-y-2 px-6">
-            {' '}
             <Label htmlFor="email" className="sr-only">
               이메일 주소
             </Label>

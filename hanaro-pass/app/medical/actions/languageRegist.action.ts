@@ -184,7 +184,7 @@ export async function submitLanguageApplicationAction(
         data: admins.map((admin) => ({
           userId: admin.id,
           title: '새로운 병원 언어 등록 신청',
-          content: `[${newApp.Hospital.nameKo}] ${vEmail}님의 신청이 접수되었습니다.`,
+          content: `[${newApp.Hospital.nameKo}] ${vEmail}님의 외국어 등록 신청이 접수되었습니다.`,
           link: `/medical/admin/${newApp.id}`,
         })),
       });

@@ -2,7 +2,6 @@ import 'dotenv/config';
 import { prisma } from '../lib/prisma';
 import { seedCoupons } from './seed/seedCoupons';
 import { seedUserDocs, seedUserIdentityDocs } from './seed/seedDocuments';
-import { seedDummyApplications } from './seed/seedDummyApplications';
 import { seedEmbassies } from './seed/seedEmbassies';
 import { fetchAndSeedHospitals, SERVICE_KEY } from './seed/seedHospitals';
 import { seedNotifications } from './seed/seedNotifications';
@@ -42,7 +41,6 @@ async function main() {
   await prisma.$executeRaw`ALTER TABLE HospitalDept AUTO_INCREMENT = 1`;
   await prisma.$executeRaw`ALTER TABLE HospitalLang AUTO_INCREMENT = 1`;
   await prisma.$executeRaw`ALTER TABLE HospitalReview AUTO_INCREMENT = 1`;
-  await prisma.$executeRaw`ALTER TABLE HospitalLanguageApplication AUTO_INCREMENT = 1`;
   await prisma.$executeRaw`ALTER TABLE SavedPlace AUTO_INCREMENT = 1`;
   await prisma.$executeRaw`ALTER TABLE Embassy AUTO_INCREMENT = 1`;
   await prisma.$executeRaw`ALTER TABLE User AUTO_INCREMENT = 1`;
@@ -59,8 +57,6 @@ async function main() {
   await seedAdminUser();
   await seedUserDocs();
   await seedUserIdentityDocs();
-
-  await seedDummyApplications();
 
   await seedNotifications();
   await seedUserCards();

@@ -12,4 +12,4 @@ DROP INDEX `HospitalLanguageApplication_userId_fkey` ON `HospitalLanguageApplica
 
 -- AlterTable
 ALTER TABLE `HospitalLanguageApplication` DROP COLUMN `userId`,
-    ADD COLUMN `applicantEmail` VARCHAR(255) NOT NULL DEFAULT '';
+    ADD COLUMN `applicantEmail` VARCHAR(255) NOT NULL;
