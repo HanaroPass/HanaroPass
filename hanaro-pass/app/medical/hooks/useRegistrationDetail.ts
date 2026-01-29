@@ -18,9 +18,6 @@ export function useRegistrationDetail(id: number) {
           setData(result.data);
         } else {
           setData(null);
-          if (result.status === 401) {
-            console.error('인증 에러: 로그인이 필요합니다');
-          }
         }
       } finally {
         setIsLoading(false);
