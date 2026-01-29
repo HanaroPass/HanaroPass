@@ -6,10 +6,13 @@ import OCRPageContent from './ocr/OCRPageContent';
 import AccountStep from './steps/AccountStep';
 import IntroStep from './steps/IntroStep';
 import ResultStep from './steps/ResultStep';
+import { saveArcData } from './actions/saveArc';
+import { useToast } from '@/hooks/useToast';
 
 export type IdentityType = 'passport' | 'arc';
 
 export default function IdentityPageClient() {
+  const { actionError, systemError } = useToast();
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -87,11 +90,28 @@ export default function IdentityPageClient() {
   if (currentStep === 'account') {
     return (
       <AccountStep
-        onSubmit={(data) => {
-          history.push('result', {
-            accountData: data,
-            identityData: context.identityData,
-          });
+        onSubmit={async (data) => {
+          try {
+            const formData = new FormData();
+            if (context.identityData) {
+              Object.entries(context.identityData).forEach(([k, v]) => {
+                formData.append(k, v as string);
+              });
+            }
+            // 계좌 단계에서 db 저장
+            const res = await saveArcData(null, formData);
+            if (res.success) {
+              // 성공 시 결과 페이지로 이동
+              history.push('result', {
+                accountData: data,
+                identityData: context.identityData,
+              });
+            } else {
+              actionError(res);
+            }
+          } catch {
+            systemError('신분증 정보 등록');
+          }
         }}
         onClose={handleClose}
       />
