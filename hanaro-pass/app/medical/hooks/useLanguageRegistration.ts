@@ -24,6 +24,7 @@ export function useLanguageRegistration() {
   const [hospitalName, setHospitalName] = useState('');
   const [selectedIds, setSelectedIds] = useState<LanguageId[]>([]);
   const [initialIds, setInitialIds] = useState<LanguageId[]>([]); // 기존에 선택된 언어들
+  const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { registerSuccess, error, warning, actionError, systemError } =
@@ -103,9 +104,10 @@ export function useLanguageRegistration() {
     const validation = SubmitSchema.safeParse({
       hospitalId,
       languageIds: selectedIds,
+      email,
     });
     return validation.success && isChanged;
-  }, [hospitalId, selectedIds, isChanged]);
+  }, [hospitalId, selectedIds, email, isChanged]);
 
   const submitApplication = async () => {
     if (!hospitalId || !isValid) return;
@@ -113,6 +115,7 @@ export function useLanguageRegistration() {
     const validation = SubmitSchema.safeParse({
       hospitalId,
       languageIds: selectedIds,
+      email,
     });
 
     if (!validation.success) {
@@ -125,6 +128,7 @@ export function useLanguageRegistration() {
       const result = await submitLanguageApplicationAction(
         hospitalId,
         selectedIds,
+        email,
       );
       if (result.success) {
         registerSuccess(hospitalName);
@@ -145,6 +149,8 @@ export function useLanguageRegistration() {
     hospitalName,
     selectedIds,
     initialIds,
+    email,
+    setEmail,
     setSelectedIds,
     toggleLanguage,
     submitApplication,
