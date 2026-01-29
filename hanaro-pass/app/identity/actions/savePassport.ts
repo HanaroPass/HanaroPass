@@ -7,6 +7,7 @@ import {
   handleActionResult,
 } from '@/lib/errorHandler';
 import { prisma } from '@/lib/prisma';
+import { createDefaultSavedPlaces } from '@/lib/savedPlace';
 import { getUserIdFromSession, saveUserIdToSession } from '@/lib/session';
 import { PassportFormSchema } from './identity.schema';
 
@@ -63,6 +64,8 @@ export async function savePassportData(
           data: { nickname, nationality: validated.nationality },
         });
         userIdToUse = user.id;
+
+        await createDefaultSavedPlaces(tx, userIdToUse);
       }
 
       return await tx.passport.create({
