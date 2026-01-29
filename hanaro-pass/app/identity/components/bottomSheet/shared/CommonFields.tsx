@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -11,30 +10,18 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { NATIONALITIES } from '@/constants/constants';
+import { useFormState } from '../hooks/useFormState';
 
 type CommonFieldsProps = {
   initialData?: Record<string, string>;
 };
 
 export function CommonFields({ initialData = {} }: CommonFieldsProps) {
-  const [formData, setFormData] = useState({
+  const { formData, handleChange, handleValueChange } = useFormState({
     lastName: initialData.lastName || '',
     firstName: initialData.firstName || '',
     nationality: initialData.nationality || '',
   });
-
-  useEffect(() => {
-    setFormData({
-      lastName: initialData.lastName || '',
-      firstName: initialData.firstName || '',
-      nationality: initialData.nationality || '',
-    });
-  }, [initialData]);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
 
   return (
     <>
@@ -66,9 +53,7 @@ export function CommonFields({ initialData = {} }: CommonFieldsProps) {
         <input type="hidden" name="nationality" value={formData.nationality} />
         <Select
           value={formData.nationality}
-          onValueChange={(val) =>
-            setFormData((prev) => ({ ...prev, nationality: val }))
-          }
+          onValueChange={(val) => handleValueChange('nationality', val)}
         >
           <SelectTrigger className="flex h-12 min-h-12 w-full items-center border-0 bg-gray-50">
             <SelectValue placeholder="국적을 선택해주세요" />

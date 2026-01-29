@@ -21,6 +21,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
+import { useFormState } from '../hooks/useFormState';
+
 type PassportFieldsProps = {
   initialData?: Record<string, string>;
 };
@@ -85,22 +87,10 @@ function DatePicker({
 }
 
 export function PassportFields({ initialData = {} }: PassportFieldsProps) {
-  const [formData, setFormData] = useState({
+  const { formData, handleChange, handleValueChange } = useFormState({
     passportNumber: initialData.passportNumber || '',
     gender: initialData.gender || '',
   });
-
-  useEffect(() => {
-    setFormData({
-      passportNumber: initialData.passportNumber || '',
-      gender: initialData.gender || '',
-    });
-  }, [initialData]);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
 
   return (
     <div className="flex gap-8.25">
@@ -119,9 +109,7 @@ export function PassportFields({ initialData = {} }: PassportFieldsProps) {
         <input type="hidden" name="gender" value={formData.gender} />
         <Select
           value={formData.gender}
-          onValueChange={(val) =>
-            setFormData((prev) => ({ ...prev, gender: val }))
-          }
+          onValueChange={(val) => handleValueChange('gender', val)}
         >
           <SelectTrigger className="flex h-12 min-h-12 w-full items-center border-0 bg-gray-50">
             <SelectValue placeholder="선택하세요" />
@@ -136,11 +124,9 @@ export function PassportFields({ initialData = {} }: PassportFieldsProps) {
   );
 }
 
-// 여권용 날짜 필드
 export function PassportDateFields({ initialData = {} }: PassportFieldsProps) {
   return (
     <>
-      {/* 발급일 */}
       <div className="space-y-2">
         <Label className="font-normal text-gray-600 text-sm">발급일</Label>
         <DatePicker
@@ -149,7 +135,6 @@ export function PassportDateFields({ initialData = {} }: PassportFieldsProps) {
         />
       </div>
 
-      {/* 기간 만료일 */}
       <div className="space-y-2">
         <Label className="font-normal text-gray-600 text-sm">기간 만료일</Label>
         <DatePicker

@@ -14,6 +14,8 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 
+import { useFormState } from '../hooks/useFormState';
+
 type AlienFieldsProps = {
   initialData?: Record<string, string>;
 };
@@ -76,22 +78,10 @@ function DatePicker({
 }
 
 export function AlienFields({ initialData = {} }: AlienFieldsProps) {
-  const [formData, setFormData] = useState({
+  const { formData, handleChange } = useFormState({
     registrationNumber: initialData.registrationNumber || '',
     registrationNumberSuffix: initialData.registrationNumberSuffix || '',
   });
-
-  useEffect(() => {
-    setFormData({
-      registrationNumber: initialData.registrationNumber || '',
-      registrationNumberSuffix: initialData.registrationNumberSuffix || '',
-    });
-  }, [initialData]);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
 
   return (
     <div className="space-y-2">
@@ -120,16 +110,11 @@ export function AlienFields({ initialData = {} }: AlienFieldsProps) {
     </div>
   );
 }
+
 export function AlienExtraFields({ initialData = {} }: AlienFieldsProps) {
-  const [formData, setFormData] = useState({
+  const { formData, handleChange } = useFormState({
     residenceStatus: initialData.residenceStatus || '',
   });
-
-  useEffect(() => {
-    setFormData({
-      residenceStatus: initialData.residenceStatus || '',
-    });
-  }, [initialData]);
 
   return (
     <>
@@ -138,13 +123,8 @@ export function AlienExtraFields({ initialData = {} }: AlienFieldsProps) {
         <Input
           name="residenceStatus"
           type="text"
-          value={formData.residenceStatus} // value로 제어
-          onChange={(e) =>
-            setFormData((prev) => ({
-              ...prev,
-              residenceStatus: e.target.value,
-            }))
-          }
+          value={formData.residenceStatus}
+          onChange={handleChange}
           className="h-12 border-0 bg-gray-50"
         />
       </div>
