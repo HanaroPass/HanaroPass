@@ -1,33 +1,31 @@
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useAlert } from '@/providers/alertProvider';
 import { getRegistrationResultAction } from '../actions/languageRegist.action';
 import type { StatusType } from '../constants/statusConfig';
 
-export function useRegistrationResult() {
+export function useRegistrationResult(id: number) {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { alert: modalAlert } = useAlert();
-
-  const hospitalId = Number(searchParams.get('hospitalId'));
 
   const [data, setData] = useState<{
     hospitalName: string;
     createdAt: string;
     status: StatusType;
+    applicantEmail: string;
   } | null>(null);
 
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (!hospitalId) {
+    if (!id || Number.isNaN(id)) {
       setData(null);
       setIsLoading(false);
       modalAlert({
         title: '유효하지 않은 접근',
         description: '병원 정보가 올바르지 않습니다.',
         actionLabel: '확인',
-        onAction: () => router.push('/medical/registrations'),
+        onAction: () => router.push('/'),
         hideCancel: true,
       });
       return;
@@ -36,11 +34,12 @@ export function useRegistrationResult() {
     const fetchResult = async () => {
       setIsLoading(true);
       try {
-        const result = await getRegistrationResultAction(hospitalId);
+        const result = await getRegistrationResultAction(id);
 
         if (result.success) {
           setData({
             hospitalName: result.data.hospitalName,
+            applicantEmail: result.data.applicantEmail,
             createdAt: new Date(result.data.createdAt).toLocaleString('ko-KR', {
               timeZone: 'Asia/Seoul',
               year: 'numeric',
@@ -53,18 +52,21 @@ export function useRegistrationResult() {
             status: result.data.status,
           });
         } else {
-          alert(result.message);
+          modalAlert({
+            title: '오류',
+            description: result.message,
+            actionLabel: '확인',
+          });
         }
       } catch (err) {
         console.error('Registration Result Fetch Error:', err);
-        alert('등록 결과를 불러오는 중 오류가 발생했습니다.');
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchResult();
-  }, [hospitalId, router, modalAlert]);
+  }, [id, router, modalAlert]);
 
-  return { data, isLoading, hospitalId };
+  return { data, isLoading, applicationId: id };
 }

@@ -141,9 +141,14 @@ export async function submitLanguageApplicationAction(
   email: string,
 ): Promise<ActionResult<{ id: number }>> {
   try {
-    const { hospitalId: vId, languageIds: vLangs } = SubmitSchema.parse({
+    const {
+      hospitalId: vId,
+      languageIds: vLangs,
+      email: vEmail,
+    } = SubmitSchema.parse({
       hospitalId,
       languageIds,
+      email,
     });
 
     const newApp = await prisma.$transaction(async (tx) => {
@@ -160,7 +165,7 @@ export async function submitLanguageApplicationAction(
 
       return await tx.hospitalLanguageApplication.create({
         data: {
-          applicantEmail: email,
+          applicantEmail: vEmail,
           hospitalId: vId,
           requestLangs: vLangs,
           status: 'PENDING',
@@ -175,7 +180,7 @@ export async function submitLanguageApplicationAction(
         data: admins.map((admin) => ({
           userId: admin.id,
           title: '새로운 병원 언어 등록 신청',
-          content: `[${newApp.Hospital.nameKo}] ${email}님의 신청이 접수되었습니다.`,
+          content: `[${newApp.Hospital.nameKo}] ${vEmail}님의 신청이 접수되었습니다.`,
           link: `/medical/admin/${newApp.id}`,
         })),
       });
@@ -191,10 +196,13 @@ export async function submitLanguageApplicationAction(
  *
  * 완료 페이지에서 신청한 병원명, 신청 시간, 상태를 보여주기 위해 사용
  */
-export async function getRegistrationResultAction(
-  id: number,
-): Promise<
-  ActionResult<{ hospitalName: string; createdAt: Date; status: StatusType }>
+export async function getRegistrationResultAction(id: number): Promise<
+  ActionResult<{
+    hospitalName: string;
+    createdAt: Date;
+    status: StatusType;
+    applicantEmail: string;
+  }>
 > {
   try {
     const validatedId = IdSchema.parse(id);
@@ -218,6 +226,7 @@ export async function getRegistrationResultAction(
         hospitalName: application.Hospital.nameKo,
         createdAt: application.createdAt,
         status: application.status as StatusType,
+        applicantEmail: application.applicantEmail,
       },
     };
   } catch (err) {

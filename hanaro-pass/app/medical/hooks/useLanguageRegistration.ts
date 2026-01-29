@@ -132,9 +132,7 @@ export function useLanguageRegistration() {
       );
       if (result.success) {
         registerSuccess(hospitalName);
-        router.push(
-          `/medical/registrations/complete/?hospitalId=${hospitalId}`,
-        );
+        router.push(`/medical/registrations/complete/?id=${result.data.id}`);
       } else {
         actionError(result);
       }
