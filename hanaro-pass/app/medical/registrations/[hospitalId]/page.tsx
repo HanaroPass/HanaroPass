@@ -84,14 +84,16 @@ export default function HospitalRegistrationDetailsPage() {
       label: '진료 가능 언어',
       icon: Globe,
       content: (
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           {formattedLangs?.map((lang) => (
             <div
               key={lang?.id}
-              className="flex items-center gap-1.5 rounded-md border border-gray-100 bg-gray-50 px-2 py-1"
+              className="flex items-center gap-1.5 rounded-full border-gray-100 bg-gray-50 px-4 py-2"
             >
-              <span>{lang?.flag}</span>
-              <span className="text-sm">{lang?.name}</span>
+              <span className="text-base">{lang?.flag}</span>
+              <span className="font-sans font-semibold text-sm antialiased">
+                {lang?.name}
+              </span>
             </div>
           ))}
         </div>
@@ -116,7 +118,11 @@ export default function HospitalRegistrationDetailsPage() {
         {hospitalInfo.map((item) => (
           <React.Fragment key={item.label}>
             <SectionHeader icon={item.icon} title={item.label} />
-            <InfoDetailPlate value={item.content} />
+            {item.label === '진료 가능 언어' ? (
+              <div className="px-6 py-3">{item.content}</div>
+            ) : (
+              <InfoDetailPlate value={item.content} />
+            )}
           </React.Fragment>
         ))}
 
