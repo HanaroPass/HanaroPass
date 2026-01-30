@@ -117,17 +117,16 @@ export default function AdminReviewPage() {
 
       <div className="flex flex-row gap-3 border-gray-100 border-t bg-white-ez px-6 py-4 pb-8">
         <ActionButton
-          text={isUpdating ? '처리 중...' : '승인하기'}
-          disabled={isUpdating || data.status !== 'PENDING'}
-          onClick={onApproveClick}
-          className="flex-1"
-        />
-
-        <ActionButton
           text="반려하기"
           disabled={isUpdating || data.status !== 'PENDING'}
           className="flex-1 border-none bg-hana-red text-white-ez shadow-lg shadow-red-100 transition-opacity hover:opacity-90"
           onClick={onRejectClick}
+        />
+        <ActionButton
+          text={isUpdating ? '처리 중...' : '승인하기'}
+          disabled={isUpdating || data.status !== 'PENDING'}
+          onClick={onApproveClick}
+          className="flex-1"
         />
       </div>
     </>
