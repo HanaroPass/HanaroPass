@@ -23,7 +23,12 @@ export default function MainWrapper({
   children,
   activeTab,
   isRegistered = true,
-}: PropsWithChildren<{ activeTab: string; isRegistered?: boolean }>) {
+  isAdmin = false,
+}: PropsWithChildren<{
+  activeTab: string;
+  isRegistered?: boolean;
+  isAdmin?: boolean;
+}>) {
   const activeIndex = TABS.findIndex((t) => t.key === activeTab);
   const safeIndex = activeIndex === -1 ? 0 : activeIndex;
 
@@ -45,13 +50,25 @@ export default function MainWrapper({
             />
             <ChevronDown size={20} stroke="white" />
           </button>
-          <NotificationBell />
-          <Image
-            width={20}
-            height={20}
-            src="/images/main/profile.svg"
-            alt="프로필"
-          />
+          {(isRegistered || isAdmin) && <NotificationBell />}
+          {isAdmin ? (
+            <Link href="/medical/admin" className="flex items-center">
+              <Image
+                width={20}
+                height={20}
+                src="/images/main/profile.svg"
+                alt="관리자 프로필"
+                className="cursor-pointer"
+              />
+            </Link>
+          ) : (
+            <Image
+              width={20}
+              height={20}
+              src="/images/main/profile.svg"
+              alt="프로필"
+            />
+          )}
         </div>
       </header>
 
