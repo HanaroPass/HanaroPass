@@ -24,7 +24,7 @@ export function useImageUpload(limit = 3) {
     const total = [...images, ...nonDuplicates];
 
     if (total.length > limit) {
-      toast.error('사진은 3개까지만 첨부할 수 있습니다.');
+      toast.error(`사진은 ${limit}개까지만 첨부할 수 있습니다.`);
       return;
     }
 

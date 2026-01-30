@@ -76,7 +76,7 @@ export default function useSymptomResubmit(reloadTrigger: number) {
 
     setIsPlaying(true);
     try {
-      const text = JSON.stringify(result?.번역_내용);
+      const text = result?.번역_내용 ?? '';
       const base64 = await getTTS(text);
 
       const audio = new Audio(`data:audio/mp3;base64,${base64}`);
@@ -85,7 +85,8 @@ export default function useSymptomResubmit(reloadTrigger: number) {
       await audio.play();
     } catch (e) {
       setIsPlaying(false);
-      throw e;
+      toast.error('음성 출력에 실패했습니다.');
+      console.error('TTS 재생 실패', e);
     }
   };
 

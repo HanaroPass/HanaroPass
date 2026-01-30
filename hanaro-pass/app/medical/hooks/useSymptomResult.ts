@@ -21,7 +21,8 @@ export default function useSymptomResult(images: File[]) {
       const formData = new FormData(e.currentTarget);
       if (!formData.get('type') || !formData.get('description')) {
         toast.error('증상과 내용을 모두 입력해주세요.');
-        return setLoading(false);
+        setLoading(false);
+        return;
       }
       images.map((file) => formData.append('images', file));
 
