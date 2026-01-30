@@ -7,9 +7,9 @@ import { seedEmbassies } from './seed/seedEmbassies';
 import { fetchAndSeedHospitals, SERVICE_KEY } from './seed/seedHospitals';
 import { seedNotifications } from './seed/seedNotifications';
 import { seedSavedPlaces } from './seed/seedSavedPlaces';
+import seedSymptomMapping from './seed/seedSymptomMapping';
 import { seedUserCards } from './seed/seedUserCards';
 import { seedAdminUser, seedUsers } from './seed/seedUsers';
-import seedSymptomMapping from './seed/seedSymptomMapping';
 
 async function main() {
   if (!SERVICE_KEY) {
