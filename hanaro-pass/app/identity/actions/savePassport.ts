@@ -84,6 +84,7 @@ export async function savePassportData(
       data: validated,
     };
   } catch (error) {
+    console.log(error);
     return handleActionResult(error);
   }
 }

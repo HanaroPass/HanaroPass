@@ -37,20 +37,14 @@ export default function IdentityPageClient() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    if (currentStep === 'intro') {
-      params.delete('step');
-    } else {
-      params.set('step', currentStep);
-    }
-
-    if (isFromDocs) {
-      params.set('from', 'docs');
-    }
+    if (currentStep === 'intro') params.delete('step');
+    else params.set('step', currentStep);
+    if (isFromDocs) params.set('from', 'docs');
 
     const queryString = params.toString() ? `?${params.toString()}` : '';
-    const newUrl = `${window.location.pathname}${queryString}`;
-
-    router.replace(newUrl, { scroll: false });
+    router.replace(`${window.location.pathname}${queryString}`, {
+      scroll: false,
+    });
   }, [currentStep, isFromDocs, router]);
 
   const handleClose = () => {
@@ -58,29 +52,24 @@ export default function IdentityPageClient() {
       router.replace('/docs');
       return;
     }
-
     if (currentStep === 'result') {
       router.replace('/');
       return;
     }
-
-    if (currentStep !== 'intro') {
-      history.push('intro');
-    } else {
-      router.replace('/');
-    }
+    if (currentStep !== 'intro') history.push('intro');
+    else router.replace('/');
   };
 
   if (currentStep === 'intro') {
     return (
       <IntroStep
-        onSelectIdentityType={(type) => {
+        onSelectIdentityType={(type) =>
           history.push('ocr', {
             identityType: type,
             identityData: null,
             accountData: null,
-          });
-        }}
+          })
+        }
         onClose={handleClose}
       />
     );
@@ -90,11 +79,38 @@ export default function IdentityPageClient() {
     return (
       <OCRPageContent
         type={context.identityType}
-        onSubmit={(data) => {
-          if (context.identityType === 'passport') {
-            history.push('result', { identityData: data, accountData: null });
-          } else {
-            history.push('account', { identityData: data, accountData: null });
+        onSubmit={async (data) => {
+          try {
+            const formData = new FormData();
+            Object.entries(data).forEach(([k, v]) => {
+              if (v) formData.append(k, String(v));
+            });
+
+            if (context.identityType === 'arc') {
+              const res = await saveArcData(null, formData);
+              if (!res.success) {
+                actionError(res);
+                throw new Error('VALIDATION_FAILED');
+              }
+            }
+
+            if (context.identityType === 'passport') {
+              history.push('result', { identityData: data, accountData: null });
+            } else {
+              history.push('account', {
+                identityData: data,
+                accountData: null,
+              });
+            }
+          } catch (error) {
+            if (
+              error instanceof Error &&
+              error.message === 'VALIDATION_FAILED'
+            ) {
+              throw error;
+            }
+            systemError('신분증 정보 확인');
+            throw error;
           }
         }}
         onClose={handleClose}
@@ -107,29 +123,12 @@ export default function IdentityPageClient() {
       <AccountStep
         onSubmit={async (data) => {
           try {
-            if (!context.identityData) {
-              systemError('신분증 정보 등록');
-              return;
-            }
-            const formData = new FormData();
-            Object.entries(context.identityData).forEach(([k, v]) => {
-              if (v !== undefined && v !== null) {
-                formData.append(k, String(v));
-              }
+            history.push('result', {
+              accountData: data,
+              identityData: context.identityData,
             });
-            // 계좌 단계에서 db 저장
-            const res = await saveArcData(null, formData);
-            if (res.success) {
-              // 성공 시 결과 페이지로 이동
-              history.push('result', {
-                accountData: data,
-                identityData: context.identityData,
-              });
-            } else {
-              actionError(res);
-            }
           } catch {
-            systemError('신분증 정보 등록');
+            systemError('계좌 정보 등록');
           }
         }}
         onClose={handleClose}
