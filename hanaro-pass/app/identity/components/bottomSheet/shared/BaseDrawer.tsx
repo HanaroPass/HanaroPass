@@ -36,7 +36,7 @@ export function BaseDrawer({
 }: BaseDrawerProps) {
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className={className || 'mx-auto max-w-[375px]'}>
+      <DrawerContent className={className || 'w-full'}>
         <form action={formAction}>
           <DrawerHeader className="relative border-b">
             <DrawerTitle className="text-center font-semibold text-base">

@@ -49,15 +49,11 @@ export default function ResultStep({
   }, [identityType]);
 
   useEffect(() => {
-    let mounted = true;
-
     const fetchData = async () => {
       try {
         setIsLoading(true);
         setError(null);
         const res = await getIdentityData();
-
-        if (!mounted) return;
 
         setPassportData(res.passport);
         setArcData(res.arc);
@@ -77,19 +73,15 @@ export default function ResultStep({
           else if (res.arc) setActiveTab('arc');
         }
       } catch (_err) {
-        if (mounted) {
-          systemError('신분증 정보');
-        }
+        systemError('신분증 정보');
       } finally {
-        if (mounted) setIsLoading(false);
+        setIsLoading(false);
       }
     };
 
     fetchData();
 
-    return () => {
-      mounted = false;
-    };
+    return () => {};
   }, [typeParam, systemError, registerSuccess, initialData, identityType]);
 
   const handleRegister = (type: IdentityType) => {
