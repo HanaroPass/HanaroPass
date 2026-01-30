@@ -41,26 +41,28 @@ const DEPT_CODE_MAP: Record<string, string> = {
 
 // 병원 이미지 경로
 const HOSPITAL_IMAGE_MAP: Record<string, string> = {
+  '365한국신통의원': '/images/hospitals/365_korean_sintong.jpg',
+  '365아산원탑마취통증의학과365아산원탑마취통증의학과재활의학과의원':
+    '/images/hospitals/365_asan_top.jpg',
+  '24시열린의원': '/images/hospitals/24_hours.jpg',
+  'Dr. 고 신경정신과의원': '/images/hospitals/dr_go.jpg',
   건국대학교병원: '/images/hospitals/konkuk.jpg',
-  혜민병원: '/images/hospitals/hemin.jpg',
-  건대성모외과의원: '/images/hospitals/kondae_sungmo.jpg',
-  SC제일산부인과의원: '/images/hospitals/sc_first_obgyn.jpg',
-  가온정신건강의학과의원: '/images/hospitals/gaon_psychiatry.jpg',
-  강한서울정형외과의원: '/images/hospitals/kanghan_seoul.jpg',
-  '24시열린의원': '/images/hospitals/24open.jpg',
-  건대닥터에버스의원: '/images/hospitals/doctorevers.jpg',
-  '365아산원탑마취통증의학과재활의학과의원': '/images/hospitals/365asan.jpg',
-  'Dr. 고 신경정신과의원': '/images/hospitals/drko.jpg',
-  한양대학교병원: '/images/hospitals/hanyang.jpg',
-  재단법인베스티안재단베스티안서울병원: '/images/hospitals/bestian.jpg',
-  '9988병원': '/images/hospitals/9988.jpg',
-  금호바른정형외과의원: '/images/hospitals/kumho_bareun.jpg',
+  국립정신건강센터: '/images/hospitals/mental.jpg',
+  '(사)인구보건복지협회 서울지회 가족보건의원':
+    '/images/hospitals/family_health.jpg',
+  연세무척나은병원: '/images/hospitals/mucheok.jpg',
+  혜민병원: '/images/hospitals/hyemin.jpg',
+  바른본병원: '/images/hospitals/barunbon.jpg',
+  '365다움의원': '/images/hospitals/365_dawm.jpg',
+  '365더바른신경외과의원': '/images/hospitals/365_bareun_neuro.jpg',
+  '365연세의원': '/images/hospitals/365_yonsei.jpg',
+  권교선내과의원: '/images/hospitals/kwon.jpg',
   금호퀸산부인과의원: '/images/hospitals/kumho_queen.jpg',
+  한양대학교병원: '/images/hospitals/hanyang.jpg',
   금호누리내과의원: '/images/hospitals/kumho_nuri.jpg',
-  강태영내과의원: '/images/hospitals/kang_ty.jpg',
-  금호퍼스트내과의원: '/images/hospitals/kumho_first.jpg',
-  '1삼성탑의원': '/images/hospitals/samsungtop.jpg',
-  권희정정신건강의학과의원: '/images/hospitals/kwon_psychiatry.jpg',
+  강소아청소년과의원: '/images/hospitals/kang_pediatrics.jpg',
+  강태욱피부과의원: '/images/hospitals/kang_clinic.jpg',
+  재단법인베스티안재단베스티안서울병원: '/images/hospitals/bestian.jpg',
 };
 
 // 병원 이미지 랜덤
@@ -71,6 +73,10 @@ const getRandomHospitalImage = () => {
     Math.floor(Math.random() * REAL_HOSPITAL_IMAGES.length)
   ];
 };
+
+// 병원명 기반 24시간 판별
+const is24HourHospital = (name: string) =>
+  name.includes('365') || name.includes('24');
 
 /**
  * 확률 기반 언어 랜덤 배정 함수
@@ -180,11 +186,24 @@ export async function fetchAndSeedHospitals() {
         (item: any) => !item.yadmNm.includes('요양'),
       );
 
-      // 랜덤 셔플
-      const shuffledItems = filteredItems.sort(() => 0.5 - Math.random());
+      const hospitals24 = filteredItems.filter((item: any) =>
+        is24HourHospital(item.yadmNm),
+      );
 
-      // 각 구당 10개 고정
-      const selectedItems = shuffledItems.slice(0, 10);
+      const hospitalsNormal = filteredItems.filter(
+        (item: any) => !is24HourHospital(item.yadmNm),
+      );
+
+      const shuffled24 = hospitals24.sort(() => 0.5 - Math.random());
+      const shuffledNormal = hospitalsNormal.sort(() => 0.5 - Math.random());
+
+      const TARGET_TOTAL = 10;
+      const TARGET_24H = 3;
+
+      const selectedItems = [
+        ...shuffled24.slice(0, TARGET_24H),
+        ...shuffledNormal.slice(0, TARGET_TOTAL - TARGET_24H),
+      ];
 
       for (const item of selectedItems) {
         const departments = await getHospitalDepartments(item.ykiho);
@@ -206,7 +225,9 @@ export async function fetchAndSeedHospitals() {
             latitude,
             longitude,
             phone: item.telno || null,
-            openHours: '09:00 - 18:00',
+            openHours: is24HourHospital(item.yadmNm)
+              ? '00:00 - 24:00'
+              : '09:00 - 18:00',
             HospitalDept: {
               create:
                 departments.length > 0 ? departments : [{ deptName: '일반의' }], // 만약에 없으면, 그냥 일반의로
