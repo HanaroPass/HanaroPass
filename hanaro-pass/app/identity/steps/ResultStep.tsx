@@ -160,7 +160,11 @@ export default function ResultStep({
                 onRegister={() => handleRegister(activeTab)}
               />
             </div>
-          ) : null}
+          ) : (
+            <div className="flex h-full items-center justify-center text-gray-400 text-sm">
+              탭을 선택해주세요
+            </div>
+          )}
         </div>
       </div>
     </>

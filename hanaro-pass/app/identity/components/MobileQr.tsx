@@ -95,11 +95,7 @@ export default function MobileQr({ type, data }: MobileQrProps) {
         </div>
       </div>
 
-      <div
-        className={`flex flex-1 justify-center px-2 transition-all ${
-          isPassport ? 'mt-0' : 'sm:-mt-24 mt-0'
-        }`}
-      >
+      <div className="flex flex-1 justify-center px-2 transition-all">
         {isPassport ? (
           <div className="flex w-full max-w-md flex-col space-y-4">
             <div className="flex space-x-5">
