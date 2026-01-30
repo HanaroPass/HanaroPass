@@ -18,8 +18,8 @@ export default function LuckyPouchPage() {
 
   const sideBySideLayout =
     '[&>footer]:flex-row [&>footer]:gap-3 sm:max-w-[380px]';
-  const brandBtnStyle = '!bg-hana-green !text-white flex-1 ';
-  const cancelBtnStyle = 'flex-1 mt-0';
+  const brandBtnStyle = '!bg-hana-green !text-white flex-1 font-bold py-6 ';
+  const cancelBtnStyle = 'flex-1 mt-0 py-6 bg-gray-100 text-black-600';
 
   const showShareModal = () => {
     setIsPlaying(false);
