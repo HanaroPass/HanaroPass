@@ -72,7 +72,7 @@ export default function LanguageRegistrationClient() {
             hospitalName
               ? `${hospitalName}에서 외국어 진료가 가능한 언어를`
               : '병원 정보를 불러오는 중...',
-            '아래에서 선택해주세요',
+            '아래에서 선택해주세요.',
           ]}
         />
 

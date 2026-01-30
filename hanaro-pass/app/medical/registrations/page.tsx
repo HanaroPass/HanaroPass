@@ -22,7 +22,7 @@ export default function MedicalPage() {
           title="병원 등록"
           descriptions={[
             '지도에 등록된 병원을 검색해',
-            '외국어 진료 가능 여부를 추가로 등록해주세요',
+            '외국어 진료 가능 여부를 추가로 등록해주세요.',
           ]}
         />
         <div className="mt-4 px-6">
