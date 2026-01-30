@@ -66,14 +66,13 @@ export default async function Page({
     ) : null;
 
   return (
-    <LoadingGate>
-      <MainWrapper activeTab={tab} isRegistered isAdmin={isAdmin}>
-        <div className="app-layout">
-          <MainWrapper.Title>
-            {tab === 'pay' && 'EZ Pay'}
-            {tab === 'transfer' && '조회/이체'}
-            {tab === 'service' && '서비스'}
-          </MainWrapper.Title>
+    <MainWrapper activeTab={tab} isRegistered isAdmin={isAdmin}>
+      <div className="app-layout">
+        <MainWrapper.Title>
+          {tab === 'pay' && 'EZ Pay'}
+          {tab === 'transfer' && '조회/이체'}
+          {tab === 'service' && '서비스'}
+        </MainWrapper.Title>
 
         <div className="app-main">
           {tab === 'pay' ? (
