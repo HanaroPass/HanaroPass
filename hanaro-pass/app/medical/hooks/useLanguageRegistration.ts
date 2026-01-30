@@ -26,6 +26,7 @@ export function useLanguageRegistration() {
   const [initialIds, setInitialIds] = useState<LanguageId[]>([]); // 기존에 선택된 언어들
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const { registerSuccess, error, warning, actionError, systemError } =
     useToast();
@@ -69,6 +70,7 @@ export function useLanguageRegistration() {
           }
           setSelectedIds(result.data.existingLangs);
           setInitialIds(result.data.existingLangs);
+          setIsLoading(false);
         } else {
           actionError(result);
           router.back();
@@ -146,6 +148,7 @@ export function useLanguageRegistration() {
   };
 
   return {
+    isLoading,
     hospitalName,
     selectedIds,
     initialIds,

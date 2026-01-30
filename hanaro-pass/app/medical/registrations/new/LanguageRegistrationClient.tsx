@@ -1,6 +1,6 @@
 'use client';
 
-import { Globe, Mail, RotateCcw, XCircle } from 'lucide-react';
+import { Globe, Loader2, Mail, RotateCcw, XCircle } from 'lucide-react';
 import ActionButton from '@/components/ui/ActionButton';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/useToast';
@@ -17,6 +17,7 @@ export default function LanguageRegistrationClient() {
   const { alert } = useAlert();
 
   const {
+    isLoading,
     hospitalName,
     selectedIds,
     setSelectedIds,
@@ -62,6 +63,14 @@ export default function LanguageRegistrationClient() {
         ? `언어 정보 수정하기 (${selectedIds.length})`
         : '변경 사항 없음'
       : `병원 언어 등록 신청하기${selectedIds.length > 0 ? ` (${selectedIds.length})` : ''}`;
+
+  if (isLoading) {
+    return (
+      <div className="flex h-full w-full items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-hana-green" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-full flex-col">
