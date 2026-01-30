@@ -75,26 +75,25 @@ export default async function Page({
             {tab === 'service' && '서비스'}
           </MainWrapper.Title>
 
-          <div className="app-main">
-            {tab === 'pay' ? (
-              <Suspense
-                fallback={
-                  <div className="flex justify-center py-10">
-                    <Loader className="animate-spin text-green-ez" />
-                  </div>
-                }
-              >
-                <TabComponent
-                  cardsPromise={cardsPromise}
-                  couponList={couponList}
-                />
-              </Suspense>
-            ) : (
-              <TabComponent />
-            )}
-          </div>
+        <div className="app-main">
+          {tab === 'pay' ? (
+            <Suspense
+              fallback={
+                <div className="flex justify-center py-10">
+                  <Loader className="animate-spin text-green-ez" />
+                </div>
+              }
+            >
+              <TabComponent
+                cardsPromise={cardsPromise}
+                couponList={couponList}
+              />
+            </Suspense>
+          ) : (
+            <TabComponent />
+          )}
         </div>
-      </MainWrapper>
-    </LoadingGate>
+      </div>
+    </MainWrapper>
   );
 }
