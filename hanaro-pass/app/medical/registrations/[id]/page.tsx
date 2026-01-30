@@ -9,6 +9,7 @@ import {
   History,
   Hospital,
   type LucideIcon,
+  Mail,
 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import React, { useMemo } from 'react';
@@ -19,14 +20,16 @@ import ActionButton from '@/components/ui/ActionButton';
 import { ApplicationStatusAlert } from '../../components/ApplicationStatusAlert';
 import { InfoDetailPlate } from '../../components/InfoDetailPlate';
 import { useRegistrationDetail } from '../../hooks/useRegistrationDetail';
+import { LoadingScreen } from '../complete/page';
 
 export default function HospitalRegistrationDetailsPage() {
   const router = useRouter();
   const params = useParams();
-  const hospitalId = Number(params.hospitalId);
+
+  const applicationId = Number(params.id);
 
   const { data, isLoading, formattedLangs, formatDate } =
-    useRegistrationDetail(hospitalId);
+    useRegistrationDetail(applicationId);
 
   const historySteps = useMemo(() => {
     if (!data?.history) return [];
@@ -69,8 +72,7 @@ export default function HospitalRegistrationDetailsPage() {
     });
   }, [data?.history, formatDate]);
 
-  if (isLoading)
-    return <div className="p-10 text-center">정보를 불러오는 중...</div>;
+  if (isLoading) return <LoadingScreen />;
   if (!data)
     return (
       <div className="p-10 text-center text-black-600">
@@ -80,18 +82,21 @@ export default function HospitalRegistrationDetailsPage() {
 
   const hospitalInfo = [
     { label: '병원 정보', icon: Hospital, content: data.hospitalName },
+    { label: '신청자 이메일', icon: Mail, content: data.applicantEmail },
     {
       label: '진료 가능 언어',
       icon: Globe,
       content: (
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           {formattedLangs?.map((lang) => (
             <div
               key={lang?.id}
-              className="flex items-center gap-1.5 rounded-md border border-gray-100 bg-gray-50 px-2 py-1"
+              className="flex items-center gap-1.5 rounded-full border-gray-100 bg-gray-50 px-4 py-2"
             >
-              <span>{lang?.flag}</span>
-              <span className="text-sm">{lang?.name}</span>
+              <span className="text-base">{lang?.flag}</span>
+              <span className="font-sans font-semibold text-sm antialiased">
+                {lang?.name}
+              </span>
             </div>
           ))}
         </div>
@@ -116,7 +121,11 @@ export default function HospitalRegistrationDetailsPage() {
         {hospitalInfo.map((item) => (
           <React.Fragment key={item.label}>
             <SectionHeader icon={item.icon} title={item.label} />
-            <InfoDetailPlate value={item.content} />
+            {item.label === '진료 가능 언어' ? (
+              <div className="px-6 py-3">{item.content}</div>
+            ) : (
+              <InfoDetailPlate value={item.content} />
+            )}
           </React.Fragment>
         ))}
 
@@ -148,17 +157,23 @@ export default function HospitalRegistrationDetailsPage() {
         </div>
       </main>
 
-      <div className="space-y-3 border-gray-100 border-t bg-white-ez px-6 py-4 pb-8">
+      <div className="flex flex-row gap-3 border-gray-100 border-t bg-white-ez px-6 py-4 pb-8">
         {data.status === 'REJECTED' && (
           <ActionButton
             text="다시 신청하기"
             onClick={() =>
-              router.push(`/medical/registrations/new?hospitalId=${hospitalId}`)
+              router.push(
+                `/medical/registrations/new?hospitalId=${data.hospitalId}`,
+              )
             }
-            className="bg-hana-red text-white-ez transition-opacity hover:bg-hana-red hover:opacity-90"
+            className="flex-1 bg-hana-red text-white-ez transition-opacity hover:bg-hana-red hover:opacity-90"
           />
         )}
-        <ActionButton text="확인" onClick={() => router.push('/')} />
+        <ActionButton
+          text="확인"
+          onClick={() => router.push('/')}
+          className="flex-1"
+        />
       </div>
     </>
   );
@@ -178,7 +193,6 @@ const HistoryItem = ({
   iconColor,
   label,
   date,
-  isLast,
   isItalic,
 }: HistoryItemProps) => (
   <div className="relative flex w-full flex-row items-center justify-between">

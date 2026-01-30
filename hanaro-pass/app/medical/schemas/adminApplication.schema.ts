@@ -19,6 +19,7 @@ export const AdminApplicationSchema = BaseApplicationSchema;
 export const AdminReviewDetailSchema = BaseApplicationSchema.extend({
   hospitalId: z.number(),
   processedAt: z.date().nullable().optional(),
+  applicantEmail: z.string(),
 });
 
 export const AdminDashboardSchema = z.object({

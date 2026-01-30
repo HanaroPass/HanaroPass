@@ -1,7 +1,6 @@
-import Image from 'next/image';
-import { DOCS_CARD_ITEMS } from '../constants/docsCardItem';
 import Header from '@/components/header/Header';
 import { getUserDocs } from '../actions/userDocs';
+import { DOCS_CARD_ITEMS } from '../constants/docsCardItem';
 import DocsDetailPageClient from './docsDetailPageClient';
 import DocsPreviewClient from './docsPreviewClient';
 
@@ -19,7 +18,7 @@ export default async function DocsDetailPage({ params }: DocsProps) {
   const fileUrl = userDoc?.fileUrl ?? '';
 
   return (
-    <>
+    <div className="flex h-dvh flex-col overflow-hidden bg-green-400">
       <Header title={doc?.title ?? '서류'} />
       <main className="min-h-dvh bg-green-400 pt-25">
         {/* 중앙 카드 */}
@@ -49,6 +48,6 @@ export default async function DocsDetailPage({ params }: DocsProps) {
           title={doc?.title ?? '서류'}
         />
       </main>
-    </>
+    </div>
   );
 }

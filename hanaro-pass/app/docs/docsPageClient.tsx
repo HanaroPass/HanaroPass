@@ -1,15 +1,15 @@
 'use client';
+import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
-import DocsCardStack from './components/main/DocsCardStack';
+import Header from '@/components/header/Header';
+import type { getDocsStatus } from './actions/userDocsList';
+import DocsSelectList from './components/add/BottomSelectList';
 import BottomSheet from './components/add/BottomSheet';
+import DocsCardStack from './components/main/DocsCardStack';
 import {
   DOC_ID_TO_REQUIREMENT,
   DOCS_CARD_ITEMS,
 } from './constants/docsCardItem';
-import Header from '@/components/header/Header';
-import DocsSelectList from './components/add/BottomSelectList';
-import { useRouter } from 'next/navigation';
-import type { getDocsStatus } from './actions/userDocsList';
 
 type UserProps = {
   userName: string;
@@ -40,7 +40,7 @@ export default function DocsPageClient({ userName, docStatus }: UserProps) {
   }, [ownedItems]);
 
   return (
-    <>
+    <div className="flex h-dvh flex-col overflow-hidden">
       <Header title="서류 보관함" />
       <main className="relative min-h-dvh bg-linear-to-br from-(--color-green-ez) to-[#89D5D8] px-5 pt-4">
         {/* 상단 타이틀 */}
@@ -62,7 +62,7 @@ export default function DocsPageClient({ userName, docStatus }: UserProps) {
           </button>
         </div>
         {/* 카드 아코디언 */}
-        <div className="pb-10">
+        <div className="flex flex-col items-center pb-20">
           <DocsCardStack userName={userName} items={ownedItems} />
         </div>
 
@@ -75,16 +75,16 @@ export default function DocsPageClient({ userName, docStatus }: UserProps) {
                 setIsSheetOpen(false);
                 // 여권 혹은 외국인등록증을 선택한 경우 인트로 페이지로 이동
                 if (id === 'passport' || id === 'arc') {
-                  router.push('/identity?step=intro&from=docs');
+                  router.replace(`/identity?step=intro&type=${id}&from=docs`);
                 } else {
                   // 기타 일반 서류
-                  router.push(`/docs/add/${id}`);
+                  router.replace(`/docs/add/${id}`);
                 }
               }}
             />
           ) : null}
         </BottomSheet>
       </main>
-    </>
+    </div>
   );
 }

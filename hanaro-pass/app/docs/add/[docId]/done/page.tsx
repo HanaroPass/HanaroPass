@@ -31,7 +31,7 @@ export default function DocsDonePage() {
   }, [doc?.title, registerSuccess]);
 
   return (
-    <>
+    <div className="flex h-dvh flex-col overflow-hidden bg-green-400">
       <Header title={`${doc?.title} 등록 완료`} />
       <main className="min-h-dvh bg-white pb-10">
         <RegistrationSummary
@@ -54,6 +54,6 @@ export default function DocsDonePage() {
           />
         </div>
       </main>
-    </>
+    </div>
   );
 }

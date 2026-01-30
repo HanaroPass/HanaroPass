@@ -1,8 +1,5 @@
 'use client';
 
-import { useToast } from '@/hooks/useToast';
-import { saveArcData } from '../../actions/saveArc';
-import { useDrawerForm } from './hooks/useDrawerForm';
 import { AlienExtraFields, AlienFields } from './shared/AlienFields';
 import { BaseDrawer } from './shared/BaseDrawer';
 import { CommonFields } from './shared/CommonFields';
@@ -24,25 +21,22 @@ export function AlienDrawer({
   className,
   initialData = {},
 }: AlienDrawerProps) {
-  const { actionError } = useToast();
+  const handleDataProcess = (formData: FormData) => {
+    const data = Object.fromEntries(formData.entries());
 
-  const { formAction, isPending } = useDrawerForm({
-    action: saveArcData,
-    onSuccess: (data) => onSubmit?.(data),
-    onError: (error) => actionError(error),
-    onOpenChange,
-  });
-
+    onSubmit?.(data as Record<string, string>);
+    onOpenChange(false);
+  };
   return (
     <BaseDrawer
       open={open}
       onOpenChange={onOpenChange}
       title="외국인 등록증 정보 확인"
-      formAction={formAction}
+      formAction={handleDataProcess}
       onReset={onReset || (() => {})}
       className={className}
       showButtons={true}
-      isPending={isPending}
+      isPending={false}
     >
       <CommonFields initialData={initialData} />
       <AlienFields initialData={initialData} />

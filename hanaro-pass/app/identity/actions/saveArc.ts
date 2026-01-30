@@ -7,6 +7,7 @@ import {
   handleActionResult,
 } from '@/lib/errorHandler';
 import { prisma } from '@/lib/prisma';
+import { createDefaultSavedPlaces } from '@/lib/savedPlaces';
 import { getUserIdFromSession, saveUserIdToSession } from '@/lib/session';
 import { ArcFormSchema } from './identity.schema';
 
@@ -70,6 +71,8 @@ export async function saveArcData(
           select: { id: true },
         });
         userIdToUse = user.id;
+
+        await createDefaultSavedPlaces(tx, userIdToUse);
       }
 
       return await tx.aRC.create({
