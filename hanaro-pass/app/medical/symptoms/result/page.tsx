@@ -20,6 +20,7 @@ export default function SymptomResultContent() {
     result,
     writtenSymptom,
     mode,
+    isPlaying,
   } = useSymptomResubmit(reloadTrigger);
 
   return (
@@ -82,7 +83,13 @@ export default function SymptomResultContent() {
 
         <div className="h-20">{result?.번역_내용}</div>
       </div>
-      <ActionButton onClick={playAudio} text="AI 음성으로 듣기" invert={true} />
+
+      <ActionButton
+        onClick={playAudio}
+        text={isPlaying ? '음성 출력 중...' : 'AI 음성으로 듣기'}
+        disabled={isPlaying}
+        invert={true}
+      />
       <div className="-mx-6 -mt-3">
         <HospitalGuide text="이 내용을 병원에 전달하면 더 원활한 예약이 가능해요" />
       </div>

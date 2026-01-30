@@ -8,10 +8,10 @@ import { useImageUpload } from '../../hooks/useImageUpload';
 import useSymptomResult from '../../hooks/useSymptomResult';
 
 export default function SymptomAnalyzePage() {
-  const { images, imageUrls, isImageCntOK, handleImages, clearImages } =
+  const { images, imageUrls, handleImages, removeImage, clearImages } =
     useImageUpload();
-
   const { isLoading, handleSubmit } = useSymptomResult(images);
+  // const { isFilled }= useSymptomForm();
 
   return (
     <>
@@ -39,17 +39,11 @@ export default function SymptomAnalyzePage() {
             className="h-64 w-full resize-none rounded-[10px] bg-gray-200 px-4 py-3 placeholder:font-normal placeholder:text-black-800 placeholder:leading-6"
             name="description"
             rows={6}
-            required
             placeholder={`ex)\n어제부터 갑자기 배가 아프기 시작했어요.\n누가 배를 콕콕콕 찌르는 것 같이 아파요.`}
           />
           <div className="pt-5 font-medium text-base leading-6">
             관련 사진을 첨부해주세요. ({images.length}/3)
           </div>
-          {!isImageCntOK && (
-            <div className="text-red-700">
-              사진은 3개까지만 첨부할 수 있습니다.
-            </div>
-          )}
           <div className="no-scrollbar flex overflow-x-auto pt-3">
             {images.length < 3 ? (
               <label>
@@ -73,12 +67,19 @@ export default function SymptomAnalyzePage() {
                 />
               </div>
             )}
-            {imageUrls.map((url) => (
+            {imageUrls.map((url, idx) => (
               <div
                 className="relative mr-3 h-28 w-28 shrink-0 overflow-hidden rounded-[10px]"
-                key={url}
+                key={idx}
               >
                 <Image src={url} alt="preview" fill className="object-cover" />
+                <button
+                  type="button"
+                  onClick={() => removeImage(idx)}
+                  className="absolute top-1 right-1 rounded-full bg-white p-1 shadow"
+                >
+                  <XIcon className="h-4 w-4 text-gray-600" />
+                </button>
               </div>
             ))}
           </div>
@@ -91,4 +92,7 @@ export default function SymptomAnalyzePage() {
       </div>
     </>
   );
+}
+function useSymptomForm(): { isFilled: any } {
+  throw new Error('Function not implemented.');
 }

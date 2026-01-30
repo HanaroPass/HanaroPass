@@ -109,5 +109,6 @@ export default function useSymptomResubmit(reloadTrigger: number) {
     isLoading,
     handleResubmit,
     mode,
+    isPlaying
   };
 }
