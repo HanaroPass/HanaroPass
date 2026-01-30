@@ -42,15 +42,16 @@ export default function HospitalRegistrationCompleteClient() {
         <HospitalGuide text="승인 완료 시 외국인 환자가 귀하의 병원 정보를 확인할 수 있게 됩니다." />
       </main>
 
-      <div className="space-y-3 border-gray-100 border-t bg-white-ez px-6 py-4 pb-8">
-        <ActionButton
-          text="신청 내역"
-          onClick={() => router.push(`/medical/registrations/${applicationId}`)}
-        />
+      <div className="flex gap-3 space-y-3 border-gray-100 border-t bg-white-ez px-6 py-4 pb-8">
         <ActionButton
           text="처음으로"
           onClick={() => router.push('/')}
-          className="bg-gray-100 font-semibold text-black-400 shadow-none hover:bg-gray-200"
+          className="flex-1 bg-gray-100 font-semibold text-black-400 shadow-none hover:bg-gray-200"
+        />
+        <ActionButton
+          text="신청 내역"
+          onClick={() => router.push(`/medical/registrations/${applicationId}`)}
+          className="flex-1"
         />
       </div>
     </>
