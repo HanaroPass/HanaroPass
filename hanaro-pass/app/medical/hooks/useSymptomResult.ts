@@ -24,7 +24,6 @@ export default function useSymptomResult(images: File[]) {
       localStorage.setItem('symptom-images', JSON.stringify(imageDataArray));
 
       const { fromCached, response } = await postSymptomForm(formData);
-      console.log(response);
       if (fromCached) {
         await new Promise((r) => setTimeout(r, 2000));
       }

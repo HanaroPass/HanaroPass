@@ -10,7 +10,6 @@ export async function postSymptomForm(formData: FormData) {
   const type = formData.get('type') as string;
   const description = formData.get('description') as string;
   const images = formData.getAll('images') as File[];
-  console.log(images);
   return analyzeSymptom(type, description, images);
 }
 

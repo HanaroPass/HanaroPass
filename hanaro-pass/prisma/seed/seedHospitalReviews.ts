@@ -1,9 +1,9 @@
+import OpenAI from 'openai';
 import {
   pickRandomPlasticReviews,
   pickRandomReviews,
 } from '@/app/map/constants/hospitalsReview';
 import { prisma } from '@/lib/prisma';
-import OpenAI from 'openai';
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -51,12 +51,10 @@ export async function seedHospitalReviews() {
   });
 
   for (const hospital of hospitals) {
-    console.log(hospital);
     let reviews: string[];
     if (hospital.HospitalDept.some((d) => d.deptName === '성형외과')) {
       reviews = pickRandomPlasticReviews();
     } else reviews = pickRandomReviews();
-    console.log(reviews);
     const aiSummary = await generateSummary(reviews);
 
     await prisma.hospitalReview.create({
