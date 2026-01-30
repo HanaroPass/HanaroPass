@@ -41,28 +41,28 @@ const DEPT_CODE_MAP: Record<string, string> = {
 
 // 병원 이미지 경로
 const HOSPITAL_IMAGE_MAP: Record<string, string> = {
-  '365한국신통의원': '/images/hospitals/365_korean_sintong.jpg',
-  '365아산원탑마취통증의학과365아산원탑마취통증의학과재활의학과의원':
-    '/images/hospitals/365_asan_top.jpg',
   '24시열린의원': '/images/hospitals/24_hours.jpg',
-  'Dr. 고 신경정신과의원': '/images/hospitals/dr_go.jpg',
-  건국대학교병원: '/images/hospitals/konkuk.jpg',
-  국립정신건강센터: '/images/hospitals/mental.jpg',
+  '365류마고내과의원': '/images/hospitals/365_rhumago.jpg',
+  '365아산원탑마취통증의학과재활의학과의원':
+    '/images/hospitals/365_asan_top.jpg',
   '(사)인구보건복지협회 서울지회 가족보건의원':
     '/images/hospitals/family_health.jpg',
-  연세무척나은병원: '/images/hospitals/mucheok.jpg',
-  혜민병원: '/images/hospitals/hyemin.jpg',
-  바른본병원: '/images/hospitals/barunbon.jpg',
+  'Dr. 고 신경정신과의원': '/images/hospitals/dr_go_mental.jpg',
+  SC제일산부인과의원: '/images/hospitals/sc_first_obgyn.jpg',
+  가온정신건강의학과의원: '/images/hospitals/gaon_mental.jpg',
+  가족애내과의원: '/images/hospitals/family_love_internal.jpg',
+  강남훈내과의원: '/images/hospitals/gangnam_hun_internal.jpg',
+  강한서울정형외과의원: '/images/hospitals/kanghan_seoul.jpg',
   '365다움의원': '/images/hospitals/365_dawm.jpg',
-  '365더바른신경외과의원': '/images/hospitals/365_bareun_neuro.jpg',
+  '365더바른신경외과의원': '/images/hospitals/365_bare_neuro.jpg',
   '365연세의원': '/images/hospitals/365_yonsei.jpg',
-  권교선내과의원: '/images/hospitals/kwon.jpg',
-  금호퀸산부인과의원: '/images/hospitals/kumho_queen.jpg',
-  한양대학교병원: '/images/hospitals/hanyang.jpg',
-  금호누리내과의원: '/images/hospitals/kumho_nuri.jpg',
+  '1삼성탑의원': '/images/hospitals/samsung_tower.jpg',
+  '9988의원': '/images/hospitals/9988.jpg',
+  가온삼성비뇨의학과의원: '/images/hospitals/gaon_samsung.jpg',
+  강남호랑이마취통증의학과의원: '/images/hospitals/gangnam_tiger.jpg',
+  강내과의원: '/images/hospitals/kang_internal.jpg',
   강소아청소년과의원: '/images/hospitals/kang_pediatrics.jpg',
-  강태욱피부과의원: '/images/hospitals/kang_clinic.jpg',
-  재단법인베스티안재단베스티안서울병원: '/images/hospitals/bestian.jpg',
+  강태영내과의원: '/images/hospitals/kang_taeyoung.jpg',
 };
 
 // 병원 이미지 랜덤
@@ -186,23 +186,20 @@ export async function fetchAndSeedHospitals() {
         (item: any) => !item.yadmNm.includes('요양'),
       );
 
-      const hospitals24 = filteredItems.filter((item: any) =>
-        is24HourHospital(item.yadmNm),
-      );
+      const hospitals24 = filteredItems
+        .filter((item) => is24HourHospital(item.yadmNm))
+        .sort((a, b) => a.yadmNm.localeCompare(b.yadmNm));
 
-      const hospitalsNormal = filteredItems.filter(
-        (item: any) => !is24HourHospital(item.yadmNm),
-      );
-
-      const shuffled24 = hospitals24.sort(() => 0.5 - Math.random());
-      const shuffledNormal = hospitalsNormal.sort(() => 0.5 - Math.random());
+      const hospitalsNormal = filteredItems
+        .filter((item) => !is24HourHospital(item.yadmNm))
+        .sort((a, b) => a.yadmNm.localeCompare(b.yadmNm));
 
       const TARGET_TOTAL = 10;
       const TARGET_24H = 3;
 
       const selectedItems = [
-        ...shuffled24.slice(0, TARGET_24H),
-        ...shuffledNormal.slice(0, TARGET_TOTAL - TARGET_24H),
+        ...hospitals24.slice(0, TARGET_24H),
+        ...hospitalsNormal.slice(0, TARGET_TOTAL - TARGET_24H),
       ];
 
       for (const item of selectedItems) {
