@@ -5,18 +5,18 @@ import ActionButton from '@/components/ui/ActionButton';
 
 export default function recommendLayout({ children }: PropsWithChildren) {
   return (
-    <>
-      {children}
+    <div className="flex h-dvh flex-col">
+      <div className="flex-1 overflow-y-auto py-6">{children}</div>
 
-      <div className="-translate-x-1/2 fixed bottom-0 left-1/2 w-full bg-white px-5 py-5">
+      <div className="sticky bottom-0 z-50 bg-white px-5 py-7">
         <Link href="/">
           <ActionButton
-            className="w-full"
+            className="h-14 w-full"
             text="홈으로 돌아가기"
             onClick={() => {}}
           />
         </Link>
       </div>
-    </>
+    </div>
   );
 }

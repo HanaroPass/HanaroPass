@@ -84,7 +84,7 @@ export default function SymptomAnalyzePage() {
           </div>
           <ActionButton
             text="다 입력했어요"
-            className="mb-9"
+            className="mb-9 h-14"
             onClick={() => {}}
           />
         </form>

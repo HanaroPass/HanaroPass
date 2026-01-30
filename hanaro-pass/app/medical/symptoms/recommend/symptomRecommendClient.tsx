@@ -27,7 +27,7 @@ export default function SymptomRecommendClient() {
   }, []);
 
   return (
-    <div className="space-y-4 px-4 py-6 pb-20">
+    <div className="space-y-4 px-4 py-6 pb-5">
       <SymptomHeader user={user} symptom={symptom} />
       <HospitalList hospitals={hospitals} isLoading={isLoading} />
     </div>

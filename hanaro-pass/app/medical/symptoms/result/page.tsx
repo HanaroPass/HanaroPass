@@ -105,6 +105,7 @@ export default function SymptomResultContent() {
           />
         ) : (
           <ActionButton
+            className="h-14"
             onClick={() => {
               localStorage.removeItem('symptom-images');
               router.push('/map');
