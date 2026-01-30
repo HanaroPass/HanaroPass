@@ -1,8 +1,7 @@
 'use client';
 
-import { Globe, Mail, RotateCcw } from 'lucide-react';
+import { Globe, Mail, RotateCcw, XCircle } from 'lucide-react';
 import ActionButton from '@/components/ui/ActionButton';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/useToast';
 import { useAlert } from '@/providers/alertProvider';
@@ -77,20 +76,32 @@ export default function LanguageRegistrationClient() {
           ]}
         />
 
-        <div className="mb-4 px-2">
+        <div className="mb-4 select-none px-2">
           <SectionHeader icon={Mail} title="결과 수신 이메일" />
           <div className="mt-2 space-y-2 px-6">
             <Label htmlFor="email" className="sr-only">
               이메일 주소
             </Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="example@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="h-12 rounded-xl border-gray-200 focus:border-hana-red focus:ring-hana-red"
-            />
+            <div className="group flex items-center gap-2 rounded-xl bg-gray-200 px-4 py-3.5">
+              <input
+                id="email"
+                type="email"
+                placeholder="example@gmail.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="flex-1 select-text bg-transparent text-base text-black-900 outline-none placeholder:text-black-400"
+              />
+
+              {email && (
+                <button
+                  type="button"
+                  onClick={() => setEmail('')}
+                  className="text-black-400 transition-colors hover:text-black-600"
+                >
+                  <XCircle size={20} className="fill-black-400 text-gray-200" />
+                </button>
+              )}
+            </div>
             <p className="mt-2 font-sans text-black-600 text-xs">
               심사 결과(승인/반려)가 위 메일 주소로 발송됩니다. 정확히
               입력해주세요.
