@@ -50,7 +50,7 @@ export function useLanguageRegistration() {
           if (result.data.isPENDING && result.data.pendingAppId) {
             alert({
               title: '심사 진행 중',
-              description: `'${result.data.nameKo}'에 대해 이미 심사 중인 내역이 있습니다.\n결과가 나올 때까지 추가 신청이 불가능합니다.`,
+              description: `'${result.data.nameKo}'에 대해 \n이미 심사 중인 내역이 있습니다.\n결과가 나올 때까지 추가 신청이 불가능합니다.`,
               actionLabel: '내역 확인하기',
               cancelLabel: '돌아가기',
               onAction: () =>

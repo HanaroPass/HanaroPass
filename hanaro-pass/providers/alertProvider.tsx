@@ -242,7 +242,7 @@ export function AlertDialogProvider({ children }: { children: ReactNode }) {
           ) : null}
 
           {options.description ? (
-            <AlertDialogDescription>
+            <AlertDialogDescription className="whitespace-pre-wrap text-center">
               {options.description}
             </AlertDialogDescription>
           ) : null}
