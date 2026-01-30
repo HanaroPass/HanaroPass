@@ -4,13 +4,13 @@ import { seedDummyApplications } from './seed/seedApplications';
 import { seedCoupons } from './seed/seedCoupons';
 import { seedUserDocs, seedUserIdentityDocs } from './seed/seedDocuments';
 import { seedEmbassies } from './seed/seedEmbassies';
+import { seedHospitalReviews } from './seed/seedHospitalReviews';
 import { fetchAndSeedHospitals, SERVICE_KEY } from './seed/seedHospitals';
 import { seedNotifications } from './seed/seedNotifications';
 import { seedSavedPlaces } from './seed/seedSavedPlaces';
+import seedSymptomMapping from './seed/seedSymptomMapping';
 import { seedUserCards } from './seed/seedUserCards';
 import { seedAdminUser, seedUsers } from './seed/seedUsers';
-import seedSymptomMapping from './seed/seedSymptomMapping';
-import { seedHospitalReviews } from './seed/seedHospitalReviews';
 
 async function main() {
   if (!SERVICE_KEY) {
@@ -54,7 +54,6 @@ async function main() {
   await prisma.$executeRaw`ALTER TABLE Notification AUTO_INCREMENT = 1`;
   await prisma.$executeRaw`ALTER TABLE SymptomMappings AUTO_INCREMENT = 1`;
   await prisma.$executeRaw`ALTER TABLE HospitalReview AUTO_INCREMENT = 1`;
-  
 
   await fetchAndSeedHospitals();
   await seedUsers();
