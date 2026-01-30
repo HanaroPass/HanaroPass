@@ -11,7 +11,6 @@ export default function SymptomAnalyzePage() {
   const { images, imageUrls, handleImages, removeImage, clearImages } =
     useImageUpload();
   const { isLoading, handleSubmit } = useSymptomResult(images);
-  // const { isFilled }= useSymptomForm();
 
   return (
     <>
@@ -70,7 +69,7 @@ export default function SymptomAnalyzePage() {
             {imageUrls.map((url, idx) => (
               <div
                 className="relative mr-3 h-28 w-28 shrink-0 overflow-hidden rounded-[10px]"
-                key={idx}
+                key={url}
               >
                 <Image src={url} alt="preview" fill className="object-cover" />
                 <button
@@ -92,7 +91,4 @@ export default function SymptomAnalyzePage() {
       </div>
     </>
   );
-}
-function useSymptomForm(): { isFilled: any } {
-  throw new Error('Function not implemented.');
 }

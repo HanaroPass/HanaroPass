@@ -19,6 +19,7 @@ export default function useSymptomResubmit(reloadTrigger: number) {
 
   useEffect(() => {
     const parse = async () => {
+      reloadTrigger;
       const data = localStorage.getItem('symptom-result');
       if (!data) return;
 
@@ -109,6 +110,6 @@ export default function useSymptomResubmit(reloadTrigger: number) {
     isLoading,
     handleResubmit,
     mode,
-    isPlaying
+    isPlaying,
   };
 }

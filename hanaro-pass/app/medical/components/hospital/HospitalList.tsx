@@ -48,7 +48,7 @@ export default function HospitalList({
   const unChecked = 'bg-green-ez border-green-ez text-white';
 
   return (
-    <div>
+    <div className="pr-4 pl-2">
       <div className="mt-6 flex gap-2 text-center font-medium">
         <button
           disabled={!location}
@@ -86,7 +86,7 @@ export default function HospitalList({
               phone: hospital.phone ?? '',
               languages: hospital.languages,
               departments: hospital.departments,
-              aiSummary: hospital.aiSummary ?? undefined,
+              aiSummary: hospital.aiSummary,
               imageUrl: hospital.imageUrl,
             }}
           />
