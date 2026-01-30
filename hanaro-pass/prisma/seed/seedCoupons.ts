@@ -217,7 +217,7 @@ export async function seedCoupons() {
         couponCode: 'HN-2025-000404',
         brandName: 'CGV',
         brandPic:
-          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRntmucCbdS902B24l78XpjEYrcaHFAvfSh1w&s',
+          'https://i.namu.wiki/i/6NsnI5PqnBZbq8EzyE9dA2FALVOFaeSSplqJ7xxA0Ds3Lp_u7n-U-DHKx9CvDmtAI3S3l3cjPYj_PpX4XI1GgA.svg',
         latitude: '37.54430',
         longitude: '127.05910',
         description:
