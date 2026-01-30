@@ -29,10 +29,12 @@ export default function ResultStep({
 }: ResultStepProps) {
   const { registerSuccess, systemError } = useToast();
   const searchParams = useSearchParams();
-  const typeParam = searchParams.get('type') as IdentityType | null;
+  const rawTypeParam = searchParams.get('type');
+  const typeParam: IdentityType | null =
+    rawTypeParam === 'passport' || rawTypeParam === 'arc' ? rawTypeParam : null;
 
-  const [activeTab, setActiveTab] = useState<IdentityType>(
-    identityType || typeParam || DEFAULT_TAB,
+  const [activeTab, setActiveTab] = useState<IdentityType | null>(
+    identityType || typeParam || null,
   );
   const [passportData, setPassportData] = useState<Record<
     string,
@@ -58,19 +60,17 @@ export default function ResultStep({
         setPassportData(res.passport);
         setArcData(res.arc);
 
+        const nextTab: IdentityType =
+          identityType ??
+          typeParam ??
+          (res.passport ? 'passport' : res.arc ? 'arc' : DEFAULT_TAB);
+
+        setActiveTab(nextTab);
+
         if (initialData) {
           const typeLabel =
             identityType === 'passport' ? '여권' : '외국인 등록증';
           registerSuccess(typeLabel);
-        }
-
-        if (identityType) {
-          setActiveTab(identityType);
-        } else if (typeParam) {
-          setActiveTab(typeParam);
-        } else {
-          if (res.passport) setActiveTab('passport');
-          else if (res.arc) setActiveTab('arc');
         }
       } catch (_err) {
         systemError('신분증 정보');
@@ -149,16 +149,20 @@ export default function ResultStep({
             <div className="flex h-full items-center justify-center text-red-500">
               {error}
             </div>
-          ) : currentDisplayData ? (
+          ) : activeTab && currentDisplayData ? (
             <div className="flex h-full flex-col">
               <MobileQr type={activeTab} data={currentDisplayData} />
             </div>
-          ) : (
+          ) : activeTab ? (
             <div className="flex h-full flex-col">
               <EmptyIdentityCard
                 type={activeTab}
                 onRegister={() => handleRegister(activeTab)}
               />
+            </div>
+          ) : (
+            <div className="flex h-full items-center justify-center text-gray-400 text-sm">
+              탭을 선택해주세요
             </div>
           )}
         </div>
