@@ -44,3 +44,19 @@ export async function validateUser() {
   }
   return session.userId; // 인증된 유저의 ID를 반환
 }
+
+/**
+ * 현재 로그인한 유저가 관리자인지 여부만 확인 (Boolean 반환)
+ */
+export async function checkIsAdmin(): Promise<boolean> {
+  const userId = await getUserIdFromSession();
+
+  if (!userId) return false;
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { role: true },
+  });
+
+  return user?.role === 'ADMIN';
+}

@@ -21,14 +21,15 @@ export function useAdminReview(id: number) {
       setIsLoading(true);
       setError(null);
 
-      const idValidation = IdSchema.safeParse(id);
+      const numericId = Number(id);
+      const idValidation = IdSchema.safeParse(numericId);
 
       if (!idValidation.success) {
         setData(null);
         setError('유효하지 않은 신청 ID입니다.');
         return;
       }
-      const result = await getAdminReviewDetailAction(id);
+      const result = await getAdminReviewDetailAction(numericId);
 
       if (result.success) setData(result.data);
       else {

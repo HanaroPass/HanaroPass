@@ -15,7 +15,7 @@ export const STATUS_CONFIG = {
       iconColor: 'text-yellow-600',
     },
     Icon: Clock,
-    message: '관리자가 확인 중입니다. 승인까지 1-2 영업일이 소요됩니다.',
+    message: '승인까지 1-2 영업일이 소요됩니다.',
   },
   APPROVED: {
     label: '승인완료',
@@ -27,12 +27,11 @@ export const STATUS_CONFIG = {
     alert: {
       bg: 'bg-green-50',
       title: 'text-green-900',
-      desc: 'text-green-700',
+      desc: 'text-green-900',
       iconColor: 'text-green-600',
     },
     Icon: CheckCircle2,
-    message:
-      '승인이 완료되었습니다. 이제 외국인 환자가 병원 정보를 확인할 수 있습니다.',
+    message: '이제 외국인 환자가 병원 정보를 확인할 수 있습니다.',
   },
   REJECTED: {
     label: '반려됨',
@@ -48,7 +47,7 @@ export const STATUS_CONFIG = {
       iconColor: 'text-red-600',
     },
     Icon: AlertCircle,
-    message: '정보가 반려되었습니다. 사유 확인 후 다시 신청해주세요.',
+    message: '다시 신청해주세요.',
   },
 } as const;
 

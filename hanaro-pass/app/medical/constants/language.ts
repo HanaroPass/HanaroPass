@@ -35,12 +35,12 @@ export type LanguageInfo = {
 };
 
 export const mapLanguages = (ids: string[]): LanguageInfo[] =>
-  ids.map((id) => {
-    const info = LANGUAGES.find((l) => l.id === id);
-    return {
-      id,
-      name: info?.name || id,
-      sub: info?.sub || '',
-      flag: info?.flag || '🌐',
-    };
-  });
+  ids
+    .map((id) => LANGUAGES.find((l) => l.id === id))
+    .filter((info): info is (typeof LANGUAGES)[number] => !!info)
+    .map((info) => ({
+      id: info.id,
+      name: info.name,
+      sub: info.sub,
+      flag: info.flag,
+    }));
