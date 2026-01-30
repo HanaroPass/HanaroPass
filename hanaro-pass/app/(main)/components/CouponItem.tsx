@@ -28,7 +28,7 @@ export default function CouponItem({ item }: CouponItemProps) {
           src={item.logo}
           alt={item.brand}
           width={35}
-          height={0}
+          height={35}
           sizes="100vw"
           className="h-auto w-8.75 object-contain"
           priority
