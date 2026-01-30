@@ -75,7 +75,7 @@ export default function MobileQr({ type, data }: MobileQrProps) {
           </p>
         </div>
 
-        <div className="mx-auto aspect-square w-64 rounded-xl bg-white p-4">
+        <div className="mx-auto aspect-square w-72 rounded-xl bg-white p-4">
           <div
             className={`flex h-full w-full items-center justify-center transition-all duration-300 ${
               isExpired ? 'opacity-50 blur-sm' : 'opacity-100'
@@ -84,14 +84,14 @@ export default function MobileQr({ type, data }: MobileQrProps) {
             <QRCode
               value={qrData}
               size={256}
-              style={{ height: 'auto', maxWidth: '100%', width: '100%' }}
+              style={{ height: 'auto', maxWidth: '90%', width: '90%' }}
               viewBox="0 0 256 256"
             />
           </div>
         </div>
       </div>
 
-      <div className="flex flex-1 justify-center px-2">
+      <div className="flex flex-1 justify-center px-2 transition-all">
         {isPassport ? (
           <div className="flex w-full max-w-md flex-col space-y-4">
             <div className="flex space-x-5">
@@ -123,7 +123,7 @@ export default function MobileQr({ type, data }: MobileQrProps) {
             </div>
           </div>
         ) : (
-          <div className="flex w-full max-w-md items-center space-x-5">
+          <div className="flex w-full max-w-md items-start space-x-5">
             {PhotoSection}
             <div className="flex h-48 flex-1 flex-col justify-center space-y-4 rounded-2xl bg-gray-50 px-4 py-2 text-gray-800">
               <div>
