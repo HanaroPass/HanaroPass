@@ -34,6 +34,14 @@ export const handleActionResult = (err: unknown): ActionResult<never> => {
     };
   }
 
+  if (err instanceof HttpError) {
+    return {
+      success: false,
+      message: err.message,
+      status: err.status,
+    };
+  }
+
   if (isErrorWithMessage(err)) {
     console.error('Server System Error:', err.message);
     return {
