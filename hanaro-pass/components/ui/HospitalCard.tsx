@@ -35,11 +35,11 @@ export function HospitalCard({ hospital }: { hospital: HospitalInfo }) {
           {/* 병원명 */}
           <div className="font-bold text-gray-900 text-lg">{hospital.name}</div>
 
-          {/* 영업시간 + 상태 */}
-          <div className="flex items-center gap-1.5 whitespace-nowrap text-sm">
-            <span className="font-semibold text-gray-700">영업 시간</span>
-            <span className="text-gray-800">
-              {hospital.openTime}
+          {/* 진료시간 + 상태 */}
+          <div className="flex items-center whitespace-nowrap text-sm">
+            <span className="font-semibold text-gray-700">진료 시간</span>
+            <span className="pr-1.5 text-gray-800">
+              : {hospital.openTime}
               {hospital.closeTime?.trim() && ` ~ ${hospital.closeTime}`}
             </span>
             <span
@@ -77,7 +77,7 @@ export function HospitalCard({ hospital }: { hospital: HospitalInfo }) {
         </div>
 
         {/* 오른쪽 사진 (고정 높이) */}
-        <div className="relative h-32 w-32 self-start overflow-hidden rounded-xl bg-gray-100">
+        <div className="relative h-30 w-30 self-start overflow-hidden rounded-xl bg-gray-100">
           {hospital.imageUrl ? (
             <Image
               src={hospital.imageUrl}

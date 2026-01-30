@@ -1,7 +1,6 @@
 'use client';
 
 import { type ReactNode, useEffect, useState } from 'react';
-import { createPortal } from 'react-dom';
 
 export function FloatingLayer({ children }: { children: ReactNode }) {
   const [mounted, setMounted] = useState(false);
@@ -12,5 +11,5 @@ export function FloatingLayer({ children }: { children: ReactNode }) {
 
   if (!mounted) return null;
 
-  return createPortal(children, document.body);
+  return <>{children}</>;
 }
