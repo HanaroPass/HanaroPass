@@ -342,3 +342,36 @@ input[type="search"]::-webkit-search-results-decoration {
     pointer-events: auto;
   }
 }
+
+@keyframes waveGradient {
+  0% {
+    background-position: 0% 0%;
+  }
+  50% {
+    background-position: 100% 100%;
+  }
+  100% {
+    background-position: 0% 0%;
+  }
+}
+
+.qr-wave-bg {
+  position: relative;
+  background: linear-gradient(135deg, #115e59, #14b8a6, #5eead4, #ccfbf1);
+  background-size: 300% 200%;
+  animation: waveGradient 4s ease-in-out infinite;
+  overflow: hidden;
+}
+
+.qr-wave-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(
+    rgba(255, 255, 255, 0.05) 1px,
+    transparent 1px
+  );
+  background-size: 4px 4px;
+  opacity: 0.2;
+  pointer-events: none;
+}

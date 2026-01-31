@@ -62,15 +62,11 @@ export default function MobileQr({ type, data }: MobileQrProps) {
   const imgSrc = `/images/nation/${fileName}.png`;
 
   return (
-    <div className="flex min-h-full flex-col gap-6 overflow-y-auto pb-3">
-      <div
-        className="rounded-2xl py-8 text-white shadow-lg"
-        style={{
-          background:
-            'linear-gradient(139deg, #01A5AC 0%, #5BC1C4 19.54%, #D9E8E5 98.01%)',
-        }}
-      >
-        <div className="mb-3 text-center">
+    <div
+      className={`flex min-h-full flex-col overflow-y-auto pb-4 ${isPassport ? 'space-y-6' : '-space-y-22'}`}
+    >
+      <div className="qr-wave-bg rounded-2xl p-6 text-white shadow-lg">
+        <div className="mb-4 text-center">
           <p className="font-semibold text-lg opacity-90">
             남은 시간 : {timeLeft}초
             {isExpired && (
