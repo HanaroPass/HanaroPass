@@ -172,7 +172,7 @@ export async function fetchAndSeedHospitals() {
 
       const items = normalizeItems(result.response.body.items.item);
       console.log(
-        `[ 시딩 작업 완료 - ${district.name}: 총 ${items.length}개의 병원 발견.`,
+        `[ 시딩 작업 완료 - ${district.name}: 총 ${items.length}개의 병원 발견 ]`,
       );
 
       // 요양 병원 제거
@@ -213,11 +213,6 @@ export async function fetchAndSeedHospitals() {
             },
             HospitalLang: {
               create: langs.map((langName) => ({ langName })),
-            },
-            HospitalReview: {
-              create: {
-                aiSummary: `${item.yadmNm}은(는) ${district.name} 소재 의료기관입니다. 지원 언어: ${langs.join(', ')}`,
-              },
             },
           },
         });

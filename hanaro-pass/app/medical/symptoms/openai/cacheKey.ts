@@ -1,4 +1,4 @@
-import crypto from 'crypto';
+import hashText from '../../utils/hash';
 import type { MessageInput } from './cachedAIResult';
 
 export function makeCacheKey(payload: {
@@ -11,7 +11,7 @@ export function makeCacheKey(payload: {
   };
 
   const json = JSON.stringify(normalized);
-  const hash = crypto.createHash('sha256').update(json).digest('hex');
+  const hash = hashText(json);
 
   return `openai:cache:v1:${hash}`;
 }

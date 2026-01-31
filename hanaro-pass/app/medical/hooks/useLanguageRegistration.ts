@@ -24,7 +24,9 @@ export function useLanguageRegistration() {
   const [hospitalName, setHospitalName] = useState('');
   const [selectedIds, setSelectedIds] = useState<LanguageId[]>([]);
   const [initialIds, setInitialIds] = useState<LanguageId[]>([]); // 기존에 선택된 언어들
+  const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const { registerSuccess, error, warning, actionError, systemError } =
     useToast();
@@ -45,15 +47,22 @@ export function useLanguageRegistration() {
         if (result.success) {
           setHospitalName(result.data.nameKo);
 
-          if (result.data.isPENDING) {
+          if (result.data.isPENDING && result.data.pendingAppId) {
             alert({
               title: '심사 진행 중',
-              description: `'${result.data.nameKo}'에 대해 이미 심사 중인 내역이 있습니다.\n결과가 나올 때까지 추가 신청이 불가능합니다.`,
+              description: `'${result.data.nameKo}'에 대해 \n이미 심사 중인 내역이 있습니다.\n결과가 나올 때까지 추가 신청이 불가능합니다.`,
               actionLabel: '내역 확인하기',
               cancelLabel: '돌아가기',
               onAction: () =>
-                router.replace(`/medical/registrations/${hospitalId}`),
+                router.replace(
+                  `/medical/registrations/${result.data.pendingAppId}`,
+                ),
+              actionProps: {
+                className: 'py-3 rounded-lg font-semibold active:opacity-90',
+              },
               cancelProps: {
+                className:
+                  'py-3 rounded-lg font-semibold bg-gray-100 text-black-800 active:opacity-90',
                 onClick: () => router.back(),
               },
             });
@@ -61,6 +70,7 @@ export function useLanguageRegistration() {
           }
           setSelectedIds(result.data.existingLangs);
           setInitialIds(result.data.existingLangs);
+          setIsLoading(false);
         } else {
           actionError(result);
           router.back();
@@ -98,9 +108,10 @@ export function useLanguageRegistration() {
     const validation = SubmitSchema.safeParse({
       hospitalId,
       languageIds: selectedIds,
+      email,
     });
     return validation.success && isChanged;
-  }, [hospitalId, selectedIds, isChanged]);
+  }, [hospitalId, selectedIds, email, isChanged]);
 
   const submitApplication = async () => {
     if (!hospitalId || !isValid) return;
@@ -108,6 +119,7 @@ export function useLanguageRegistration() {
     const validation = SubmitSchema.safeParse({
       hospitalId,
       languageIds: selectedIds,
+      email,
     });
 
     if (!validation.success) {
@@ -120,12 +132,11 @@ export function useLanguageRegistration() {
       const result = await submitLanguageApplicationAction(
         hospitalId,
         selectedIds,
+        email,
       );
       if (result.success) {
         registerSuccess(hospitalName);
-        router.push(
-          `/medical/registrations/complete/?hospitalId=${hospitalId}`,
-        );
+        router.push(`/medical/registrations/complete/?id=${result.data.id}`);
       } else {
         actionError(result);
       }
@@ -137,9 +148,12 @@ export function useLanguageRegistration() {
   };
 
   return {
+    isLoading,
     hospitalName,
     selectedIds,
     initialIds,
+    email,
+    setEmail,
     setSelectedIds,
     toggleLanguage,
     submitApplication,

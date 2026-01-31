@@ -1,6 +1,7 @@
 'use client';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import {
   getTTS,
   parseOutput,
@@ -17,8 +18,8 @@ export default function useSymptomResubmit(reloadTrigger: number) {
   const mode = searchParams.get('mode');
 
   useEffect(() => {
-    console.log('reloadTrigger:', reloadTrigger);
     const parse = async () => {
+      reloadTrigger;
       const data = localStorage.getItem('symptom-result');
       if (!data) return;
 
@@ -34,8 +35,8 @@ export default function useSymptomResubmit(reloadTrigger: number) {
   }, [reloadTrigger]);
 
   const handleResubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    if (isLoading) return;
     e.preventDefault();
+    if (isLoading) return;
     setLoading(true);
 
     try {
@@ -60,7 +61,6 @@ export default function useSymptomResubmit(reloadTrigger: number) {
         await new Promise((resolve) => setTimeout(resolve, 2000));
       }
       localStorage.setItem('symptom-result', response);
-      console.log(response);
     } catch (err) {
       console.error('재제출 실패', err);
       alert('증상 분석 중 오류가 발생했습니다. 다시 시도해주세요.');
@@ -69,18 +69,35 @@ export default function useSymptomResubmit(reloadTrigger: number) {
     }
   };
 
+  const [isPlaying, setIsPlaying] = useState(false);
+
   const playAudio = async () => {
-    const base64 = await getTTS(JSON.stringify(result?.번역_내용));
-    const audio = new Audio(`data:audio/mp3;base64,${base64}`);
-    audio.play();
+    if (isPlaying) return;
+
+    setIsPlaying(true);
+    try {
+      const text = result?.번역_내용 ?? '';
+      const base64 = await getTTS(text);
+
+      const audio = new Audio(`data:audio/mp3;base64,${base64}`);
+      audio.onended = () => setIsPlaying(false);
+      audio.onerror = () => setIsPlaying(false);
+      await audio.play();
+    } catch (e) {
+      setIsPlaying(false);
+      toast.error('음성 출력에 실패했습니다.');
+      console.error('TTS 재생 실패', e);
+    }
   };
 
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(result?.번역_내용 || '');
       setCopied(true);
+      toast.success('복사되었습니다.', { duration: 1500 });
       setTimeout(() => setCopied(false), 1500);
     } catch (e) {
+      toast.error('복사에 실패하였습니다.');
       console.error('클립보드 복사 실패', e);
     }
   };
@@ -94,5 +111,6 @@ export default function useSymptomResubmit(reloadTrigger: number) {
     isLoading,
     handleResubmit,
     mode,
+    isPlaying,
   };
 }

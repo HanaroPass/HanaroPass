@@ -9,8 +9,8 @@ export async function seedUsers() {
 
   const users = [
     { nickname: 'Kelsey Kwon', nationality: 'KOR' },
-    { nickname: 'John Doe', nationality: 'USA' },
-    { nickname: 'Mina Tanaka', nationality: 'JPN' },
+    { nickname: 'John Doe', nationality: 'UNITED STATES OF AMERICA' },
+    { nickname: 'Mina Tanaka', nationality: 'REPUBLIC OF JAPAN' },
   ] as const;
 
   for (const u of users) {

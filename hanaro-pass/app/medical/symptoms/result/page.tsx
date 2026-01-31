@@ -20,6 +20,7 @@ export default function SymptomResultContent() {
     result,
     writtenSymptom,
     mode,
+    isPlaying,
   } = useSymptomResubmit(reloadTrigger);
 
   return (
@@ -67,22 +68,28 @@ export default function SymptomResultContent() {
         />
       </form>
 
-      <div className="mt-7 text-black-800 text-sm">AI 번역 내용</div>
-      <div className="relative mt-3 mb-6 w-full rounded-2xl bg-gray-200 p-6 text-black-800 text-sm">
+      <div className="mt-7 pr-4 text-black-800 text-sm">AI 번역 내용</div>
+      <div className="relative mt-3 mb-6 w-full rounded-2xl bg-gray-200 p-6 pb-9 text-black-800 text-sm">
         <button
           onClick={handleCopy}
-          className="absolute top-2 right-2 text-hana-green"
+          className="absolute right-5 bottom-5 text-hana-green"
         >
           {copied ? (
             <Check className="h-4.5 w-4.5 text-green-600" />
           ) : (
-            <Copy className="h-4.5 w-4.5" />
+            <Copy className="h-4.5 w-4.5 scale-x-[-1]" />
           )}
         </button>
 
         <div className="h-20">{result?.번역_내용}</div>
       </div>
-      <ActionButton onClick={playAudio} text="AI 음성으로 듣기" invert={true} />
+
+      <ActionButton
+        onClick={playAudio}
+        text={isPlaying ? '음성 출력 중...' : 'AI 음성으로 듣기'}
+        disabled={isPlaying}
+        invert={true}
+      />
       <div className="-mx-6 -mt-3">
         <HospitalGuide text="이 내용을 병원에 전달하면 더 원활한 예약이 가능해요" />
       </div>
@@ -94,10 +101,12 @@ export default function SymptomResultContent() {
               localStorage.removeItem('symptom-images');
               router.push('/medical/symptoms/recommend');
             }}
+            className="h-14"
             text="병원 추천 보러가기"
           />
         ) : (
           <ActionButton
+            className="h-14"
             onClick={() => {
               localStorage.removeItem('symptom-images');
               router.push('/map');

@@ -78,7 +78,7 @@ export default function DocsAddPage({ params }: DocsProps) {
   };
 
   return (
-    <>
+    <div className="flex h-dvh flex-col overflow-hidden bg-green-400">
       <Header title={`${doc?.title ?? '서류'} 등록`} />
       <main className="min-h-dvh bg-white px-5 pt-10">
         <h2 className="mb-3 font-sans font-semibold text-[14px] text-black-900">
@@ -161,6 +161,6 @@ export default function DocsAddPage({ params }: DocsProps) {
           />
         </div>
       </main>
-    </>
+    </div>
   );
 }

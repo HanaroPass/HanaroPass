@@ -1,6 +1,7 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useMemo } from 'react';
 import { ApplicationStatusTabs } from '../components/languageAdmin/ApplicationAdminTabs';
 import { HospitalApplicationCard } from '../components/languageAdmin/HospitalApplicationCard';
 import type { StatusType } from '../constants/statusConfig';
@@ -9,13 +10,22 @@ import { useRequireAdmin } from '../hooks/useRequireAdmin';
 import { LoadingScreen } from '../registrations/complete/page';
 
 export default function AdminDashboardPage() {
-  const [activeTab, setActiveTab] = useState<StatusType>('PENDING');
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const activeTab = (searchParams.get('status') as StatusType) || 'PENDING';
+
   const { applications, counts, isLoading, error } = useAdminApplications();
   useRequireAdmin(error);
 
   const filteredApplications = useMemo(() => {
     return applications.filter((app) => app.status === activeTab);
   }, [applications, activeTab]);
+
+  const handleTabChange = (status: StatusType) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('status', status);
+    router.push(`/medical/admin?${params.toString()}`);
+  };
 
   if (isLoading) return <LoadingScreen />;
 
@@ -24,7 +34,7 @@ export default function AdminDashboardPage() {
       <section className="shrink-0">
         <ApplicationStatusTabs
           activeTab={activeTab}
-          onTabChange={setActiveTab}
+          onTabChange={handleTabChange}
           counts={counts}
         />
       </section>
@@ -60,11 +70,4 @@ export default function AdminDashboardPage() {
       </section>
     </div>
   );
-}
-function actionError(arg0: {
-  success: boolean;
-  message: string;
-  status: number;
-}) {
-  throw new Error('Function not implemented.');
 }

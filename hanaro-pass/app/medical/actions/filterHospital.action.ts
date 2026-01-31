@@ -28,7 +28,7 @@ export async function getFilteredHospitals(
       },
     });
   } else {
-    if (!symptom || symptom.length === 0) {
+    if (!symptom || symptom.every((s) => !s.trim())) {
       hospitals = await prisma.hospital.findMany({
         where: {
           HospitalDept: {
@@ -53,7 +53,9 @@ export async function getFilteredHospitals(
         },
       });
 
-      const depts = symptomMapping.map((d) => d.deptName);
+      const depts = symptomMapping
+        .flatMap((row) => row.deptName.split(','))
+        .map((d) => d.trim());
 
       hospitals = await prisma.hospital.findMany({
         where: {

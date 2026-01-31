@@ -5,6 +5,7 @@ import {
   HttpError,
   handleActionResult,
 } from '@/lib/errorHandler';
+import { sendApplicationResultEmail } from '@/lib/mail';
 import { prisma } from '@/lib/prisma';
 import { validateAdmin } from '@/lib/user';
 import { LANGUAGES, mapLanguages } from '../constants/language';
@@ -16,7 +17,6 @@ import {
   AdminReviewDetailSchema,
   UpdateStatusSchema,
 } from '../schemas/adminApplication.schema';
-import { triggerPushNotification } from './push.action';
 
 /**
  * [관리자 대시보드 데이터 조회]
@@ -88,6 +88,7 @@ export async function getAdminReviewDetailAction(
       hospitalId: application.hospitalId,
       hospitalName: application.Hospital.nameKo,
       status: application.status,
+      applicantEmail: application.applicantEmail,
       requestLangs: mapLanguages(application.requestLangs as string[]),
       createdAt: application.createdAt,
       processedAt: application.processedAt,
@@ -120,12 +121,8 @@ export async function updateApplicationStatusAction(
       id,
       status,
     });
-    let pushData: {
-      userId: number;
-      title: string;
-      body: string;
-      url: string;
-    } | null = null;
+    let applicantEmail: string | null = null;
+    let hospitalName: string = '';
 
     await prisma.$transaction(async (tx) => {
       const app = await tx.hospitalLanguageApplication.findUnique({
@@ -134,12 +131,17 @@ export async function updateApplicationStatusAction(
           Hospital: { select: { nameKo: true } },
         },
       });
+
       if (!app) throw new HttpError('처리 가능한 신청 내역이 아닙니다.', 400);
+
+      applicantEmail = app.applicantEmail;
+      hospitalName = app.Hospital.nameKo;
 
       const updated = await tx.hospitalLanguageApplication.updateMany({
         where: { id: vId, status: 'PENDING' },
         data: { status: vStatus, processedAt: new Date() },
       });
+
       if (updated.count === 0)
         throw new HttpError('처리 가능한 신청 내역이 아닙니다.', 400);
 
@@ -159,23 +161,25 @@ export async function updateApplicationStatusAction(
           })),
         });
       }
-
-      pushData = {
-        userId: app.userId,
-        title: `[${app.Hospital.nameKo}] 신청 심사 결과 안내`,
-        body:
-          vStatus === 'APPROVED'
-            ? `축하합니다! 신청이 승인되었습니다.`
-            : `안타깝게도 신청이 반려되었습니다.`,
-        url: `/medical/registrations/${app.hospitalId}`,
-      };
     });
 
-    if (pushData) {
-      const { userId, title, body, url } = pushData;
-      triggerPushNotification(userId, title, body, url).catch((err) =>
-        console.error('[알림 전송 실패]:', err),
-      );
+    if (applicantEmail) {
+      try {
+        const mailRes = await sendApplicationResultEmail(
+          applicantEmail,
+          hospitalName,
+          vStatus,
+          vId,
+        );
+
+        if (mailRes.success) {
+          console.log(`[Email Sent Success] To: ${applicantEmail}`);
+        } else {
+          console.error(`[Email Sent Failed]`, mailRes.error);
+        }
+      } catch (mailError) {
+        console.error(`[Email Exception]`, mailError);
+      }
     }
 
     return { success: true, data: null };

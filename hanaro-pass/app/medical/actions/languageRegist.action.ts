@@ -6,9 +6,8 @@ import {
   handleActionResult,
 } from '@/lib/errorHandler';
 import type { Hospital } from '@/lib/generated/prisma';
+import { sendApplicationSubmissionEmail } from '@/lib/mail';
 import { prisma } from '@/lib/prisma';
-import { getSession } from '@/lib/session';
-import { validateUser } from '@/lib/user';
 import { type LanguageId, mapLanguages } from '../constants/language';
 import type { StatusType } from '../constants/statusConfig';
 import {
@@ -17,7 +16,6 @@ import {
   type RegistrationDetailResponse,
   SubmitSchema,
 } from '../schemas/languageRegist.schema';
-import { triggerPushNotification } from './push.action';
 
 /**
  * [병원 검색 서버 액션]
@@ -41,7 +39,6 @@ export async function searchHospitalAction(
     const searchTerms = cleanedQuery
       .split(/\s+/)
       .filter((term) => term.length > 0)
-      .map((term) => `+${term}`)
       .join(' ');
 
     if (!searchTerms) {
@@ -85,6 +82,7 @@ export async function getHospitalDetailAction(id: number): Promise<
     nameKo: string;
     existingLangs: LanguageId[];
     isPENDING: boolean;
+    pendingAppId?: number;
   }>
 > {
   try {
@@ -109,6 +107,7 @@ export async function getHospitalDetailAction(id: number): Promise<
         hospitalId: validatedId,
         status: 'PENDING',
       },
+      select: { id: true },
     });
 
     const validatedLangs = LanguageTransformSchema.parse(
@@ -121,6 +120,7 @@ export async function getHospitalDetailAction(id: number): Promise<
         nameKo: hospital.nameKo,
         existingLangs: validatedLangs,
         isPENDING: !!PENDINGApp,
+        pendingAppId: PENDINGApp?.id,
       },
     };
   } catch (err) {
@@ -142,20 +142,20 @@ export async function getHospitalDetailAction(id: number): Promise<
 export async function submitLanguageApplicationAction(
   hospitalId: number,
   languageIds: string[],
-): Promise<ActionResult<null>> {
+  email: string,
+): Promise<ActionResult<{ id: number }>> {
   try {
-    const { hospitalId: vId, languageIds: vLangs } = SubmitSchema.parse({
+    const {
+      hospitalId: vId,
+      languageIds: vLangs,
+      email: vEmail,
+    } = SubmitSchema.parse({
       hospitalId,
       languageIds,
+      email,
     });
 
-    const session = await getSession();
-    const userId = session?.userId;
-    if (!userId) {
-      throw new HttpError('로그인이 필요한 서비스입니다.', 401);
-    }
-
-    await prisma.$transaction(async (tx) => {
+    const newApp = await prisma.$transaction(async (tx) => {
       const existingPENDING = await tx.hospitalLanguageApplication.findFirst({
         where: {
           hospitalId: vId,
@@ -167,25 +167,43 @@ export async function submitLanguageApplicationAction(
         throw new HttpError('이미 심사 중인 신청 건이 존재합니다.', 400);
       }
 
-      await tx.hospitalLanguageApplication.create({
+      return await tx.hospitalLanguageApplication.create({
         data: {
-          userId: userId,
+          applicantEmail: vEmail,
           hospitalId: vId,
           requestLangs: vLangs,
           status: 'PENDING',
         },
+        include: { Hospital: { select: { nameKo: true } } },
       });
     });
 
-    const pushTitle = '신청 접수 완료';
-    const pushBody =
-      '외국어 진료 서비스 신청이 정상적으로 접수되었습니다. 심사 결과가 나오면 바로 알려드릴게요!';
-    const targetUrl = '/medical/notifications'; // 알림 클릭 시 이동할 곳
+    const admins = await prisma.user.findMany({ where: { role: 'ADMIN' } });
+    if (admins.length > 0) {
+      await prisma.notification.createMany({
+        data: admins.map((admin) => ({
+          userId: admin.id,
+          title: '새로운 병원 언어 등록 신청',
+          content: `[${newApp.Hospital.nameKo}] ${vEmail}님의 외국어 등록 신청이 접수되었습니다.`,
+          link: `/medical/admin/${newApp.id}`,
+        })),
+      });
+    }
 
-    triggerPushNotification(userId, pushTitle, pushBody, targetUrl).catch(
-      (err) => console.error('[제출 알림 전송 실패]:', err),
-    );
-    return { success: true, data: null };
+    if (email) {
+      try {
+        await sendApplicationSubmissionEmail(
+          email,
+          newApp.Hospital.nameKo,
+          newApp.id,
+        );
+        console.log(`[Submission Email Sent] To: ${email}`);
+      } catch (mailError) {
+        console.error('[Submission Email Failed]', mailError);
+      }
+    }
+
+    return { success: true, data: { id: newApp.id } };
   } catch (err) {
     return handleActionResult(err);
   }
@@ -196,17 +214,19 @@ export async function submitLanguageApplicationAction(
  *
  * 완료 페이지에서 신청한 병원명, 신청 시간, 상태를 보여주기 위해 사용
  */
-export async function getRegistrationResultAction(
-  hospitalId: number,
-): Promise<
-  ActionResult<{ hospitalName: string; createdAt: Date; status: StatusType }>
+export async function getRegistrationResultAction(id: number): Promise<
+  ActionResult<{
+    hospitalName: string;
+    createdAt: Date;
+    status: StatusType;
+    applicantEmail: string;
+  }>
 > {
   try {
-    const validatedId = IdSchema.parse(hospitalId);
+    const validatedId = IdSchema.parse(id);
 
-    const application = await prisma.hospitalLanguageApplication.findFirst({
-      where: { hospitalId: validatedId },
-      orderBy: { createdAt: 'desc' },
+    const application = await prisma.hospitalLanguageApplication.findUnique({
+      where: { id: validatedId },
       include: {
         Hospital: {
           select: { nameKo: true },
@@ -224,6 +244,7 @@ export async function getRegistrationResultAction(
         hospitalName: application.Hospital.nameKo,
         createdAt: application.createdAt,
         status: application.status as StatusType,
+        applicantEmail: application.applicantEmail,
       },
     };
   } catch (err) {
@@ -237,35 +258,41 @@ export async function getRegistrationResultAction(
  * 신청 내역 상세 페이지에서 신청한 병원명, 신청 시간, 상태, 요청 언어 리스트를 보여주기 위해 사용
  */
 export async function getRegistrationDetailAction(
-  hospitalId: number,
+  id: number,
 ): Promise<ActionResult<RegistrationDetailResponse>> {
   try {
-    const validatedId = IdSchema.parse(hospitalId);
-    const userId = await validateUser();
+    const validatedId = IdSchema.parse(id);
 
-    const applications = await prisma.hospitalLanguageApplication.findMany({
-      where: { hospitalId: validatedId, userId: userId },
-      orderBy: { createdAt: 'desc' },
+    const application = await prisma.hospitalLanguageApplication.findUnique({
+      where: { id: validatedId },
       include: {
         Hospital: { select: { nameKo: true } },
       },
     });
 
-    if (applications.length === 0) {
+    if (!application) {
       throw new HttpError('신청 내역을 찾을 수 없습니다.', 404);
     }
 
-    const latest = applications[0]; // 가장 최근 건
+    const history = await prisma.hospitalLanguageApplication.findMany({
+      where: {
+        hospitalId: application.hospitalId,
+        applicantEmail: application.applicantEmail,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
 
     return {
       success: true,
       data: {
-        hospitalName: latest.Hospital.nameKo,
-        status: latest.status as StatusType,
-        requestLangs: mapLanguages(latest.requestLangs as string[]),
-        createdAt: latest.createdAt,
-        processedAt: latest.processedAt,
-        history: applications.map((app) => ({
+        hospitalId: application.hospitalId,
+        applicantEmail: application.applicantEmail,
+        hospitalName: application.Hospital.nameKo,
+        status: application.status as StatusType,
+        requestLangs: mapLanguages(application.requestLangs as string[]),
+        createdAt: application.createdAt,
+        processedAt: application.processedAt,
+        history: history.map((app) => ({
           id: app.id,
           status: app.status as StatusType,
           createdAt: app.createdAt,
