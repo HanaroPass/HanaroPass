@@ -83,7 +83,7 @@ export function HospitalContent({
         <div className="mt-auto border-[#F0F3F4] border-t bg-white py-4">
           <Button
             className="h-14 w-full rounded-xl bg-green-ez text-white"
-            onClick={() => router.push('/medical/symptoms/analyze')}
+            onClick={() => router.push('/medical/symptoms/analyze?mode=translate')}
           >
             AI에게 진료 내용 번역 요청하기
           </Button>
