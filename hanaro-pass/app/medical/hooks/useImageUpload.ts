@@ -1,5 +1,5 @@
 'use client';
-import { ChangeEvent, useState } from 'react';
+import { type ChangeEvent, useState } from 'react';
 
 export function useImageUpload(limit = 3) {
   const [images, setImages] = useState<File[]>([]);
@@ -10,7 +10,7 @@ export function useImageUpload(limit = 3) {
     if (!e.target.files) return;
 
     const newImages = Array.from(e.target.files);
-    const total = [...images, ...newImages];
+    const total = [...newImages, ...images];
 
     if (total.length > limit) {
       setImageCntOK(false);
