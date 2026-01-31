@@ -1,6 +1,6 @@
 'use client';
 
-import { Calendar, Globe, Hospital } from 'lucide-react';
+import { Calendar, Globe, Hospital, Mail } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import React from 'react';
 import ActionButton from '@/components/ui/ActionButton';
@@ -39,7 +39,7 @@ export default function AdminReviewPage() {
       actionLabel: '승인하기',
       onAction: async () => {
         const success = await handleUpdateStatus('APPROVED');
-        if (success) router.push('/medical/admin');
+        if (success) router.push('/medical/admin?status=APPROVED');
       },
     });
   };
@@ -52,13 +52,18 @@ export default function AdminReviewPage() {
       actionLabel: '반려하기',
       onAction: async () => {
         const success = await handleUpdateStatus('REJECTED');
-        if (success) router.push('/medical/admin');
+        if (success) router.push('/medical/admin?status=REJECTED');
       },
     });
   };
 
   const infoItems = [
     { label: '병원 정보', icon: Hospital, content: data.hospitalName },
+    {
+      label: '신청자 연락처',
+      icon: Mail,
+      content: data.applicantEmail,
+    },
     {
       label: '진료 가능 언어',
       icon: Globe,
@@ -86,7 +91,6 @@ export default function AdminReviewPage() {
   return (
     <>
       <main className="app-main no-scrollbar flex flex-col pb-6 font-sans">
-        {/* 1. DescriptionSection: 상단 가이드 */}
         <DescriptionSection
           title="신청 심사 상세 정보"
           descriptions={[
@@ -111,18 +115,18 @@ export default function AdminReviewPage() {
         </div>
       </main>
 
-      <div className="flex flex-col gap-3 border-gray-100 border-t bg-white-ez px-6 py-4 pb-8">
+      <div className="flex flex-row gap-3 border-gray-100 border-t bg-white-ez px-6 py-4 pb-8">
+        <ActionButton
+          text="반려하기"
+          disabled={isUpdating || data.status !== 'PENDING'}
+          className="flex-1 border-none bg-hana-red text-white-ez shadow-lg shadow-red-100 transition-opacity hover:opacity-90"
+          onClick={onRejectClick}
+        />
         <ActionButton
           text={isUpdating ? '처리 중...' : '승인하기'}
           disabled={isUpdating || data.status !== 'PENDING'}
           onClick={onApproveClick}
-        />
-
-        <ActionButton
-          text="반려하기"
-          disabled={isUpdating || data.status !== 'PENDING'}
-          className="border-none bg-red-500 text-white shadow-lg shadow-red-100 hover:bg-red-600"
-          onClick={onRejectClick}
+          className="flex-1"
         />
       </div>
     </>

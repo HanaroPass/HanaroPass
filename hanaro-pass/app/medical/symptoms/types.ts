@@ -1,14 +1,18 @@
-import type { Hospital } from '@/lib/generated/prisma';
-
-export type HospitalWithStatus = Omit<Hospital, 'latitude' | 'longitude'> & {
+export type HospitalWithStatus = {
+  id: number;
+  nameKo: string;
+  address: string;
   latitude: number;
   longitude: number;
+  phone: string | null;
+  openHours: string;
+  imageUrl: string | null;
   openTime: string;
   closeTime: string;
   status: '진료 중' | '진료 종료';
   departments: string[];
   languages: string[];
-  aiSummary: string | null;
+  aiSummary?: string;
   distance?: number;
 };
 

@@ -1,5 +1,7 @@
 import { Loader } from 'lucide-react';
 import { Suspense } from 'react';
+import LoadingGate from '@/components/loading/LoadingGate';
+import { checkIsAdmin } from '@/lib/user';
 import { getIdentityData } from '../identity/actions/identity';
 import type { IdentityData } from '../identity/actions/identity.schema';
 import { getUserCardsAction } from './actions/getUserCards.action';
@@ -9,7 +11,6 @@ import PassportUnregisteredContent from './components/PassportUnregisteredConten
 import Pay from './components/Pay';
 import Service from './components/Service';
 import Transfer from './components/Transfer';
-import LoadingGate from '@/components/loading/LoadingGate';
 
 const TAB_COMPONENTS = {
   pay: Pay,
@@ -24,6 +25,7 @@ export default async function Page({
   searchParams: Promise<{ tab?: string }>;
 }) {
   const { tab: rawTab } = await searchParams;
+  const isAdmin = await checkIsAdmin();
   const tab =
     rawTab && rawTab in TAB_COMPONENTS
       ? (rawTab as keyof typeof TAB_COMPONENTS)
@@ -41,7 +43,7 @@ export default async function Page({
   if (!isRegistered) {
     return (
       <LoadingGate>
-        <MainWrapper activeTab={tab} isRegistered={false}>
+        <MainWrapper activeTab={tab} isRegistered={false} isAdmin={isAdmin}>
           <MainWrapper.Title>환율 정보</MainWrapper.Title>
           <PassportUnregisteredContent />
         </MainWrapper>
@@ -64,35 +66,33 @@ export default async function Page({
     ) : null;
 
   return (
-    <LoadingGate>
-      <MainWrapper activeTab={tab} isRegistered>
-        <div className="app-layout">
-          <MainWrapper.Title>
-            {tab === 'pay' && 'EZ Pay'}
-            {tab === 'transfer' && '조회/이체'}
-            {tab === 'service' && '서비스'}
-          </MainWrapper.Title>
+    <MainWrapper activeTab={tab} isRegistered isAdmin={isAdmin}>
+      <div className="app-layout">
+        <MainWrapper.Title>
+          {tab === 'pay' && 'EZ Pay'}
+          {tab === 'transfer' && '조회/이체'}
+          {tab === 'service' && '서비스'}
+        </MainWrapper.Title>
 
-          <div className="app-main">
-            {tab === 'pay' ? (
-              <Suspense
-                fallback={
-                  <div className="flex justify-center py-10">
-                    <Loader className="animate-spin text-green-ez" />
-                  </div>
-                }
-              >
-                <TabComponent
-                  cardsPromise={cardsPromise}
-                  couponList={couponList}
-                />
-              </Suspense>
-            ) : (
-              <TabComponent />
-            )}
-          </div>
+        <div className="app-main">
+          {tab === 'pay' ? (
+            <Suspense
+              fallback={
+                <div className="flex justify-center py-10">
+                  <Loader className="animate-spin text-green-ez" />
+                </div>
+              }
+            >
+              <TabComponent
+                cardsPromise={cardsPromise}
+                couponList={couponList}
+              />
+            </Suspense>
+          ) : (
+            <TabComponent />
+          )}
         </div>
-      </MainWrapper>
-    </LoadingGate>
+      </div>
+    </MainWrapper>
   );
 }

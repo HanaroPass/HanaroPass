@@ -11,7 +11,6 @@ export default function SymptomRadioGroup() {
     <RadioGroup
       name="type"
       className="flex"
-      required
       onValueChange={setSelectedType}
     >
       <Label
