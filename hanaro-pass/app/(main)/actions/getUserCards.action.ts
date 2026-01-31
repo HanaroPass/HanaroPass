@@ -37,8 +37,7 @@ export async function getUserCardsAction(): Promise<
         imageUrl: getCardImageUrl(c.cardType),
       })),
     );
-    console.log('user', userId);
-    console.log('cards', data);
+
     return { success: true, data };
   } catch (err) {
     return handleActionResult(err);
