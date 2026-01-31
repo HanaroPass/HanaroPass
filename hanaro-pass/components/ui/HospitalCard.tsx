@@ -42,15 +42,6 @@ export function HospitalCard({ hospital }: { hospital: HospitalInfo }) {
               : {hospital.openTime}
               {hospital.closeTime?.trim() && ` ~ ${hospital.closeTime}`}
             </span>
-            <span
-              className={`inline-flex shrink-0 items-center justify-center gap-1 rounded-full px-2 py-1 font-medium text-xs ${
-                hospital.status === '진료 중'
-                  ? 'bg-green-500 text-green-900'
-                  : 'bg-gray-200 text-gray-600'
-              }`}
-            >
-              {hospital.status}
-            </span>
           </div>
 
           {/* 언어 */}
@@ -68,7 +59,7 @@ export function HospitalCard({ hospital }: { hospital: HospitalInfo }) {
             {hasMore && (
               <button
                 onClick={() => setExpanded((p) => !p)}
-                className="ml-1 inline-block w-10 text-center text-gray-600 text-xs underline"
+                className="ml-2 inline-block text-center text-gray-600 text-xs underline"
               >
                 {expanded ? '접기' : '더보기'}
               </button>
@@ -78,6 +69,19 @@ export function HospitalCard({ hospital }: { hospital: HospitalInfo }) {
 
         {/* 오른쪽 사진 (고정 높이) */}
         <div className="relative h-30 w-30 self-start overflow-hidden rounded-xl bg-gray-100">
+          {/* 상태 칩 */}
+          <div className="absolute top-1.5 right-1.5 z-10">
+            <span
+              className={`inline-flex shrink-0 items-center justify-center gap-1 rounded-full px-2 py-1 font-medium text-xs ${
+                hospital.status === '진료 중'
+                  ? 'bg-green-500 text-green-900'
+                  : 'bg-gray-200 text-gray-600'
+              }`}
+            >
+              {hospital.status}
+            </span>
+          </div>
+
           {hospital.imageUrl ? (
             <Image
               src={hospital.imageUrl}

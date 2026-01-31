@@ -14,7 +14,7 @@ export default function SymptomHeader({ user, symptom }: Props) {
       <p className="text-gray-500 text-sm">외국인 진료가 가능한 병원이에요.</p>
       <div className="h-24 rounded-2xl bg-gray-200">
         <div className="ml-6 pt-5 text-black-800 text-sm">
-          {user} 손님의 맞춤형 병원
+          찾으시는 진료 키워드
         </div>
         <div className="mt-2 mb-5 ml-6">
           {symptom?.map((s) => (
