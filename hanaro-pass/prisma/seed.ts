@@ -3,6 +3,7 @@ import { prisma } from '../lib/prisma';
 import { seedCoupons } from './seed/seedCoupons';
 import { seedUserDocs, seedUserIdentityDocs } from './seed/seedDocuments';
 import { seedEmbassies } from './seed/seedEmbassies';
+import { seedHospitalReviews } from './seed/seedHospitalReviews';
 import { fetchAndSeedHospitals, SERVICE_KEY } from './seed/seedHospitals';
 import { seedNotifications } from './seed/seedNotifications';
 import { seedSavedPlaces } from './seed/seedSavedPlaces';
@@ -35,6 +36,7 @@ async function main() {
   await prisma.embassy.deleteMany();
   await prisma.coupon.deleteMany();
   await prisma.symptomMapping.deleteMany();
+  await prisma.hospitalReview.deleteMany();
 
   // AUTO_INCREMENT 초기화
   await prisma.$executeRaw`ALTER TABLE Hospital AUTO_INCREMENT = 1`;
@@ -51,6 +53,7 @@ async function main() {
   await prisma.$executeRaw`ALTER TABLE UserCard AUTO_INCREMENT = 1`;
   await prisma.$executeRaw`ALTER TABLE Notification AUTO_INCREMENT = 1`;
   await prisma.$executeRaw`ALTER TABLE SymptomMappings AUTO_INCREMENT = 1`;
+  await prisma.$executeRaw`ALTER TABLE HospitalReview AUTO_INCREMENT = 1`;
 
   await fetchAndSeedHospitals();
   await seedUsers();
@@ -64,6 +67,7 @@ async function main() {
   await seedSavedPlaces();
   await seedEmbassies();
   await seedSymptomMapping();
+  await seedHospitalReviews();
   console.log('[ 시딩 작업 완료! ]');
 }
 

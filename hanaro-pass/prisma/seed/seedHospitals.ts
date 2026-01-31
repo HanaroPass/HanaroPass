@@ -214,11 +214,6 @@ export async function fetchAndSeedHospitals() {
             HospitalLang: {
               create: langs.map((langName) => ({ langName })),
             },
-            HospitalReview: {
-              create: {
-                aiSummary: `${item.yadmNm}은(는) ${district.name} 소재 의료기관입니다. 지원 언어: ${langs.join(', ')}`,
-              },
-            },
           },
         });
         await new Promise((r) => setTimeout(r, 50));
