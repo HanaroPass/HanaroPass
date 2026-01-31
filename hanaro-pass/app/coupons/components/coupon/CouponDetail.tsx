@@ -117,7 +117,7 @@ export default function CouponDetail({
         aria-label="쿠폰으로 결제하기"
       >
         <div
-          className={`flex h-14 w-full items-center justify-center overflow-hidden rounded-md border bg-white transition-all duration-700 ease-in-out ${
+          className={`flex h-14 w-full items-center justify-center overflow-hidden rounded-md border bg-white ${
             !isCardUnlocked ? 'blur-sm' : 'blur-0'
           }`}
         >
