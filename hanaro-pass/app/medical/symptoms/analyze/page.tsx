@@ -54,7 +54,7 @@ export default function SymptomAnalyzePage() {
                   onChange={handleImages}
                   className="hidden"
                 />
-                <div className="mr-3 mb-11 flex h-28 w-28 items-center justify-center border-2 border-gray-100 bg-gray-200">
+                <div className="mr-3 mb-11 flex h-28 w-28 items-center justify-center rounded-[10px] border-2 border-gray-100 bg-gray-200">
                   <PlusIcon className="h-11 w-11 text-gray-400" />
                 </div>
               </label>
