@@ -192,7 +192,7 @@ export function HospitalContent({
         )}
       </div>
 
-      <div className="sticky bottom-0 border-[#F0F3F4] border-t bg-white px-6 py-4">
+      <div className="sticky bottom-0 z-10 border-[#F0F3F4] border-t bg-white px-6 py-4">
         <ActionButton
           text={'AI에게 나에게 맞는 병원 추천받기'}
           onClick={() =>
