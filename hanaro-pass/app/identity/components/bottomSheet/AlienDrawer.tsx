@@ -45,10 +45,9 @@ export function AlienDrawer({
   const { actionError } = useToast();
 
   const { formAction, isPending } = useDrawerForm<ArcActionData>({
-    action: saveArcData as unknown as ActionFn,
+    action: saveArcData,
     onSuccess: (data: ArcActionData) => {
-      onSubmit?.(data as unknown as Record<string, string>);
-      onOpenChange(false);
+      onSubmit?.(data);
     },
     onError: (error: ActionResult<ArcActionData>) => {
       actionError(error);
