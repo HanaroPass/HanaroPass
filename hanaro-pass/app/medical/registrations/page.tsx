@@ -21,20 +21,19 @@ export default function MedicalPage() {
         <DescriptionSection
           title="병원 등록"
           descriptions={[
-            '이미 지도에 등록된 병원을 검색해',
-            '외국어 진료 가능 여부를 추가로 등록해주세요',
+            '지도에 등록된 병원을 검색해',
+            '외국어 진료 가능 여부를 추가로 등록해주세요.',
           ]}
         />
-        {/* 1. 검색 입력 (상태에 따라 변함) */}
         <div className="mt-4 px-6">
           <SearchInput
+            placeholder="병원명을 검색해주세요 (ex: 하나병원)"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onClear={() => setSearchQuery('')}
           />
         </div>
 
-        {/* 2. 병원 리스트 (데이터 유무에 따라 변함) */}
         <div className="px-6 py-6">
           <h3 className="mb-4 font-bold text-black-900 text-sm">
             검색된 병원 정보
