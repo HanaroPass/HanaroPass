@@ -22,8 +22,8 @@ export default async function Page({ searchParams }: PageProps) {
       <Link href="/coupons/benefit/1" className="mt-auto pt-6">
         <BenefitBanner
           variant={BENEFIT_BANNER_VARIANTS.SKI}
-          countryCode="HK"
-          name="Chan"
+          countryCode="MNG"
+          name="Batsukh"
         />
       </Link>
     </div>

@@ -1,5 +1,6 @@
 import { Clock, Heart, MapPin, Phone, Share2 } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 import type React from 'react';
 import type { PropsWithChildren } from 'react';
 import Header from '@/components/header/Header';
@@ -9,8 +10,7 @@ const MOCK_BENEFIT_DATA = {
   title: '비발디파크',
   subTitle: '강원도 홍천 스키 리조트',
   tag: '하나EZ BEST',
-  mainImage:
-    'https://images.unsplash.com/photo-1551698618-1fed5d978044?q=80&w=2070&auto=format&fit=crop',
+  mainImage: '/images/benefits/vivaldi-park.png',
   benefits: [
     { id: 'b1', text: '리프트 1일권 20% 할인 (최대 12,000원)' },
     { id: 'b2', text: '장비 렌탈 10% 추가 할인' },
@@ -18,9 +18,9 @@ const MOCK_BENEFIT_DATA = {
     { id: 'b4', text: '본인 포함 최대 4인까지 적용' },
   ],
   usage: {
-    operatingHours: '평일 08:30 - 16:30 / 주말 08:00 - 17:00',
+    operatingHours: '주간/야간/심야: 09:00 ~ 23:00 (정설 17:30~19:00)',
     customerPhone: '1588-4888',
-    reservation: 'https://www.sonohotels.com/vivaldi',
+    reservation: 'https://www.sonohotelsresorts.com/complex_vp',
   },
   precautions: [
     { id: 'p1', text: '본 혜택은 타 할인/쿠폰과 중복 사용이 불가합니다.' },
@@ -62,7 +62,7 @@ export default function BenefitDetailPage() {
               </span>
             </div>
 
-            <div className="relative mt-6 h-28.75 w-full overflow-hidden rounded-xl">
+            <div className="-mx-6 relative mt-6 aspect-375/115 w-screen overflow-hidden">
               <Image
                 src={data.mainImage}
                 alt={data.title}
@@ -138,9 +138,13 @@ export default function BenefitDetailPage() {
         </main>
 
         <footer className="sticky bottom-0 left-0 w-full px-6 py-4">
-          <button className="flex h-14 w-full items-center justify-center rounded-xl bg-green-ez font-bold text-lg text-white shadow-green-ez/20 shadow-lg transition-transform active:scale-[0.98]">
+          <Link
+            href="https://www.hanacard.co.kr/"
+            aria-label="하나 더 이지 카드 만들기"
+            className="flex h-14 w-full items-center justify-center rounded-xl bg-green-ez font-bold text-lg text-white shadow-green-ez/20 shadow-lg transition-transform active:scale-[0.98]"
+          >
             하나 더 이지 카드 만들기
-          </button>
+          </Link>
         </footer>
       </div>
     </>

@@ -65,10 +65,10 @@ export const BENEFIT_BANNER_COPY: Record<
   },
 };
 
-// TODO: 국가 코드 맞추기
 export const COUNTRY_LABEL: Record<string, string> = {
   HK: '홍콩',
   TH: '태국',
   TW: '대만',
   RU: '러시아',
+  MNG: '몽골',
 };
