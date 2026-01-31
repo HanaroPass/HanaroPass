@@ -1,13 +1,12 @@
 'use client';
 
-import type { DocsProps } from '@/app/docs/[docId]/page';
+import { useParams, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { DOCS_CARD_ITEMS } from '@/app/docs/constants/docsCardItem';
 import Header from '@/components/header/Header';
 import RegistrationSummary from '@/components/result/RegistrationSummary';
 import ActionButton from '@/components/ui/ActionButton';
 import { useToast } from '@/hooks/useToast';
-import { useParams, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
 
 export default function DocsDonePage() {
   const router = useRouter();
@@ -31,9 +30,9 @@ export default function DocsDonePage() {
   }, [doc?.title, registerSuccess]);
 
   return (
-    <div className="flex h-dvh flex-col overflow-hidden bg-green-400">
+    <div className="flex flex-col overflow-hidden bg-green-400">
       <Header title={`${doc?.title} 등록 완료`} />
-      <main className="min-h-dvh bg-white pb-10">
+      <main className="min-h-[calc(100dvh-56px)] bg-white pb-5">
         <RegistrationSummary
           title="서류 저장이 완료되었습니다"
           description={'등록된 전자증명서는\n바로 확인할 수 있어요'}

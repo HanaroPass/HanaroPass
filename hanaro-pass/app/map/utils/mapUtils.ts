@@ -12,11 +12,8 @@ const CATEGORY_MAP: Record<string, string> = {
 };
 
 // 병원 운영 상태 계산 함수
-export function getHospitalStatus(
-  openHours: string,
-  hospitalName?: string,
-): '진료 중' | '진료 종료' {
-  if (is24HoursHospital(hospitalName)) {
+export function getHospitalStatus(openHours: string): '진료 중' | '진료 종료' {
+  if (openHours === '00:00 - 24:00') {
     return '진료 중';
   }
   if (!openHours || !openHours.includes('-')) return '진료 종료';
@@ -38,23 +35,20 @@ export function getHospitalStatus(
       closeTime.setDate(closeTime.getDate() + 1);
     }
 
-    const isOpen = now >= openTime && now < closeTime;
-
-    return isOpen ? '진료 중' : '진료 종료';
+    return now >= openTime && now < closeTime ? '진료 중' : '진료 종료';
   } catch {
     return '진료 종료';
   }
 }
 
 // 24시간 병원 여부 판단
-export function is24HoursHospital(name?: string) {
-  if (!name) return false;
-  return name.includes('24') || name.includes('365');
+export function is24HoursHospitalByOpenHours(openHours?: string) {
+  return openHours === '00:00 - 24:00';
 }
 
 // 운영 시간 파싱
-export const parseOpenHours = (openHours: string, hospitalName?: string) => {
-  if (is24HoursHospital(hospitalName)) {
+export const parseOpenHours = (openHours: string) => {
+  if (openHours === '00:00 - 24:00') {
     return { openTime: '24시간', closeTime: '' };
   }
 
@@ -62,15 +56,11 @@ export const parseOpenHours = (openHours: string, hospitalName?: string) => {
     return { openTime: '정보 없음', closeTime: '' };
   }
 
-  try {
-    const [openTime, closeTime] = openHours.split('-');
-    return {
-      openTime: openTime || '정보 없음',
-      closeTime: closeTime || '',
-    };
-  } catch {
-    return { openTime: '정보 없음', closeTime: '' };
-  }
+  const [openTime, closeTime] = openHours.split('-');
+  return {
+    openTime: openTime || '정보 없음',
+    closeTime: closeTime || '',
+  };
 };
 
 const BANK_KEYWORDS = [

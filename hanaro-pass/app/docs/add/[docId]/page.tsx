@@ -6,16 +6,16 @@ import { useRouter } from 'next/navigation';
 import { use, useRef, useState } from 'react';
 
 import Header from '@/components/header/Header';
-import { DOCS_CARD_ITEMS } from '../../constants/docsCardItem';
-import type { DocsProps } from '../../[docId]/page';
 import ActionButton from '@/components/ui/ActionButton';
-import { useFilePreview } from '../../hooks/useFilePreview';
+import { useToast } from '@/hooks/useToast';
+import type { DocsProps } from '../../[docId]/page';
+import { addUserDocs } from '../../actions/userDocs';
 import {
   DOC_ID_TO_REQUIREMENT,
+  DOCS_CARD_ITEMS,
   type DocsCardId,
 } from '../../constants/docsCardItem';
-import { addUserDocs } from '../../actions/userDocs';
-import { useToast } from '@/hooks/useToast';
+import { useFilePreview } from '../../hooks/useFilePreview';
 
 export default function DocsAddPage({ params }: DocsProps) {
   const { docId } = use(params);
@@ -27,7 +27,7 @@ export default function DocsAddPage({ params }: DocsProps) {
   const { file, previewUrl, isPdf, isImage, setSelectedFile } =
     useFilePreview();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { actionError, systemError, registerSuccess, warning } = useToast();
+  const { actionError, systemError, warning } = useToast();
 
   const handlePick = () => inputRef.current?.click();
 
@@ -78,9 +78,9 @@ export default function DocsAddPage({ params }: DocsProps) {
   };
 
   return (
-    <div className="flex h-dvh flex-col overflow-hidden bg-green-400">
+    <div className="flex flex-col overflow-hidden bg-green-400">
       <Header title={`${doc?.title ?? '서류'} 등록`} />
-      <main className="min-h-dvh bg-white px-5 pt-10">
+      <main className="min-h-[calc(100dvh-56px)] bg-white px-5 pt-10 pb-5">
         <h2 className="mb-3 font-sans font-semibold text-[14px] text-black-900">
           서류 파일
         </h2>

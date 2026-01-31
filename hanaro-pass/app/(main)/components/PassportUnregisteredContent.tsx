@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { cn } from '@/lib/utils';
 
 function ExchangeCard({
   code,
@@ -8,8 +9,9 @@ function ExchangeCard({
 }: {
   code: string;
   value: string;
-  delta: string;
+  delta: number;
 }) {
+  const isNegative = delta < 0;
   return (
     <div className="min-w-35 rounded-2xl border border-gray-100 bg-gray-50 p-4 shadow-sm">
       <div className="flex items-center gap-2">
@@ -21,9 +23,15 @@ function ExchangeCard({
         />
         <p className="font-bold text-gray-700">{code}</p>
       </div>
-
       <p className="mt-3 font-bold text-2xl text-black-900">{value}</p>
-      <p className="mt-1 text-base text-red-500">▲ {delta}</p>
+      <p
+        className={cn(
+          'mt-1 font-medium text-base',
+          isNegative ? 'text-blue-500' : 'text-red-500',
+        )}
+      >
+        {isNegative ? '▼' : '▲'} {Math.abs(delta).toFixed(2)}
+      </p>{' '}
     </div>
   );
 }
@@ -32,10 +40,10 @@ export default function PassportUnregisteredContent() {
   return (
     <div className="space-y-6">
       <section>
-        <div className="no-scrollbar flex gap-3 overflow-x-auto pb-2">
-          <ExchangeCard code="USD" value="1,472.70" delta="2.40" />
-          <ExchangeCard code="CAD" value="1,060.03" delta="1.69" />
-          <ExchangeCard code="EUR" value="1,060.03" delta="1.69" />
+        <div className="no-scrollbar -mx-4 flex gap-3 overflow-x-auto px-4 pb-2">
+          <ExchangeCard code="USD" value="1,437.40" delta={2.4} />
+          <ExchangeCard code="CAD" value="1,063.36" delta={0.52} />
+          <ExchangeCard code="EUR" value="1,715.11" delta={-2.23} />
         </div>
       </section>
 

@@ -142,7 +142,7 @@ export default function MapPageClient({
       </div>
 
       <FloatingLayer>
-        <div className="fixed top-20 left-3 z-40 flex gap-2.5">
+        <div className="absolute top-3 left-3 z-40 flex gap-2.5">
           <ToggleButton
             variant="pill"
             label="병원"
@@ -183,7 +183,7 @@ export default function MapPageClient({
           />
         </div>
 
-        <div className="fixed top-[15%] right-3 z-40 flex flex-col gap-2.5">
+        <div className="absolute top-[15%] right-3 z-40 flex flex-col gap-2.5">
           <ToggleButton
             variant="icon"
             icon={<LocateFixed className="h-5 w-5" />}

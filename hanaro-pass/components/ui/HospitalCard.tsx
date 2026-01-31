@@ -35,21 +35,12 @@ export function HospitalCard({ hospital }: { hospital: HospitalInfo }) {
           {/* 병원명 */}
           <div className="font-bold text-gray-900 text-lg">{hospital.name}</div>
 
-          {/* 영업시간 + 상태 */}
-          <div className="flex items-center gap-1.5 whitespace-nowrap text-sm">
-            <span className="font-semibold text-gray-700">영업 시간</span>
-            <span className="text-gray-800">
-              {hospital.openTime}
+          {/* 진료시간 + 상태 */}
+          <div className="flex items-center whitespace-nowrap text-sm">
+            <span className="font-semibold text-gray-700">진료 시간</span>
+            <span className="pr-1.5 text-gray-800">
+              : {hospital.openTime}
               {hospital.closeTime?.trim() && ` ~ ${hospital.closeTime}`}
-            </span>
-            <span
-              className={`inline-flex shrink-0 items-center justify-center gap-1 rounded-full px-2 py-1 font-medium text-xs ${
-                hospital.status === '진료 중'
-                  ? 'bg-green-500 text-green-900'
-                  : 'bg-gray-200 text-gray-600'
-              }`}
-            >
-              {hospital.status}
             </span>
           </div>
 
@@ -68,7 +59,7 @@ export function HospitalCard({ hospital }: { hospital: HospitalInfo }) {
             {hasMore && (
               <button
                 onClick={() => setExpanded((p) => !p)}
-                className="ml-1 inline-block w-10 text-center text-gray-600 text-xs underline"
+                className="ml-2 inline-block text-center text-gray-600 text-xs underline"
               >
                 {expanded ? '접기' : '더보기'}
               </button>
@@ -77,7 +68,20 @@ export function HospitalCard({ hospital }: { hospital: HospitalInfo }) {
         </div>
 
         {/* 오른쪽 사진 (고정 높이) */}
-        <div className="relative h-32 w-32 self-start overflow-hidden rounded-xl bg-gray-100">
+        <div className="relative h-30 w-30 self-start overflow-hidden rounded-xl bg-gray-100">
+          {/* 상태 칩 */}
+          <div className="absolute top-1.5 right-1.5 z-10">
+            <span
+              className={`inline-flex shrink-0 items-center justify-center gap-1 rounded-full px-2 py-1 font-medium text-xs ${
+                hospital.status === '진료 중'
+                  ? 'bg-green-500 text-green-900'
+                  : 'bg-gray-200 text-gray-600'
+              }`}
+            >
+              {hospital.status}
+            </span>
+          </div>
+
           {hospital.imageUrl ? (
             <Image
               src={hospital.imageUrl}
