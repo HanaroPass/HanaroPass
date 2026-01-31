@@ -109,7 +109,7 @@ export default function MobileQr({ type, data }: MobileQrProps) {
                   height={50}
                   className="mb-2 rounded border border-gray-200 shadow-sm"
                 />
-                <span className="font-medium text-gray-900 text-sm">
+                <span className="w-full text-center text-base text-black-900 leading-tight tracking-tight">
                   {rawCountry}
                 </span>
               </div>

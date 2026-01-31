@@ -33,6 +33,7 @@ export const handleActionResult = (err: unknown): ActionResult<never> => {
       status: 400,
     };
   }
+
   if (err instanceof HttpError) {
     return {
       success: false,
@@ -40,9 +41,16 @@ export const handleActionResult = (err: unknown): ActionResult<never> => {
       status: err.status,
     };
   }
+
   if (isErrorWithMessage(err)) {
-    return { success: false, message: err.message, status: 500 };
+    console.error('Server System Error:', err.message);
+    return {
+      success: false,
+      message: '처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
+      status: 500,
+    };
   }
+
   return {
     success: false,
     message: '알 수 없는 오류가 발생했습니다.',

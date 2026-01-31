@@ -18,7 +18,7 @@ function Calendar({
   className,
   classNames,
   showOutsideDays = true,
-  captionLayout = 'label',
+  captionLayout = 'dropdown',
   buttonVariant = 'ghost',
   formatters,
   components,
@@ -31,6 +31,8 @@ function Calendar({
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
+      startMonth={new Date(1950, 0)}
+      endMonth={new Date(2050, 11)}
       className={cn(
         'group/calendar bg-background p-3 [--cell-size:--spacing(8)] [[data-slot=card-content]_&]:bg-transparent [[data-slot=popover-content]_&]:bg-transparent',
         String.raw`rtl:**:[.rdp-button\_next>svg]:rotate-180`,
@@ -51,7 +53,7 @@ function Calendar({
         ),
         month: cn('flex flex-col w-full gap-4', defaultClassNames.month),
         nav: cn(
-          'flex items-center gap-1 w-full absolute top-0 inset-x-0 justify-between',
+          'flex items-center gap-1 w-full absolute top-0 inset-x-0 justify-between z-10',
           defaultClassNames.nav,
         ),
         button_previous: cn(
@@ -69,22 +71,19 @@ function Calendar({
           defaultClassNames.month_caption,
         ),
         dropdowns: cn(
-          'w-full flex items-center text-sm font-medium justify-center h-(--cell-size) gap-1.5',
+          'flex items-center justify-center gap-2',
           defaultClassNames.dropdowns,
         ),
         dropdown_root: cn(
-          'relative has-focus:border-ring border border-input shadow-xs has-focus:ring-ring/50 has-focus:ring-[3px] rounded-md',
+          'relative inline-flex items-center h-8 px-2 rounded-md border border-input bg-background shadow-sm hover:bg-accent transition-colors',
           defaultClassNames.dropdown_root,
         ),
         dropdown: cn(
-          'absolute bg-popover inset-0 opacity-0',
+          'absolute inset-0 opacity-0 cursor-pointer z-20',
           defaultClassNames.dropdown,
         ),
         caption_label: cn(
-          'select-none font-medium',
-          captionLayout === 'label'
-            ? 'text-sm'
-            : 'rounded-md pl-2 pr-1 flex items-center gap-1 text-sm h-8 [&>svg]:text-muted-foreground [&>svg]:size-3.5',
+          'select-none font-medium flex items-center gap-1 text-sm h-8 px-2 rounded-md hover:bg-accent transition-colors cursor-pointer',
           defaultClassNames.caption_label,
         ),
         table: 'w-full border-collapse',
@@ -158,7 +157,10 @@ function Calendar({
           }
 
           return (
-            <ChevronDownIcon className={cn('size-4', className)} {...props} />
+            <ChevronDownIcon
+              className={cn('ml-1 size-4 text-muted-foreground', className)}
+              {...props}
+            />
           );
         },
         DayButton: CalendarDayButton,
@@ -203,6 +205,7 @@ function CalendarDayButton({
         !modifiers.range_end &&
         !modifiers.range_middle
       }
+      data-day-outside={modifiers.outside}
       data-range-start={modifiers.range_start}
       data-range-end={modifiers.range_end}
       data-range-middle={modifiers.range_middle}

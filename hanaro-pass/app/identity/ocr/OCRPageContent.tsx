@@ -114,22 +114,25 @@ export default function OCRPageContent({
         </p>
       </div>
 
-      {!isProcessing && !isDrawerOpen ? (
-        <CameraCapture
-          type={type}
-          onClick={() => setIsDrawerOpen(true)}
-          onImageSelect={handleImageSelect}
-        />
-      ) : (
-        <div className="flex aspect-3/4 w-full items-center justify-center bg-black">
-          {isProcessing && (
-            <div className="flex flex-col items-center gap-4">
-              <div className="h-10 w-10 animate-spin rounded-full border-4 border-white border-t-transparent" />
-              <p className="text-white">OCR 분석 중</p>
-            </div>
-          )}
-        </div>
-      )}
+      <div className="flex flex-col items-center px-6">
+        {!isProcessing && !isDrawerOpen ? (
+          <CameraCapture
+            type={type}
+            onClick={() => setIsDrawerOpen(true)}
+            onImageSelect={handleImageSelect}
+          />
+        ) : (
+          /* 인식 완료 문구를 제거하여 로딩 중일 때만 스피너를 보여줌 */
+          <div className="mb-12 flex h-72 w-full max-w-sm flex-col items-center justify-center rounded-xl border border-gray-800 bg-black">
+            {isProcessing && (
+              <div className="flex flex-col items-center gap-4">
+                <div className="h-10 w-10 animate-spin rounded-full border-4 border-white/20 border-t-white" />
+                <p className="font-medium text-white">OCR 분석 중</p>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
 
       <div className="bg-black px-8 pb-6 text-left sm:pb-8 md:pb-10 lg:pb-12">
         <div className="flex flex-col gap-4 sm:gap-5 md:gap-6">
