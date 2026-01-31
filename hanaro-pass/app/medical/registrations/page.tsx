@@ -48,7 +48,7 @@ export default function MedicalPage() {
                   검색 결과가 없습니다
                 </p>
                 <p className="mt-2 font-sans text-black-400 text-sm">
-                  병원명이나 주소를 다시 확인해주세요
+                  병원명을 다시 확인해주세요
                 </p>
               </div>
             ) : (
