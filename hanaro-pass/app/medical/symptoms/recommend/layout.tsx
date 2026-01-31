@@ -9,10 +9,10 @@ export default function recommendLayout({ children }: PropsWithChildren) {
       <div className="flex-1 overflow-y-auto py-6">{children}</div>
 
       <div className="sticky bottom-0 z-50 bg-white px-5 py-7">
-        <Link href="/">
+        <Link href="/map">
           <ActionButton
             className="h-14 w-full"
-            text="홈으로 돌아가기"
+            text="지도로 돌아가기"
             onClick={() => {}}
           />
         </Link>
