@@ -7,7 +7,7 @@ export default function recommendLayout({ children }: PropsWithChildren) {
     <div className="flex h-dvh flex-col">
       <div className="flex-1 overflow-y-auto py-6">{children}</div>
 
-      <div className="sticky bottom-0 z-50 bg-white px-5 py-7">
+      <div className="sticky bottom-0 z-50 bg-white p-5">
         <Link href="/map">
           <BottomMapButton />
         </Link>

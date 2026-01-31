@@ -43,8 +43,7 @@ export default function NotificationHeaderActions({
   const handleAllDeleteClick = () => {
     alert({
       title: '알림 전체 삭제',
-      description:
-        '모든 알림 내역을 삭제하시겠습니까? 삭제된 알림은 복구할 수 없습니다.',
+      description: `모든 알림 내역을 삭제하시겠습니까? \n삭제된 알림은 복구할 수 없습니다.`,
       variant: 'destructive',
       actionLabel: '전체 삭제',
       onAction: async () => {
@@ -54,7 +53,7 @@ export default function NotificationHeaderActions({
             throw new HttpError(result.message || '전체 삭제 실패', 500);
           onAllDeleteAction();
           info('알림 삭제 완료', '모든 알림 내역이 삭제되었습니다.');
-        } catch (error) {
+        } catch (_) {
           systemError('전체 삭제');
         }
       },

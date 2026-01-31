@@ -27,7 +27,7 @@ export default function EmptyIdentityCard({
           priority
         />
 
-        <div className="mt-24 space-y-3 text-center font-medium text-gray-800 text-lg">
+        <div className="mt-24 text-center font-medium text-black-800 text-lg">
           <p>등록된 {isPassport ? '여권' : '외국인등록증'}이 없습니다.</p>
           <p>{isPassport ? '여권' : '신분증'}을 등록하시겠습니까?</p>
         </div>

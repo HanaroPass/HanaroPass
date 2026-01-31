@@ -37,7 +37,7 @@ ${reviews.map((r) => `- ${r}`).join('\n')}
 }
 
 export async function seedHospitalReviews() {
-  console.log('💡 DB Seed 시작...');
+  console.log('[ AI 병원 요약 - DB Seed 시작... ]');
 
   // DB에서 모든 병원 가져오기
   const hospitals = await prisma.hospital.findMany({
@@ -61,8 +61,8 @@ export async function seedHospitalReviews() {
       data: { hospitalId: hospital.id, aiSummary },
     });
 
-    console.log(`✅ 병원 ${hospital.nameKo} AI 요약 완료`);
+    console.log(`[ ✅ 병원 ${hospital.nameKo} AI 요약 완료 ]`);
   }
 
-  console.log('💡 DB Seed 완료!');
+  console.log('[ AI 병원 요약 - DB Seed 완료! ]');
 }

@@ -21,7 +21,7 @@ export function useImageUpload(limit = 3) {
     const nonDuplicates = newImages.filter(
       (i) => !images.some((img) => img.name === i.name && img.size === i.size),
     );
-    const total = [...images, ...nonDuplicates];
+    const total = [...nonDuplicates, ...images];
 
     if (total.length > limit) {
       toast.error(`사진은 ${limit}개까지만 첨부할 수 있습니다.`);

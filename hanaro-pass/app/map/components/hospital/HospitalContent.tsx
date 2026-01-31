@@ -2,7 +2,7 @@
 
 import { X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
+import ActionButton from '@/components/ui/ActionButton';
 import { HospitalCard } from '@/components/ui/HospitalCard';
 import {
   type Hospital,
@@ -81,12 +81,12 @@ export function HospitalContent({
         />
 
         <div className="mt-auto border-[#F0F3F4] border-t bg-white py-4">
-          <Button
-            className="h-14 w-full rounded-xl bg-green-ez text-white"
-            onClick={() => router.push('/medical/symptoms/analyze?mode=translate')}
-          >
-            AI에게 진료 내용 번역 요청하기
-          </Button>
+          <ActionButton
+            text={'AI에게 진료 내용 번역 요청하기'}
+            onClick={() =>
+              router.push('/medical/symptoms/analyze?mode=translate')
+            }
+          />
         </div>
       </div>
     );
@@ -192,15 +192,13 @@ export function HospitalContent({
         )}
       </div>
 
-      <div className="sticky bottom-0 border-[#F0F3F4] border-t bg-white px-6 py-4">
-        <Button
-          className="h-14 w-full rounded-xl bg-green-ez text-white"
+      <div className="sticky bottom-0 z-10 border-[#F0F3F4] border-t bg-white px-6 py-4">
+        <ActionButton
+          text={'AI에게 나에게 맞는 병원 추천받기'}
           onClick={() =>
             router.push('/medical/symptoms/analyze?mode=recommend')
           }
-        >
-          AI에게 나에게 맞는 병원 추천받기
-        </Button>
+        />
       </div>
     </div>
   );
