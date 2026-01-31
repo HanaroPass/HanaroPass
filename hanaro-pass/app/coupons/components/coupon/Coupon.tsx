@@ -21,7 +21,7 @@ function Coupon({
   description,
 }: CouponProps) {
   return (
-    <div className="flex h-27.5 w-full items-center gap-4 overflow-hidden rounded-xl border border-gray-100 bg-white-ez px-4 shadow-sm">
+    <div className="flex h-28 w-full items-center gap-4 overflow-hidden rounded-xl border border-gray-100 bg-white-ez px-4 shadow-sm">
       <div className="shrink-0">
         <Image
           src={brandPic}
@@ -37,7 +37,9 @@ function Coupon({
           {tag && <p className="text-gray-500 text-sm">{tag}</p>}
         </div>
         <p className="font-bold text-green-ez text-xl">{discount}% 할인</p>
-        <p className="text-black-800 text-sm">{description}</p>
+        <p className="whitespace-normal break-keep text-black-800 text-sm">
+          {description}
+        </p>
       </div>
       <Link
         href={`/coupons/${id}`}

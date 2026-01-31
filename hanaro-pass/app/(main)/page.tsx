@@ -1,5 +1,6 @@
 import { Loader } from 'lucide-react';
 import { Suspense } from 'react';
+import LoadingGate from '@/components/loading/LoadingGate';
 import { getIdentityData } from '../identity/actions/identity';
 import type { IdentityData } from '../identity/actions/identity.schema';
 import { getUserCardsAction } from './actions/getUserCards.action';
@@ -9,7 +10,6 @@ import PassportUnregisteredContent from './components/PassportUnregisteredConten
 import Pay from './components/Pay';
 import Service from './components/Service';
 import Transfer from './components/Transfer';
-import LoadingGate from '@/components/loading/LoadingGate';
 
 const TAB_COMPONENTS = {
   pay: Pay,
