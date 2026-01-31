@@ -1,7 +1,6 @@
-'use client';
 import Link from 'next/link';
 import type { PropsWithChildren } from 'react';
-import ActionButton from '@/components/ui/ActionButton';
+import BottomMapButton from '../../components/symptom/BottomMapButton';
 
 export default function recommendLayout({ children }: PropsWithChildren) {
   return (
@@ -10,11 +9,7 @@ export default function recommendLayout({ children }: PropsWithChildren) {
 
       <div className="sticky bottom-0 z-50 bg-white px-5 py-7">
         <Link href="/map">
-          <ActionButton
-            className="h-14 w-full"
-            text="지도로 돌아가기"
-            onClick={() => {}}
-          />
+          <BottomMapButton />
         </Link>
       </div>
     </div>

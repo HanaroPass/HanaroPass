@@ -101,6 +101,7 @@ export default function SymptomResultContent() {
               localStorage.removeItem('symptom-images');
               router.push('/medical/symptoms/recommend');
             }}
+            className="h-14"
             text="병원 추천 보러가기"
           />
         ) : (

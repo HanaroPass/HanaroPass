@@ -48,8 +48,6 @@ async function main() {
     await prisma.hospitalReview.create({
       data: { hospitalId: hospital.id, aiSummary },
     });
-
-    console.log(`✅ 병원 ${hospital.nameKo} AI 요약 완료`);
   }
 
   console.log('💡 DB Seed 완료!');
