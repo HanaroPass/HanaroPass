@@ -51,10 +51,7 @@ export function HospitalContent({
   if (mode === 'detail') {
     if (!hospital) return null;
 
-    const { openTime, closeTime } = parseOpenHours(
-      hospital.openHours,
-      hospital.nameKo,
-    );
+    const { openTime, closeTime } = parseOpenHours(hospital.openHours);
 
     return (
       <div className="relative flex h-full flex-col px-6 pt-2">
@@ -68,7 +65,7 @@ export function HospitalContent({
         <HospitalCard
           hospital={{
             name: hospital.nameKo,
-            status: getHospitalStatus(hospital.openHours, hospital.nameKo),
+            status: getHospitalStatus(hospital.openHours),
             openTime,
             closeTime,
             address: hospital.address,
@@ -156,10 +153,7 @@ export function HospitalContent({
           </div>
         ) : (
           visibleHospitals.map((h, idx) => {
-            const { openTime, closeTime } = parseOpenHours(
-              h.openHours,
-              h.nameKo,
-            );
+            const { openTime, closeTime } = parseOpenHours(h.openHours);
 
             return (
               <div
@@ -173,7 +167,7 @@ export function HospitalContent({
                 <HospitalCard
                   hospital={{
                     name: h.nameKo,
-                    status: getHospitalStatus(h.openHours, h.nameKo),
+                    status: getHospitalStatus(h.openHours),
                     openTime,
                     closeTime,
                     address: h.address,
