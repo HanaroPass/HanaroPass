@@ -1,22 +1,17 @@
-'use client';
 import Link from 'next/link';
 import type { PropsWithChildren } from 'react';
-import ActionButton from '@/components/ui/ActionButton';
+import BottomMapButton from '../../components/symptom/BottomMapButton';
 
 export default function recommendLayout({ children }: PropsWithChildren) {
   return (
-    <>
-      {children}
+    <div className="flex h-dvh flex-col">
+      <div className="flex-1 overflow-y-auto py-6">{children}</div>
 
-      <div className="-translate-x-1/2 fixed bottom-0 left-1/2 w-full max-w-93.75 bg-white px-4 py-5">
-        <Link href="/">
-          <ActionButton
-            className="w-full"
-            text="홈으로 돌아가기"
-            onClick={() => {}}
-          />
+      <div className="sticky bottom-0 z-50 bg-white px-5 py-7">
+        <Link href="/map">
+          <BottomMapButton />
         </Link>
       </div>
-    </>
+    </div>
   );
 }

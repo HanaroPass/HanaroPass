@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { postSymptomForm } from '../actions/symptoms.action';
 import { convertImagesToBase64 } from '../utils/convertImagesToBase64';
 
@@ -18,13 +19,17 @@ export default function useSymptomResult(images: File[]) {
     setLoading(true);
     try {
       const formData = new FormData(e.currentTarget);
+      if (!formData.get('type') || !formData.get('description')) {
+        toast.error('증상과 내용을 모두 입력해주세요.');
+        setLoading(false);
+        return;
+      }
       images.map((file) => formData.append('images', file));
 
       const imageDataArray = await convertImagesToBase64(images);
       localStorage.setItem('symptom-images', JSON.stringify(imageDataArray));
 
       const { fromCached, response } = await postSymptomForm(formData);
-      console.log(response);
       if (fromCached) {
         await new Promise((r) => setTimeout(r, 2000));
       }

@@ -16,7 +16,6 @@ model User {
   role                        Role                          @default(USER)
   pushSubscription            Json?
   ARC                         ARC?
-  HospitalLanguageApplication HospitalLanguageApplication[]
   Notifications               Notification[]
   Passport                    Passport?
   SavedPlace                  SavedPlace[]
@@ -156,16 +155,14 @@ model HospitalLanguageApplication {
   hospitalId   Int               @db.UnsignedInt
   status       ApplicationStatus @default(PENDING)
   requestLangs Json
+  applicantEmail String          @db.VarChar(255) 
   createdAt    DateTime          @default(now()) @db.Timestamp(0)
   updatedAt    DateTime          @default(now()) @updatedAt @db.Timestamp(0)
   processedAt  DateTime?         @db.Timestamp(0)
   parentId     Int?
-  userId       Int               @db.UnsignedInt
   Hospital     Hospital          @relation(fields: [hospitalId], references: [id], onDelete: Cascade)
-  User         User              @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([hospitalId], map: "fk_LanguageApplication_hospital")
-  @@index([userId], map: "HospitalLanguageApplication_userId_fkey")
 }
 
 model Notification {
