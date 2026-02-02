@@ -2,7 +2,7 @@ import OpenAI from 'openai';
 import {
   pickRandomPlasticReviews,
   pickRandomReviews,
-} from '@/app/map/constants/hospitalsReview';
+} from '@/app/medical/symptoms/openai/hospitalsReview';
 import { prisma } from '@/lib/prisma';
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -60,8 +60,6 @@ export async function seedHospitalReviews() {
     await prisma.hospitalReview.create({
       data: { hospitalId: hospital.id, aiSummary },
     });
-
-    console.log(`[ ✅ 병원 ${hospital.nameKo} AI 요약 완료 ]`);
   }
 
   console.log('[ AI 병원 요약 - DB Seed 완료! ]');

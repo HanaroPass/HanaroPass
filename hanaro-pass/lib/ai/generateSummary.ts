@@ -1,5 +1,5 @@
 import OpenAI from 'openai';
-import { pickRandomReviews } from '@/app/map/constants/hospitalsReview';
+import { pickRandomReviews } from '@/app/medical/symptoms/openai/hospitalsReview';
 import { PrismaClient } from '../generated/prisma';
 
 const prisma = new PrismaClient();

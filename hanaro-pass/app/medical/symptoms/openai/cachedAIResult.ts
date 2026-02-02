@@ -1,6 +1,6 @@
-import OpenAI from 'openai';
+import { redis } from '@/lib/redisClient';
 import 'dotenv/config';
-import { redis } from '@/app/redis/client';
+import OpenAI from 'openai';
 import { makeCacheKey } from './cacheKey';
 
 export type MessageContent =
@@ -26,8 +26,8 @@ export async function cachedOpenAI(model: string, input: MessageInput[]) {
 
   const output = response.output_text;
 
-  // 캐시 저장 1시간
-  await redis.set(cacheKey, JSON.stringify(output), 'EX', 60 * 60);
+  // 캐시 저장 10시간
+  await redis.set(cacheKey, JSON.stringify(output), 'EX', 60 * 60 * 10);
 
   return output;
 }
