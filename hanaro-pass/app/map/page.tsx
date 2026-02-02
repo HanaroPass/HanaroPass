@@ -2,6 +2,7 @@ import { getUserIdFromSession } from '@/lib/session';
 import { getMyEmbassy } from './actions/embassy';
 import { getHospitals } from './actions/hospitals';
 import { getSavedPlaces } from './actions/savedPlaces';
+import type { Hospital } from './hooks/useHospitalFilters';
 import MapPageClient from './mapPageClient';
 
 export default async function Page() {
@@ -19,9 +20,16 @@ export default async function Page() {
 
   const embassyData = embassyRes.success ? embassyRes.data : null;
   const savedPlacesData = savedPlacesRes.success ? savedPlacesRes.data : [];
+  const formattedHospitals = hospitals.map((h) => ({
+    ...h,
+    nameEn: h.nameEn ?? undefined,
+    phone: h.phone ?? undefined,
+    imageUrl: h.imageUrl ?? undefined,
+  })) as Hospital[];
+
   return (
     <MapPageClient
-      hospitals={hospitals}
+      hospitals={formattedHospitals}
       initialEmbassy={embassyData}
       initialSavedPlaces={savedPlacesData}
     />

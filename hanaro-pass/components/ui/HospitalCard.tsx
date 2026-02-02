@@ -26,7 +26,7 @@ export function HospitalCard({
   lang,
 }: {
   hospital: HospitalInfo;
-  lang: 'ko' | 'en';
+  lang?: 'ko' | 'en';
 }) {
   const [expanded, setExpanded] = useState(false);
 

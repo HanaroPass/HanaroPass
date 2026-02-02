@@ -10,25 +10,13 @@ import type { HospitalWithStatus } from '../../symptoms/types';
 export default function HospitalList({
   hospitals,
   isLoading,
-  lang,
 }: {
   hospitals: HospitalWithStatus[];
   isLoading: boolean;
-  lang: 'ko' | 'en';
 }) {
   const [sortByDistance, setSortByDistance] = useState(false);
   const [isOpened, setOpened] = useState(false);
   const { location } = useMyLocation();
-
-  const t = {
-    sortByDistance: lang === 'en' ? 'By distance' : '거리순',
-    openOnly: lang === 'en' ? 'Open now' : '현재 진료 가능 병원',
-    loading: lang === 'en' ? 'Loading...' : '로딩중...',
-    empty:
-      lang === 'en'
-        ? 'No hospitals match your criteria'
-        : '조건에 맞는 병원이 없어요',
-  };
 
   const sortedHospitals = useMemo(() => {
     let updated = [...hospitals];
@@ -89,7 +77,6 @@ export default function HospitalList({
           }
         >
           <HospitalCard
-            lang={lang}
             hospital={{
               name: hospital.nameKo,
               status: hospital.status,

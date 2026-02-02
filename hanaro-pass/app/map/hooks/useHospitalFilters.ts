@@ -4,7 +4,7 @@ import type { MapBounds } from '../types/map';
 export type Hospital = {
   id: number;
   nameKo: string;
-  nameEn?: string;
+  nameEn?: string | null;
   address: string;
   addressEn?: string;
   latitude: number;

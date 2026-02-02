@@ -68,7 +68,7 @@ export function HospitalContent({
           lang={lang}
           hospital={{
             name: hospital.nameKo,
-            nameEn: hospital.nameEn,
+            nameEn: hospital.nameEn ?? undefined,
             status: getHospitalStatus(hospital.openHours),
             openTime,
             closeTime,
@@ -135,7 +135,6 @@ export function HospitalContent({
             <LanguageFilterPanel
               value={selectedLanguages}
               onChange={setSelectedLanguages}
-              lang={lang}
             />
           </FilterPanel>
         </div>
@@ -147,7 +146,6 @@ export function HospitalContent({
             <DepartmentFilterPanel
               value={selectedDepartments}
               onChange={setSelectedDepartments}
-              lang={lang}
             />
           </FilterPanel>
         </div>
@@ -176,7 +174,7 @@ export function HospitalContent({
                   lang={lang}
                   hospital={{
                     name: h.nameKo,
-                    nameEn: h.nameEn,
+                    nameEn: h.nameEn ?? undefined,
                     status: getHospitalStatus(h.openHours),
                     openTime,
                     closeTime,
