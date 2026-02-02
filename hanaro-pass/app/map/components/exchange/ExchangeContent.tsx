@@ -24,9 +24,7 @@ export function ExchangeContent({
           type="button"
           onClick={onBackToList}
           className="absolute top-0 right-4 z-10 text-gray-400 transition-colors"
-          aria-label={
-            lang === 'ko' ? '목록으로 나가기 .' : 'No exchange offices nearby.'
-          }
+          aria-label={lang === 'ko' ? '목록으로 나가기 .' : 'Back to list'}
         >
           <X width={20} height={20} />
         </button>

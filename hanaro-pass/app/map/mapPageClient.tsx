@@ -54,8 +54,10 @@ export default function MapPageClient({
 
   const [currentMapRegion, setCurrentMapRegion] = useState('');
   const mapControlRef = useRef<NaverMapHandle>(null);
-  const { exchangeResults, searchExchanges, clearResults } =
-    useExchangeSearch(currentMapRegion);
+  const { exchangeResults, searchExchanges, clearResults } = useExchangeSearch(
+    currentMapRegion,
+    lang,
+  );
   const [userCoords, setUserCoords] = useState<{ lat: number; lng: number }>();
 
   const toggleLang = () => {

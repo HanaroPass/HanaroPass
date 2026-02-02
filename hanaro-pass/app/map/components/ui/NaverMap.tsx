@@ -79,7 +79,11 @@ export const NaverMap = forwardRef<NaverMapHandle, NaverMapProps>(
             map.panTo(finalCoord, { duration: 500, easing: 'easeOutCubic' });
           },
           () => {
-            warning('내 위치를 찾으려면 위치 권한을 허용해주세요.');
+            warning(
+              props.lang === 'ko'
+                ? '내 위치를 찾으려면 위치 권한을 허용해주세요.'
+                : 'Please allow location permission to find your location.',
+            );
           },
         );
       },

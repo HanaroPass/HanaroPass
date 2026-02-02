@@ -139,7 +139,7 @@ export const EMBASSY_DATA: Omit<Embassy, 'id'>[] = [
     nameEn: 'Embassy of Sri Lanka',
     addressKo: '서울 중구 동호로10길 39 장호물산',
     addressEn: '39 Dongho-ro 10-gil, Jung-gu, Seoul',
-    openHours: '9:30-16:30 (Break 12:00-14:30)',
+    openHours: '09:30-16:30 (Break 12:00-14:30)',
     phone: '02-735-2966',
     latitude: '37.555582',
     longitude: '127.0122579',

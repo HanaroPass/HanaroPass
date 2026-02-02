@@ -126,7 +126,9 @@ export function PlaceCard({ data, userCoords, lang = 'ko' }: PlaceCardProps) {
                 src={data.imageUrl}
                 width={80}
                 height={80}
-                alt={`${data.name} 사진`}
+                alt={
+                  lang === 'ko' ? `${data.name} 사진` : `Photo of ${data.name}`
+                }
                 className="h-20 w-20 rounded object-cover"
               />
             </div>
@@ -138,7 +140,9 @@ export function PlaceCard({ data, userCoords, lang = 'ko' }: PlaceCardProps) {
         <button
           type="button"
           onClick={handlePhoneCall}
-          aria-label={`전화 걸기: ${data.name}`}
+          aria-label={
+            lang === 'ko' ? `전화 걸기: ${data.name}` : `Call: ${data.name}`
+          }
           className="flex items-center justify-center gap-2 rounded-full border border-black-200 bg-white px-2 py-1 text-black-800 text-sm"
         >
           <Phone className="h-4 w-4" />
@@ -147,7 +151,11 @@ export function PlaceCard({ data, userCoords, lang = 'ko' }: PlaceCardProps) {
         <button
           type="button"
           onClick={handleNavigation}
-          aria-label={`네이버 지도 연결: ${data.name}`}
+          aria-label={
+            lang === 'ko'
+              ? `네이버 지도 연결: ${data.name}`
+              : `Open in Naver Map: ${data.name}`
+          }
           className="flex items-center justify-center gap-2 rounded-full border border-black-200 bg-white px-2 py-1 text-black-800 text-sm"
         >
           <Globe className="h-4 w-4" />
