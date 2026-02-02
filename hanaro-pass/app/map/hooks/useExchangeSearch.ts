@@ -16,7 +16,10 @@ type NaverLocalSearchItem = {
   mapy: string;
 };
 
-export function useExchangeSearch(currentMapRegion: string) {
+export function useExchangeSearch(
+  currentMapRegion: string,
+  lang: 'ko' | 'en' = 'ko',
+) {
   const [exchangeResults, setExchangeResults] = useState<NaverSearchResult[]>(
     [],
   );
@@ -41,10 +44,13 @@ export function useExchangeSearch(currentMapRegion: string) {
       setIsLoading(true);
 
       try {
-        const regions = targetRegion.split(' ');
+        const regions = targetRegion.split(lang === 'ko' ? ' ' : ', ');
         const guName = regions[0] || '';
         const dongName = regions[1] || '';
-        const keywords = ['환전', '환전소', '무인환전', '머니박스'];
+        const keywords =
+          lang === 'ko'
+            ? ['환전', '환전소', '무인환전', '머니박스']
+            : ['Currency Exchange', 'Money Exchange', 'Money Box'];
 
         const allQueries = keywords.flatMap((word) => [
           `${guName} ${dongName} ${word}`,
@@ -103,7 +109,7 @@ export function useExchangeSearch(currentMapRegion: string) {
         }
       }
     },
-    [currentMapRegion],
+    [currentMapRegion, lang],
   );
 
   const clearResults = useCallback(() => {

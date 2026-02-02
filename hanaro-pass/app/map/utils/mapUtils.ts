@@ -113,22 +113,40 @@ export function getExchangeType(name: string): '은행' | '환전소' | '기타'
   return '기타';
 }
 
+const EXCHANGE_CATEGORY_MAP = {
+  ko: {
+    은행: '은행',
+    환전소: '환전소',
+    기타: '기타',
+  },
+  en: {
+    은행: 'Bank',
+    환전소: 'Exchange',
+    기타: 'Etc.',
+  },
+} as const;
+
 // HTML 태그 제거 및 데이터 포맷팅
 export const formatExchangeData = (
   results: NaverSearchResult[],
+  lang: 'ko' | 'en' = 'ko',
 ): LocationInfo[] => {
-  return results.map((item) => ({
-    id: `${item.mapx}-${item.mapy}`,
-    name: item.title.replace(/<[^>]*>?/g, ''),
-    type: getExchangeType(item.title),
-    address: item.roadAddress || item.address || '',
-    phone: item.telephone || '',
-    distance: '',
-    status: '',
-    explainTime: '',
-    latitude: item.mapy || '',
-    longitude: item.mapx || '',
-  }));
+  return results.map((item) => {
+    const typeKey = getExchangeType(item.title);
+
+    return {
+      id: `${item.mapx}-${item.mapy}`,
+      name: item.title.replace(/<[^>]*>?/g, ''),
+      type: EXCHANGE_CATEGORY_MAP[lang][typeKey],
+      address: item.roadAddress || item.address || '',
+      phone: item.telephone || '',
+      distance: '',
+      status: '',
+      explainTime: '',
+      latitude: item.mapy || '',
+      longitude: item.mapx || '',
+    };
+  });
 };
 
 export const mapDbToInfo = (
@@ -136,10 +154,25 @@ export const mapDbToInfo = (
   lang: 'ko' | 'en' = 'ko',
 ): LocationInfo => {
   if ('mapx' in db) {
+    const typeKey = getExchangeType(db.title);
+
+    const exchangeCategoryMap = {
+      ko: {
+        은행: '은행',
+        환전소: '환전소',
+        기타: '기타',
+      },
+      en: {
+        은행: 'Bank',
+        환전소: 'Exchange',
+        기타: 'Etc.',
+      },
+    };
+
     return {
       id: `${db.mapx}-${db.mapy}`,
       name: db.title.replace(/<[^>]*>?/g, ''),
-      type: getExchangeType(db.title),
+      type: exchangeCategoryMap[lang][typeKey],
       address: db.roadAddress || db.address || '',
       phone: db.telephone || '',
       distance: '',
@@ -153,7 +186,6 @@ export const mapDbToInfo = (
   const isSaved = 'category' in db;
   const currentCategoryMap = CATEGORY_MAP[lang];
 
-  // 💡 수정된 부분: 키 타입을 명시적으로 지정해줍니다.
   const translatedType = isSaved
     ? (currentCategoryMap as Record<string, string>)[db.category] ||
       currentCategoryMap.ETC

@@ -20,3 +20,5 @@ export type MapBounds = {
   north: number;
   east: number;
 };
+
+export type LanguageType = 'en' | 'ko';

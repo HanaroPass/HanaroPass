@@ -284,12 +284,13 @@ export default function MapPageClient({
         {openSheet === 'siren' && <SirenContent lang={lang} />}
         {openSheet === 'exchange' && (
           <ExchangeContent
-            results={formatExchangeData(exchangeResults)}
+            results={formatExchangeData(exchangeResults, lang)}
             selectedPlace={
               selectedPlace && 'mapx' in selectedPlace
-                ? mapDbToInfo(selectedPlace)
+                ? mapDbToInfo(selectedPlace, lang)
                 : null
             }
+            lang={lang}
             onBackToList={() => {
               setSelectedPlace(null);
               toggleSheet('exchange', true);
