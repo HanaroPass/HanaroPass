@@ -58,16 +58,24 @@ export function useHospitalFilters(
     department: lang === 'en' ? 'Departments' : '진료 과목',
   };
 
-  const makeLabel = (selected: string[], defaultLabel: string) => {
+  const makeLabel = (
+    selected: string[],
+    defaultLabel: string,
+    lang: 'ko' | 'en',
+  ) => {
     if (selected.length === 0) return defaultLabel;
     if (selected.length === 1) return selected[0];
     if (selected.length === 2) return `${selected[0]}, ${selected[1]}`;
-    return `${selected[0]}, ${selected[1]} 외 ${selected.length - 2}개`;
+    const suffix = lang === 'en' ? `others` : `외 ${selected.length - 2}개`;
+    return `${selected[0]}, ${selected[1]} ${suffix}`;
   };
 
-  const languageLabel = makeLabel(selectedLanguages, baseLabels.language);
-
-  const departmentLabel = makeLabel(selectedDepartments, baseLabels.department);
+  const languageLabel = makeLabel(selectedLanguages, baseLabels.language, lang);
+  const departmentLabel = makeLabel(
+    selectedDepartments,
+    baseLabels.department,
+    lang,
+  );
 
   const toggleFilter = (type: FilterType) => {
     setActive((prev) => (prev === type ? null : type));
