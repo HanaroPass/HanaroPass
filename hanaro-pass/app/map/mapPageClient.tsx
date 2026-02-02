@@ -23,6 +23,7 @@ import {
 } from './components/ui/NaverMap';
 import { PlaceCard } from './components/ui/PlaceCard';
 import { ToggleButton } from './components/ui/ToggleButton';
+import { MAP_UI_TEXTS } from './constants/mapTranslations';
 import { useBottomSheet } from './hooks/useBottomSheet';
 import { useExchangeSearch } from './hooks/useExchangeSearch';
 import { type Hospital, useHospitalFilters } from './hooks/useHospitalFilters';
@@ -41,6 +42,9 @@ export default function MapPageClient({
   initialEmbassy,
   initialSavedPlaces,
 }: MapPageClientProps) {
+  const [lang, setLang] = useState<'ko' | 'en'>('ko');
+  const t = MAP_UI_TEXTS[lang];
+
   const [savedPlaces] = useState<SavedPlace[]>(initialSavedPlaces);
   const [myEmbassy] = useState<Embassy | null>(initialEmbassy);
   const [bookmark, setBookmark] = useState(false);
@@ -53,8 +57,6 @@ export default function MapPageClient({
   const { exchangeResults, searchExchanges, clearResults } =
     useExchangeSearch(currentMapRegion);
   const [userCoords, setUserCoords] = useState<{ lat: number; lng: number }>();
-
-  const [lang, setLang] = useState<'ko' | 'en'>('ko');
 
   const toggleLang = () => {
     setLang((prev) => (prev === 'ko' ? 'en' : 'ko'));
@@ -86,7 +88,7 @@ export default function MapPageClient({
             lng: pos.coords.longitude,
           });
         },
-        (err) => console.error('위치 정보를 가져올 수 없습니다.', err),
+        (err) => console.warn('위치 정보를 가져올 수 없습니다.', err),
       );
     }
   }, []);
@@ -142,92 +144,104 @@ export default function MapPageClient({
           showEmbassy={openSheet === 'embassy'}
           exchangeResults={exchangeResults}
           showExchanges={openSheet === 'exchange'}
+          lang={lang}
         />
       </div>
 
       <FloatingLayer>
-        <div className="absolute top-3 left-3 z-40 flex gap-2.5">
-          <ToggleButton
-            variant="pill"
-            label="병원"
-            icon={
-              <Cross className="h-4 w-4" fill="currentColor" strokeWidth={3} />
-            }
-            active={openSheet === 'hospital'}
-            iconColorVariant="red"
-            onClick={() => {
-              setSelectedHospital(null);
-              toggleSheet('hospital');
-            }}
-          />
-          <ToggleButton
-            variant="pill"
-            label="대사관"
-            icon={<Landmark className="h-4 w-4" />}
-            active={openSheet === 'embassy'}
-            iconColorVariant="blue"
-            onClick={() => {
-              const isOpening = openSheet !== 'embassy';
-              toggleSheet('embassy');
-              if (isOpening && myEmbassy) {
-                mapControlRef.current?.panToLocation(
-                  Number(myEmbassy.latitude),
-                  Number(myEmbassy.longitude),
-                );
-              }
-            }}
-          />
-          <ToggleButton
-            variant="pill"
-            label="환전소"
-            icon={<CircleDollarSign className="h-4 w-4" />}
-            active={openSheet === 'exchange'}
-            iconColorVariant="yellow"
-            onClick={handleExchangeClick}
-          />
+        <div className="absolute top-3 right-0 left-0 z-40">
+          <div className="flex gap-2.5 overflow-x-auto px-3 pb-2 [ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <div className="flex flex-nowrap items-center gap-2.5">
+              <ToggleButton
+                variant="icon"
+                active={lang === 'en'}
+                onClick={toggleLang}
+                ariaLabel={lang === 'en' ? 'Switch to KO' : 'Switch to EN'}
+                iconColorVariant="gray"
+                icon={
+                  <span className="flex items-center justify-center font-semibold text-base leading-none">
+                    {lang === 'en' ? 'KO' : 'EN'}
+                  </span>
+                }
+              />
 
-          <ToggleButton
-            variant="icon"
-            active={lang === 'en'}
-            onClick={toggleLang}
-            icon={
-              <span className="font-bold text-xs">
-                {lang === 'en' ? 'EN' : 'KO'}
-              </span>
-            }
-            ariaLabel="언어 전환"
-            iconColorVariant="gray"
-          />
+              <ToggleButton
+                variant="pill"
+                label={t.hospital}
+                icon={
+                  <Cross
+                    className="h-4 w-4"
+                    fill="currentColor"
+                    strokeWidth={3}
+                  />
+                }
+                active={openSheet === 'hospital'}
+                iconColorVariant="red"
+                ariaLabel={t.hospital}
+                onClick={() => {
+                  setSelectedHospital(null);
+                  toggleSheet('hospital');
+                }}
+              />
+              <ToggleButton
+                variant="pill"
+                label={t.embassy}
+                icon={<Landmark className="h-4 w-4" />}
+                active={openSheet === 'embassy'}
+                iconColorVariant="blue"
+                ariaLabel={t.embassy}
+                onClick={() => {
+                  const isOpening = openSheet !== 'embassy';
+                  toggleSheet('embassy');
+                  if (isOpening && myEmbassy) {
+                    mapControlRef.current?.panToLocation(
+                      Number(myEmbassy.latitude),
+                      Number(myEmbassy.longitude),
+                    );
+                  }
+                }}
+              />
+              <ToggleButton
+                variant="pill"
+                label={t.exchange}
+                icon={<CircleDollarSign className="h-4 w-4" />}
+                active={openSheet === 'exchange'}
+                iconColorVariant="yellow"
+                ariaLabel={t.exchange}
+                onClick={handleExchangeClick}
+              />
+            </div>
+          </div>
         </div>
 
         <div className="absolute top-[15%] right-3 z-40 flex flex-col gap-2.5">
           <ToggleButton
             variant="icon"
-            icon={<LocateFixed className="h-5 w-5" />}
             active={false}
+            icon={<LocateFixed className="h-5 w-5" />}
             iconColorVariant="gray"
-            ariaLabel="내 위치 토글"
+            ariaLabel={t.myLocation}
             onClick={() => mapControlRef.current?.centerToMyPosition()}
           />
           <ToggleButton
             variant="icon"
+            active={bookmark}
             icon={
               <Bookmark
                 className="h-5 w-5"
                 fill={bookmark ? 'currentColor' : 'none'}
               />
             }
-            active={bookmark}
-            ariaLabel="저장 토글"
+            ariaLabel={t.bookmark}
             onClick={() => setBookmark(!bookmark)}
           />
           <ToggleButton
             variant="icon"
-            icon={<Siren className="h-5 w-5" />}
             active={openSheet === 'siren'}
+            icon={<Siren className="h-5 w-5" />}
             iconColorVariant="red"
             colorVariant="red"
-            ariaLabel="긴급 상황 토글"
+            ariaLabel={t.emergency}
             onClick={() => toggleSheet('siren')}
           />
         </div>
@@ -265,7 +279,7 @@ export default function MapPageClient({
             }}
           />
         )}
-        {openSheet === 'siren' && <SirenContent />}
+        {openSheet === 'siren' && <SirenContent lang={lang} />}
         {openSheet === 'exchange' && (
           <ExchangeContent
             results={formatExchangeData(exchangeResults)}
