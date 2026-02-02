@@ -62,10 +62,8 @@ export default function MobileQr({ type, data }: MobileQrProps) {
   const imgSrc = `/images/nation/${fileName}.png`;
 
   return (
-    <div
-      className={`flex min-h-full flex-col overflow-y-auto pb-4 ${isPassport ? 'space-y-6' : '-space-y-22'}`}
-    >
-      <div className="qr-wave-bg rounded-2xl p-6 text-white shadow-lg">
+    <div className="flex h-full flex-col gap-6 overflow-y-auto pb-10">
+      <div className="qr-wave-bg flex-none rounded-2xl p-6 text-white shadow-lg">
         <div className="mb-4 text-center">
           <p className="font-semibold text-lg opacity-90">
             남은 시간 : {timeLeft}초
@@ -75,11 +73,9 @@ export default function MobileQr({ type, data }: MobileQrProps) {
           </p>
         </div>
 
-        <div className="mx-auto aspect-square w-72 rounded-xl bg-white p-4">
+        <div className="mx-auto aspect-square w-full max-w-[260px] rounded-xl bg-white p-4 shadow-md sm:max-w-[288px]">
           <div
-            className={`flex h-full w-full items-center justify-center transition-all duration-300 ${
-              isExpired ? 'opacity-50 blur-sm' : 'opacity-100'
-            }`}
+            className={`flex h-full w-full items-center justify-center transition-all duration-300 ${isExpired ? 'opacity-50 blur-sm' : 'opacity-100'}`}
           >
             <QRCode
               value={qrData}
@@ -91,12 +87,12 @@ export default function MobileQr({ type, data }: MobileQrProps) {
         </div>
       </div>
 
-      <div className="flex flex-1 justify-center px-2 transition-all">
+      <div className="flex flex-none justify-center px-2">
         {isPassport ? (
           <div className="flex w-full max-w-md flex-col space-y-4">
             <div className="flex space-x-5">
               {PhotoSection}
-              <div className="flex flex-1 flex-col items-center justify-center rounded-2xl bg-gray-50 p-4">
+              <div className="flex flex-1 flex-col items-center justify-center rounded-2xl border border-gray-100 bg-gray-50 p-4">
                 <div className="mb-3 rounded-md bg-gray-800 px-3 py-1">
                   <span className="font-semibold text-white text-xs tracking-wider">
                     COUNTRY
@@ -109,7 +105,7 @@ export default function MobileQr({ type, data }: MobileQrProps) {
                   height={50}
                   className="mb-2 rounded border border-gray-200 shadow-sm"
                 />
-                <span className="w-full text-center text-base text-black-900 leading-tight tracking-tight">
+                <span className="w-full text-center text-base text-black-900 leading-tight">
                   {rawCountry}
                 </span>
               </div>
@@ -125,7 +121,7 @@ export default function MobileQr({ type, data }: MobileQrProps) {
         ) : (
           <div className="flex w-full max-w-md items-start space-x-5">
             {PhotoSection}
-            <div className="flex h-48 flex-1 flex-col justify-center space-y-4 rounded-2xl bg-gray-50 px-4 py-2 text-gray-800">
+            <div className="flex min-h-[12rem] flex-1 flex-col justify-center space-y-4 rounded-2xl border border-gray-100 bg-gray-50 px-4 py-4 text-gray-800">
               <div>
                 <p className="mb-1 font-semibold text-xl">Status</p>
                 <p className="font-regular text-sm">
