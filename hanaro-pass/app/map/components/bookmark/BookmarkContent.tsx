@@ -15,15 +15,11 @@ export function BookmarkContent({
   userCoords,
   lang,
 }: BookmarkContentProps) {
-  const localizedData = {
-    ...mapDbToInfo(data),
-    name: lang === 'ko' ? data.nameKo : data.nameEn,
-    address: lang === 'ko' ? data.addressKo : data.addressEn,
-  };
+  const localizedData = mapDbToInfo(data, lang);
 
   return (
     <div className="px-2">
-      <PlaceCard data={localizedData} userCoords={userCoords} />
+      <PlaceCard data={localizedData} userCoords={userCoords} lang={lang} />
     </div>
   );
 }

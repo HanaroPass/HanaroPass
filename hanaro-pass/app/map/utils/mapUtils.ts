@@ -1,14 +1,9 @@
 import type { Embassy, SavedPlace } from '@/lib/generated/prisma';
 import type { NaverSearchResult } from '../components/ui/NaverMap';
 import type { LocationInfo } from '../components/ui/PlaceCard';
+import { CATEGORY_MAP } from '../constants/mapTranslations';
 import type { Hospital } from '../hooks/useHospitalFilters';
 import type { ClickablePlace } from '../hooks/useMapMarkers';
-
-const CATEGORY_MAP: Record<string, string> = {
-  CAFE: '카페',
-  FOOD: '식당',
-  SHOP: '쇼핑',
-};
 
 // 병원 운영 상태 계산 함수
 export function getHospitalStatus(openHours: string): '진료 중' | '진료 종료' {
@@ -136,9 +131,9 @@ export const formatExchangeData = (
   }));
 };
 
-// 다양한 DB 타입을 LocationInfo 타입으로 변환
 export const mapDbToInfo = (
   db: SavedPlace | Embassy | NaverSearchResult,
+  lang: 'ko' | 'en' = 'ko',
 ): LocationInfo => {
   if ('mapx' in db) {
     return {
@@ -155,14 +150,20 @@ export const mapDbToInfo = (
     };
   }
 
-  const type =
-    'category' in db ? CATEGORY_MAP[db.category] || '기타' : '대사관, 영사관';
+  const isSaved = 'category' in db;
+  const currentCategoryMap = CATEGORY_MAP[lang];
+
+  // 💡 수정된 부분: 키 타입을 명시적으로 지정해줍니다.
+  const translatedType = isSaved
+    ? (currentCategoryMap as Record<string, string>)[db.category] ||
+      currentCategoryMap.ETC
+    : currentCategoryMap.EMBASSY;
 
   return {
     id: db.id,
-    name: db.nameKo,
-    type,
-    address: db.addressKo,
+    name: lang === 'ko' ? db.nameKo : db.nameEn || db.nameKo,
+    type: translatedType,
+    address: lang === 'ko' ? db.addressKo : db.addressEn || db.addressKo,
     phone: db.phone,
     explainTime: db.openHours,
     distance: '',

@@ -39,6 +39,7 @@ export function EmbassyContent({
           longitude: data.longitude,
         }}
         userCoords={userCoords}
+        lang={lang}
       />
       <div className="flex gap-1 px-4 text-[11px] text-gray-400">
         <span className="shrink-0">*</span>

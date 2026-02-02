@@ -259,7 +259,8 @@ export default function MapPageClient({
       >
         {openSheet === 'bookmark' &&
           selectedPlace &&
-          'nameKo' in selectedPlace && (
+          'nameKo' in selectedPlace &&
+          'category' in selectedPlace && (
             <BookmarkContent
               data={selectedPlace as SavedPlace}
               userCoords={userCoords}
