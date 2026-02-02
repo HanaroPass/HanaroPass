@@ -27,7 +27,7 @@ export async function cachedOpenAI(model: string, input: MessageInput[]) {
   const output = response.output_text;
 
   // 캐시 저장 1시간
-  await redis.set(cacheKey, JSON.stringify(output), 'EX', 60 * 60);
+  await redis.set(cacheKey, JSON.stringify(output), 'EX', 60 * 60 * 10);
 
   return output;
 }
