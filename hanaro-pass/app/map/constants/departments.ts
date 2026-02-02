@@ -22,3 +22,29 @@ export const DEPARTMENTS = [
 ] as const;
 
 export type Department = (typeof DEPARTMENTS)[number];
+
+export const DEPARTMENT_TRANSLATIONS: Record<
+  Department,
+  { ko: string; en: string }
+> = {
+  내과: { ko: '내과', en: 'Internal Medicine' },
+  소아과: { ko: '소아과', en: 'Pediatrics' },
+  피부과: { ko: '피부과', en: 'Dermatology' },
+  이비인후과: { ko: '이비인후과', en: 'ENT (Otolaryngology)' },
+  정형외과: { ko: '정형외과', en: 'Orthopedics' },
+  외과: { ko: '외과', en: 'General Surgery' },
+  가정의학과: { ko: '가정의학과', en: 'Family Medicine' },
+  신경외과: { ko: '신경외과', en: 'Neurosurgery' },
+  마취통증과: { ko: '마취통증과', en: 'Anesthesiology & Pain' },
+  성형외과: { ko: '성형외과', en: 'Plastic Surgery' },
+  산부인과: { ko: '산부인과', en: 'OB-GYN' },
+  안과: { ko: '안과', en: 'Ophthalmology' },
+  정신건강의학과: { ko: '정신건강의학과', en: 'Psychiatry' },
+  비뇨의학과: { ko: '비뇨의학과', en: 'Urology' },
+  신경과: { ko: '신경과', en: 'Neurology' },
+  재활의학과: { ko: '재활의학과', en: 'Rehabilitation' },
+  흉부외과: { ko: '흉부외과', en: 'Thoracic Surgery' },
+  영상의학과: { ko: '영상의학과', en: 'Radiology' },
+  치과: { ko: '치과', en: 'Dentistry' },
+  한의원: { ko: '한의원', en: 'Korean Medicine' },
+};

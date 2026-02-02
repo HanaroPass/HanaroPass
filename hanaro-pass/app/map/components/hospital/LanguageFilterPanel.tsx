@@ -1,37 +1,47 @@
 'use client';
 
-import { LANGUAGES } from '../../constants/languages';
+import {
+  LANGUAGE_TRANSLATIONS,
+  LANGUAGES,
+  type Language,
+} from '../../constants/languages';
 
 type LanguageFilterPanelProps = {
   value: string[];
   onChange: (v: string[]) => void;
+  lang?: 'ko' | 'en';
 };
 
 export default function LanguageFilterPanel({
   value,
   onChange,
+  lang = 'ko',
 }: LanguageFilterPanelProps) {
-  const toggle = (lang: string) => {
+  const toggle = (langKey: string) => {
     onChange(
-      value.includes(lang) ? value.filter((l) => l !== lang) : [...value, lang],
+      value.includes(langKey)
+        ? value.filter((l) => l !== langKey)
+        : [...value, langKey],
     );
   };
 
   return (
     <>
-      {LANGUAGES.map((lang) => {
-        const checked = value.includes(lang);
+      {LANGUAGES.map((langKey) => {
+        const checked = value.includes(langKey);
+        const displayLabel = LANGUAGE_TRANSLATIONS[langKey as Language][lang];
 
         return (
           <button
-            key={lang}
+            key={langKey}
             type="button"
-            onClick={() => toggle(lang)}
+            onClick={() => toggle(langKey)}
             className="flex h-16 w-full items-center gap-3 border-gray-200 border-b px-4 last:border-b-0"
           >
             <div
-              className={`flex h-5 w-5 items-center justify-center rounded ${checked ? 'bg-green-ez' : 'border border-gray-300'}
-      `}
+              className={`flex h-5 w-5 items-center justify-center rounded ${
+                checked ? 'bg-green-ez' : 'border border-gray-300'
+              }`}
             >
               {checked && (
                 <svg
@@ -51,8 +61,7 @@ export default function LanguageFilterPanel({
                 </svg>
               )}
             </div>
-
-            <span className="font-medium text-base">{lang}</span>
+            <span className="font-medium text-base">{displayLabel}</span>
           </button>
         );
       })}

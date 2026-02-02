@@ -149,6 +149,7 @@ export function HospitalContent({
             <LanguageFilterPanel
               value={selectedLanguages}
               onChange={setSelectedLanguages}
+              lang={lang}
             />
           </FilterPanel>
         </div>
@@ -160,6 +161,7 @@ export function HospitalContent({
             <DepartmentFilterPanel
               value={selectedDepartments}
               onChange={setSelectedDepartments}
+              lang={lang}
             />
           </FilterPanel>
         </div>

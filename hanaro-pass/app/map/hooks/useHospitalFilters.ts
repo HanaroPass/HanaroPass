@@ -1,4 +1,9 @@
 import { useMemo, useState } from 'react';
+import {
+  DEPARTMENT_TRANSLATIONS,
+  type Department,
+} from '../constants/departments';
+import { LANGUAGE_TRANSLATIONS, type Language } from '../constants/languages';
 import type { MapBounds } from '../types/map';
 
 export type Hospital = {
@@ -61,19 +66,47 @@ export function useHospitalFilters(
   const makeLabel = (
     selected: string[],
     defaultLabel: string,
+    type: 'language' | 'department',
     lang: 'ko' | 'en',
   ) => {
     if (selected.length === 0) return defaultLabel;
-    if (selected.length === 1) return selected[0];
-    if (selected.length === 2) return `${selected[0]}, ${selected[1]}`;
-    const suffix = lang === 'en' ? `others` : `외 ${selected.length - 2}개`;
-    return `${selected[0]}, ${selected[1]} ${suffix}`;
+
+    const getTranslatedName = (key: string) => {
+      if (type === 'language') {
+        return LANGUAGE_TRANSLATIONS[key as Language]?.[lang] || key;
+      }
+      return DEPARTMENT_TRANSLATIONS[key as Department]?.[lang] || key;
+    };
+
+    const maxShow = lang === 'en' ? 1 : 2;
+    const first = getTranslatedName(selected[0]);
+
+    if (selected.length === 1) return first;
+
+    if (lang === 'ko' && selected.length === 2) {
+      return `${first}, ${getTranslatedName(selected[1])}`;
+    }
+
+    const remainingCount = selected.length - maxShow;
+
+    if (lang === 'en') {
+      return `${first} +${remainingCount}`;
+    } else {
+      const second = getTranslatedName(selected[1]);
+      return `${first}, ${second} 외 ${remainingCount}`;
+    }
   };
 
-  const languageLabel = makeLabel(selectedLanguages, baseLabels.language, lang);
+  const languageLabel = makeLabel(
+    selectedLanguages,
+    baseLabels.language,
+    'language',
+    lang,
+  );
   const departmentLabel = makeLabel(
     selectedDepartments,
     baseLabels.department,
+    'department',
     lang,
   );
 
