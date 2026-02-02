@@ -8,12 +8,27 @@ import {
 } from '../constants/map';
 import type { MapBounds } from '../types/map';
 
+interface ExtendedMapOptions extends naver.maps.MapOptions {
+  language?: 'ko' | 'en';
+}
+
 export function useNaverMapInit(
   containerRef: React.RefObject<HTMLDivElement | null>,
   onMapMoved?: (address: string, bounds?: MapBounds) => void,
   lang: 'ko' | 'en' = 'ko',
 ) {
   const mapRef = useRef<naver.maps.Map | null>(null);
+  const lastStateRef = useRef<{
+    center: naver.maps.LatLng;
+    zoom: number;
+  } | null>(null);
+  const myRealPosRef = useRef<{ lat: number; lng: number } | null>(null);
+
+  const onMapMovedRef = useRef(onMapMoved);
+  useEffect(() => {
+    onMapMovedRef.current = onMapMoved;
+  }, [onMapMoved]);
+
   const [isMapReady, setIsMapReady] = useState(false);
   const [isMapLoading, setIsMapLoading] = useState(false);
 
@@ -60,14 +75,21 @@ export function useNaverMapInit(
             ? `${region?.area3?.name || ''}, ${region?.area2?.name || ''}`.trim()
             : `${region?.area2?.name || ''} ${region?.area3?.name || ''}`.trim();
 
-        if (onMapMoved && fullRegionName) {
-          onMapMoved(fullRegionName, mapBounds);
+        if (onMapMovedRef.current && fullRegionName) {
+          onMapMovedRef.current(fullRegionName, mapBounds);
         }
       },
     );
-  }, [onMapMoved, lang]);
+  }, [lang]);
 
   useEffect(() => {
+    if (mapRef.current) {
+      lastStateRef.current = {
+        center: mapRef.current.getCenter() as naver.maps.LatLng,
+        zoom: mapRef.current.getZoom(),
+      };
+    }
+
     const NAVER_MAP_KEY = process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID;
     const container = containerRef.current;
     if (!NAVER_MAP_KEY || !container) return;
@@ -88,23 +110,28 @@ export function useNaverMapInit(
         mapRef.current = null;
         setIsMapReady(false);
 
-        const renderMap = (lat: number, lng: number) => {
+        const renderMap = (actualLat: number, actualLng: number) => {
           if (!isMounted) return;
 
-          const initialOptions = {
-            center: new window.naver.maps.LatLng(lat, lng),
-            zoom: 15,
+          const mapCenter = lastStateRef.current
+            ? lastStateRef.current.center
+            : new window.naver.maps.LatLng(actualLat, actualLng);
+          const mapZoom = lastStateRef.current ? lastStateRef.current.zoom : 15;
+
+          const map = new window.naver.maps.Map(container, {
+            center: mapCenter,
+            zoom: mapZoom,
             logoControl: false,
             language: lang,
-          };
+          } as ExtendedMapOptions);
 
-          const map = new window.naver.maps.Map(container, initialOptions);
           mapRef.current = map;
           setIsMapReady(true);
-          map.panBy(new window.naver.maps.Point(0, 150));
+          if (!lastStateRef.current)
+            map.panBy(new window.naver.maps.Point(0, 150));
 
           new window.naver.maps.Marker({
-            position: new window.naver.maps.LatLng(lat, lng),
+            position: new window.naver.maps.LatLng(actualLat, actualLng),
             map,
             icon: {
               content: MARKER_ICONS.myLocation,
@@ -123,32 +150,40 @@ export function useNaverMapInit(
           setIsMapLoading(false);
         };
 
-        navigator.geolocation.getCurrentPosition(
-          (pos) => renderMap(pos.coords.latitude, pos.coords.longitude),
-          () => {
-            renderMap(DEFAULT_COORDS.lat, DEFAULT_COORDS.lng);
-            onMapMoved?.(
-              lang === 'en'
-                ? 'Seongsu-dong, Seongdong-gu'
-                : '서울특별시 성동구 성수동',
-            );
-            setIsMapLoading(false);
-          },
-          { enableHighAccuracy: true, timeout: 10000 },
-        );
+        if (myRealPosRef.current) {
+          renderMap(myRealPosRef.current.lat, myRealPosRef.current.lng);
+        } else {
+          navigator.geolocation.getCurrentPosition(
+            (pos) => {
+              myRealPosRef.current = {
+                lat: pos.coords.latitude,
+                lng: pos.coords.longitude,
+              };
+              renderMap(pos.coords.latitude, pos.coords.longitude);
+            },
+            () => {
+              myRealPosRef.current = {
+                lat: DEFAULT_COORDS.lat,
+                lng: DEFAULT_COORDS.lng,
+              };
+              renderMap(DEFAULT_COORDS.lat, DEFAULT_COORDS.lng);
+              if (onMapMovedRef.current) {
+                onMapMovedRef.current(
+                  lang === 'en'
+                    ? 'Seongsu-dong, Seongdong-gu'
+                    : '서울특별시 성동구 성수동',
+                );
+              }
+            },
+            { enableHighAccuracy: true, timeout: 10000 },
+          );
+        }
       }, 200);
     };
 
     const scriptId = 'naver-map-script';
     const oldScript = document.getElementById(scriptId);
-
-    if (oldScript) {
-      oldScript.remove();
-      if ('naver' in window) {
-        const win = window as unknown as Record<string, unknown>;
-        win.naver = undefined;
-      }
-    }
+    if (oldScript) oldScript.remove();
 
     const script = document.createElement('script');
     script.id = scriptId;
@@ -161,7 +196,7 @@ export function useNaverMapInit(
       isMounted = false;
       if (idleListener) window.naver.maps.Event.removeListener(idleListener);
     };
-  }, [containerRef, lang, onMapMoved, updateCenterAddress]);
+  }, [containerRef, lang, updateCenterAddress]);
 
   return { mapRef, isMapReady, isMapLoading };
 }
