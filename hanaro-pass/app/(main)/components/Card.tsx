@@ -194,9 +194,7 @@ export default function Card({
     });
 
     void refreshBarcodeToken();
-
-    router.refresh();
-  }, [isPaying, barcodeToken, alert, router, refreshBarcodeToken]);
+  }, [isPaying, barcodeToken, alert, refreshBarcodeToken]);
 
   if (!activeCard) return null;
 
