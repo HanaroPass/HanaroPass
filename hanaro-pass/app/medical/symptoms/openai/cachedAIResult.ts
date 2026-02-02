@@ -1,6 +1,6 @@
-import OpenAI from 'openai';
+import { redis } from '@/lib/redisClient';
 import 'dotenv/config';
-import { redis } from '@/app/redis/client';
+import OpenAI from 'openai';
 import { makeCacheKey } from './cacheKey';
 
 export type MessageContent =

@@ -1,9 +1,9 @@
 'use server';
 
-import { redis } from '@/app/redis/client';
 import { parseAIOutput } from '@/lib/ai/outputParser';
 import { analyzeSymptom } from '@/lib/ai/symptomService';
 import { generateTTS } from '@/lib/ai/ttsService';
+import { redis } from '@/lib/redisClient';
 import hashText from '../utils/hash';
 
 export async function postSymptomForm(formData: FormData) {
