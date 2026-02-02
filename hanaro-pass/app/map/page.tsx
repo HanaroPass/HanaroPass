@@ -20,12 +20,12 @@ export default async function Page() {
 
   const embassyData = embassyRes.success ? embassyRes.data : null;
   const savedPlacesData = savedPlacesRes.success ? savedPlacesRes.data : [];
-  const formattedHospitals = hospitals.map((h) => ({
+  const formattedHospitals: Hospital[] = hospitals.map((h) => ({
     ...h,
     nameEn: h.nameEn ?? undefined,
-    phone: h.phone ?? undefined,
+    phone: h.phone ?? null,
     imageUrl: h.imageUrl ?? undefined,
-  })) as Hospital[];
+  }));
 
   return (
     <MapPageClient
