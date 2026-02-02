@@ -20,6 +20,7 @@ export async function getHospitals() {
   return hospitals.map((h) => ({
     id: h.id,
     nameKo: h.nameKo,
+    nameEn: null,
     address: h.address,
     latitude: Number(h.latitude),
     longitude: Number(h.longitude),

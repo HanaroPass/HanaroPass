@@ -4,7 +4,9 @@ import type { MapBounds } from '../types/map';
 export type Hospital = {
   id: number;
   nameKo: string;
+  nameEn?: string;
   address: string;
+  addressEn?: string;
   latitude: number;
   longitude: number;
   phone: string | null;
@@ -12,6 +14,7 @@ export type Hospital = {
   imageUrl?: string | null;
   languages: string[];
   departments: string[];
+  departmentsEn?: string[];
   aiSummary?: string;
 };
 
@@ -20,6 +23,7 @@ type FilterType = 'language' | 'department' | null;
 export function useHospitalFilters(
   hospitals: Hospital[],
   mapBounds: MapBounds | null,
+  lang: 'ko' | 'en',
 ) {
   const [active, setActive] = useState<FilterType>(null);
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
@@ -49,6 +53,11 @@ export function useHospitalFilters(
     });
   }, [hospitals, selectedLanguages, selectedDepartments, mapBounds]);
 
+  const baseLabels = {
+    language: lang === 'en' ? 'Languages' : '소통 가능 언어',
+    department: lang === 'en' ? 'Departments' : '진료 과목',
+  };
+
   const makeLabel = (selected: string[], defaultLabel: string) => {
     if (selected.length === 0) return defaultLabel;
     if (selected.length === 1) return selected[0];
@@ -56,8 +65,9 @@ export function useHospitalFilters(
     return `${selected[0]}, ${selected[1]} 외 ${selected.length - 2}개`;
   };
 
-  const languageLabel = makeLabel(selectedLanguages, '소통 가능 언어');
-  const departmentLabel = makeLabel(selectedDepartments, '진료 과목');
+  const languageLabel = makeLabel(selectedLanguages, baseLabels.language);
+
+  const departmentLabel = makeLabel(selectedDepartments, baseLabels.department);
 
   const toggleFilter = (type: FilterType) => {
     setActive((prev) => (prev === type ? null : type));

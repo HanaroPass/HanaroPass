@@ -4,8 +4,8 @@ import { X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import ActionButton from '@/components/ui/ActionButton';
 import { HospitalCard } from '@/components/ui/HospitalCard';
-import {
-  type Hospital,
+import type {
+  Hospital,
   useHospitalFilters,
 } from '../../hooks/useHospitalFilters';
 import type { MapBounds } from '../../types/map';
@@ -21,14 +21,16 @@ type Props = {
   hospitals: Hospital[];
   hospital?: Hospital;
   mapBounds: MapBounds | null;
+  lang: 'ko' | 'en';
+  filterState: ReturnType<typeof useHospitalFilters>;
   onBackToList?: () => void;
 };
 
 export function HospitalContent({
   mode,
-  hospitals,
   hospital,
-  mapBounds,
+  filterState,
+  lang,
   onBackToList,
 }: Props) {
   const router = useRouter();
@@ -43,7 +45,7 @@ export function HospitalContent({
     visibleHospitals,
     languageLabel,
     departmentLabel,
-  } = useHospitalFilters(hospitals, mapBounds);
+  } = filterState;
 
   /* =====================
    * DETAIL MODE (병원 하나 상세)
@@ -63,15 +65,19 @@ export function HospitalContent({
           <X width={20} height={20} />
         </button>
         <HospitalCard
+          lang={lang}
           hospital={{
             name: hospital.nameKo,
+            nameEn: hospital.nameEn,
             status: getHospitalStatus(hospital.openHours),
             openTime,
             closeTime,
             address: hospital.address,
+            addressEn: hospital.addressEn,
             phone: hospital.phone ?? '-',
             languages: hospital.languages,
             departments: hospital.departments,
+            departmentsEn: hospital.departmentsEn,
             imageUrl: hospital.imageUrl,
             aiSummary: hospital.aiSummary,
           }}
@@ -125,10 +131,11 @@ export function HospitalContent({
 
       {active === 'language' && (
         <div className="sticky top-11 z-30 bg-white px-6">
-          <FilterPanel title="소통 가능 언어">
+          <FilterPanel title={lang === 'en' ? 'Languages' : '소통 가능 언어'}>
             <LanguageFilterPanel
               value={selectedLanguages}
               onChange={setSelectedLanguages}
+              lang={lang}
             />
           </FilterPanel>
         </div>
@@ -136,10 +143,11 @@ export function HospitalContent({
 
       {active === 'department' && (
         <div className="sticky top-11 z-30 bg-white px-6">
-          <FilterPanel title="진료 과목">
+          <FilterPanel title={lang === 'en' ? 'Departments' : '진료 과목'}>
             <DepartmentFilterPanel
               value={selectedDepartments}
               onChange={setSelectedDepartments}
+              lang={lang}
             />
           </FilterPanel>
         </div>
@@ -165,15 +173,19 @@ export function HospitalContent({
                 }
               >
                 <HospitalCard
+                  lang={lang}
                   hospital={{
                     name: h.nameKo,
+                    nameEn: h.nameEn,
                     status: getHospitalStatus(h.openHours),
                     openTime,
                     closeTime,
                     address: h.address,
+                    addressEn: h.addressEn,
                     phone: h.phone ?? '-',
                     languages: h.languages,
                     departments: h.departments,
+                    departmentsEn: h.departmentsEn,
                     imageUrl: h.imageUrl,
                     aiSummary: h.aiSummary,
                   }}

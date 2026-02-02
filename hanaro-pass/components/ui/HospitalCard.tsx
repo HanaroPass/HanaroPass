@@ -5,39 +5,79 @@ import AIResultIcon from '@/components/ui/AIResultIcon';
 
 export type HospitalInfo = {
   name: string;
+  nameEn?: string;
   status: '진료 중' | '진료 종료';
   openTime: string;
   closeTime: string;
   address: string;
+  addressEn?: string;
   phone: string | null;
   languages: string[];
   departments: string[];
+  departmentsEn?: string[];
   imageUrl?: string | null;
   aiSummary?: string;
 };
 
 const MAX_DEPT = 6;
 
-export function HospitalCard({ hospital }: { hospital: HospitalInfo }) {
+export function HospitalCard({
+  hospital,
+  lang,
+}: {
+  hospital: HospitalInfo;
+  lang: 'ko' | 'en';
+}) {
   const [expanded, setExpanded] = useState(false);
-  const hasMore = hospital.departments.length > MAX_DEPT;
-  const visibleDepts = expanded
-    ? hospital.departments
-    : hospital.departments.slice(0, MAX_DEPT);
+
+  const name =
+    lang === 'en' && hospital.nameEn ? hospital.nameEn : hospital.name;
+
+  const address =
+    lang === 'en' && hospital.addressEn ? hospital.addressEn : hospital.address;
+
+  const departments =
+    lang === 'en' && hospital.departmentsEn
+      ? hospital.departmentsEn
+      : hospital.departments;
+
+  const hasMore = departments.length > MAX_DEPT;
+  const visibleDepts = expanded ? departments : departments.slice(0, MAX_DEPT);
+
+  const t = {
+    hours: lang === 'en' ? 'Hours' : '진료 시간',
+    languages: lang === 'en' ? 'Languages' : '소통 언어',
+    departments: lang === 'en' ? 'Departments' : '진료 과목',
+    more: lang === 'en' ? 'More' : '더보기',
+    less: lang === 'en' ? 'Less' : '접기',
+    aiSummary: lang === 'en' ? 'AI Summary' : 'AI 요약',
+    aiEmpty:
+      lang === 'en'
+        ? 'AI summary not available yet.'
+        : '아직 AI 요약이 제공되지 않았어요.',
+    noImage: lang === 'en' ? 'No Image' : '이미지 없음',
+    status:
+      hospital.status === '진료 중'
+        ? lang === 'en'
+          ? 'Open'
+          : '진료 중'
+        : lang === 'en'
+          ? 'Closed'
+          : '진료 종료',
+  };
 
   return (
     <div className="py-4">
       {/* ================= 상단: 정보 + 사진 ================= */}
       <div className="grid grid-cols-[minmax(0,1fr)_120px] gap-5">
         {/* 왼쪽 정보 */}
-
         <div className="space-y-1">
           {/* 병원명 */}
-          <div className="font-bold text-gray-900 text-lg">{hospital.name}</div>
+          <div className="font-bold text-gray-900 text-lg">{name}</div>
 
-          {/* 진료시간 + 상태 */}
+          {/* 진료시간 */}
           <div className="flex items-center whitespace-nowrap text-sm">
-            <span className="font-semibold text-gray-700">진료 시간</span>
+            <span className="font-semibold text-gray-700">{t.hours}</span>
             <span className="pr-1.5 text-gray-800">
               : {hospital.openTime}
               {hospital.closeTime?.trim() && ` ~ ${hospital.closeTime}`}
@@ -46,7 +86,7 @@ export function HospitalCard({ hospital }: { hospital: HospitalInfo }) {
 
           {/* 언어 */}
           <div className="text-sm">
-            <span className="font-semibold text-gray-700">소통 언어</span>
+            <span className="font-semibold text-gray-700">{t.languages}</span>
             <span className="text-gray-800">
               : {hospital.languages.join(', ')}
             </span>
@@ -54,45 +94,45 @@ export function HospitalCard({ hospital }: { hospital: HospitalInfo }) {
 
           {/* 진료과목 */}
           <div className="text-sm">
-            <span className="font-semibold text-gray-700">진료 과목</span>
+            <span className="font-semibold text-gray-700">{t.departments}</span>
             <span className="text-gray-800">: {visibleDepts.join(', ')}</span>
             {hasMore && (
               <button
                 onClick={() => setExpanded((p) => !p)}
-                className="ml-2 inline-block text-center text-gray-600 text-xs underline"
+                className="ml-2 inline-block text-gray-600 text-xs underline"
               >
-                {expanded ? '접기' : '더보기'}
+                {expanded ? t.less : t.more}
               </button>
             )}
           </div>
         </div>
 
-        {/* 오른쪽 사진 (고정 높이) */}
+        {/* 오른쪽 이미지 */}
         <div className="relative h-30 w-30 self-start overflow-hidden rounded-xl bg-gray-100">
           {/* 상태 칩 */}
           <div className="absolute top-1.5 right-1.5 z-10">
             <span
-              className={`inline-flex shrink-0 items-center justify-center gap-1 rounded-full px-2 py-1 font-medium text-xs ${
+              className={`inline-flex items-center rounded-full px-2 py-1 font-medium text-xs ${
                 hospital.status === '진료 중'
                   ? 'bg-green-500 text-green-900'
                   : 'bg-gray-200 text-gray-600'
               }`}
             >
-              {hospital.status}
+              {t.status}
             </span>
           </div>
 
           {hospital.imageUrl ? (
             <Image
               src={hospital.imageUrl}
-              alt={`${hospital.name} 병원 이미지`}
+              alt={`${name} image`}
               fill
-              className="object-cover object-center"
+              className="object-cover"
               unoptimized
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center text-gray-400 text-xs">
-              이미지 없음
+              {t.noImage}
             </div>
           )}
         </div>
@@ -101,7 +141,7 @@ export function HospitalCard({ hospital }: { hospital: HospitalInfo }) {
       {/* 주소 */}
       <div className="flex items-center gap-2 pt-2 text-gray-500 text-sm">
         <MapPin className="h-4 w-4 shrink-0" />
-        <span>{hospital.address}</span>
+        <span>{address}</span>
       </div>
 
       {/* 전화 */}
@@ -110,15 +150,15 @@ export function HospitalCard({ hospital }: { hospital: HospitalInfo }) {
         <span>{hospital.phone ?? '-'}</span>
       </div>
 
-      {/* ================= 하단: AI 한줄 요약 (전체 폭) ================= */}
+      {/* ================= AI 요약 ================= */}
       <div className="mt-5 rounded-xl border bg-gray-50 px-4 py-3">
         <div className="flex items-center gap-2 font-semibold text-gray-800 text-sm">
           <AIResultIcon size="sm" />
-          <span>AI 한 줄 요약</span>
+          <span>{t.aiSummary}</span>
         </div>
 
         <p className="mt-1 text-[13px] text-gray-600 leading-snug">
-          {hospital.aiSummary ?? 'AI 요약 정보가 아직 없어요.'}
+          {hospital.aiSummary ?? t.aiEmpty}
         </p>
       </div>
     </div>
