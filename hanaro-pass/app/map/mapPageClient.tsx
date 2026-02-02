@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Embassy, SavedPlace } from '@/lib/generated/prisma';
+import { BookmarkContent } from './components/bookmark/BookmarkContent';
 import { EmbassyContent } from './components/embassy/EmbassyContent';
 import { ExchangeContent } from './components/exchange/ExchangeContent';
 import { HospitalContent } from './components/hospital/HospitalContent';
@@ -21,7 +22,6 @@ import {
   type NaverMapHandle,
   type NaverSearchResult,
 } from './components/ui/NaverMap';
-import { PlaceCard } from './components/ui/PlaceCard';
 import { ToggleButton } from './components/ui/ToggleButton';
 import { MAP_UI_TEXTS } from './constants/mapTranslations';
 import { useBottomSheet } from './hooks/useBottomSheet';
@@ -257,14 +257,15 @@ export default function MapPageClient({
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        {openSheet === 'bookmark' && selectedPlace && (
-          <div className="px-2">
-            <PlaceCard
-              data={mapDbToInfo(selectedPlace)}
+        {openSheet === 'bookmark' &&
+          selectedPlace &&
+          'nameKo' in selectedPlace && (
+            <BookmarkContent
+              data={selectedPlace as SavedPlace}
               userCoords={userCoords}
+              lang={lang}
             />
-          </div>
-        )}
+          )}
         {openSheet === 'hospital' && (
           <HospitalContent
             mode={selectedHospital ? 'detail' : 'list'}
@@ -295,7 +296,11 @@ export default function MapPageClient({
           />
         )}
         {openSheet === 'embassy' && (
-          <EmbassyContent data={myEmbassy} userCoords={userCoords} />
+          <EmbassyContent
+            data={myEmbassy}
+            userCoords={userCoords}
+            lang={lang}
+          />
         )}
       </MapBottomSheet>
     </main>

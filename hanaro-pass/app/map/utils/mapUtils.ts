@@ -1,5 +1,4 @@
 import type { Embassy, SavedPlace } from '@/lib/generated/prisma';
-
 import type { NaverSearchResult } from '../components/ui/NaverMap';
 import type { LocationInfo } from '../components/ui/PlaceCard';
 import type { Hospital } from '../hooks/useHospitalFilters';
@@ -155,15 +154,16 @@ export const mapDbToInfo = (
       longitude: db.mapx || '',
     };
   }
-  const { address, phone } = db;
+
   const type =
     'category' in db ? CATEGORY_MAP[db.category] || '기타' : '대사관, 영사관';
+
   return {
     id: db.id,
-    name: db.placeName,
+    name: db.nameKo,
     type,
-    address,
-    phone,
+    address: db.addressKo,
+    phone: db.phone,
     explainTime: db.openHours,
     distance: '',
     latitude: db.latitude,
@@ -177,7 +177,7 @@ export const isHospitalPlace = (place: ClickablePlace): place is Hospital =>
   hasKey(place, 'departments');
 
 export const isEmbassy = (place: ClickablePlace): place is Embassy =>
-  hasKey(place, 'nationality');
+  hasKey(place, 'nationality') && hasKey(place, 'nameKo');
 
 export const isExchangePlace = (
   place: ClickablePlace,
@@ -185,4 +185,4 @@ export const isExchangePlace = (
   hasKey(place, 'mapx') && hasKey(place, 'title');
 
 export const isSavedPlace = (place: ClickablePlace): place is SavedPlace =>
-  hasKey(place, 'placeName');
+  hasKey(place, 'nameKo') && hasKey(place, 'category');

@@ -12,9 +12,16 @@ export async function createDefaultSavedPlaces(
   const selectedPlaces = shuffled.slice(0, 25);
 
   const dataToInsert = selectedPlaces.map((place) => ({
-    ...place,
     userId: userId,
+    nameKo: place.nameKo,
+    nameEn: place.nameEn,
+    addressKo: place.addressKo,
+    addressEn: place.addressEn,
     category: place.category as PlaceCategory,
+    latitude: place.latitude,
+    longitude: place.longitude,
+    openHours: place.openHours,
+    phone: place.phone,
   }));
 
   await tx.savedPlace.createMany({
