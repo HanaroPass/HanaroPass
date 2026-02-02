@@ -1,6 +1,7 @@
 'use client';
-import type { CouponNearbyItem } from '../actions/getCouponNearby.schema';
-import CouponItem from './CouponItem';
+
+import type { CouponNearbyItem } from '../../actions/getCouponNearby.schema';
+import CouponItem from '../CouponItem';
 
 export default function CouponListClient({
   coupons,

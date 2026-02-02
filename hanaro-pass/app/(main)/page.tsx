@@ -5,7 +5,8 @@ import { checkIsAdmin } from '@/lib/user';
 import { getIdentityData } from '../identity/actions/identity';
 import type { IdentityData } from '../identity/actions/identity.schema';
 import { getUserCardsAction } from './actions/getUserCards.action';
-import CouponListLoader from './components/CouponList.loader';
+import CouponListServer from './components/couponList/CouponList.server';
+import GeoBoot from './components/couponList/GeoBoot.client';
 import MainWrapper from './components/MainWrapper';
 import PassportUnregisteredContent from './components/PassportUnregisteredContent';
 import Pay from './components/Pay';
@@ -22,9 +23,9 @@ const TAB_COMPONENTS = {
 export default async function Page({
   searchParams,
 }: {
-  searchParams: Promise<{ tab?: string }>;
+  searchParams: Promise<{ tab?: string; lat?: string; lng?: string }>;
 }) {
-  const { tab: rawTab } = await searchParams;
+  const { tab: rawTab, lat, lng } = await searchParams;
   const isAdmin = await checkIsAdmin();
   const tab =
     rawTab && rawTab in TAB_COMPONENTS
@@ -61,7 +62,17 @@ export default async function Page({
           <Loader className="mx-auto h-8 w-8 animate-spin text-green-ez" />
         }
       >
-        <CouponListLoader />
+        {(!lat || !lng) && <GeoBoot />}
+
+        {lat && lng && (
+          <Suspense
+            fallback={
+              <Loader className="mx-auto h-8 w-8 animate-spin text-green-ez" />
+            }
+          >
+            <CouponListServer lat={Number(lat)} lng={Number(lng)} />
+          </Suspense>
+        )}
       </Suspense>
     ) : null;
 
