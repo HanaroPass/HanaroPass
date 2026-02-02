@@ -5,7 +5,7 @@ interface UseCardLockGateReturn {
   defaultCardId: number | null;
   isCardUnlocked: boolean;
   isLoading: boolean;
-  unlockCard: () => void;
+  unlockCard: () => Promise<void>;
 }
 
 /**

@@ -1,5 +1,6 @@
 'use server';
 
+import crypto from 'node:crypto';
 import {
   type ActionResult,
   HttpError,
@@ -28,11 +29,15 @@ function calcPaidAmountByRate(rate?: number) {
   return Math.floor(LIST_PRICE * (1 - r / 100));
 }
 
+function sha256(input: string) {
+  return crypto.createHash('sha256').update(input).digest('hex');
+}
+
 export async function postPaymentAction(
   raw: PaymentRequest,
 ): Promise<ActionResult<PaymentResponse>> {
   try {
-    const { cardNumber, couponId } = PaymentRequestSchema.parse(raw);
+    const { barcodeToken, couponId } = PaymentRequestSchema.parse(raw);
     const userId = await getCurrentUserId();
 
     const data = await prisma.$transaction(async (tx) => {
@@ -51,22 +56,54 @@ export async function postPaymentAction(
       const paidAmount = calcPaidAmountByRate(discountRate);
 
       // 2) 결제 대상 카드 선택
-      // - cardNumber 있으면 "그 카드로 결제"
-      // - 없으면 대표카드로 결제
-      const targetCard = cardNumber
-        ? await tx.userCard.findFirst({
-            where: { userId, cardNumber },
-            select: { id: true },
-          })
-        : await tx.userCard.findFirst({
-            where: { userId, isDefault: true },
-            select: { id: true },
-          });
+      // 없으면 대표카드로 결제
+      let targetCardId: number;
 
-      if (!targetCard) {
-        if (cardNumber) throw new HttpError('해당 카드가 없습니다.', 404);
-        throw new HttpError('대표 카드가 없습니다.', 404);
+      if (barcodeToken) {
+        const tokenHash = sha256(barcodeToken);
+        const now = new Date();
+
+        const consume = await tx.barcodeToken.updateMany({
+          where: {
+            tokenHash,
+            userId,
+            usedAt: null,
+            expiresAt: { gt: now },
+          },
+          data: { usedAt: now },
+        });
+
+        if (consume.count !== 1) {
+          throw new HttpError('바코드가 만료되었거나 유효하지 않습니다.', 400);
+        }
+
+        const tokenRow = await tx.barcodeToken.findUnique({
+          where: { tokenHash },
+          select: { cardId: true },
+        });
+
+        if (!tokenRow) {
+          throw new HttpError('바코드 토큰을 확인할 수 없습니다.', 400);
+        }
+
+        targetCardId = tokenRow.cardId;
+      } else {
+        const defaultCard = await tx.userCard.findFirst({
+          where: { userId, isDefault: true },
+          select: { id: true },
+        });
+
+        if (!defaultCard) throw new HttpError('대표 카드가 없습니다.', 404);
+
+        targetCardId = defaultCard.id;
       }
+
+      const targetCard = await tx.userCard.findFirst({
+        where: { id: targetCardId, userId },
+        select: { id: true },
+      });
+
+      if (!targetCard) throw new HttpError('해당 카드가 없습니다.', 404);
 
       // 3) Race condition 방지
       // balance >= paidAmount 조건으로 한 번에 decrement

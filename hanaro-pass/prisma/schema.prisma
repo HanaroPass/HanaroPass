@@ -90,6 +90,21 @@ model Coupon {
   @@map("Coupons")
 }
 
+model BarcodeToken {
+  id        Int      @id @default(autoincrement())
+  tokenHash String   @unique
+  userId    Int
+  cardId    Int
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([cardId])
+  @@index([expiresAt])
+}
+
+
 model SavedPlace {
   id        Int           @id @default(autoincrement()) @db.UnsignedInt
   userId    Int           @db.UnsignedInt

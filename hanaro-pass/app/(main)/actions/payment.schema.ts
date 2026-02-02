@@ -1,11 +1,10 @@
 import { z } from 'zod';
 
-const CardNumberSchema = z
+const BarcodeTokenSchema = z
   .string()
   .trim()
-  .min(8, 'cardNumber가 너무 짧습니다.')
-  .max(32, 'cardNumber가 너무 깁니다.')
-  .regex(/^[0-9]+$/, 'cardNumber는 숫자 문자열이어야 합니다.');
+  .min(20, 'barcodeToken이 너무 짧습니다.')
+  .max(200, 'barcodeToken이 너무 깁니다.');
 
 const CouponIdSchema = z
   .number()
@@ -14,7 +13,7 @@ const CouponIdSchema = z
 
 export const PaymentRequestSchema = z
   .object({
-    cardNumber: CardNumberSchema.optional(),
+    barcodeToken: BarcodeTokenSchema.optional(),
     couponId: CouponIdSchema.optional(),
   })
   .strict();
