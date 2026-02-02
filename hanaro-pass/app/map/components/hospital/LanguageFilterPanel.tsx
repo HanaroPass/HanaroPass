@@ -2,13 +2,15 @@
 
 import { LANGUAGES } from '../../constants/languages';
 
+type LanguageFilterPanelProps = {
+  value: string[];
+  onChange: (v: string[]) => void;
+};
+
 export default function LanguageFilterPanel({
   value,
   onChange,
-}: {
-  value: string[];
-  onChange: (v: string[]) => void;
-}) {
+}: LanguageFilterPanelProps) {
   const toggle = (lang: string) => {
     onChange(
       value.includes(lang) ? value.filter((l) => l !== lang) : [...value, lang],

@@ -54,6 +54,12 @@ export default function MapPageClient({
     useExchangeSearch(currentMapRegion);
   const [userCoords, setUserCoords] = useState<{ lat: number; lng: number }>();
 
+  const [lang, setLang] = useState<'ko' | 'en'>('ko');
+
+  const toggleLang = () => {
+    setLang((prev) => (prev === 'ko' ? 'en' : 'ko'));
+  };
+
   const {
     openSheet,
     sheetPosition,
@@ -67,11 +73,9 @@ export default function MapPageClient({
   } = useBottomSheet();
 
   const [mapBounds, setMapBounds] = useState<MapBounds | null>(null);
+  const hospitalFilter = useHospitalFilters(hospitals, mapBounds, lang);
 
-  const { selectedHospital, setSelectedHospital } = useHospitalFilters(
-    hospitals,
-    mapBounds,
-  );
+  const { selectedHospital, setSelectedHospital } = hospitalFilter;
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -181,6 +185,19 @@ export default function MapPageClient({
             iconColorVariant="yellow"
             onClick={handleExchangeClick}
           />
+
+          <ToggleButton
+            variant="icon"
+            active={lang === 'en'}
+            onClick={toggleLang}
+            icon={
+              <span className="font-bold text-xs">
+                {lang === 'en' ? 'EN' : 'KO'}
+              </span>
+            }
+            ariaLabel="언어 전환"
+            iconColorVariant="gray"
+          />
         </div>
 
         <div className="absolute top-[15%] right-3 z-40 flex flex-col gap-2.5">
@@ -240,6 +257,8 @@ export default function MapPageClient({
             hospitals={hospitals}
             mapBounds={mapBounds}
             hospital={selectedHospital ?? undefined}
+            lang={lang}
+            filterState={hospitalFilter}
             onBackToList={() => {
               setSelectedHospital(null);
               toggleSheet('hospital', true);
