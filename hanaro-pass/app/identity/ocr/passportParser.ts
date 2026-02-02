@@ -1,7 +1,6 @@
 import { NATIONALITIES } from '@/constants/constants';
-import type { ParsedData } from './ocrTypes';
-export const parsePassportData = (text: string): ParsedData => {
-  const data: ParsedData = {};
+export const parsePassportData = (text: string): Record<string, string> => {
+  const data: Record<string, string> = {};
   const fullText = text.replace(/\s+/g, ' ');
 
   const monthMap: Record<string, string> = {

@@ -101,6 +101,7 @@ export function PassportFields({ initialData = {} }: PassportFieldsProps) {
           type="text"
           value={formData.passportNumber}
           onChange={handleChange}
+          maxLength={8}
           className="h-12 border-0 bg-gray-50"
         />
       </div>
