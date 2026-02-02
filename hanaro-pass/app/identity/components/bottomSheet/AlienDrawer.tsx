@@ -20,11 +20,6 @@ type ArcActionData = {
   firstName: string;
 };
 
-type ActionFn = (
-  prevState: ActionResult<ArcActionData> | null,
-  formData: FormData,
-) => Promise<ActionResult<ArcActionData>>;
-
 type AlienDrawerProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;

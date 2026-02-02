@@ -122,7 +122,6 @@ export default function OCRPageContent({
             onImageSelect={handleImageSelect}
           />
         ) : (
-          /* 인식 완료 문구를 제거하여 로딩 중일 때만 스피너를 보여줌 */
           <div className="mb-12 flex h-72 w-full max-w-sm flex-col items-center justify-center rounded-xl border border-gray-800 bg-black">
             {isProcessing && (
               <div className="flex flex-col items-center gap-4">

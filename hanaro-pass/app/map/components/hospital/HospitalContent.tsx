@@ -51,10 +51,7 @@ export function HospitalContent({
   if (mode === 'detail') {
     if (!hospital) return null;
 
-    const { openTime, closeTime } = parseOpenHours(
-      hospital.openHours,
-      hospital.nameKo,
-    );
+    const { openTime, closeTime } = parseOpenHours(hospital.openHours);
 
     return (
       <div className="relative flex h-full flex-col px-6 pt-2">
@@ -68,7 +65,7 @@ export function HospitalContent({
         <HospitalCard
           hospital={{
             name: hospital.nameKo,
-            status: getHospitalStatus(hospital.openHours, hospital.nameKo),
+            status: getHospitalStatus(hospital.openHours),
             openTime,
             closeTime,
             address: hospital.address,
@@ -126,7 +123,6 @@ export function HospitalContent({
         </div>
       </div>
 
-      {/* 언어 필터 */}
       {active === 'language' && (
         <div className="sticky top-11 z-30 bg-white px-6">
           <FilterPanel title="소통 가능 언어">
@@ -138,7 +134,6 @@ export function HospitalContent({
         </div>
       )}
 
-      {/* 진료과 필터 */}
       {active === 'department' && (
         <div className="sticky top-11 z-30 bg-white px-6">
           <FilterPanel title="진료 과목">
@@ -158,10 +153,7 @@ export function HospitalContent({
           </div>
         ) : (
           visibleHospitals.map((h, idx) => {
-            const { openTime, closeTime } = parseOpenHours(
-              h.openHours,
-              h.nameKo,
-            );
+            const { openTime, closeTime } = parseOpenHours(h.openHours);
 
             return (
               <div
@@ -175,7 +167,7 @@ export function HospitalContent({
                 <HospitalCard
                   hospital={{
                     name: h.nameKo,
-                    status: getHospitalStatus(h.openHours, h.nameKo),
+                    status: getHospitalStatus(h.openHours),
                     openTime,
                     closeTime,
                     address: h.address,

@@ -22,7 +22,7 @@ export default function IntroStep({
   const [isGuideOpen, setIsGuideOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  // 유저가 이미 가지고 있는 신분증 상태 관리
+
   const [hasPassport, setHasPassport] = useState(false);
   const [hasArc, setHasArc] = useState(false);
   const guideRef = useRef<HTMLDivElement>(null);
@@ -32,7 +32,7 @@ export default function IntroStep({
       try {
         setError(null);
         const res = await getIdentityData();
-        // 데이터가 있으면 true, 없으면 false (null 체크)
+
         setHasPassport(!!res.passport);
         setHasArc(!!res.arc);
       } catch (error) {
@@ -52,7 +52,6 @@ export default function IntroStep({
     setIsGuideOpen((prev) => {
       const newState = !prev;
 
-      // 가이드가 열릴 때만 스크롤
       if (newState && guideRef.current) {
         requestAnimationFrame(() => {
           guideRef.current?.scrollIntoView({
