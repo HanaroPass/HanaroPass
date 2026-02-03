@@ -66,14 +66,14 @@ export function useNaverMapInit(
     );
     const topCenterCoord = proj.fromOffsetToCoord(topCenterPoint);
 
-    // 💡 2. any 없이 인터페이스 강제 지정
+    const langAtRequest = langRef.current;
     const geocodeOptions: ExtendedReverseGeocodeOptions = {
       coords: topCenterCoord,
       orders: [
         window.naver.maps.Service.OrderType.ADDR,
         window.naver.maps.Service.OrderType.ROAD_ADDR,
       ].join(','),
-      language: langRef.current,
+      language: langAtRequest,
     };
 
     window.naver.maps.Service.reverseGeocode(
@@ -82,10 +82,9 @@ export function useNaverMapInit(
         if (status !== window.naver.maps.Service.Status.OK) return;
         const result = response.v2;
         const region = result.results[0]?.region;
-        const currentLang = langRef.current;
 
         const fullRegionName =
-          currentLang === 'en'
+          langAtRequest === 'en'
             ? `${region?.area3?.name || ''}, ${region?.area2?.name || ''}`.trim()
             : `${region?.area2?.name || ''} ${region?.area3?.name || ''}`.trim();
 
