@@ -12,6 +12,12 @@ interface ExtendedMapOptions extends naver.maps.MapOptions {
   language?: 'ko' | 'en';
 }
 
+interface ExtendedReverseGeocodeOptions {
+  coords: naver.maps.Coord | naver.maps.LatLng;
+  orders?: string;
+  language?: 'ko' | 'en';
+}
+
 export function useNaverMapInit(
   containerRef: React.RefObject<HTMLDivElement | null>,
   onMapMoved?: (address: string, bounds?: MapBounds) => void,
@@ -23,6 +29,11 @@ export function useNaverMapInit(
     zoom: number;
   } | null>(null);
   const myRealPosRef = useRef<{ lat: number; lng: number } | null>(null);
+
+  const langRef = useRef(lang);
+  useEffect(() => {
+    langRef.current = lang;
+  }, [lang]);
 
   const onMapMovedRef = useRef(onMapMoved);
   useEffect(() => {
@@ -55,23 +66,26 @@ export function useNaverMapInit(
     );
     const topCenterCoord = proj.fromOffsetToCoord(topCenterPoint);
 
-    const geocodeOptions = {
+    // 💡 2. any 없이 인터페이스 강제 지정
+    const geocodeOptions: ExtendedReverseGeocodeOptions = {
       coords: topCenterCoord,
       orders: [
         window.naver.maps.Service.OrderType.ADDR,
         window.naver.maps.Service.OrderType.ROAD_ADDR,
       ].join(','),
-      language: lang,
+      language: langRef.current,
     };
 
     window.naver.maps.Service.reverseGeocode(
-      geocodeOptions as unknown as naver.maps.Service.ReverseServiceOptions,
+      geocodeOptions as naver.maps.Service.ReverseServiceOptions,
       (status, response) => {
         if (status !== window.naver.maps.Service.Status.OK) return;
         const result = response.v2;
         const region = result.results[0]?.region;
+        const currentLang = langRef.current;
+
         const fullRegionName =
-          lang === 'en'
+          currentLang === 'en'
             ? `${region?.area3?.name || ''}, ${region?.area2?.name || ''}`.trim()
             : `${region?.area2?.name || ''} ${region?.area3?.name || ''}`.trim();
 
@@ -80,7 +94,7 @@ export function useNaverMapInit(
         }
       },
     );
-  }, [lang]);
+  }, []);
 
   useEffect(() => {
     if (mapRef.current) {
@@ -101,8 +115,8 @@ export function useNaverMapInit(
       if (!container || !isMounted) return;
 
       setIsMapLoading(true);
-      container.style.transition = 'opacity 0.2s ease-in-out';
-      container.style.opacity = '0';
+      container.style.cssText =
+        'transition: opacity 0.2s ease-in-out; opacity: 0;';
 
       setTimeout(() => {
         if (!isMounted) return;
@@ -183,7 +197,11 @@ export function useNaverMapInit(
 
     const scriptId = 'naver-map-script';
     const oldScript = document.getElementById(scriptId);
-    if (oldScript) oldScript.remove();
+    if (oldScript) {
+      oldScript.remove();
+      if (window.naver)
+        (window as unknown as { naver: unknown }).naver = undefined;
+    }
 
     const script = document.createElement('script');
     script.id = scriptId;
