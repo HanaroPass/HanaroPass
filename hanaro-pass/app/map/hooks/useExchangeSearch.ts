@@ -58,7 +58,7 @@ export function useExchangeSearch(
         ]);
 
         const results = await Promise.allSettled(
-          allQueries.map((q) => fetchExchanges(q)),
+          allQueries.map((q) => fetchExchanges(q, lang)),
         );
 
         if (requestId !== latestRequestIdRef.current) return;

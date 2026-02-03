@@ -1,14 +1,41 @@
 'use server';
 
+interface NaverSearchItem {
+  title: string;
+  link: string;
+  category: string;
+  description: string;
+  telephone: string;
+  address: string;
+  roadAddress: string;
+  mapx: string;
+  mapy: string;
+}
+
+interface NaverSearchResponse {
+  items: NaverSearchItem[];
+}
+
+interface GoogleTranslateResponse {
+  data: {
+    translations: {
+      translatedText: string;
+    }[];
+  };
+}
+
 /**
  * @function fetchExchanges
- * @description 네이버 지역 검색 API를 호출하여 환전소 정보를 가져옵니다.
- * @param query 검색 키워드
- * @param start 검색 시작 위치 (문자열로 받아서 내부에서 숫자로 검증)
+ * @description 네이버 검색 결과를 가져와 필요 시 구글 번역 API로 번역하여 반환합니다.
  */
-export async function fetchExchanges(query: string, start = '1') {
+export async function fetchExchanges(
+  query: string,
+  lang: 'ko' | 'en' = 'ko',
+  start = '1',
+): Promise<NaverSearchItem[]> {
   const clientId = process.env.NAVER_SEARCH_ID;
   const clientSecret = process.env.NAVER_SEARCH_SECRET;
+  const googleApiKey = process.env.GOOGLE_TRANSLATE_API_KEY;
 
   // API 키 확인
   if (!clientId || !clientSecret) {
@@ -27,9 +54,7 @@ export async function fetchExchanges(query: string, start = '1') {
 
   // 타임아웃 설정
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => {
-    controller.abort();
-  }, 10000);
+  const timeoutId = setTimeout(() => controller.abort(), 15000); // 번역 고려 + 5000
 
   try {
     const response = await fetch(apiUrl, {
@@ -38,30 +63,76 @@ export async function fetchExchanges(query: string, start = '1') {
         'X-Naver-Client-Secret': clientSecret,
       },
       cache: 'no-store',
-      signal: controller.signal, // 타임아웃 신호 전달
+      signal: controller.signal,
     });
 
-    // 에러 로깅 강화
     if (!response.ok) {
-      console.error(
-        `Naver API Error: ${response.status} ${response.statusText}`,
+      console.error(`Naver API Error: ${response.status}`);
+      return [];
+    }
+
+    const data: NaverSearchResponse = await response.json();
+    const items = data.items || [];
+
+    if (lang === 'en' && googleApiKey && items.length > 0) {
+      const textsToTranslate = items.flatMap((item) => [
+        item.title.replace(/<[^>]*>?/g, '').trim(),
+        item.roadAddress || item.address,
+      ]);
+
+      const translatedTexts = await translateWithGoogle(
+        textsToTranslate,
+        googleApiKey,
       );
-      return [];
+
+      return items.map((item, index) => ({
+        ...item,
+        title: translatedTexts[index * 2] || item.title,
+        roadAddress: translatedTexts[index * 2 + 1] || item.roadAddress,
+      }));
     }
 
-    const data = await response.json();
-    return data.items || [];
+    return items;
   } catch (error) {
-    // 타임아웃 처리
     if (error instanceof Error && error.name === 'AbortError') {
-      console.error('Naver API request timed out after 10 seconds');
-      return [];
+      console.error('Request timed out');
     }
-
     console.error('Server Action Error:', error);
     return [];
   } finally {
     // 타이머 해제
     clearTimeout(timeoutId);
+  }
+}
+
+/**
+ * @description Google Cloud Translation API를 사용해 번역합니다.
+ */
+async function translateWithGoogle(
+  texts: string[],
+  apiKey: string,
+): Promise<string[]> {
+  try {
+    const response = await fetch(
+      `https://translation.googleapis.com/language/translate/v2?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          q: texts,
+          target: 'en',
+          source: 'ko',
+          format: 'text',
+        }),
+      },
+    );
+
+    if (!response.ok) return [];
+
+    const result: GoogleTranslateResponse = await response.json();
+    return result.data.translations.map((t) => t.translatedText);
+  } catch (e) {
+    console.error('Google Translation Failed:', e);
+    return [];
   }
 }
