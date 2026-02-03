@@ -11,20 +11,24 @@ const openai = new OpenAI({
 export async function translateKoToEn(text: string): Promise<string> {
   if (!text) return '';
 
-  const res = await openai.chat.completions.create({
-    model: 'gpt-4.1-mini',
-    messages: [
-      {
-        role: 'system',
-        content: 'You are a professional medical translator.',
-      },
-      {
-        role: 'user',
-        content: `Translate the following Korean medical text into natural English:\n\n${text}`,
-      },
-    ],
-    temperature: 0.2,
-  });
+  try {
+    const res = await openai.chat.completions.create({
+      model: 'gpt-4.1-mini',
+      messages: [
+        {
+          role: 'system',
+          content: 'You are a professional medical translator.',
+        },
+        {
+          role: 'user',
+          content: `Translate the following Korean medical text into natural English:\n\n${text}`,
+        },
+      ],
+      temperature: 0.2,
+    });
 
-  return res.choices[0].message?.content?.trim() ?? text;
+    return res.choices[0].message?.content?.trim() ?? text;
+  } catch {
+    return text;
+  }
 }

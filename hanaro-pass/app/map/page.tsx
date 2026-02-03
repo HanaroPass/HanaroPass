@@ -11,7 +11,8 @@ export default async function Page({
   searchParams: Promise<{ lang?: 'ko' | 'en' }>;
 }) {
   const userId = await getUserIdFromSession();
-  const { lang = 'ko' } = await searchParams;
+  const { lang: rawLang } = await searchParams;
+  const lang = rawLang === 'en' ? 'en' : 'ko';
 
   const [hospitals, embassyRes, savedPlacesRes] = await Promise.all([
     getHospitals(),

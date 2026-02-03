@@ -1,6 +1,6 @@
 'use client';
 
-import { useSearchParams } from 'next/dist/client/components/navigation';
+import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { getRecommendResult } from '../../actions/getRecommendResult.action';
 import HospitalList from '../../components/hospital/HospitalList';
