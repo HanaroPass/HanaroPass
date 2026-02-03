@@ -1,42 +1,40 @@
 'use client';
 
-import {
-  DEPARTMENT_TRANSLATIONS,
-  DEPARTMENTS,
-  type Department,
-} from '../../constants/departments';
+import { DEPARTMENT_MAP } from '../../constants/departments';
 
 type Props = {
   value: string[];
-  onChange: (value: string[]) => void;
-  lang?: 'ko' | 'en';
+  onChange: (v: string[]) => void;
+  lang: 'ko' | 'en';
 };
 
 export default function DepartmentFilterPanel({
   value,
   onChange,
-  lang = 'ko',
+  lang,
 }: Props) {
-  const toggle = (depKey: string) => {
+  const koOptions = DEPARTMENT_MAP.ko;
+  const displayOptions = DEPARTMENT_MAP[lang];
+
+  const toggle = (koDep: string) => {
     onChange(
-      value.includes(depKey)
-        ? value.filter((d) => d !== depKey)
-        : [...value, depKey],
+      value.includes(koDep)
+        ? value.filter((d) => d !== koDep)
+        : [...value, koDep],
     );
   };
 
   return (
     <>
-      {DEPARTMENTS.map((depKey) => {
-        const checked = value.includes(depKey);
-        const displayLabel =
-          DEPARTMENT_TRANSLATIONS[depKey as Department][lang];
+      {koOptions.map((koDep, idx) => {
+        const checked = value.includes(koDep);
+        const label = displayOptions[idx];
 
         return (
           <button
-            key={depKey}
+            key={koDep}
             type="button"
-            onClick={() => toggle(depKey)}
+            onClick={() => toggle(koDep)}
             className="flex h-16 w-full items-center gap-3 border-gray-200 border-b px-4 last:border-b-0"
           >
             <div
@@ -63,7 +61,7 @@ export default function DepartmentFilterPanel({
               )}
             </div>
 
-            <span className="font-medium text-base">{displayLabel}</span>
+            <span className="font-medium text-base">{label}</span>
           </button>
         );
       })}

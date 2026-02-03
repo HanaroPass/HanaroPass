@@ -1,6 +1,8 @@
 import { MapPin, Phone } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
+import { DEPARTMENT_MAP } from '@/app/map/constants/departments';
+import { LANGUAGE_MAP } from '@/app/map/constants/languages';
 import AIResultIcon from '@/components/ui/AIResultIcon';
 
 export type HospitalInfo = {
@@ -14,7 +16,6 @@ export type HospitalInfo = {
   phone: string | null;
   languages: string[];
   departments: string[];
-  departmentsEn?: string[];
   imageUrl?: string | null;
   aiSummary?: string;
 };
@@ -23,27 +24,14 @@ const MAX_DEPT = 6;
 
 export function HospitalCard({
   hospital,
-  lang,
+  lang = 'ko',
 }: {
   hospital: HospitalInfo;
   lang?: 'ko' | 'en';
 }) {
   const [expanded, setExpanded] = useState(false);
 
-  const name =
-    lang === 'en' && hospital.nameEn ? hospital.nameEn : hospital.name;
-
-  const address =
-    lang === 'en' && hospital.addressEn ? hospital.addressEn : hospital.address;
-
-  const departments =
-    lang === 'en' && hospital.departmentsEn
-      ? hospital.departmentsEn
-      : hospital.departments;
-
-  const hasMore = departments.length > MAX_DEPT;
-  const visibleDepts = expanded ? departments : departments.slice(0, MAX_DEPT);
-
+  /* ================= 변환 로직 ================= */
   const t = {
     hours: lang === 'en' ? 'Hours' : '진료 시간',
     languages: lang === 'en' ? 'Languages' : '소통 언어',
@@ -66,40 +54,76 @@ export function HospitalCard({
           : '진료 종료',
   };
 
+  const displayName =
+    lang === 'en'
+      ? (hospital.nameEn ?? `${hospital.name} Clinic`)
+      : hospital.name;
+
+  const displayHours =
+    hospital.openTime === '24시간'
+      ? lang === 'en'
+        ? 'Open 24 Hours'
+        : '24시간'
+      : lang === 'en'
+        ? `${hospital.openTime} - ${hospital.closeTime}`
+        : `${hospital.openTime} ~ ${hospital.closeTime}`;
+
+  const displayLanguages =
+    lang === 'en'
+      ? hospital.languages.map((l) => {
+          const idx = LANGUAGE_MAP.ko.findIndex((k) => k === l);
+          return idx >= 0 ? LANGUAGE_MAP.en[idx] : l;
+        })
+      : hospital.languages;
+
+  const displayDepartments =
+    lang === 'en'
+      ? hospital.departments.map((d) => {
+          const idx = DEPARTMENT_MAP.ko.findIndex((k) => k === d);
+          return idx >= 0 ? DEPARTMENT_MAP.en[idx] : d;
+        })
+      : hospital.departments;
+
+  const displayAiSummary =
+    lang === 'en'
+      ? 'This hospital is suitable for foreign patients, offering clear communication and a comfortable treatment environment.'
+      : (hospital.aiSummary ?? t.aiEmpty);
+
+  const displayAddress =
+    lang === 'en' ? `Seoul, ${hospital.address}` : hospital.address;
+
+  /* ================= 기본 필드 ================= */
+  const hasMore = displayDepartments.length > MAX_DEPT;
+  const visibleDepts = expanded
+    ? displayDepartments
+    : displayDepartments.slice(0, MAX_DEPT);
+
   return (
     <div className="py-4">
-      {/* ================= 상단: 정보 + 사진 ================= */}
+      {/* ================= 상단 ================= */}
       <div className="grid grid-cols-[minmax(0,1fr)_120px] gap-5">
-        {/* 왼쪽 정보 */}
         <div className="space-y-1">
-          {/* 병원명 */}
-          <div className="font-bold text-gray-900 text-lg">{name}</div>
+          <div className="font-bold text-gray-900 text-lg">{displayName}</div>
 
-          {/* 진료시간 */}
-          <div className="flex items-center whitespace-nowrap text-sm">
+          <div className="flex items-center text-sm">
             <span className="font-semibold text-gray-700">{t.hours}</span>
-            <span className="pr-1.5 text-gray-800">
-              : {hospital.openTime}
-              {hospital.closeTime?.trim() && ` ~ ${hospital.closeTime}`}
-            </span>
+            <span className="text-gray-800">: {displayHours}</span>
           </div>
 
-          {/* 언어 */}
           <div className="text-sm">
             <span className="font-semibold text-gray-700">{t.languages}</span>
             <span className="text-gray-800">
-              : {hospital.languages.join(', ')}
+              : {displayLanguages.join(', ')}
             </span>
           </div>
 
-          {/* 진료과목 */}
           <div className="text-sm">
             <span className="font-semibold text-gray-700">{t.departments}</span>
             <span className="text-gray-800">: {visibleDepts.join(', ')}</span>
             {hasMore && (
               <button
                 onClick={() => setExpanded((p) => !p)}
-                className="ml-2 inline-block text-gray-600 text-xs underline"
+                className="ml-2 text-gray-600 text-xs underline"
               >
                 {expanded ? t.less : t.more}
               </button>
@@ -107,12 +131,11 @@ export function HospitalCard({
           </div>
         </div>
 
-        {/* 오른쪽 이미지 */}
-        <div className="relative h-30 w-30 self-start overflow-hidden rounded-xl bg-gray-100">
-          {/* 상태 칩 */}
+        {/* 이미지 */}
+        <div className="relative h-30 w-30 overflow-hidden rounded-xl bg-gray-100">
           <div className="absolute top-1.5 right-1.5 z-10">
             <span
-              className={`inline-flex items-center rounded-full px-2 py-1 font-medium text-xs ${
+              className={`rounded-full px-2 py-1 font-medium text-xs ${
                 hospital.status === '진료 중'
                   ? 'bg-green-500 text-green-900'
                   : 'bg-gray-200 text-gray-600'
@@ -125,13 +148,13 @@ export function HospitalCard({
           {hospital.imageUrl ? (
             <Image
               src={hospital.imageUrl}
-              alt={`${name} image`}
+              alt={`${displayName} image`}
               fill
               className="object-cover"
               unoptimized
             />
           ) : (
-            <div className="flex h-full w-full items-center justify-center text-gray-400 text-xs">
+            <div className="flex h-full items-center justify-center text-gray-400 text-xs">
               {t.noImage}
             </div>
           )}
@@ -140,26 +163,24 @@ export function HospitalCard({
 
       {/* 주소 */}
       <div className="flex items-center gap-2 pt-2 text-gray-500 text-sm">
-        <MapPin className="h-4 w-4 shrink-0" />
-        <span>{address}</span>
+        <MapPin className="h-4 w-4" />
+        <span>{displayAddress}</span>
       </div>
 
       {/* 전화 */}
       <div className="flex items-center gap-2 text-gray-500 text-sm">
-        <Phone className="h-4 w-4 shrink-0" />
+        <Phone className="h-4 w-4" />
         <span>{hospital.phone ?? '-'}</span>
       </div>
 
-      {/* ================= AI 요약 ================= */}
+      {/* AI 요약 */}
       <div className="mt-5 rounded-xl border bg-gray-50 px-4 py-3">
         <div className="flex items-center gap-2 font-semibold text-gray-800 text-sm">
           <AIResultIcon size="sm" />
           <span>{t.aiSummary}</span>
         </div>
 
-        <p className="mt-1 text-[13px] text-gray-600 leading-snug">
-          {hospital.aiSummary ?? t.aiEmpty}
-        </p>
+        <p className="mt-1 text-[13px] text-gray-600">{displayAiSummary}</p>
       </div>
     </div>
   );

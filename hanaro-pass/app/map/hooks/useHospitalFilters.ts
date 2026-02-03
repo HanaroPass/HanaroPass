@@ -1,10 +1,7 @@
 import { useMemo, useState } from 'react';
-import {
-  DEPARTMENT_TRANSLATIONS,
-  type Department,
-} from '../constants/departments';
-import { LANGUAGE_TRANSLATIONS, type Language } from '../constants/languages';
-import type { MapBounds } from '../types/map';
+import { DEPARTMENT_MAP } from '@/app/map/constants/departments';
+import { LANGUAGE_MAP } from '@/app/map/constants/languages';
+import type { MapBounds } from '@/app/map/types/map';
 
 export type Hospital = {
   id: number;
@@ -71,11 +68,12 @@ export function useHospitalFilters(
   ) => {
     if (selected.length === 0) return defaultLabel;
 
-    const getTranslatedName = (key: string) => {
-      if (type === 'language') {
-        return LANGUAGE_TRANSLATIONS[key as Language]?.[lang] || key;
-      }
-      return DEPARTMENT_TRANSLATIONS[key as Department]?.[lang] || key;
+    const map: Readonly<{ ko: readonly string[]; en: readonly string[] }> =
+      type === 'language' ? LANGUAGE_MAP : DEPARTMENT_MAP;
+
+    const getTranslatedName = (koValue: string) => {
+      const idx = map.ko.indexOf(koValue);
+      return idx !== -1 ? map[lang][idx] : koValue;
     };
 
     const maxShow = lang === 'en' ? 1 : 2;
@@ -89,12 +87,9 @@ export function useHospitalFilters(
 
     const remainingCount = selected.length - maxShow;
 
-    if (lang === 'en') {
-      return `${first} +${remainingCount}`;
-    } else {
-      const second = getTranslatedName(selected[1]);
-      return `${first}, ${second} 외 ${remainingCount}`;
-    }
+    return lang === 'en'
+      ? `${first} +${remainingCount}`
+      : `${first}, ${getTranslatedName(selected[1])} 외 ${remainingCount}`;
   };
 
   const languageLabel = makeLabel(

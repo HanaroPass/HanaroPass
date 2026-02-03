@@ -91,7 +91,6 @@ export function HospitalContent({
             phone: hospital.phone ?? '-',
             languages: hospital.languages,
             departments: hospital.departments,
-            departmentsEn: hospital.departmentsEn,
             imageUrl: hospital.imageUrl,
             aiSummary: hospital.aiSummary,
           }}
@@ -199,7 +198,6 @@ export function HospitalContent({
                     phone: h.phone ?? '-',
                     languages: h.languages,
                     departments: h.departments,
-                    departmentsEn: h.departmentsEn,
                     imageUrl: h.imageUrl,
                     aiSummary: h.aiSummary,
                   }}

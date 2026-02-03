@@ -1,41 +1,36 @@
 'use client';
 
-import {
-  LANGUAGE_TRANSLATIONS,
-  LANGUAGES,
-  type Language,
-} from '../../constants/languages';
+import { LANGUAGE_MAP } from '../../constants/languages';
 
-type LanguageFilterPanelProps = {
+type Props = {
   value: string[];
   onChange: (v: string[]) => void;
-  lang?: 'ko' | 'en';
+  lang: 'ko' | 'en';
 };
 
-export default function LanguageFilterPanel({
-  value,
-  onChange,
-  lang = 'ko',
-}: LanguageFilterPanelProps) {
-  const toggle = (langKey: string) => {
+export default function LanguageFilterPanel({ value, onChange, lang }: Props) {
+  const koOptions = LANGUAGE_MAP.ko;
+  const displayOptions = LANGUAGE_MAP[lang];
+
+  const toggle = (koLang: string) => {
     onChange(
-      value.includes(langKey)
-        ? value.filter((l) => l !== langKey)
-        : [...value, langKey],
+      value.includes(koLang)
+        ? value.filter((l) => l !== koLang)
+        : [...value, koLang],
     );
   };
 
   return (
     <>
-      {LANGUAGES.map((langKey) => {
-        const checked = value.includes(langKey);
-        const displayLabel = LANGUAGE_TRANSLATIONS[langKey as Language][lang];
+      {koOptions.map((koLang, idx) => {
+        const checked = value.includes(koLang);
+        const label = displayOptions[idx];
 
         return (
           <button
-            key={langKey}
+            key={koLang}
             type="button"
-            onClick={() => toggle(langKey)}
+            onClick={() => toggle(koLang)}
             className="flex h-16 w-full items-center gap-3 border-gray-200 border-b px-4 last:border-b-0"
           >
             <div
@@ -61,7 +56,8 @@ export default function LanguageFilterPanel({
                 </svg>
               )}
             </div>
-            <span className="font-medium text-base">{displayLabel}</span>
+
+            <span className="font-medium text-base">{label}</span>
           </button>
         );
       })}
