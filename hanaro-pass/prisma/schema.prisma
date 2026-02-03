@@ -110,7 +110,9 @@ model SavedPlace {
 model Hospital {
   id                           Int                           @id @default(autoincrement()) @db.UnsignedInt
   nameKo                       String                        @db.VarChar(255)
+  nameEn                       String?                       @db.VarChar(255)
   address                      String                        @db.VarChar(500)
+  addressEn                    String?                       @db.VarChar(500)
   latitude                     Decimal                       @db.Decimal(10, 8)
   longitude                    Decimal                       @db.Decimal(11, 8)
   phone                        String?                       @db.VarChar(20)
@@ -147,6 +149,7 @@ model HospitalReview {
   id         Int      @id @default(autoincrement()) @db.UnsignedInt
   hospitalId Int      @unique(map: "uniq_HospitalReview_hospital") @db.UnsignedInt
   aiSummary  String   @db.VarChar(500)
+  aiSummaryEn String?  @db.VarChar(500)
   Hospital   Hospital @relation(fields: [hospitalId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "hospitalreview_ibfk_1")
 
   @@index([hospitalId], map: "fk_HospitalReview_hospital")

@@ -81,7 +81,7 @@ export function HospitalContent({
         <HospitalCard
           lang={lang}
           hospital={{
-            name: hospital.nameKo,
+            nameKo: hospital.nameKo,
             nameEn: hospital.nameEn ?? undefined,
             status: getHospitalStatus(hospital.openHours),
             openTime,
@@ -93,6 +93,7 @@ export function HospitalContent({
             departments: hospital.departments,
             imageUrl: hospital.imageUrl,
             aiSummary: hospital.aiSummary,
+            aiSummaryEn: hospital.aiSummaryEn,
           }}
         />
 
@@ -188,7 +189,7 @@ export function HospitalContent({
                 <HospitalCard
                   lang={lang}
                   hospital={{
-                    name: h.nameKo,
+                    nameKo: h.nameKo,
                     nameEn: h.nameEn ?? undefined,
                     status: getHospitalStatus(h.openHours),
                     openTime,
@@ -200,6 +201,7 @@ export function HospitalContent({
                     departments: h.departments,
                     imageUrl: h.imageUrl,
                     aiSummary: h.aiSummary,
+                    aiSummaryEn: h.aiSummaryEn,
                   }}
                 />
               </div>

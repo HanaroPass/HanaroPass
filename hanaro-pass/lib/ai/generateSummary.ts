@@ -42,11 +42,13 @@ async function main() {
 
   for (const hospital of hospitals) {
     const reviews = pickRandomReviews();
-
     const aiSummary = await generateSummary(reviews);
 
     await prisma.hospitalReview.create({
-      data: { hospitalId: hospital.id, aiSummary },
+      data: {
+        hospitalId: hospital.id,
+        aiSummary,
+      },
     });
   }
 

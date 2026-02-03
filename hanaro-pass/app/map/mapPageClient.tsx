@@ -8,6 +8,7 @@ import {
   LocateFixed,
   Siren,
 } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Embassy, SavedPlace } from '@/lib/generated/prisma';
 import { BookmarkContent } from './components/bookmark/BookmarkContent';
@@ -35,14 +36,21 @@ type MapPageClientProps = {
   hospitals: Hospital[];
   initialEmbassy: Embassy | null;
   initialSavedPlaces: SavedPlace[];
+  lang: 'ko' | 'en';
 };
 
 export default function MapPageClient({
   hospitals,
   initialEmbassy,
   initialSavedPlaces,
+  lang: initialLang,
 }: MapPageClientProps) {
-  const [lang, setLang] = useState<'ko' | 'en'>('ko');
+  const [lang, setLang] = useState<'ko' | 'en'>(initialLang);
+
+  useEffect(() => {
+    setLang(initialLang);
+  }, [initialLang]);
+
   const t = MAP_UI_TEXTS[lang];
 
   const [savedPlaces] = useState<SavedPlace[]>(initialSavedPlaces);
@@ -60,8 +68,16 @@ export default function MapPageClient({
   );
   const [userCoords, setUserCoords] = useState<{ lat: number; lng: number }>();
 
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   const toggleLang = () => {
-    setLang((prev) => (prev === 'ko' ? 'en' : 'ko'));
+    const nextLang = lang === 'ko' ? 'en' : 'ko';
+    const params = new URLSearchParams(searchParams.toString());
+
+    params.set('lang', nextLang);
+
+    router.replace(`/map?${params.toString()}`);
   };
 
   const {

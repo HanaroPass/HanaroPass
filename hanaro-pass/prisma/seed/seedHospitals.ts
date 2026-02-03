@@ -110,6 +110,54 @@ export const getRandomLangs = () => {
 
   return [...result, ...extraLangs];
 };
+
+async function translateWithGoogle(
+  texts: string[],
+  apiKey: string,
+): Promise<string[]> {
+  const response = await fetch(
+    `https://translation.googleapis.com/language/translate/v2?key=${apiKey}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        q: texts,
+        source: 'ko',
+        target: 'en',
+        format: 'text',
+      }),
+    },
+  );
+
+  if (!response.ok) return [];
+  const result = await response.json();
+  return result.data.translations.map((t: any) => t.translatedText);
+}
+
+async function translateHospitalFields(
+  nameKo: string,
+  addressKo: string,
+): Promise<{ nameEn: string; addressEn: string }> {
+  const apiKey = process.env.GOOGLE_TRANSLATE_API_KEY;
+
+  if (!apiKey) {
+    return {
+      nameEn: nameKo,
+      addressEn: addressKo,
+    };
+  }
+
+  const [nameEn, addressEn] = await translateWithGoogle(
+    [nameKo, addressKo],
+    apiKey,
+  );
+
+  return {
+    nameEn: nameEn || nameKo,
+    addressEn: addressEn || addressKo,
+  };
+}
+
 // imageUrl이 비어 있을 때만 쓰는 fallback
 export const getDefaultHospitalImage = () => {
   return '/images/hospitals/default.jpg';
@@ -213,12 +261,19 @@ export async function fetchAndSeedHospitals() {
           continue;
         }
 
+        const { nameEn, addressEn } = await translateHospitalFields(
+          item.yadmNm,
+          item.addr,
+        );
+
         await prisma.hospital.create({
           data: {
             nameKo: item.yadmNm,
+            nameEn,
+            address: item.addr,
+            addressEn,
             imageUrl:
               HOSPITAL_IMAGE_MAP[item.yadmNm] ?? getRandomHospitalImage(),
-            address: item.addr,
             latitude,
             longitude,
             phone: item.telno || null,
@@ -227,13 +282,14 @@ export async function fetchAndSeedHospitals() {
               : '09:00 - 18:00',
             HospitalDept: {
               create:
-                departments.length > 0 ? departments : [{ deptName: '일반의' }], // 만약에 없으면, 그냥 일반의로
+                departments.length > 0 ? departments : [{ deptName: '일반의' }],
             },
             HospitalLang: {
               create: langs.map((langName) => ({ langName })),
             },
           },
         });
+
         await new Promise((r) => setTimeout(r, 50));
       }
     } catch (error) {

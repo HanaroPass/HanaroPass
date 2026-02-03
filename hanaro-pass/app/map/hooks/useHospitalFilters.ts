@@ -8,7 +8,7 @@ export type Hospital = {
   nameKo: string;
   nameEn?: string | null;
   address: string;
-  addressEn?: string;
+  addressEn?: string | null;
   latitude: number;
   longitude: number;
   phone: string | null;
@@ -18,6 +18,7 @@ export type Hospital = {
   departments: string[];
   departmentsEn?: string[];
   aiSummary?: string;
+  aiSummaryEn?: string;
 };
 
 type FilterType = 'language' | 'department' | null;
@@ -93,6 +94,11 @@ export function useHospitalFilters(
     if (selected.length === 0) return defaultLabel;
 
     const display = selected.map((v) => toDisplayLabel(v, type, lang));
+
+    if (lang === 'en' && type === 'department') {
+      if (display.length === 1) return display[0];
+      return `${display[0]} +${display.length - 1}`;
+    }
 
     if (display.length === 1) return display[0];
     if (display.length === 2) return `${display[0]}, ${display[1]}`;

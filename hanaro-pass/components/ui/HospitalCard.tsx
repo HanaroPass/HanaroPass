@@ -6,25 +6,26 @@ import { LANGUAGE_MAP } from '@/app/map/constants/languages';
 import AIResultIcon from '@/components/ui/AIResultIcon';
 
 export type HospitalInfo = {
-  name: string;
+  nameKo: string;
   nameEn?: string;
   status: '진료 중' | '진료 종료';
   openTime: string;
   closeTime: string;
   address: string;
-  addressEn?: string;
+  addressEn?: string | null;
   phone: string | null;
   languages: string[];
   departments: string[];
   imageUrl?: string | null;
   aiSummary?: string;
+  aiSummaryEn?: string;
 };
 
 const MAX_DEPT = 6;
 
 export function HospitalCard({
   hospital,
-  lang = 'ko',
+  lang,
 }: {
   hospital: HospitalInfo;
   lang?: 'ko' | 'en';
@@ -53,16 +54,13 @@ export function HospitalCard({
           ? 'Closed'
           : '진료 종료',
   };
-
   const displayName =
-    lang === 'en'
-      ? (hospital.nameEn ?? `${hospital.name} Clinic`)
-      : hospital.name;
+    lang === 'en' && hospital.nameEn ? hospital.nameEn : hospital.nameKo;
 
   const displayHours =
     hospital.openTime === '24시간'
       ? lang === 'en'
-        ? 'Open 24 Hours'
+        ? '24 Hours'
         : '24시간'
       : lang === 'en'
         ? `${hospital.openTime} - ${hospital.closeTime}`
@@ -86,11 +84,11 @@ export function HospitalCard({
 
   const displayAiSummary =
     lang === 'en'
-      ? 'This hospital is suitable for foreign patients, offering clear communication and a comfortable treatment environment.'
+      ? (hospital.aiSummaryEn ?? t.aiEmpty)
       : (hospital.aiSummary ?? t.aiEmpty);
 
   const displayAddress =
-    lang === 'en' ? `Seoul, ${hospital.address}` : hospital.address;
+    lang === 'en' && hospital.addressEn ? hospital.addressEn : hospital.address;
 
   /* ================= 기본 필드 ================= */
   const hasMore = displayDepartments.length > MAX_DEPT;

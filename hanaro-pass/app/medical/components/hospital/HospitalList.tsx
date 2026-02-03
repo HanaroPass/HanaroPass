@@ -10,9 +10,11 @@ import type { HospitalWithStatus } from '../../symptoms/types';
 export default function HospitalList({
   hospitals,
   isLoading,
+  lang,
 }: {
   hospitals: HospitalWithStatus[];
   isLoading: boolean;
+  lang: 'ko' | 'en';
 }) {
   const [sortByDistance, setSortByDistance] = useState(false);
   const [isOpened, setOpened] = useState(false);
@@ -77,8 +79,9 @@ export default function HospitalList({
           }
         >
           <HospitalCard
+            lang={lang}
             hospital={{
-              name: hospital.nameKo,
+              nameKo: hospital.nameKo,
               status: hospital.status,
               openTime: hospital.openTime,
               closeTime: hospital.closeTime,
