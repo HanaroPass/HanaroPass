@@ -161,13 +161,13 @@ export function HospitalCard({
 
       {/* 주소 */}
       <div className="flex items-center gap-2 pt-2 text-gray-500 text-sm">
-        <MapPin className="h-4 w-4" />
+        <MapPin className="h-4 w-4 shrink-0" />
         <span>{displayAddress}</span>
       </div>
 
       {/* 전화 */}
       <div className="flex items-center gap-2 text-gray-500 text-sm">
-        <Phone className="h-4 w-4" />
+        <Phone className="h-4 w-4 shrink-0" />
         <span>{hospital.phone ?? '-'}</span>
       </div>
 

@@ -23,6 +23,10 @@ export function EmbassyContent({
       </div>
     );
   }
+  const displayOpenHours =
+    lang === 'ko' && data.openHours
+      ? data.openHours.replace(/Break/g, '휴게 시간')
+      : data.openHours;
 
   return (
     <div className="flex flex-col px-2">
@@ -33,7 +37,7 @@ export function EmbassyContent({
           type: lang === 'ko' ? '대사관, 영사관' : 'Embassy, Consulate',
           address: lang === 'ko' ? data.addressKo : data.addressEn,
           phone: data.phone,
-          explainTime: data.openHours,
+          explainTime: displayOpenHours,
           distance: '',
           latitude: data.latitude,
           longitude: data.longitude,
