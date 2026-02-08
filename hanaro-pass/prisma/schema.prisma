@@ -21,6 +21,7 @@ model User {
   SavedPlace                  SavedPlace[]
   UserCard                    UserCard[]
   UserDocument                UserDocument[]
+  BarcodeTokens               BarcodeToken[]
 }
 
 model Passport {
@@ -70,6 +71,7 @@ model UserCard {
   isDefault  Boolean  @default(false)
   createdAt  DateTime @default(now()) @db.Timestamp(0)
   User       User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "usercard_ibfk_1")
+  BarcodeTokens BarcodeToken[] 
 
   @@index([userId], map: "fk_UserCard_user")
 }
@@ -89,6 +91,24 @@ model Coupon {
   @@index([latitude, longitude], map: "idx_coupon_location")
   @@map("Coupons")
 }
+
+model BarcodeToken {
+  id        Int      @id @default(autoincrement()) @db.UnsignedInt
+  tokenHash String   @unique @db.Char(64)
+  userId    Int      @db.UnsignedInt
+  cardId    Int      @db.UnsignedInt
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  User     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  UserCard UserCard @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([cardId])
+  @@index([expiresAt])
+}
+
 
 model SavedPlace {
   id        Int           @id @default(autoincrement()) @db.UnsignedInt

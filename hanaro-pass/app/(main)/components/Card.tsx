@@ -1,13 +1,14 @@
 'use client';
 
-import { Lock } from 'lucide-react';
+import { Loader, Lock } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { memo, useCallback, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Barcode from 'react-barcode';
 import PaymentResultModal from '@/components/payResult/PayResult';
 import { useAlert } from '@/providers/alertProvider';
 import type { UserCardResponse } from '../actions/getUserCards.schema';
+import { issueBarcodeTokenAction } from '../actions/issueBarcodeToken.action';
 import { postPaymentAction } from '../actions/postPayment.action';
 import { topUpCardAction } from '../actions/topUpCard.action';
 
@@ -39,9 +40,9 @@ const CardItem = memo(
         style={{
           transformStyle: 'preserve-3d',
           transform: `
-            translateX(${translateX}px) 
-            translateZ(${translateZ}px) 
-            rotateY(${rotateY}deg) 
+            translateX(${translateX}px)
+            translateZ(${translateZ}px)
+            rotateY(${rotateY}deg)
             scale(${scale})
           `,
           zIndex: 100 - Math.abs(diff),
@@ -71,8 +72,10 @@ export default function Card({
   const [activeIndex, setActiveIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const touchStartRef = useRef<number | null>(null);
-
   const [isPaying, setIsPaying] = useState(false);
+  const [barcodeToken, setBarcodeToken] = useState<string | null>(null);
+  const [_, setIsIssuingToken] = useState(false);
+
   const router = useRouter();
   const { alert } = useAlert();
 
@@ -80,10 +83,13 @@ export default function Card({
     () => cards[activeIndex] ?? null,
     [cards, activeIndex],
   );
-  const isCurrentUnlocked = useMemo(
-    () => (activeCard ? unlockedCardIds.has(activeCard.id) : false),
-    [unlockedCardIds, activeCard],
-  );
+
+  const activeCardId = activeCard?.id ?? null;
+
+  const isCurrentUnlocked = useMemo(() => {
+    if (!activeCard) return false;
+    return unlockedCardIds.has(activeCard.id);
+  }, [activeCard, unlockedCardIds]);
 
   const handleSwipe = useCallback(
     (direction: 'NEXT' | 'PREV') => {
@@ -113,14 +119,64 @@ export default function Card({
     touchStartRef.current = null;
   };
 
-  if (!activeCard) return null;
+  const activeCardIdRef = useRef<number | null>(null);
+  useEffect(() => {
+    activeCardIdRef.current = activeCardId;
+  }, [activeCardId]);
 
-  const pay = async () => {
+  const issuingRef = useRef(false);
+
+  const refreshBarcodeToken = useCallback(async () => {
+    if (!activeCardId) return;
+    if (!isCurrentUnlocked) return;
+    if (issuingRef.current) return;
+
+    const requestCardId = activeCardId;
+    issuingRef.current = true;
+    setIsIssuingToken(true);
+
+    try {
+      const res = await issueBarcodeTokenAction({ cardId: requestCardId });
+
+      if (!res.success) {
+        if (activeCardIdRef.current === requestCardId && !barcodeToken) {
+          alert({ title: '바코드 생성 실패', description: res.message });
+        }
+        return;
+      }
+
+      if (activeCardIdRef.current !== requestCardId) return;
+
+      setBarcodeToken(res.data.barcodeToken);
+    } finally {
+      issuingRef.current = false;
+      setIsIssuingToken(false);
+    }
+  }, [activeCardId, isCurrentUnlocked, barcodeToken, alert]);
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: '초기화를 위해 의존성 주입'
+  useEffect(() => {
+    setBarcodeToken(null);
+  }, [activeCardId]);
+
+  useEffect(() => {
+    if (!isCurrentUnlocked) {
+      setBarcodeToken(null);
+      return;
+    }
+
+    if (!barcodeToken) {
+      void refreshBarcodeToken();
+    }
+  }, [isCurrentUnlocked, barcodeToken, refreshBarcodeToken]);
+
+  const pay = useCallback(async () => {
     if (isPaying) return;
+
+    if (!barcodeToken) return;
+
     setIsPaying(true);
-
-    const res = await postPaymentAction({ cardNumber: activeCard.cardNumber });
-
+    const res = await postPaymentAction({ barcodeToken });
     setIsPaying(false);
 
     if (!res.success) {
@@ -139,6 +195,7 @@ export default function Card({
     }
 
     const data = res.data;
+
     alert({
       render: () => (
         <PaymentResultModal
@@ -151,8 +208,11 @@ export default function Card({
       srTitle: '결제가 완료됐어요',
       srDescription: `원화 ${data.paidAmount.toLocaleString()}원 결제`,
     });
-    router.refresh();
-  };
+
+    void refreshBarcodeToken();
+  }, [isPaying, barcodeToken, alert, refreshBarcodeToken]);
+
+  if (!activeCard) return null;
 
   const onBarcodeAreaClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -161,6 +221,8 @@ export default function Card({
       onLockClickAction(activeCard.id);
       return;
     }
+
+    if (!barcodeToken) return;
 
     await pay();
   };
@@ -180,6 +242,9 @@ export default function Card({
     }
     router.refresh();
   };
+
+  const barcodeValue = barcodeToken ?? '000000000000';
+  const isBarcodeClickable = isCurrentUnlocked && !!barcodeToken && !isPaying;
 
   return (
     <div className="w-full select-none overflow-hidden rounded-4xl border border-gray-100 bg-white px-10 py-8 shadow-sm">
@@ -210,11 +275,13 @@ export default function Card({
         type="button"
         className="relative mx-auto mt-2 flex h-28 w-65 flex-col items-center justify-center bg-white transition-opacity active:opacity-70 disabled:opacity-50"
         onClick={onBarcodeAreaClick}
-        disabled={isPaying}
+        disabled={!isBarcodeClickable && isCurrentUnlocked}
         aria-label={
           !isCurrentUnlocked
             ? 'PIN 번호를 입력하여 바코드 보기'
-            : '바코드를 클릭하여 결제하기'
+            : !barcodeToken
+              ? '바코드 생성 중'
+              : '바코드를 클릭하여 결제하기'
         }
       >
         <div
@@ -223,11 +290,11 @@ export default function Card({
           }`}
         >
           <Barcode
-            value={activeCard.cardNumber ?? '000000000000'}
+            value={barcodeValue}
             format="CODE128"
             displayValue={false}
             height={48}
-            width={1.6}
+            width={3}
             margin={0}
           />
         </div>
@@ -238,6 +305,10 @@ export default function Card({
               <Lock className="text-black-800" size={24} />
             </div>
           </div>
+        )}
+
+        {isCurrentUnlocked && !barcodeToken && (
+          <Loader className="mx-auto h-8 w-8 animate-spin text-green-ez" />
         )}
       </button>
 

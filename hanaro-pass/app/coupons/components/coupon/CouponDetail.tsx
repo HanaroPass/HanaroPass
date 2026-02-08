@@ -1,10 +1,11 @@
 'use client';
 
-import { Lock } from 'lucide-react';
+import { Loader, Lock } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Barcode from 'react-barcode';
+import { issueBarcodeTokenAction } from '@/app/(main)/actions/issueBarcodeToken.action';
 import { postPaymentAction } from '@/app/(main)/actions/postPayment.action';
 import PinInput from '@/app/(main)/components/PinInput';
 import PaymentResultModal from '@/components/payResult/PayResult';
@@ -29,16 +30,53 @@ export default function CouponDetail({
   const { alert } = useAlert();
   const [isPaying, setIsPaying] = useState(false);
   const [showPinInput, setShowPinInput] = useState(false);
+  const [barcodeToken, setBarcodeToken] = useState<string | null>(null);
+  const [isIssuingToken, setIsIssuingToken] = useState(false);
 
   const { defaultCardId, isCardUnlocked, isLoading, unlockCard } =
     useCardLockGate();
 
-  const processPayment = async () => {
+  const refreshBarcodeToken = useCallback(async () => {
+    if (defaultCardId == null) return;
+    if (!isCardUnlocked) return;
+    if (isIssuingToken) return;
+
+    setIsIssuingToken(true);
+    const res = await issueBarcodeTokenAction({ cardId: defaultCardId });
+    setIsIssuingToken(false);
+
+    if (!res.success) {
+      if (!barcodeToken) {
+        alert({ title: '바코드 생성 실패', description: res.message });
+      }
+      return;
+    }
+
+    setBarcodeToken(res.data.barcodeToken);
+  }, [defaultCardId, isCardUnlocked, isIssuingToken, barcodeToken, alert]);
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: '초기화를 위해 의존성 주입'
+  useEffect(() => {
+    setBarcodeToken(null);
+  }, [defaultCardId]);
+
+  useEffect(() => {
+    if (!isCardUnlocked) {
+      setBarcodeToken(null);
+      return;
+    }
+    if (!barcodeToken) {
+      void refreshBarcodeToken();
+    }
+  }, [isCardUnlocked, barcodeToken, refreshBarcodeToken]);
+
+  const processPayment = useCallback(async () => {
     if (isPaying) return;
+
+    if (!barcodeToken) return;
+
     setIsPaying(true);
-
-    const res = await postPaymentAction({ couponId: id });
-
+    const res = await postPaymentAction({ couponId: id, barcodeToken });
     setIsPaying(false);
 
     if (!res.success) {
@@ -69,7 +107,9 @@ export default function CouponDetail({
       srTitle: '결제가 완료됐어요',
       srDescription: `원화 ${data.paidAmount.toLocaleString()}원 결제`,
     });
-  };
+
+    void refreshBarcodeToken();
+  }, [isPaying, barcodeToken, id, alert, refreshBarcodeToken]);
 
   const onBarcodeClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -80,6 +120,8 @@ export default function CouponDetail({
       return;
     }
 
+    if (!barcodeToken) return;
+
     await processPayment();
   };
 
@@ -89,6 +131,10 @@ export default function CouponDetail({
     unlockCard();
     setShowPinInput(false);
   };
+
+  const barcodeValue = barcodeToken ?? couponNumber;
+  const isBarcodeClickable =
+    isCardUnlocked && !!barcodeToken && !isPaying && !isLoading;
 
   return (
     <main className="flex flex-1 flex-col items-center px-6 py-10">
@@ -112,9 +158,15 @@ export default function CouponDetail({
       <button
         type="button"
         onClick={onBarcodeClick}
-        disabled={isPaying || isLoading}
+        disabled={isCardUnlocked ? !isBarcodeClickable : isPaying || isLoading}
         className="relative mx-auto mt-2 flex h-28 w-65 flex-col items-center justify-center bg-white transition-opacity active:opacity-70 disabled:opacity-50"
-        aria-label="쿠폰으로 결제하기"
+        aria-label={
+          !isCardUnlocked
+            ? 'PIN 번호를 입력하여 바코드 보기'
+            : !barcodeToken
+              ? '바코드 생성 중'
+              : '바코드를 클릭하여 결제하기'
+        }
       >
         <div
           className={`flex h-14 w-full items-center justify-center overflow-hidden rounded-md border bg-white ${
@@ -122,7 +174,7 @@ export default function CouponDetail({
           }`}
         >
           <Barcode
-            value={couponNumber}
+            value={barcodeValue}
             format="CODE128"
             displayValue={false}
             height={80}
@@ -139,11 +191,16 @@ export default function CouponDetail({
             </div>
           </div>
         )}
+
+        {isCardUnlocked && !barcodeToken && (
+          <Loader className="mx-auto h-8 w-8 animate-spin text-green-ez" />
+        )}
       </button>
 
       <p className="font-medium text-gray-400 text-sm">
         쿠폰번호: <span className="uppercase">{couponNumber}</span>
       </p>
+
       <div className="mt-6 w-full px-4 text-center text-gray-800 text-xs">
         <p className="mb-2">
           본 쿠폰은{' '}
