@@ -74,7 +74,7 @@ export default function Card({
   const touchStartRef = useRef<number | null>(null);
   const [isPaying, setIsPaying] = useState(false);
   const [barcodeToken, setBarcodeToken] = useState<string | null>(null);
-  const [isIssuingToken, setIsIssuingToken] = useState(false);
+  const [_, setIsIssuingToken] = useState(false);
 
   const router = useRouter();
   const { alert } = useAlert();
@@ -119,24 +119,40 @@ export default function Card({
     touchStartRef.current = null;
   };
 
+  const activeCardIdRef = useRef<number | null>(null);
+  useEffect(() => {
+    activeCardIdRef.current = activeCardId;
+  }, [activeCardId]);
+
+  const issuingRef = useRef(false);
+
   const refreshBarcodeToken = useCallback(async () => {
     if (!activeCardId) return;
     if (!isCurrentUnlocked) return;
-    if (isIssuingToken) return;
+    if (issuingRef.current) return;
 
+    const requestCardId = activeCardId;
+    issuingRef.current = true;
     setIsIssuingToken(true);
-    const res = await issueBarcodeTokenAction({ cardId: activeCardId });
-    setIsIssuingToken(false);
 
-    if (!res.success) {
-      if (!barcodeToken) {
-        alert({ title: '바코드 생성 실패', description: res.message });
+    try {
+      const res = await issueBarcodeTokenAction({ cardId: requestCardId });
+
+      if (!res.success) {
+        if (activeCardIdRef.current === requestCardId && !barcodeToken) {
+          alert({ title: '바코드 생성 실패', description: res.message });
+        }
+        return;
       }
-      return;
-    }
 
-    setBarcodeToken(res.data.barcodeToken);
-  }, [activeCardId, isCurrentUnlocked, isIssuingToken, barcodeToken, alert]);
+      if (activeCardIdRef.current !== requestCardId) return;
+
+      setBarcodeToken(res.data.barcodeToken);
+    } finally {
+      issuingRef.current = false;
+      setIsIssuingToken(false);
+    }
+  }, [activeCardId, isCurrentUnlocked, barcodeToken, alert]);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: '초기화를 위해 의존성 주입'
   useEffect(() => {
@@ -278,7 +294,7 @@ export default function Card({
             format="CODE128"
             displayValue={false}
             height={48}
-            width={1}
+            width={3}
             margin={0}
           />
         </div>
