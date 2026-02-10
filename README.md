@@ -54,3 +54,15 @@
 | --- | --- | --- | --- | --- | --- | --- |
 | [<img src="https://github.com/imsom2.png" width="150"/>](https://github.com/imsom2) | [<img src="https://github.com/thisminji.png" width="150"/>](https://github.com/thisminji)  | [<img src="https://github.com/imddoy.png" width="150"/>](https://github.com/imddoy) | [<img src="https://github.com/kimm00.png" width="150"/>](https://github.com/kimm00) | [<img src="https://github.com/hansoojeongsj.png" width="150"/>](https://github.com/hansoojeongsj) | [<img src="https://github.com/KelseyKwon.png" width="150"/>](https://github.com/KelseyKwon) | [<img src="https://github.com/s0nsy.png" width="150"/>](https://github.com/s0nsy) |
 | 남소미 | 이민지 | 김채현 | 김도이 | 한수정 | 권나연 | 손세영 |
+
+# 🔫 트러블 슈팅
+
+| 팀원명 | 트러블 슈팅 내역 |
+| --- | --- |
+| [남소미](https://github.com/imsom2) |   • [Prisma Migrate 실행 시 Shadow Database 권한 오류 트러블슈팅](https://www.notion.so/Prisma-Migrate-Shadow-Database-303aa6cb801f80348802d29c2a883bcc?pvs=21) <br/> • [Supabase를 활용한 파일 스토리지 및 DB 설계 개선](https://www.notion.so/Supabase-DB-303aa6cb801f80c1b1d3d4056528b67e?pvs=21)  |
+| [이민지](https://github.com/thisminji) |   • [폼 관리 리팩토링: 클라이언트 State에서 Server Actions로 전환](https://www.notion.so/State-Server-Actions-303aa6cb801f801a9188f5f9cfaeb65e?pvs=21) <br/>  • [OCR 엔진 교체: 실시간 SDK에서 이미지 분석 방식으로 전환](https://www.notion.so/OCR-SDK-303aa6cb801f8089a302f28eee30462d?pvs=21)  |
+| [김채현](https://github.com/imddoy) |   • [HanaroPass main 페이지 아키텍처 설계와 트러블슈팅](https://www.notion.so/HanaroPass-main-303aa6cb801f80cc9263d712d52f60bb?pvs=21) <br/>  • [Search Input 컴포넌트 구현](https://www.notion.so/Search-Input-303aa6cb801f80e2a012ed8dcdcf6b3c?pvs=21)  |
+| [김도이](https://github.com/kimm00) |   • [지도 기반 병원 서비스 마커·상태·AI 요약 동기화 트러블슈팅](https://www.notion.so/AI-303aa6cb801f80319563cab5f958f6fe?pvs=21) <br/> • [지도 한·영 전환 시 병원 정보 동기화 문제 해결](https://www.notion.so/303aa6cb801f8098a442e8d5f05fa1d3?pvs=21)  |
+| [한수정](https://github.com/hansoojeongsj) |   • [Map Interaction을 위한 Custom BottomSheet 구현](https://www.notion.so/Map-Interaction-Custom-BottomSheet-303aa6cb801f800d822fc349f4828ded?pvs=21) <br/> • [좌표 기반 환전소 검색 구현](https://www.notion.so/303aa6cb801f80c3bb43c9644ab697de?pvs=21)  |
+| [권나연](https://github.com/KelseyKwon) |   • [성능과 UX를 모두 잡기 : 한글 검색 최적화부터 빌드 에러 해결까지](https://www.notion.so/UX-303aa6cb801f80a1b9d7ed85488b9830?pvs=21)  |
+| [손세영](https://github.com/s0nsy) |   • [OpenAI API: 이미지 처리 로직 개선](https://www.notion.so/OpenAI-API-303aa6cb801f8099a5f5cd3ddba64f72?pvs=21)  <br/>• [OpenAI: 프롬프트 개선](https://www.notion.so/OpenAI-303aa6cb801f80169631f15ecfd3dd86?pvs=21)  |
