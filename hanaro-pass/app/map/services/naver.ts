@@ -1,6 +1,8 @@
 'use server';
 
-interface NaverSearchItem {
+import { translateWithGoogle } from './google';
+
+type NaverSearchItem = {
   title: string;
   link: string;
   category: string;
@@ -10,19 +12,11 @@ interface NaverSearchItem {
   roadAddress: string;
   mapx: string;
   mapy: string;
-}
+};
 
-interface NaverSearchResponse {
+type NaverSearchResponse = {
   items: NaverSearchItem[];
-}
-
-interface GoogleTranslateResponse {
-  data: {
-    translations: {
-      translatedText: string;
-    }[];
-  };
-}
+};
 
 /**
  * @function fetchExchanges
@@ -102,37 +96,5 @@ export async function fetchExchanges(
   } finally {
     // 타이머 해제
     clearTimeout(timeoutId);
-  }
-}
-
-/**
- * @description Google Cloud Translation API를 사용해 번역합니다.
- */
-async function translateWithGoogle(
-  texts: string[],
-  apiKey: string,
-): Promise<string[]> {
-  try {
-    const response = await fetch(
-      `https://translation.googleapis.com/language/translate/v2?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          q: texts,
-          target: 'en',
-          source: 'ko',
-          format: 'text',
-        }),
-      },
-    );
-
-    if (!response.ok) return [];
-
-    const result: GoogleTranslateResponse = await response.json();
-    return result.data.translations.map((t) => t.translatedText);
-  } catch (e) {
-    console.error('Google Translation Failed:', e);
-    return [];
   }
 }
