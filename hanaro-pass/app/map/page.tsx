@@ -33,7 +33,7 @@ export default async function Page({
     imageUrl: h.imageUrl ?? undefined,
 
     aiSummaryEn: h.aiSummaryEn ?? undefined,
-    aiSummary: h.aiSummary ?? '',
+    aiSummary: h.aiSummary ?? undefined,
   }));
 
   return (

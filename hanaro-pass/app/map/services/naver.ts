@@ -67,10 +67,11 @@ export async function fetchExchanges(
 
     const data: NaverSearchResponse = await response.json();
     const items = data.items || [];
+    const stripHtml = (s: string) => s.replace(/<[^>]*>?/g, '').trim();
 
     if (lang === 'en' && googleApiKey && items.length > 0) {
       const textsToTranslate = items.flatMap((item) => [
-        item.title.replace(/<[^>]*>?/g, '').trim(),
+        stripHtml(item.title),
         item.roadAddress || item.address,
       ]);
 
@@ -81,7 +82,7 @@ export async function fetchExchanges(
 
       return items.map((item, index) => ({
         ...item,
-        title: translatedTexts[index * 2] || item.title,
+        title: translatedTexts[index * 2] || stripHtml(item.title),
         roadAddress: translatedTexts[index * 2 + 1] || item.roadAddress,
       }));
     }
@@ -90,6 +91,7 @@ export async function fetchExchanges(
   } catch (error) {
     if (error instanceof Error && error.name === 'AbortError') {
       console.error('Request timed out');
+      return [];
     }
     console.error('Server Action Error:', error);
     return [];

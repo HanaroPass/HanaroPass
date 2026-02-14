@@ -31,7 +31,9 @@ export async function translateWithGoogle(
     if (!response.ok) return [];
 
     const result: GoogleTranslateResponse = await response.json();
-    return result.data.translations.map((t) => t.translatedText);
+    const translations = result?.data?.translations;
+    if (!translations) return [];
+    return translations.map((t) => t.translatedText);
   } catch (e) {
     console.error('Google Translation Failed:', e);
     return [];
