@@ -46,33 +46,23 @@ export default function MapPageClient({
   lang: initialLang,
 }: MapPageClientProps) {
   const [lang, setLang] = useState<'ko' | 'en'>(initialLang);
-
-  useEffect(() => {
-    setLang(initialLang);
-  }, [initialLang]);
-
-  const t = MAP_UI_TEXTS[lang];
-
   const [savedPlaces] = useState<SavedPlace[]>(initialSavedPlaces);
   const [myEmbassy] = useState<Embassy | null>(initialEmbassy);
   const [bookmark, setBookmark] = useState(false);
   const [selectedPlace, setSelectedPlace] = useState<
     SavedPlace | Embassy | NaverSearchResult | null
   >(null);
-
   const [currentMapRegion, setCurrentMapRegion] = useState('');
-  const mapControlRef = useRef<NaverMapHandle>(null);
-  const { exchangeResults, searchExchanges, clearResults } = useExchangeSearch(
-    currentMapRegion,
-    lang,
-  );
+  const [mapBounds, setMapBounds] = useState<MapBounds | null>(null);
   const [userCoords, setUserCoords] = useState<{ lat: number; lng: number }>();
 
   const router = useRouter();
   const searchParams = useSearchParams();
+  const mapControlRef = useRef<NaverMapHandle>(null);
 
   const toggleLang = () => {
     const nextLang = lang === 'ko' ? 'en' : 'ko';
+    setLang(nextLang);
     const params = new URLSearchParams(searchParams.toString());
 
     params.set('lang', nextLang);
@@ -92,20 +82,25 @@ export default function MapPageClient({
     getTranslateValue,
   } = useBottomSheet();
 
-  const [mapBounds, setMapBounds] = useState<MapBounds | null>(null);
   const hospitalFilter = useHospitalFilters(hospitals, mapBounds, lang);
 
   const { selectedHospital, setSelectedHospital } = hospitalFilter;
 
+  const { exchangeResults, searchExchanges, clearResults } = useExchangeSearch(
+    currentMapRegion,
+    lang,
+  );
+
+  const t = MAP_UI_TEXTS[lang];
+
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (pos) => {
+        (pos) =>
           setUserCoords({
             lat: pos.coords.latitude,
             lng: pos.coords.longitude,
-          });
-        },
+          }),
         (err) => console.warn('위치 정보를 가져올 수 없습니다.', err),
       );
     }
@@ -113,13 +108,34 @@ export default function MapPageClient({
 
   useEffect(() => {
     if (openSheet !== 'exchange' || !currentMapRegion) return;
-
-    const timer = setTimeout(() => {
-      searchExchanges();
-    }, 1000);
-
+    const timer = setTimeout(() => searchExchanges(), 1000);
     return () => clearTimeout(timer);
   }, [currentMapRegion, openSheet, searchExchanges]);
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <reset sheet lang>
+  useEffect(() => {
+    if (!openSheet) return;
+
+    const sheet = openSheet as
+      | 'hospital'
+      | 'exchange'
+      | 'embassy'
+      | 'siren'
+      | 'bookmark';
+
+    setSelectedPlace(null);
+    toggleSheet(sheet, false);
+    if (sheet === 'exchange') {
+      const timer = setTimeout(async () => {
+        await searchExchanges();
+        toggleSheet('exchange', true);
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+
+    const timer = setTimeout(() => toggleSheet(sheet, true), 50);
+    return () => clearTimeout(timer);
+  }, [lang]);
 
   const handleMapMove = useCallback((address: string, bounds?: MapBounds) => {
     setCurrentMapRegion(address);
@@ -129,14 +145,14 @@ export default function MapPageClient({
   const handleExchangeClick = useCallback(async () => {
     if (openSheet === 'exchange') {
       clearResults();
-      toggleSheet('exchange');
+      toggleSheet('exchange', false);
       setSelectedPlace(null);
       return;
     }
 
     clearResults();
     await searchExchanges(true);
-    toggleSheet('exchange');
+    toggleSheet('exchange', true);
   }, [openSheet, toggleSheet, searchExchanges, clearResults]);
 
   const { handleMarkerClick } = useMarkerClick({
