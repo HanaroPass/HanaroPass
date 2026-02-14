@@ -123,8 +123,15 @@ export default function MapPageClient({
       | 'siren'
       | 'bookmark';
 
-    setSelectedPlace(null);
+    if (sheet !== 'bookmark') {
+      setSelectedPlace(null);
+    }
+    if (sheet !== 'hospital') {
+      setSelectedHospital(null);
+    }
+
     toggleSheet(sheet, false);
+
     if (sheet === 'exchange') {
       const timer = setTimeout(async () => {
         await searchExchanges();
@@ -133,7 +140,10 @@ export default function MapPageClient({
       return () => clearTimeout(timer);
     }
 
-    const timer = setTimeout(() => toggleSheet(sheet, true), 50);
+    const timer = setTimeout(() => {
+      toggleSheet(sheet, true);
+    }, 50);
+
     return () => clearTimeout(timer);
   }, [lang]);
 
