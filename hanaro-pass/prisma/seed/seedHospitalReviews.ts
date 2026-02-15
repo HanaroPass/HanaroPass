@@ -36,6 +36,33 @@ ${reviews.map((r) => `- ${r}`).join('\n')}
   return response.choices[0].message?.content?.trim() || '';
 }
 
+async function generateSummaryEn(reviews: string[]): Promise<string> {
+  const prompt = `
+Below are multiple user reviews for a hospital.
+Summarize them into ONE sentence that would be helpful for foreign patients.
+
+Rules:
+- Must be strictly based on the reviews
+- One sentence only
+- Neutral, friendly tone
+- No exaggeration or advertising language
+- English
+- Focus on strengths; soften weaknesses if any
+- Do NOT start with "This hospital" or similar phrases
+
+Reviews:
+${reviews.map((r) => `- ${r}`).join('\n')}
+`;
+
+  const response = await openai.chat.completions.create({
+    model: 'gpt-4.1-mini',
+    messages: [{ role: 'user', content: prompt }],
+    temperature: 0.3,
+  });
+
+  return response.choices[0].message?.content?.trim() || '';
+}
+
 export async function seedHospitalReviews() {
   console.log('[ AI 병원 요약 - DB Seed 시작... ]');
 
@@ -56,9 +83,14 @@ export async function seedHospitalReviews() {
       reviews = pickRandomPlasticReviews();
     } else reviews = pickRandomReviews();
     const aiSummary = await generateSummary(reviews);
+    const aiSummaryEn = await generateSummaryEn(reviews);
 
     await prisma.hospitalReview.create({
-      data: { hospitalId: hospital.id, aiSummary },
+      data: {
+        hospitalId: hospital.id,
+        aiSummary,
+        aiSummaryEn,
+      },
     });
   }
 

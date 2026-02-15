@@ -1,15 +1,9 @@
 import type { Embassy, SavedPlace } from '@/lib/generated/prisma';
-
 import type { NaverSearchResult } from '../components/ui/NaverMap';
 import type { LocationInfo } from '../components/ui/PlaceCard';
+import { CATEGORY_MAP } from '../constants/mapTranslations';
 import type { Hospital } from '../hooks/useHospitalFilters';
 import type { ClickablePlace } from '../hooks/useMapMarkers';
-
-const CATEGORY_MAP: Record<string, string> = {
-  CAFE: '카페',
-  FOOD: '식당',
-  SHOP: '쇼핑',
-};
 
 // 병원 운영 상태 계산 함수
 export function getHospitalStatus(openHours: string): '진료 중' | '진료 종료' {
@@ -119,33 +113,66 @@ export function getExchangeType(name: string): '은행' | '환전소' | '기타'
   return '기타';
 }
 
+const EXCHANGE_CATEGORY_MAP = {
+  ko: {
+    은행: '은행',
+    환전소: '환전소',
+    기타: '기타',
+  },
+  en: {
+    은행: 'Bank',
+    환전소: 'Exchange',
+    기타: 'Etc.',
+  },
+} as const;
+
 // HTML 태그 제거 및 데이터 포맷팅
 export const formatExchangeData = (
   results: NaverSearchResult[],
+  lang: 'ko' | 'en' = 'ko',
 ): LocationInfo[] => {
-  return results.map((item) => ({
-    id: `${item.mapx}-${item.mapy}`,
-    name: item.title.replace(/<[^>]*>?/g, ''),
-    type: getExchangeType(item.title),
-    address: item.roadAddress || item.address || '',
-    phone: item.telephone || '',
-    distance: '',
-    status: '',
-    explainTime: '',
-    latitude: item.mapy || '',
-    longitude: item.mapx || '',
-  }));
+  return results.map((item) => {
+    const typeKey = getExchangeType(item.title);
+
+    return {
+      id: `${item.mapx}-${item.mapy}`,
+      name: item.title.replace(/<[^>]*>?/g, ''),
+      type: EXCHANGE_CATEGORY_MAP[lang][typeKey],
+      address: item.roadAddress || item.address || '',
+      phone: item.telephone || '',
+      distance: '',
+      status: '',
+      explainTime: '',
+      latitude: item.mapy || '',
+      longitude: item.mapx || '',
+    };
+  });
 };
 
-// 다양한 DB 타입을 LocationInfo 타입으로 변환
 export const mapDbToInfo = (
   db: SavedPlace | Embassy | NaverSearchResult,
+  lang: 'ko' | 'en' = 'ko',
 ): LocationInfo => {
   if ('mapx' in db) {
+    const typeKey = getExchangeType(db.title);
+
+    const exchangeCategoryMap = {
+      ko: {
+        은행: '은행',
+        환전소: '환전소',
+        기타: '기타',
+      },
+      en: {
+        은행: 'Bank',
+        환전소: 'Exchange',
+        기타: 'Etc.',
+      },
+    };
+
     return {
       id: `${db.mapx}-${db.mapy}`,
       name: db.title.replace(/<[^>]*>?/g, ''),
-      type: getExchangeType(db.title),
+      type: exchangeCategoryMap[lang][typeKey],
       address: db.roadAddress || db.address || '',
       phone: db.telephone || '',
       distance: '',
@@ -155,15 +182,21 @@ export const mapDbToInfo = (
       longitude: db.mapx || '',
     };
   }
-  const { address, phone } = db;
-  const type =
-    'category' in db ? CATEGORY_MAP[db.category] || '기타' : '대사관, 영사관';
+
+  const isSaved = 'category' in db;
+  const currentCategoryMap = CATEGORY_MAP[lang];
+
+  const translatedType = isSaved
+    ? (currentCategoryMap as Record<string, string>)[db.category] ||
+      currentCategoryMap.ETC
+    : currentCategoryMap.EMBASSY;
+
   return {
     id: db.id,
-    name: db.placeName,
-    type,
-    address,
-    phone,
+    name: lang === 'ko' ? db.nameKo : db.nameEn || db.nameKo,
+    type: translatedType,
+    address: lang === 'ko' ? db.addressKo : db.addressEn || db.addressKo,
+    phone: db.phone,
     explainTime: db.openHours,
     distance: '',
     latitude: db.latitude,
@@ -177,7 +210,7 @@ export const isHospitalPlace = (place: ClickablePlace): place is Hospital =>
   hasKey(place, 'departments');
 
 export const isEmbassy = (place: ClickablePlace): place is Embassy =>
-  hasKey(place, 'nationality');
+  hasKey(place, 'nationality') && hasKey(place, 'nameKo');
 
 export const isExchangePlace = (
   place: ClickablePlace,
@@ -185,4 +218,4 @@ export const isExchangePlace = (
   hasKey(place, 'mapx') && hasKey(place, 'title');
 
 export const isSavedPlace = (place: ClickablePlace): place is SavedPlace =>
-  hasKey(place, 'placeName');
+  hasKey(place, 'nameKo') && hasKey(place, 'category');

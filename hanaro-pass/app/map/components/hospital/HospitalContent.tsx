@@ -81,7 +81,7 @@ export function HospitalContent({
         <HospitalCard
           lang={lang}
           hospital={{
-            name: hospital.nameKo,
+            nameKo: hospital.nameKo,
             nameEn: hospital.nameEn ?? undefined,
             status: getHospitalStatus(hospital.openHours),
             openTime,
@@ -91,9 +91,9 @@ export function HospitalContent({
             phone: hospital.phone ?? '-',
             languages: hospital.languages,
             departments: hospital.departments,
-            departmentsEn: hospital.departmentsEn,
             imageUrl: hospital.imageUrl,
             aiSummary: hospital.aiSummary,
+            aiSummaryEn: hospital.aiSummaryEn,
           }}
         />
 
@@ -149,6 +149,7 @@ export function HospitalContent({
             <LanguageFilterPanel
               value={selectedLanguages}
               onChange={setSelectedLanguages}
+              lang={lang}
             />
           </FilterPanel>
         </div>
@@ -160,6 +161,7 @@ export function HospitalContent({
             <DepartmentFilterPanel
               value={selectedDepartments}
               onChange={setSelectedDepartments}
+              lang={lang}
             />
           </FilterPanel>
         </div>
@@ -187,7 +189,7 @@ export function HospitalContent({
                 <HospitalCard
                   lang={lang}
                   hospital={{
-                    name: h.nameKo,
+                    nameKo: h.nameKo,
                     nameEn: h.nameEn ?? undefined,
                     status: getHospitalStatus(h.openHours),
                     openTime,
@@ -197,9 +199,9 @@ export function HospitalContent({
                     phone: h.phone ?? '-',
                     languages: h.languages,
                     departments: h.departments,
-                    departmentsEn: h.departmentsEn,
                     imageUrl: h.imageUrl,
                     aiSummary: h.aiSummary,
+                    aiSummaryEn: h.aiSummaryEn,
                   }}
                 />
               </div>

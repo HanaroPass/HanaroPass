@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { useMemo } from 'react';
 import { useToast } from '@/hooks/useToast';
 import getDistance from '@/lib/getDistance';
+import { MAP_UI_TEXTS } from '../../constants/mapTranslations';
 
 export type LocationInfo = {
   id?: string | number;
@@ -22,9 +23,13 @@ export type LocationInfo = {
 type PlaceCardProps = {
   data: LocationInfo;
   userCoords?: { lat: number; lng: number };
+  lang?: 'ko' | 'en';
 };
 
-export function PlaceCard({ data, userCoords }: PlaceCardProps) {
+export function PlaceCard({ data, userCoords, lang = 'ko' }: PlaceCardProps) {
+  const t = MAP_UI_TEXTS[lang];
+  const { info } = useToast();
+
   const calculatedDistance = useMemo(() => {
     if (!userCoords || !data.latitude || !data.longitude) return data.distance;
 
@@ -78,14 +83,11 @@ export function PlaceCard({ data, userCoords }: PlaceCardProps) {
     }
   };
 
-  const { info } = useToast();
-
   const handlePhoneCall = () => {
     if (!data.phone || data.phone.trim() === '') {
-      info('등록된 전화번호가 없습니다.');
+      info(t.noPhone);
       return;
     }
-
     window.location.href = `tel:${data.phone}`;
   };
 
@@ -124,7 +126,9 @@ export function PlaceCard({ data, userCoords }: PlaceCardProps) {
                 src={data.imageUrl}
                 width={80}
                 height={80}
-                alt={`${data.name} 사진`}
+                alt={
+                  lang === 'ko' ? `${data.name} 사진` : `Photo of ${data.name}`
+                }
                 className="h-20 w-20 rounded object-cover"
               />
             </div>
@@ -136,20 +140,26 @@ export function PlaceCard({ data, userCoords }: PlaceCardProps) {
         <button
           type="button"
           onClick={handlePhoneCall}
-          aria-label={`전화 걸기: ${data.name}`}
+          aria-label={
+            lang === 'ko' ? `전화 걸기: ${data.name}` : `Call: ${data.name}`
+          }
           className="flex items-center justify-center gap-2 rounded-full border border-black-200 bg-white px-2 py-1 text-black-800 text-sm"
         >
           <Phone className="h-4 w-4" />
-          전화
+          {t.call}
         </button>
         <button
           type="button"
           onClick={handleNavigation}
-          aria-label={`네이버 지도 연결: ${data.name}`}
+          aria-label={
+            lang === 'ko'
+              ? `네이버 지도 연결: ${data.name}`
+              : `Open in Naver Map: ${data.name}`
+          }
           className="flex items-center justify-center gap-2 rounded-full border border-black-200 bg-white px-2 py-1 text-black-800 text-sm"
         >
           <Globe className="h-4 w-4" />
-          네이버 지도
+          {t.naverMap}
         </button>
       </div>
     </div>

@@ -31,6 +31,7 @@ type NaverMapProps = {
   activeCategory?: 'hospital' | 'embassy' | 'exchange' | null;
   showEmbassy?: boolean;
   showExchanges?: boolean;
+  lang: 'ko' | 'en';
 };
 
 export type NaverMapHandle = {
@@ -41,13 +42,14 @@ export type NaverMapHandle = {
 export const NaverMap = forwardRef<NaverMapHandle, NaverMapProps>(
   (props, ref) => {
     const containerRef = useRef<HTMLDivElement>(null);
-    const { warning } = useToast();
 
-    // 지도 초기화 훅
-    const { mapRef, isMapReady } = useNaverMapInit(
+    // 훅에 props.lang 전달
+    const { mapRef, isMapReady, isMapLoading } = useNaverMapInit(
       containerRef,
       props.onMapMoved,
+      props.lang,
     );
+    const { warning } = useToast();
 
     // 마커 관리 훅
     useMapMarkers({
@@ -77,7 +79,11 @@ export const NaverMap = forwardRef<NaverMapHandle, NaverMapProps>(
             map.panTo(finalCoord, { duration: 500, easing: 'easeOutCubic' });
           },
           () => {
-            warning('내 위치를 찾으려면 위치 권한을 허용해주세요.');
+            warning(
+              props.lang === 'ko'
+                ? '내 위치를 찾으려면 위치 권한을 허용해주세요.'
+                : 'Please allow location permission to find your location.',
+            );
           },
         );
       },
@@ -94,7 +100,23 @@ export const NaverMap = forwardRef<NaverMapHandle, NaverMapProps>(
         map.panTo(finalCoord, { duration: 500, easing: 'easeOutCubic' });
       },
     }));
+    return (
+      <div className="relative h-full w-full">
+        <div ref={containerRef} className="h-full w-full" />
 
-    return <div ref={containerRef} className="h-full w-full" />;
+        {isMapLoading && (
+          <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm">
+            <div className="flex flex-col items-center gap-2">
+              <div className="h-8 w-8 animate-spin rounded-full border-4 border-green-ez border-t-transparent" />
+              <p className="font-medium text-gray-700 text-sm">
+                {props.lang === 'en'
+                  ? 'Map Loading...'
+                  : '지도를 불러오는 중입니다...'}{' '}
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
+    );
   },
 );

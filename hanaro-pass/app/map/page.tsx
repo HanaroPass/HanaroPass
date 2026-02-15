@@ -5,8 +5,14 @@ import { getSavedPlaces } from './actions/savedPlaces';
 import type { Hospital } from './hooks/useHospitalFilters';
 import MapPageClient from './mapPageClient';
 
-export default async function Page() {
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<{ lang?: 'ko' | 'en' }>;
+}) {
   const userId = await getUserIdFromSession();
+  const { lang: rawLang } = await searchParams;
+  const lang = rawLang === 'en' ? 'en' : 'ko';
 
   const [hospitals, embassyRes, savedPlacesRes] = await Promise.all([
     getHospitals(),
@@ -25,6 +31,9 @@ export default async function Page() {
     nameEn: h.nameEn ?? undefined,
     phone: h.phone ?? null,
     imageUrl: h.imageUrl ?? undefined,
+
+    aiSummaryEn: h.aiSummaryEn ?? undefined,
+    aiSummary: h.aiSummary ?? undefined,
   }));
 
   return (
@@ -32,6 +41,7 @@ export default async function Page() {
       hospitals={formattedHospitals}
       initialEmbassy={embassyData}
       initialSavedPlaces={savedPlacesData}
+      lang={lang}
     />
   );
 }

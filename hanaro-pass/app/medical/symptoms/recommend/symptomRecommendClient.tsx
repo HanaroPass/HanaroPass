@@ -1,5 +1,6 @@
 'use client';
 
+import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { getRecommendResult } from '../../actions/getRecommendResult.action';
 import HospitalList from '../../components/hospital/HospitalList';
@@ -11,6 +12,8 @@ export default function SymptomRecommendClient() {
   const [symptom, setSymptom] = useState<string[]>();
   const [hospitals, setHospitals] = useState<HospitalWithStatus[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const searchParams = useSearchParams();
+  const lang = (searchParams.get('lang') as 'ko' | 'en') ?? 'ko';
   useEffect(() => {
     const run = async () => {
       const raw = localStorage.getItem('symptom-result');
@@ -29,7 +32,7 @@ export default function SymptomRecommendClient() {
   return (
     <div className="space-y-4 px-4 py-6 pb-5">
       <SymptomHeader user={user} symptom={symptom} />
-      <HospitalList hospitals={hospitals} isLoading={isLoading} />
+      <HospitalList hospitals={hospitals} isLoading={isLoading} lang={lang} />
     </div>
   );
 }

@@ -12,7 +12,7 @@ export async function getHospitals() {
         select: { langName: true },
       },
       HospitalReview: {
-        select: { aiSummary: true },
+        select: { aiSummary: true, aiSummaryEn: true },
       },
     },
   });
@@ -20,8 +20,9 @@ export async function getHospitals() {
   return hospitals.map((h) => ({
     id: h.id,
     nameKo: h.nameKo,
-    nameEn: null,
+    nameEn: h.nameEn ?? null,
     address: h.address,
+    addressEn: h.addressEn ?? null,
     latitude: Number(h.latitude),
     longitude: Number(h.longitude),
     phone: h.phone,
@@ -31,5 +32,6 @@ export async function getHospitals() {
     departments: h.HospitalDept.map((d) => d.deptName),
     languages: h.HospitalLang.map((l) => l.langName),
     aiSummary: h.HospitalReview?.aiSummary,
+    aiSummaryEn: h.HospitalReview?.aiSummaryEn,
   }));
 }

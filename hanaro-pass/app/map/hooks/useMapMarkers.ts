@@ -44,24 +44,32 @@ export function useMapMarkers({
   const bookmarkMarkersRef = useRef<naver.maps.Marker[]>([]);
   const embassyMarkersRef = useRef<naver.maps.Marker[]>([]);
   const hospitalMarkersRef = useRef<naver.maps.Marker[]>([]);
-
   const exchangeMarkersRef = useRef<Map<string, naver.maps.Marker>>(new Map());
+
+  const getNaverMaps = useCallback(() => {
+    if (typeof window !== 'undefined' && window.naver && window.naver.maps) {
+      return window.naver.maps;
+    }
+    return null;
+  }, []);
 
   const createMarker = useCallback(
     (lat: number, lng: number, iconHtml: string, onClick: () => void) => {
-      if (!map) return null;
-      const marker = new window.naver.maps.Marker({
-        position: new window.naver.maps.LatLng(lat, lng),
+      const naverMaps = getNaverMaps();
+      if (!map || !naverMaps) return null;
+
+      const marker = new naverMaps.Marker({
+        position: new naverMaps.LatLng(lat, lng),
         map,
         icon: {
           content: iconHtml,
-          anchor: new window.naver.maps.Point(10, 10),
+          anchor: new naverMaps.Point(10, 10),
         },
       });
-      window.naver.maps.Event.addListener(marker, 'click', onClick);
+      naverMaps.Event.addListener(marker, 'click', onClick);
       return marker;
     },
-    [map],
+    [map, getNaverMaps],
   );
 
   // 북마크 마커 관리
@@ -144,98 +152,64 @@ export function useMapMarkers({
 
   // 환전소 마커 관리
   useEffect(() => {
-    let cancelled = false;
+    const naverMaps = getNaverMaps();
+    if (!isMapReady || !map || !naverMaps) return;
 
-    if (!isMapReady || !map) return;
+    const currentMarkersMap = exchangeMarkersRef.current;
+
+    currentMarkersMap.forEach((marker) => {
+      if (marker.getMap() !== map) marker.setMap(map);
+    });
 
     if (!showExchanges || !exchangeResults || exchangeResults.length === 0) {
-      exchangeMarkersRef.current.forEach((m) => {
+      currentMarkersMap.forEach((m) => {
         m.setMap(null);
       });
-      exchangeMarkersRef.current.clear();
+      currentMarkersMap.clear();
       return;
     }
 
-    const currentMarkersMap = exchangeMarkersRef.current;
     const activeKeys = new Set<string>();
-    const seenKeys = new Set<string>();
-    const pendingResults = exchangeResults.filter((result) => {
+    exchangeResults.forEach((result) => {
       const markerKey = `${result.mapx}-${result.mapy}`;
-      if (seenKeys.has(markerKey)) return false;
-      seenKeys.add(markerKey);
       activeKeys.add(markerKey);
-      return !currentMarkersMap.has(markerKey);
+
+      const existingMarker = currentMarkersMap.get(markerKey);
+      if (existingMarker) {
+        naverMaps.Event.clearInstanceListeners(existingMarker);
+        naverMaps.Event.addListener(existingMarker, 'click', () => {
+          const clickData = {
+            ...result,
+            name: result.title.replace(/<[^>]*>?/g, ''),
+            type: getExchangeType(result.title),
+          };
+          onMarkerClick(clickData);
+        });
+        return;
+      }
+
+      const lat = Number(result.mapy) / 10000000;
+      const lng = Number(result.mapx) / 10000000;
+
+      if (!Number.isNaN(lat) && !Number.isNaN(lng)) {
+        const marker = createMarker(lat, lng, MARKER_ICONS.exchange, () => {
+          const clickData = {
+            ...result,
+            name: result.title.replace(/<[^>]*>?/g, ''),
+            type: getExchangeType(result.title),
+          };
+          onMarkerClick(clickData);
+        });
+        if (marker) currentMarkersMap.set(markerKey, marker);
+      }
     });
 
-    if (pendingResults.length > 0) {
-      const geocodePromises = pendingResults.map((result) => {
-        const addr = result.roadAddress || result.address;
-        if (!addr) return Promise.resolve(null);
-
-        return new Promise<{
-          lat: number;
-          lng: number;
-          result: NaverSearchResult;
-        } | null>((resolve) => {
-          window.naver.maps.Service.geocode(
-            { query: addr },
-            (status, response) => {
-              if (
-                status === window.naver.maps.Service.Status.OK &&
-                response.v2.addresses.length > 0
-              ) {
-                const item = response.v2.addresses[0];
-                resolve({
-                  lat: Number(item.y),
-                  lng: Number(item.x),
-                  result,
-                });
-              } else {
-                resolve(null);
-              }
-            },
-          );
-        });
-      });
-
-      Promise.all(geocodePromises).then((validResults) => {
-        if (cancelled || !showExchanges || !map) return;
-
-        validResults.forEach((item) => {
-          if (!item) return;
-          const { lat, lng, result } = item;
-          const markerKey = `${result.mapx}-${result.mapy}`;
-
-          if (!activeKeys.has(markerKey)) return;
-
-          const marker = createMarker(lat, lng, MARKER_ICONS.exchange, () => {
-            const clickData: NaverSearchResult & {
-              name: string;
-              type: string;
-            } = {
-              ...result,
-              name: result.title.replace(/<[^>]*>?/g, ''),
-              type: getExchangeType(result.title),
-            };
-            onMarkerClick(clickData);
-          });
-
-          if (marker) {
-            currentMarkersMap.set(markerKey, marker);
-          }
-        });
-      });
-    }
     currentMarkersMap.forEach((marker, key) => {
       if (!activeKeys.has(key)) {
         marker.setMap(null);
         currentMarkersMap.delete(key);
       }
     });
-
-    return () => {
-      cancelled = true;
-    };
   }, [
     isMapReady,
     map,
@@ -243,5 +217,6 @@ export function useMapMarkers({
     exchangeResults,
     createMarker,
     onMarkerClick,
+    getNaverMaps,
   ]);
 }

@@ -8,12 +8,40 @@ import {
 } from '../constants/map';
 import type { MapBounds } from '../types/map';
 
+interface ExtendedMapOptions extends naver.maps.MapOptions {
+  language?: 'ko' | 'en';
+}
+
+interface ExtendedReverseGeocodeOptions {
+  coords: naver.maps.Coord | naver.maps.LatLng;
+  orders?: string;
+  language?: 'ko' | 'en';
+}
+
 export function useNaverMapInit(
   containerRef: React.RefObject<HTMLDivElement | null>,
   onMapMoved?: (address: string, bounds?: MapBounds) => void,
+  lang: 'ko' | 'en' = 'ko',
 ) {
   const mapRef = useRef<naver.maps.Map | null>(null);
+  const lastStateRef = useRef<{
+    center: naver.maps.LatLng;
+    zoom: number;
+  } | null>(null);
+  const myRealPosRef = useRef<{ lat: number; lng: number } | null>(null);
+
+  const langRef = useRef(lang);
+  useEffect(() => {
+    langRef.current = lang;
+  }, [lang]);
+
+  const onMapMovedRef = useRef(onMapMoved);
+  useEffect(() => {
+    onMapMovedRef.current = onMapMoved;
+  }, [onMapMoved]);
+
   const [isMapReady, setIsMapReady] = useState(false);
+  const [isMapLoading, setIsMapLoading] = useState(false);
 
   const updateCenterAddress = useCallback(() => {
     const map = mapRef.current;
@@ -38,104 +66,154 @@ export function useNaverMapInit(
     );
     const topCenterCoord = proj.fromOffsetToCoord(topCenterPoint);
 
+    const langAtRequest = langRef.current;
+    const geocodeOptions: ExtendedReverseGeocodeOptions = {
+      coords: topCenterCoord,
+      orders: [
+        window.naver.maps.Service.OrderType.ADDR,
+        window.naver.maps.Service.OrderType.ROAD_ADDR,
+      ].join(','),
+      language: langAtRequest,
+    };
+
     window.naver.maps.Service.reverseGeocode(
-      {
-        coords: topCenterCoord,
-        orders: [
-          window.naver.maps.Service.OrderType.ADDR,
-          window.naver.maps.Service.OrderType.ROAD_ADDR,
-        ].join(','),
-      },
+      geocodeOptions as naver.maps.Service.ReverseServiceOptions,
       (status, response) => {
         if (status !== window.naver.maps.Service.Status.OK) return;
         const result = response.v2;
         const region = result.results[0]?.region;
+
         const fullRegionName =
-          `${region?.area2?.name || ''} ${region?.area3?.name || ''}`.trim();
-        if (onMapMoved && fullRegionName) {
-          onMapMoved(fullRegionName, mapBounds);
+          langAtRequest === 'en'
+            ? `${region?.area3?.name || ''}, ${region?.area2?.name || ''}`.trim()
+            : `${region?.area2?.name || ''} ${region?.area3?.name || ''}`.trim();
+
+        if (onMapMovedRef.current && fullRegionName) {
+          onMapMovedRef.current(fullRegionName, mapBounds);
         }
       },
     );
-  }, [onMapMoved]);
+  }, []);
 
   useEffect(() => {
+    if (mapRef.current) {
+      lastStateRef.current = {
+        center: mapRef.current.getCenter() as naver.maps.LatLng,
+        zoom: mapRef.current.getZoom(),
+      };
+    }
+
     const NAVER_MAP_KEY = process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID;
     const container = containerRef.current;
     if (!NAVER_MAP_KEY || !container) return;
 
-    let idleListener: naver.maps.MapEventListener | null = null;
     let isMounted = true;
+    let idleListener: naver.maps.MapEventListener | null = null;
 
     const initMap = () => {
-      if (!container || mapRef.current || !isMounted) return;
+      if (!container || !isMounted) return;
 
-      const renderMap = (lat: number, lng: number) => {
+      setIsMapLoading(true);
+      container.style.cssText =
+        'transition: opacity 0.2s ease-in-out; opacity: 0;';
+
+      setTimeout(() => {
         if (!isMounted) return;
+        container.innerHTML = '';
+        mapRef.current = null;
+        setIsMapReady(false);
 
-        const map = new window.naver.maps.Map(container, {
-          center: new window.naver.maps.LatLng(lat, lng),
-          zoom: 15,
-          logoControl: false,
-        });
+        const renderMap = (actualLat: number, actualLng: number) => {
+          if (!isMounted) return;
 
-        mapRef.current = map;
-        setIsMapReady(true);
+          const mapCenter = lastStateRef.current
+            ? lastStateRef.current.center
+            : new window.naver.maps.LatLng(actualLat, actualLng);
+          const mapZoom = lastStateRef.current ? lastStateRef.current.zoom : 15;
 
-        map.panBy(new window.naver.maps.Point(0, 150));
+          const map = new window.naver.maps.Map(container, {
+            center: mapCenter,
+            zoom: mapZoom,
+            logoControl: false,
+            language: lang,
+          } as ExtendedMapOptions);
 
-        new window.naver.maps.Marker({
-          position: new window.naver.maps.LatLng(lat, lng),
-          map,
-          icon: {
-            content: MARKER_ICONS.myLocation,
-            anchor: new window.naver.maps.Point(8, 8),
-          },
-        });
+          mapRef.current = map;
+          setIsMapReady(true);
+          if (!lastStateRef.current)
+            map.panBy(new window.naver.maps.Point(0, 150));
 
-        // 이벤트 리스너를 변수에 저장
-        idleListener = window.naver.maps.Event.addListener(
-          map,
-          'idle',
-          updateCenterAddress,
-        );
-        updateCenterAddress();
-      };
+          new window.naver.maps.Marker({
+            position: new window.naver.maps.LatLng(actualLat, actualLng),
+            map,
+            icon: {
+              content: MARKER_ICONS.myLocation,
+              anchor: new window.naver.maps.Point(8, 8),
+            },
+          });
 
-      navigator.geolocation.getCurrentPosition(
-        (pos) => renderMap(pos.coords.latitude, pos.coords.longitude),
-        () => {
-          renderMap(DEFAULT_COORDS.lat, DEFAULT_COORDS.lng);
+          idleListener = window.naver.maps.Event.addListener(
+            map,
+            'idle',
+            updateCenterAddress,
+          );
+          updateCenterAddress();
 
-          onMapMoved?.('서울특별시 성동구 성수동');
-        },
-        { enableHighAccuracy: true, timeout: 10000 },
-      );
+          container.style.opacity = '1';
+          setIsMapLoading(false);
+        };
+
+        if (myRealPosRef.current) {
+          renderMap(myRealPosRef.current.lat, myRealPosRef.current.lng);
+        } else {
+          navigator.geolocation.getCurrentPosition(
+            (pos) => {
+              myRealPosRef.current = {
+                lat: pos.coords.latitude,
+                lng: pos.coords.longitude,
+              };
+              renderMap(pos.coords.latitude, pos.coords.longitude);
+            },
+            () => {
+              myRealPosRef.current = {
+                lat: DEFAULT_COORDS.lat,
+                lng: DEFAULT_COORDS.lng,
+              };
+              renderMap(DEFAULT_COORDS.lat, DEFAULT_COORDS.lng);
+              if (onMapMovedRef.current) {
+                onMapMovedRef.current(
+                  lang === 'en'
+                    ? 'Seongsu-dong, Seongdong-gu'
+                    : '서울특별시 성동구 성수동',
+                );
+              }
+            },
+            { enableHighAccuracy: true, timeout: 10000 },
+          );
+        }
+      }, 200);
     };
 
     const scriptId = 'naver-map-script';
-    const existingScript = document.getElementById(
-      scriptId,
-    ) as HTMLScriptElement | null;
-
-    if (!existingScript) {
-      const script = document.createElement('script');
-      script.id = scriptId;
-      script.src = `${NAVER_MAP_SCRIPT_URL}?ncpKeyId=${NAVER_MAP_KEY}&submodules=geocoder`;
-      script.async = true;
-      script.onload = () => initMap();
-      document.head.appendChild(script);
-    } else {
-      if (window.naver?.maps) initMap();
-      else existingScript.addEventListener('load', initMap);
+    const oldScript = document.getElementById(scriptId);
+    if (oldScript) {
+      oldScript.remove();
+      if (window.naver)
+        (window as unknown as { naver: unknown }).naver = undefined;
     }
+
+    const script = document.createElement('script');
+    script.id = scriptId;
+    script.src = `${NAVER_MAP_SCRIPT_URL}?ncpKeyId=${NAVER_MAP_KEY}&submodules=geocoder&language=${lang}`;
+    script.async = true;
+    script.onload = () => initMap();
+    document.head.appendChild(script);
 
     return () => {
       isMounted = false;
       if (idleListener) window.naver.maps.Event.removeListener(idleListener);
-      if (existingScript) existingScript.removeEventListener('load', initMap);
     };
-  }, [updateCenterAddress, containerRef, onMapMoved]);
+  }, [containerRef, lang, updateCenterAddress]);
 
-  return { mapRef, isMapReady };
+  return { mapRef, isMapReady, isMapLoading };
 }

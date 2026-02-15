@@ -1,67 +1,84 @@
 'use server';
 
+import { translateWithGoogle } from './google';
+
+export type NaverSearchItem = {
+  title: string;
+  link: string;
+  category: string;
+  description: string;
+  telephone: string;
+  address: string;
+  roadAddress: string;
+  mapx: string;
+  mapy: string;
+};
+
+type NaverSearchResponse = {
+  items: NaverSearchItem[];
+};
+
 /**
- * @function fetchExchanges
- * @description 네이버 지역 검색 API를 호출하여 환전소 정보를 가져옵니다.
- * @param query 검색 키워드
- * @param start 검색 시작 위치 (문자열로 받아서 내부에서 숫자로 검증)
+ * @function translateItems
+ * @description 이미 검색된 아이템들의 title과 address를 번역합니다.
  */
-export async function fetchExchanges(query: string, start = '1') {
+export async function translateItems(
+  items: NaverSearchItem[],
+  lang: 'ko' | 'en',
+): Promise<NaverSearchItem[]> {
+  const googleApiKey = process.env.GOOGLE_TRANSLATE_API_KEY;
+
+  // 영어 번역이 필요 없거나 키가 없으면 원본 반환
+  if (lang !== 'en' || !googleApiKey || items.length === 0) return items;
+
+  try {
+    const stripHtml = (s: string) => s.replace(/<[^>]*>?/g, '').trim();
+
+    // 번역할 텍스트 추출 (제목, 주소 순서 유지)
+    const textsToTranslate = items.flatMap((item) => [
+      stripHtml(item.title),
+      item.roadAddress || item.address,
+    ]);
+
+    const translatedTexts = await translateWithGoogle(
+      textsToTranslate,
+      googleApiKey,
+    );
+
+    return items.map((item, index) => ({
+      ...item,
+      title: translatedTexts[index * 2] || stripHtml(item.title),
+      roadAddress: translatedTexts[index * 2 + 1] || item.roadAddress,
+    }));
+  } catch (error) {
+    console.error('Translation Error:', error);
+    return items;
+  }
+}
+
+export async function fetchExchanges(
+  query: string,
+  start = '1',
+): Promise<NaverSearchItem[]> {
   const clientId = process.env.NAVER_SEARCH_ID;
   const clientSecret = process.env.NAVER_SEARCH_SECRET;
 
-  // API 키 확인
-  if (!clientId || !clientSecret) {
-    console.error('Naver API keys are missing');
-    return [];
-  }
-
-  // 파라미터 검증 및 정규화
-  const startValue = Number.parseInt(start, 10);
-  const safeStart =
-    !Number.isNaN(startValue) && startValue > 0 ? String(startValue) : '1';
+  if (!clientId || !clientSecret) return [];
 
   const apiUrl = `https://openapi.naver.com/v1/search/local.json?query=${encodeURIComponent(
     query,
-  )}&start=${safeStart}&display=20&sort=sim`;
+  )}&start=${start}&display=20&sort=sim`;
 
-  // 타임아웃 설정
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => {
-    controller.abort();
-  }, 10000);
+  const response = await fetch(apiUrl, {
+    headers: {
+      'X-Naver-Client-Id': clientId,
+      'X-Naver-Client-Secret': clientSecret,
+    },
+    cache: 'no-store',
+  });
 
-  try {
-    const response = await fetch(apiUrl, {
-      headers: {
-        'X-Naver-Client-Id': clientId,
-        'X-Naver-Client-Secret': clientSecret,
-      },
-      cache: 'no-store',
-      signal: controller.signal, // 타임아웃 신호 전달
-    });
+  if (!response.ok) return [];
 
-    // 에러 로깅 강화
-    if (!response.ok) {
-      console.error(
-        `Naver API Error: ${response.status} ${response.statusText}`,
-      );
-      return [];
-    }
-
-    const data = await response.json();
-    return data.items || [];
-  } catch (error) {
-    // 타임아웃 처리
-    if (error instanceof Error && error.name === 'AbortError') {
-      console.error('Naver API request timed out after 10 seconds');
-      return [];
-    }
-
-    console.error('Server Action Error:', error);
-    return [];
-  } finally {
-    // 타이머 해제
-    clearTimeout(timeoutId);
-  }
+  const data: NaverSearchResponse = await response.json();
+  return data.items || [];
 }

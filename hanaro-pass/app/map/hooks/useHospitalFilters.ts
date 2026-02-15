@@ -1,4 +1,6 @@
 import { useMemo, useState } from 'react';
+import { DEPARTMENT_MAP } from '@/app/map/constants/departments';
+import { LANGUAGE_MAP } from '@/app/map/constants/languages';
 import type { MapBounds } from '../types/map';
 
 export type Hospital = {
@@ -6,7 +8,7 @@ export type Hospital = {
   nameKo: string;
   nameEn?: string | null;
   address: string;
-  addressEn?: string;
+  addressEn?: string | null;
   latitude: number;
   longitude: number;
   phone: string | null;
@@ -16,6 +18,7 @@ export type Hospital = {
   departments: string[];
   departmentsEn?: string[];
   aiSummary?: string;
+  aiSummaryEn?: string;
 };
 
 type FilterType = 'language' | 'department' | null;
@@ -31,6 +34,30 @@ export function useHospitalFilters(
   const [selectedHospital, setSelectedHospital] = useState<Hospital | null>(
     null,
   );
+
+  const toDisplayLabel = (
+    value: string,
+    type: 'language' | 'department',
+    lang: 'ko' | 'en',
+  ) => {
+    if (lang === 'ko') return value;
+
+    if (type === 'language') {
+      const idx = LANGUAGE_MAP.ko.indexOf(
+        value as (typeof LANGUAGE_MAP.ko)[number],
+      );
+      return idx >= 0 ? LANGUAGE_MAP.en[idx] : value;
+    }
+
+    if (type === 'department') {
+      const idx = DEPARTMENT_MAP.ko.indexOf(
+        value as (typeof DEPARTMENT_MAP.ko)[number],
+      );
+      return idx >= 0 ? DEPARTMENT_MAP.en[idx] : value;
+    }
+
+    return value;
+  };
 
   const filteredHospitals = useMemo(() => {
     return hospitals.filter((h) => {
@@ -61,19 +88,38 @@ export function useHospitalFilters(
   const makeLabel = (
     selected: string[],
     defaultLabel: string,
+    type: 'language' | 'department',
     lang: 'ko' | 'en',
   ) => {
     if (selected.length === 0) return defaultLabel;
-    if (selected.length === 1) return selected[0];
-    if (selected.length === 2) return `${selected[0]}, ${selected[1]}`;
-    const suffix = lang === 'en' ? `others` : `외 ${selected.length - 2}개`;
-    return `${selected[0]}, ${selected[1]} ${suffix}`;
+
+    const display = selected.map((v) => toDisplayLabel(v, type, lang));
+
+    if (lang === 'en' && type === 'department') {
+      if (display.length === 1) return display[0];
+      return `${display[0]} +${display.length - 1}`;
+    }
+
+    if (display.length === 1) return display[0];
+    if (display.length === 2) return `${display[0]}, ${display[1]}`;
+
+    const suffix =
+      lang === 'en' ? `+${display.length - 2}` : `외 ${display.length - 2}개`;
+
+    return `${display[0]}, ${display[1]} ${suffix}`;
   };
 
-  const languageLabel = makeLabel(selectedLanguages, baseLabels.language, lang);
+  const languageLabel = makeLabel(
+    selectedLanguages,
+    baseLabels.language,
+    'language',
+    lang,
+  );
+
   const departmentLabel = makeLabel(
     selectedDepartments,
     baseLabels.department,
+    'department',
     lang,
   );
 
