@@ -59,7 +59,7 @@
 
 | 팀원명 | 트러블 슈팅 내역 |
 | --- | --- |
-| [남소미](https://github.com/imsom2) |   • [Prisma Migrate 실행 시 Shadow Database 권한 오류 트러블슈팅](https://www.notion.so/Prisma-Migrate-Shadow-Database-303aa6cb801f80348802d29c2a883bcc?pvs=21) <br/> • [Supabase를 활용한 파일 스토리지 및 DB 설계 개선](https://www.notion.so/Supabase-DB-303aa6cb801f80c1b1d3d4056528b67e?pvs=21)  |
+| [남소미](https://github.com/imsom2) |   • [빌드 타임 DB 의존성 문제 해결](https://tinted-gladiolus-b73.notion.site/DB-41aaa6cb801f80408a7fc5f209185356?source=copy_link)  |
 | [이민지](https://github.com/thisminji) |   • [폼 관리 리팩토링: 클라이언트 State에서 Server Actions로 전환](https://www.notion.so/State-Server-Actions-303aa6cb801f801a9188f5f9cfaeb65e?pvs=21) <br/>  • [OCR 엔진 교체: 실시간 SDK에서 이미지 분석 방식으로 전환](https://www.notion.so/OCR-SDK-303aa6cb801f8089a302f28eee30462d?pvs=21)  |
 | [김채현](https://github.com/imddoy) |   • [HanaroPass main 페이지 아키텍처 설계와 트러블슈팅](https://www.notion.so/HanaroPass-main-303aa6cb801f80cc9263d712d52f60bb?pvs=21) <br/>  • [Search Input 컴포넌트 구현](https://www.notion.so/Search-Input-303aa6cb801f80e2a012ed8dcdcf6b3c?pvs=21)  |
 | [김도이](https://github.com/kimm00) |   • [지도 기반 병원 서비스 마커·상태·AI 요약 동기화 트러블슈팅](https://www.notion.so/AI-303aa6cb801f80319563cab5f958f6fe?pvs=21) <br/> • [지도 한·영 전환 시 병원 정보 동기화 문제 해결](https://www.notion.so/303aa6cb801f8098a442e8d5f05fa1d3?pvs=21)  |
